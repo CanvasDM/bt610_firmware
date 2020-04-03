@@ -17,9 +17,9 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "source zephyr/zephyr-env.sh && west build -b pinnacle_100_dvk -d build/${input:buildApp} ${input:buildApp}",
+            "command": "source zephyr/zephyr-env.sh && west build -b ${input:boardApp} -d build/${input:buildApp} ${input:buildApp}",
             "windows": {
-                "command": "${workspaceRoot}\\zephyr\\zephyr-env.cmd && west build -b pinnacle_100_dvk -d ${workspaceRoot}\\build\\${input:buildApp} ${workspaceRoot}\\${input:buildApp}"
+                "command": "${workspaceRoot}\\zephyr\\zephyr-env.cmd && west build -b ${input:boardApp} -d ${workspaceRoot}\\build\\${input:buildApp} ${workspaceRoot}\\${input:buildApp}"
             },
             "problemMatcher": [],
         },
@@ -72,10 +72,21 @@
             "options": [
                 "apps/lte_console",
                 "apps/oob_demo",
+                "apps/peripheral_IO",
                 "tests/udp_echo_client",
                 "tests/http_get",
                 "tests/tcp_echo_client",
                 "tests/aws_connect",
+            ]
+        },
+        {
+            "id": "boardApp",
+            "description": "Select an board hardware",
+            "default": "boards/arm/pinnacle_100_dvk",
+            "type": "pickString",
+            "options": [
+                "pinnacle_100_dvk",
+                "bl654_dvk",
             ]
         }
     ]
