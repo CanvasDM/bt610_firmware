@@ -3,6 +3,9 @@
  * @brief The message framework uses queues to pass pointers to messages
  * between tasks or from an interrupt or non-msg task to a message task.
  *
+ * The convention is to check that messages are pseudo-valid, but assume
+ * queue/task objects are valid when framework assertions are turned off.
+ *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -21,10 +24,12 @@ typedef struct MsgTaskArrayEntry {
 	bool inUse;
 } MsgTaskArrayEntry_t;
 
+#define FIRST_VALID_FWK_ID (FWK_ID_RESERVED + 1)
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static void PeriodicTimerCallback(struct k_timer *pArg);
+static void PeriodicTimerCallbackIsr(struct k_timer *pArg);
 
 static MsgTaskArrayEntry_t msgTaskRegistry[FRAMEWORK_MAX_MSG_RECEIVERS];
 
@@ -40,6 +45,8 @@ void Framework_Initialize(void)
 
 void Framework_RegisterReceiver(FwkMsgReceiver_t *pRxer)
 {
+	FRAMEWORK_ASSERT(pRxer != NULL);
+	FRAMEWORK_ASSERT(pRxer->id < FRAMEWORK_MAX_MSG_RECEIVERS);
 	if (pRxer->id >= FRAMEWORK_MAX_MSG_RECEIVERS) {
 		return;
 	}
@@ -60,14 +67,25 @@ void Framework_RegisterReceiver(FwkMsgReceiver_t *pRxer)
 
 void Framework_RegisterTask(FwkMsgTask_t *pMsgTask)
 {
+	FRAMEWORK_ASSERT(pMsgTask != NULL);
 	Framework_RegisterReceiver(&pMsgTask->rxer);
-	k_timer_init(&pMsgTask->timer, PeriodicTimerCallback, NULL);
+	k_timer_init(&pMsgTask->timer, PeriodicTimerCallbackIsr, NULL);
 }
 
 BaseType_t Framework_Send(FwkId_t RxId, FwkMsg_t *pMsg)
 {
 	FRAMEWORK_ASSERT(pMsg != NULL);
 	BaseType_t result = FWK_ERROR;
+	if (pMsg == NULL) {
+		return result;
+	}
+	if (RxId >= FRAMEWORK_MAX_MSG_RECEIVERS) {
+		return result;
+	}
+	if (!msgTaskRegistry[RxId].inUse) {
+		return result;
+	}
+
 	FwkMsgReceiver_t *pMsgRxer = msgTaskRegistry[RxId].pMsgReceiver;
 	if (pMsgRxer != NULL) {
 		pMsg->header.rxId = RxId;
@@ -79,13 +97,16 @@ BaseType_t Framework_Send(FwkId_t RxId, FwkMsg_t *pMsg)
 BaseType_t Framework_Unicast(FwkMsg_t *pMsg)
 {
 	FRAMEWORK_ASSERT(pMsg != NULL);
-
 	BaseType_t result = FWK_ERROR;
+	if (pMsg == NULL) {
+		return result;
+	}
+
 	u32_t i;
-	for (i = 0; i < FRAMEWORK_MAX_MSG_RECEIVERS; i++) {
+	for (i = FIRST_VALID_FWK_ID; i < FRAMEWORK_MAX_MSG_RECEIVERS; i++) {
 		FwkMsgReceiver_t *pMsgRxer = msgTaskRegistry[i].pMsgReceiver;
 
-		if (pMsgRxer != NULL) {
+		if (pMsgRxer != NULL && pMsgRxer->pMsgDispatcher != NULL) {
 			/* The handler isn't called here.
 			 * It is only used to find the task the message belongs to. */
 			FwkMsgHandler_t msgHandler =
@@ -107,15 +128,18 @@ BaseType_t Framework_Unicast(FwkMsg_t *pMsg)
 int Framework_Broadcast(FwkMsg_t *pMsg, size_t MsgSize)
 {
 	FRAMEWORK_ASSERT(pMsg != NULL);
+	BaseType_t result = FWK_ERROR;
+	if (pMsg == NULL) {
+		return result;
+	}
+
 #if FWK_ALLOW_BROADCAST_FROM_ISR
 	/* It is technically possible to broadcast from ISR, but isn't recommended. */
 	FRAMEWORK_ASSERT(!Framework_InterruptContext());
 #endif
 
-	BaseType_t result = FWK_ERROR;
-
 	u32_t i;
-	for (i = 0; i < FRAMEWORK_MAX_MSG_RECEIVERS; i++) {
+	for (i = FIRST_VALID_FWK_ID; i < FRAMEWORK_MAX_MSG_RECEIVERS; i++) {
 		FwkMsgReceiver_t *pMsgRxer = msgTaskRegistry[i].pMsgReceiver;
 
 		if (pMsgRxer != NULL && pMsgRxer->pMsgDispatcher != NULL) {
@@ -160,7 +184,22 @@ BaseType_t Framework_Queue(FwkQueue_t *pQueue, void *ppData,
 {
 	FRAMEWORK_ASSERT(pQueue != NULL);
 	FRAMEWORK_ASSERT(ppData != NULL);
-	FRAMEWORK_ASSERT(((FwkMsg_t *)ppData)->header.msgCode != FMC_INVALID);
+	if (ppData == NULL) {
+		FRAMEWORK_ASSERT(false);
+		return FWK_ERROR;
+	}
+
+	FwkMsg_t *pMsg = (FwkMsg_t *)ppData;
+	if (pMsg == NULL) {
+		FRAMEWORK_ASSERT(false);
+		return FWK_ERROR;
+	}
+
+	if (pMsg->header.msgCode == FMC_INVALID) {
+		FRAMEWORK_ASSERT(false);
+		return FWK_ERROR;
+	}
+
 	if (Framework_InterruptContext()) {
 		return k_msgq_put(pQueue, ppData, K_NO_WAIT);
 	} else {
@@ -172,7 +211,11 @@ BaseType_t Framework_Receive(FwkQueue_t *pQueue, void *ppData,
 			     TickType_t BlockTicks)
 {
 	FRAMEWORK_ASSERT(pQueue != NULL);
-	FRAMEWORK_ASSERT(ppData != NULL);
+	if (ppData == NULL) {
+		FRAMEWORK_ASSERT(false);
+		return FWK_ERROR;
+	}
+
 	if (Framework_InterruptContext()) {
 		return k_msgq_get(pQueue, ppData, K_NO_WAIT);
 	} else {
@@ -230,7 +273,6 @@ BaseType_t Framework_QueueIsEmpty(FwkId_t RxId)
 	if (RxId >= FRAMEWORK_MAX_MSG_RECEIVERS) {
 		return 1;
 	}
-
 	if (!msgTaskRegistry[RxId].inUse) {
 		return 1;
 	}
@@ -239,15 +281,36 @@ BaseType_t Framework_QueueIsEmpty(FwkId_t RxId)
 	return ((k_msgq_num_used_get(pQueue) == 0) ? 1 : 0);
 }
 
-/******************************************************************************/
-/* Local Function Definitions                                                 */
-/******************************************************************************/
-static void PeriodicTimerCallback(struct k_timer *pArg)
+size_t Framework_Flush(FwkId_t RxId)
 {
-	/* This assumes that the task was created by providing
-	 * the pointer to the msg task structure
-	 * (or that it is first item in the object).
-	 */
+	if (RxId >= FRAMEWORK_MAX_MSG_RECEIVERS) {
+		return 0;
+	}
+	if (!msgTaskRegistry[RxId].inUse) {
+		return 0;
+	}
+
+	FwkMsg_t *pMsg;
+	size_t purged = 0;
+	while (true) {
+		pMsg = NULL;
+		k_msgq_get(msgTaskRegistry[RxId].pMsgReceiver->pQueue, &pMsg,
+			   K_NO_WAIT);
+		if (pMsg != NULL) {
+			BufferPool_Free(pMsg);
+			purged += 1;
+		} else {
+			break;
+		}
+	}
+	return purged;
+}
+
+/******************************************************************************/
+/* Interrupt Service Routines                                                 */
+/******************************************************************************/
+static void PeriodicTimerCallbackIsr(struct k_timer *pArg)
+{
 	FwkMsgTask_t *pMsgTask =
 		(FwkMsgTask_t *)CONTAINER_OF(pArg, FwkMsgTask_t, timer);
 
