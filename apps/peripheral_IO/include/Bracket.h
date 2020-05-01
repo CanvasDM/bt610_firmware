@@ -19,6 +19,7 @@ extern "C" {
 /******************************************************************************/
 #include <zephyr/types.h>
 #include <stddef.h>
+#include<kernel.h>
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */

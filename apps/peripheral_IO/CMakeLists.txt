@@ -5,5 +5,6 @@ project(peripheral_hids)
 
 FILE(GLOB app_sources src/*.c)
 target_sources(app PRIVATE ${app_sources})
+zephyr_include_directories(${ZEPHYR_BASE}/include/power)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/framework_config)
