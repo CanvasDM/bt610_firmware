@@ -12,6 +12,7 @@
 #include <zephyr.h>
 #include <power/reboot.h>
 #include "Framework.h"
+#include "Bracket.h"
 //#include "SensorTask.h"
 
 //#include "led.h"
@@ -49,7 +50,8 @@ LOG_MODULE_REGISTER(ControlTask);
 
 typedef struct ControlTaskTag
 {
-  FwkMsgTask_t msgTask;  
+  FwkMsgTask_t msgTask; 
+  BracketObj_t *pBracket; 
 
 } ControlTaskObj_t;
 
@@ -116,7 +118,6 @@ void ControlTask_Initialize(void)
   controlTaskObject.msgTask.rxer.pMsgDispatcher   = ControlTaskMsgDispatcher;
   controlTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
   controlTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
-  controlTaskObject.msgTask.pContainer            = &controlTaskObject;
   controlTaskObject.msgTask.rxer.pQueue           = &controlTaskQueue;
   
   Framework_RegisterTask(&controlTaskObject.msgTask);
@@ -138,6 +139,11 @@ void ControlTask_Initialize(void)
                     K_NO_WAIT);
 
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE);
+
+  controlTaskObject.pBracket = Bracket_Initialize(1536);
+	//controlTaskObject.conn = NULL;
+	RegisterConnectionCallbacks();
+	RegisterSecurityCallbacks();
 #endif
 }
 

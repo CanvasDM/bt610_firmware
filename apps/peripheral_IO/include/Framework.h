@@ -131,7 +131,6 @@ struct FwkMsgReceiver {
  * Contains a receiver object, task/thread information, and a timer
  */
 typedef struct FwkMsgTask {	
-	void * pContainer;           /* Object pointer that is returned in callbacks*/
 	FwkMsgReceiver_t rxer;
 	struct k_thread threadData;
 	struct k_thread *pTid;
