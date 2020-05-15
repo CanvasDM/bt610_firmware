@@ -166,7 +166,10 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 //Led_Initialize();
 
-   FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
+  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
+
+  //For test only
+  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_ALL_TASKS);
 
   while( true )
   {

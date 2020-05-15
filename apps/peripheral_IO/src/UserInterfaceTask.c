@@ -11,6 +11,11 @@
 /* Includes                                                                   */
 /******************************************************************************/
 #include <zephyr.h>
+#include <device.h>
+#include <drivers/gpio.h>
+#include <sys/util.h>
+#include <sys/printk.h>
+#include <inttypes.h>
 #include "Framework.h"
 #include "Bracket.h"
 
@@ -61,6 +66,8 @@ typedef struct UserIfTaskTag
 /******************************************************************************/
 static UserIfTaskObj_t userIfTaskObject;
 
+static struct gpio_callback button_cb_data;
+
 K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 
 K_MSGQ_DEFINE(userIfTaskQueue, 
@@ -72,8 +79,8 @@ K_MSGQ_DEFINE(userIfTaskQueue,
 /******************************************************************************/
 static void UserIfTaskThread(void *, void *, void *);
 
-//static void InitializeButton(void);
-//static void ButtonHandlerIsr(nrfx_gpiote_pin_t Pin, nrf_gpiote_polarity_t Action);
+static void InitializeButton(void);
+static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, u32_t pins);
 
 //static DispatchResult_t UserIfTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //static DispatchResult_t ButtonIsrMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -139,13 +146,55 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
   UserIfTaskObj_t *pObj = (UserIfTaskObj_t*)pArg1;
 
- // InitializeButton();
+  InitializeButton();
   
   while( true )
   {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
 }
+
+static void InitializeButton(void)
+{
+  struct device *buttonDevice;
+  int ret;
+
+	buttonDevice = device_get_binding(DT_ALIAS_SW0_GPIOS_CONTROLLER);
+	if (buttonDevice == NULL) 
+  {
+		printk("Error: didn't find %s device\n",
+			DT_ALIAS_SW0_GPIOS_CONTROLLER);
+		return;
+	}
+
+  ret = gpio_pin_configure(buttonDevice, DT_ALIAS_SW0_GPIOS_PIN,
+				 DT_ALIAS_SW0_GPIOS_FLAGS | GPIO_INPUT);
+	if (ret != 0) 
+  {
+		printk("Error %d: failed to configure pin %d '%s'\n",
+			ret, DT_ALIAS_SW0_GPIOS_PIN, DT_ALIAS_SW0_LABEL);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(buttonDevice, DT_ALIAS_SW0_GPIOS_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) 
+  {
+		printk("Error %d: failed to configure interrupt on pin %d '%s'\n",
+			ret, DT_ALIAS_SW0_GPIOS_PIN, DT_ALIAS_SW0_LABEL);
+		return;
+	}
+
+  gpio_init_callback(&button_cb_data, ButtonHandlerIsr,
+			   BIT(DT_ALIAS_SW0_GPIOS_PIN));
+	gpio_add_callback(buttonDevice, &button_cb_data);
+  
+}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
+void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
+		    u32_t pins)
+{
+	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
+}
