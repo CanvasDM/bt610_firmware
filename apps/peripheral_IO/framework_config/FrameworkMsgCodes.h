@@ -29,6 +29,7 @@ typedef enum FwkMsgCodeEnum {
 	FMC_INIT_ALL_TASKS,
 	FMC_LED_TEST,
 	FMC_INIT_NV,
+	FMC_CODE_BUTTON_ISR,
 	/* Last value (DO NOT DELETE) */
 	NUMBER_OF_FRAMEWORK_MSG_CODES
 } FwkMsgCode_t;

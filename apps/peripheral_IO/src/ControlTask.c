@@ -1,6 +1,5 @@
 //=================================================================================================
 //!
-#define THIS_FILE "ControlTask"
 //!
 //! @copyright Copyright 2019 Laird
 //!            All Rights Reserved.
@@ -14,6 +13,7 @@
 #include "Framework.h"
 #include "Bracket.h"
 //#include "SensorTask.h"
+#include "UserInterfaceTask.h"
 
 //#include "led.h"
 //#include "lte.h"
@@ -32,6 +32,8 @@ LOG_MODULE_REGISTER(ControlTask);
 //=================================================================================================
 // Local Constant, Macro and Type Definitions
 //=================================================================================================
+#define THIS_FILE "ControlTask"
+
 #if !CONTROL_TASK_USES_MAIN_THREAD
   #ifndef CONTROL_TASK_PRIORITY
     #define CONTROL_TASK_PRIORITY K_PRIO_PREEMPT(1)
@@ -126,7 +128,7 @@ void ControlTask_Initialize(void)
   controlTaskObject.msgTask.pTid = k_current_get();
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE " is main thread");
 #else
-  controlTaskObject.msgTask->pTid = 
+  controlTaskObject.msgTask.pTid = 
     k_thread_create(&controlTaskObject.msgTask.threadData, 
                     controlTaskStack,
                     K_THREAD_STACK_SIZEOF(controlTaskStack),
@@ -142,8 +144,7 @@ void ControlTask_Initialize(void)
 
   controlTaskObject.pBracket = Bracket_Initialize(1536);
 	//controlTaskObject.conn = NULL;
-	RegisterConnectionCallbacks();
-	RegisterSecurityCallbacks();
+
 #endif
 }
 
@@ -183,6 +184,7 @@ static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 #endif
 
 //  SensorTask_Initialize();
+  UserInterfaceTask_Initialize();  // sends messages to SensorTask
   
 #if 0
   FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL, 
