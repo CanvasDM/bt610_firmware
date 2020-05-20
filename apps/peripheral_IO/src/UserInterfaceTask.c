@@ -20,6 +20,7 @@
 #include "Bracket.h"
 
 #include "UserInterfaceTask.h"
+#include "AdcRead.h"
 
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -144,9 +145,12 @@ void UserInterfaceTask_Initialize(void)
 /******************************************************************************/
 static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
+  static volatile uint32_t adcTestValue = 0;
   UserIfTaskObj_t *pObj = (UserIfTaskObj_t*)pArg1;
 
   InitializeButton();
+  adcTestValue = ADC_GetBatteryMv();
+
   
   while( true )
   {
