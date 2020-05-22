@@ -1,13 +1,13 @@
 /**
- * @file UserInterfaceTask.h
+ * @file UserCommTask.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __USER_INTERFACE_TASK_H__
-#define __USER_INTERFACE_TASK_H__
+#ifndef __USER_COMM_TASK_H__
+#define __USER_COMM_TASK_H__
 
 /* (Remove Empty Sections) */
 /******************************************************************************/
@@ -39,7 +39,7 @@ extern "C" {
  *
  * @retval
  */
-void UserInterfaceTask_Initialize(void);
+void UserCommTask_Initialize(void);
 
 
 #ifdef __cplusplus

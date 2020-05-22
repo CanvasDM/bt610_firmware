@@ -24,6 +24,7 @@ typedef enum FwkIdEnumeration {
   	FWK_ID_CONTROL_TASK,
   	FWK_ID_SENSOR_TASK,
 	FWK_ID_USER_IF_TASK,  
+	FWK_ID_USER_COMM_TASK,
 	/* Reserved for framework (DO NOT DELETE, and it must be LAST) */
 	FRAMEWORK_MAX_MSG_RECEIVERS
 } FwkId_t;

@@ -14,6 +14,7 @@
 #include "Bracket.h"
 //#include "SensorTask.h"
 #include "UserInterfaceTask.h"
+#include "UserCommTask.h"
 
 //#include "led.h"
 //#include "lte.h"
@@ -188,6 +189,7 @@ static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 
 //  SensorTask_Initialize();
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
+  UserCommTask_Initialize();
   
 #if 0
   FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL, 
