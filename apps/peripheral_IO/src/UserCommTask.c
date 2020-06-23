@@ -82,13 +82,6 @@ static void UserCommTaskThread(void *, void *, void *);
 
 
 //static DispatchResult_t UserCommTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-//static DispatchResult_t ButtonIsrMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-
-//static bool isQuickPress(uint32_t Duration);
-//static bool isMediumPress(uint32_t Duration);
-//static bool isLongPress(uint32_t Duration);
-//static bool IgnoreButton(uint32_t Duration);
-
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -144,8 +137,7 @@ void UserCommTask_Initialize(void)
 /******************************************************************************/
 static void UserCommTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
-  static volatile uint32_t adcTestValue = 0;
-  UserCommTaskObj_t *pObj = (UserCommTaskObj_t*)pArg1;
+   UserCommTaskObj_t *pObj = (UserCommTaskObj_t*)pArg1;
 
   
   while( true )
@@ -154,7 +146,17 @@ static void UserCommTaskThread(void *pArg1, void *pArg2, void *pArg3)
   }
 }
 
+void uartCallBack(struct device *x)
+{
+//	uart_irq_update(x);
+//	int data_length = 0;
 
+//	if (uart_irq_rx_ready(x)) {
+//		data_length = uart_fifo_read(x, uart_buf, sizeof(uart_buf));
+//		uart_buf[data_length] = 0;
+//	}
+//	printk("%s", uart_buf);
+}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/

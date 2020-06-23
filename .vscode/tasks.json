@@ -73,6 +73,8 @@
                 "apps/lte_console",
                 "apps/oob_demo",
                 "apps/peripheral_IO",
+                "apps/peripheral_hids",
+                "apps/blink_led",
                 "tests/udp_echo_client",
                 "tests/http_get",
                 "tests/tcp_echo_client",
