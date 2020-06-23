@@ -25,13 +25,19 @@ LOG_MODULE_REGISTER(AdcRead);
 // ADC Sampling Settings
 #define CONFIG_ADC_CONFIGURABLE_INPUTS
 #define ADC_DEVICE_NAME		    DT_ALIAS_ADC_0_LABEL
-#define ADC_RESOLUTION		    (10)
-#define ADC_GAIN			    ADC_GAIN_1_6
+#define ADC_RESOLUTION		    (12)
+#define ADC_GAIN			    ADC_GAIN_1_4
 #define ADC_REFERENCE		    ADC_REF_INTERNAL
 #define ADC_ACQUISITION_TIME	ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)
 #define ADC_VDD_CHANNEL_INPUT   NRF_SAADC_INPUT_VDD
 #define BUFFER_SIZE			    (6)
 #define BAD_ANALOG_READ         (0)
+#define ADC_REF_VOLTAGE_IN_MILLIVOLTS  600  //!< Reference voltage (in milli volts) used by ADC while doing conversion.
+#define ADC_RES_10BIT                  1024 //!< Maximum digital value for 10-bit ADC conversion.
+#define ADC_RES_12BIT                  4096
+#define ADC_PRE_SCALING_COMPENSATION   6    //!< The ADC is configured to use VDD with 1/3 prescaling as input. And hence the result of conversion is to be multiplied by 3 to get the actual value of the battery voltage.
+#define ADC_RESULT_IN_MILLI_VOLTS(ADC_VALUE) \
+    ((((ADC_VALUE) * ADC_REF_VOLTAGE_IN_MILLIVOLTS) / ADC_RES_12BIT) * ADC_PRE_SCALING_COMPENSATION)
 
 
 /******************************************************************************/
@@ -78,6 +84,7 @@ uint32_t ADC_GetBatteryMv(void)
     //Reset battery math
     //adcControl.batteryMath = 0;
     //GIVE_SEMAPHORE(adcControl.adcBusy);
+	millivolts = ADC_RESULT_IN_MILLI_VOLTS(analogValue);
     return(millivolts);
 }
 

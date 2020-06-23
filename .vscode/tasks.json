@@ -67,27 +67,20 @@
         {
             "id": "buildApp",
             "description": "Select an app to build",
-            "default": "apps/oob_demo",
+            "default": "apps/peripheral_IO",
             "type": "pickString",
             "options": [
-                "apps/lte_console",
-                "apps/oob_demo",
                 "apps/peripheral_IO",
                 "apps/peripheral_hids",
                 "apps/blink_led",
-                "tests/udp_echo_client",
-                "tests/http_get",
-                "tests/tcp_echo_client",
-                "tests/aws_connect",
             ]
         },
         {
             "id": "boardApp",
             "description": "Select an board hardware",
-            "default": "boards/arm/pinnacle_100_dvk",
+            "default": "boards/arm/bl654_dvk",
             "type": "pickString",
             "options": [
-                "pinnacle_100_dvk",
                 "bl654_dvk",
             ]
         }
