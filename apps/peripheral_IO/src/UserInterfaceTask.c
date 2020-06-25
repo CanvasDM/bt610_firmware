@@ -18,6 +18,10 @@
 #include <inttypes.h>
 #include "Framework.h"
 #include "Bracket.h"
+#include <shell/shell.h>
+#include <shell/shell_uart.h>
+#include <stdlib.h>
+
 
 #include "UserInterfaceTask.h"
 #include "AdcRead.h"
@@ -52,12 +56,22 @@ LOG_MODULE_REGISTER(UserInterface);
 #define LONG_BUTTON_PRESS_MIN_DURATION_MS   10000
 #define LONG_BUTTON_PRESS_MAX_DURATION_MS   20000
 
+typedef enum AnalogSelectonTag
+{
+  UNKOWN_READING = 0,
+  VOLTAGE_READING,
+  CURRENT_READING,
+  THERMISTOR_READING,
+} AnalogType_t;
+
 typedef struct UserIfTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
+  AnalogType_t AnalogType;
 
 } UserIfTaskObj_t;
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -75,6 +89,14 @@ K_MSGQ_DEFINE(userIfTaskQueue,
               FWK_QUEUE_ENTRY_SIZE, 
               USER_IF_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
+
+enum
+{
+  AIN1 = 1,
+  AIN2,
+  AIN3,
+  AIN4,
+};              
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -90,6 +112,7 @@ static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, u32_t
 //static bool isMediumPress(uint32_t Duration);
 //static bool isLongPress(uint32_t Duration);
 //static bool IgnoreButton(uint32_t Duration);
+//static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv);
 
 //=================================================================================================
 // Framework Message Dispatcher
@@ -138,20 +161,19 @@ void UserInterfaceTask_Initialize(void)
 
   userIfTaskObject.pBracket = Bracket_Initialize(1536);
 	//userIfTaskObject.conn = NULL;
+  userIfTaskObject.AnalogType = UNKOWN_READING;
 
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
-{
-  static volatile uint32_t adcTestValue = 0;
+{  
   UserIfTaskObj_t *pObj = (UserIfTaskObj_t*)pArg1;
 
   InitializeButton();
-  adcTestValue = ADC_GetBatteryMv();
 
-  
+
   while( true )
   {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -194,6 +216,97 @@ static void InitializeButton(void)
 	gpio_add_callback(buttonDevice, &button_cb_data);
   
 }
+
+static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  uint8_t enabled = 0;
+  enabled= atoi(argv[1]);
+
+
+  shell_print(shell, "ANALOG_EN = %d \n",enabled);
+
+  return(0);
+}
+static int batteryMeasurement(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+  static volatile uint32_t adcTestValue = 0;
+  uint8_t index = 0;
+  uint8_t maxReadings = 10;
+
+  for(index =0; index < maxReadings; index++)
+  {
+    adcTestValue = ADC_GetBatteryMv();
+    shell_print(shell,"Battery %d = %d mv\n", index, adcTestValue);
+  }
+
+  return(0);
+}
+static int readAin(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+	uint8_t ainSelected = 0;
+  ainSelected= atoi(argv[1]);
+  
+  if(userIfTaskObject.AnalogType == UNKOWN_READING)
+  {
+    shell_print(shell, "Analog Type not set");
+  }
+  else
+  {
+    switch(ainSelected)
+    {
+      case AIN1:
+        break;
+      case AIN2:
+        break;
+      case AIN3:
+        break;
+      case AIN4:
+        break;       
+      default:
+        FRAMEWORK_ASSERT(FORCED);
+      break;
+    }
+    shell_print(shell, "Analog pin %d", ainSelected);
+  }
+
+  return(0);
+}
+static int analogVoltage(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  ARG_UNUSED(argv);
+  userIfTaskObject.AnalogType = VOLTAGE_READING;
+
+  shell_print(shell, "Set To Voltage\n");
+
+  return(0);
+}
+static int analogCurrent(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  ARG_UNUSED(argv);
+  userIfTaskObject.AnalogType = CURRENT_READING;
+
+  shell_print(shell, "Set To Current\n");
+
+  return(0);
+}
+static int ennableThermistorPin(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  uint8_t enabled = 0;
+  enabled= atoi(argv[1]);
+  userIfTaskObject.AnalogType = THERMISTOR_READING;
+
+  shell_print(shell, "THERM_EN = %d \n",enabled);
+
+  return(0);
+}
+
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -202,3 +315,19 @@ void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
+
+/******************************************************************************/
+/* SHELL Service                                                  */
+/******************************************************************************/
+SHELL_STATIC_SUBCMD_SET_CREATE(
+	sub_inputs, 
+  SHELL_CMD(enableAlog, NULL, "Enable/Disable Analog", ennableAnalogPin), 
+  SHELL_CMD(battery, NULL, "Take Battery Measure", batteryMeasurement),
+  SHELL_CMD(ain, NULL, "Read AINx", readAin),  
+  SHELL_CMD(voltage, NULL, "Voltage Input", analogVoltage),
+  SHELL_CMD(current, NULL, "Current Input", analogCurrent),
+  SHELL_CMD(enableTherm, NULL, "Enable/Disable Thermistor", ennableThermistorPin),  
+  SHELL_SUBCMD_SET_END);
+SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
+
+
