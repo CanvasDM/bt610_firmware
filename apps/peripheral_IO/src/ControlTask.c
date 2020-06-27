@@ -10,13 +10,13 @@
 //=================================================================================================
 #include <zephyr.h>
 #include <power/reboot.h>
-#include "Framework.h"
+#include "FrameworkIncludes.h"
 #include "Bracket.h"
 //#include "SensorTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
+#include "LedPwm.h"
 
-//#include "led.h"
 //#include "lte.h"
 //#include "aws.h"
 //#include "nv.h"
@@ -143,7 +143,9 @@ void ControlTask_Initialize(void)
 
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE);
 
-  controlTaskObject.pBracket = Bracket_Initialize(1536);
+  controlTaskObject.pBracket = 		
+    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	//controlTaskObject.conn = NULL;
 
 #endif
@@ -165,9 +167,9 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
   ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
 
-//Led_Initialize();
 
-  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
+ // FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
+  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_LED_TEST);
 
   //For test only
   FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_ALL_TASKS);
@@ -213,7 +215,7 @@ static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsg);
-  s32_t nextTickMs = appStateRunFsm();
+  int32_t nextTickMs = appStateRunFsm();
   Framework_ChangeTimerPeriod(pMsgTask, nextTickMs, 0);
   return DISPATCH_OK;
 }
@@ -260,19 +262,19 @@ static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *
 {
   UNUSED_PARAMETER(pMsgRxer);
   LedTestMsg_t * pLedMsg = (LedTestMsg_t *)pMsg;
-  uint32_t delayMs = pLedMsg->durationMs;
+  uint32_t delayMs = 3000;//pLedMsg->durationMs;
   delayMs = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, delayMs);
-  /*Led_TurnOff();
-  k_sleep(delayMs);
-  Led_TurnOn(GREEN);
-  k_sleep(delayMs);
-  Led_TurnOn(RED);
-  k_sleep(delayMs);
-  Led_TurnOn(YELLOW);
-  k_sleep(delayMs);
-  Led_TurnOff();
-  k_sleep(delayMs);
-  */
+  LedPwm_off(0);
+  LedPwm_off(1);
+  k_sleep(K_MSEC(delayMs));
+  LedPwm_on(0,1500,700);
+  k_sleep(K_MSEC(delayMs));
+  LedPwm_on(1,1500,700);
+  k_sleep(K_MSEC(delayMs));
+  LedPwm_off(0);
+  LedPwm_off(1);
+  k_sleep(K_MSEC(delayMs));
+  
   return DISPATCH_OK;
 }
 static DispatchResult_t AppReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)

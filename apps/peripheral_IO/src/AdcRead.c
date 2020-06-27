@@ -23,8 +23,8 @@ LOG_MODULE_REGISTER(AdcRead);
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
 // ADC Sampling Settings
-#define CONFIG_ADC_CONFIGURABLE_INPUTS
-#define ADC_DEVICE_NAME		    DT_ALIAS_ADC_0_LABEL
+//#define CONFIG_ADC_CONFIGURABLE_INPUTS
+#define ADC_DEVICE_NAME		    DT_LABEL(DT_INST(0, nordic_nrf_saadc))//(DT_LABEL(DT_NODELABEL(adc)))//DT_ALIAS_ADC_0_LABEL
 #define ADC_RESOLUTION		    (12)
 #define ADC_GAIN			    ADC_GAIN_1_4
 #define ADC_REFERENCE		    ADC_REF_INTERNAL
