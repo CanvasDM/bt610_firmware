@@ -15,6 +15,7 @@
 //#include "SensorTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
+#include "AnalogSensorTask.h"
 #include "LedPwm.h"
 
 //#include "lte.h"
@@ -83,7 +84,7 @@ static void ControlTaskThread(void *, void *, void *);
 
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgTask_t *pMsgTask, FwkMsg_t *pMsg);
 //static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
 
@@ -97,7 +98,7 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
   {
   case FMC_INVALID:           return Framework_UnknownMsgHandler;
 //  case FMC_PERIODIC:          return PeriodicMsgHandler;
-  case FMC_INIT_ALL_TASKS:    return InitializeAllTasks;
+  case FMC_INIT_ALL_TASKS:    return InitializeAllTasksMsgHandler;
   case FMC_SOFTWARE_RESET:    return SoftwareResetMsgHandler;
  // case FRAMEWORK_MSG_CODE_INIT_NV:           return InitNvMsgHander;
 //  case FRAMEWORK_MSG_CODE_INIT_BLE:          return InitBleMsgHandler;
@@ -180,7 +181,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
   }
 }
 
-static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsg);
 
@@ -192,6 +193,7 @@ static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 //  SensorTask_Initialize();
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
   UserCommTask_Initialize();
+  AnalogSensorTask_Initialize();
   
 #if 0
   FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL, 
@@ -262,7 +264,7 @@ static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *
 {
   UNUSED_PARAMETER(pMsgRxer);
   LedTestMsg_t * pLedMsg = (LedTestMsg_t *)pMsg;
-  uint32_t delayMs = 3000;//pLedMsg->durationMs;
+  uint32_t delayMs = 1000;//pLedMsg->durationMs;
   delayMs = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, delayMs);
   LedPwm_off(0);
   LedPwm_off(1);

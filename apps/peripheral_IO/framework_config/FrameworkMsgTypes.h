@@ -26,6 +26,11 @@ extern "C" {
 /******************************************************************************/
 /* Project Specific Message Types                                             */
 /******************************************************************************/
+typedef struct 
+{
+  bool analogEnable;
+  bool thermEnable;
+}EnablePins_t;
 
 typedef struct
 {
@@ -33,6 +38,12 @@ typedef struct
   uint32_t durationMs;
   
 } LedTestMsg_t;
+typedef struct
+{
+  FwkMsgHeader_t header;
+  EnablePins_t control;
+  
+} SetEnablePinMsg_t;
 
 #ifdef __cplusplus
 }
