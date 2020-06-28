@@ -15,6 +15,7 @@
 #include <zephyr.h>
 #include <device.h>
 #include <drivers/gpio.h>
+#include <drivers/i2c.h>
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
@@ -49,29 +50,29 @@ LOG_MODULE_REGISTER(AnalogSensor);
   #define ANALOG_SENSOR_TASK_QUEUE_DEPTH 8
 #endif
 
-#define ANALOG_ENABLE_PIN        (28)//45
-#define THERM_ENABLE_PIN         (10)
+#define ANALOG_ENABLE_PIN        (13)//SIO_45 Port1
+#define THERM_ENABLE_PIN         (29)//SIO_10 Port0
+
+#define EXPANDER_ADDRESS         (0X70)
+#define TCA9538_REG_INPUT		 (0x00)
+#define TCA9538_REG_OUTPUT		 (0x01)
+#define TCA9538_REG_POL_INV		 (0x02)
+#define TCA9538_REG_CONFIG		 (0x03)
+#define OUTPUT_CONFIG		     (0xC0) //pins 6 and 7 still set as inputs
+
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(i2c0), okay)
+#define I2C_DEV_NAME	DT_LABEL(DT_NODELABEL(i2c0))
+#else
+#error "Please set the correct I2C device"
+#endif
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
-#define FLAGS_OR_ZERO(node)						\
-	COND_CODE_1(DT_PHA_HAS_CELL(node, gpios, flags),		\
-		    (DT_GPIO_FLAGS(node, gpios)),			\
-		    (0))
-
-#define BUTTON1_NODE DT_ALIAS(sw1)
-#if DT_NODE_HAS_STATUS(BUTTON1_NODE, okay)
-#define BUTTON1_DEV DT_GPIO_LABEL(BUTTON1_NODE, gpios)
-#define BUTTON1_PIN DT_GPIO_PIN(BUTTON1_NODE, gpios)
-#define BUTTON1_FLAGS	(GPIO_INPUT | FLAGS_OR_ZERO(BUTTON1_NODE))
-#else
-#error "Unsupported board: sw1 devicetree alias is not defined"
-#endif
-
 typedef struct AnalogSensorTaskTag
 {
     FwkMsgTask_t msgTask; 
     BracketObj_t *pBracket; 
+    struct device *port0;
     struct device *port1;
 } AnalogSensorTaskObj_t;
 /******************************************************************************/
@@ -85,15 +86,19 @@ K_MSGQ_DEFINE(analogSensorTaskQueue,
               FWK_QUEUE_ENTRY_SIZE, 
               ANALOG_SENSOR_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
+
+uint32_t i2c_cfg = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;              
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void AnalogSensorTaskThread(void *, void *, void *);            
 static void InitializeEnablePins(void);
-static void ControlAnalogEnablePin(uint8_t enable);
-static void ControlThermistorEnablePin(uint8_t enable);
+static void ControlAnalogEnablePin(bool enable);
+static void ControlThermistorEnablePin(bool enable);
+static void ExpanderAnalogSetup(AnalogInput_t analogInput);
 
 static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -102,11 +107,12 @@ static FwkMsgHandler_t AnalogSenosrTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
   switch( MsgCode )
   {
-  case FMC_INVALID:            return Framework_UnknownMsgHandler;
-  case FMC_CONTROL_ENABLE:     return ControlEnablePinsMsgHandler;
+    case FMC_INVALID:            return Framework_UnknownMsgHandler;
+    case FMC_CONTROL_ENABLE:     return ControlEnablePinsMsgHandler;
+    case FMC_ANALOG_INPUT:       return AnalogInputMsgHandler;
   //case FMC_PERIODIC:           return AnalogSensorTaskPeriodicMsgHandler;
  // case FMC_WATCHDOG_CHALLENGE: return Watchdog_ChallengeHandler;
-  default:                     return NULL;
+    default:                     return NULL;
   }
 }
 /******************************************************************************/
@@ -161,9 +167,8 @@ static void AnalogSensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 }
 static void InitializeEnablePins(void)
 {
-    struct device *gpio0;
-    struct device *gpio1;
-    uint8_t configureResult;
+    //struct device *gpio0;
+    //struct device *gpio1;
 
     LOG_DBG("Analog Enable Init\n");
     analogSensorTaskObject.port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
@@ -176,15 +181,10 @@ static void InitializeEnablePins(void)
     {
         LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
-
+    //Port0
+    gpio_pin_configure(analogSensorTaskObject.port0, THERM_ENABLE_PIN, GPIO_OUTPUT_HIGH);
+    //Port1
     gpio_pin_configure(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, GPIO_OUTPUT_LOW);
-	if (configureResult != 0) 
-    {
-        LOG_ERR("configure failed %s port pin %d!\n", DT_LABEL(DT_NODELABEL(gpio1)),ANALOG_ENABLE_PIN);
-	}
-
-    gpio_pin_set(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, 0);
-
 }
 static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
@@ -192,14 +192,66 @@ static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
     SetEnablePinMsg_t *pControlPinMsg = (SetEnablePinMsg_t *)pMsg;
 
     ControlAnalogEnablePin(pControlPinMsg->control.analogEnable);
+    ControlThermistorEnablePin(pControlPinMsg->control.thermEnable);
+    return DISPATCH_OK;
+}
+static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    AnalogPinMsg_t *pAnalogMsg = (AnalogPinMsg_t *)pMsg;
+
+    ExpanderAnalogSetup(pAnalogMsg->inputConfig);
     return DISPATCH_OK;
 }
 
-static void ControlAnalogEnablePin(uint8_t enable)
+static void ControlAnalogEnablePin(bool enable)
 {
     LOG_DBG("Analog Enable Set\n");
     gpio_pin_set(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, enable);
     
+}
+static void ControlThermistorEnablePin(bool enable)
+{
+    LOG_DBG("Therm Enable Set\n");
+    gpio_pin_set(analogSensorTaskObject.port0, THERM_ENABLE_PIN, enable);
+    
+}
+
+static void ExpanderAnalogSetup(AnalogInput_t analogInput)
+{
+	unsigned char datas[2];
+	struct device *i2c_dev = device_get_binding(I2C_DEV_NAME);
+
+	if (!i2c_dev)
+    {
+		LOG_ERR("Cannot get I2C device\n");
+	}
+
+	/* 1. Verify i2c_configure() */
+	if (i2c_configure(i2c_dev, i2c_cfg)) 
+    {
+		LOG_ERR("I2C config failed\n");
+	}
+
+	datas[0] = TCA9538_REG_CONFIG;
+	datas[1] = OUTPUT_CONFIG;
+
+	/* 2. verify i2c_write() */
+	if (i2c_write(i2c_dev, datas, 2, EXPANDER_ADDRESS)) 
+    {
+		LOG_ERR("Fail to configure sensor GY271\n");
+	}
+
+	datas[0] = TCA9538_REG_OUTPUT;
+	datas[1] = analogInput;
+    LOG_DBG("Analog input Set %d\n", analogInput);
+	if (i2c_write(i2c_dev, datas, 2, EXPANDER_ADDRESS))
+     {
+		LOG_ERR("Fail to configure sensor GY271\n");
+	}
+
+	k_sleep(K_MSEC(1));
+	(void)memset(datas, 0, sizeof(datas));
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
