@@ -99,6 +99,9 @@ static void ExpanderAnalogSetup(AnalogInput_t analogInput);
 
 static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t ReadAnalogPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t ReadThermistorPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -110,6 +113,8 @@ static FwkMsgHandler_t AnalogSenosrTaskMsgDispatcher(FwkMsgCode_t MsgCode)
     case FMC_INVALID:            return Framework_UnknownMsgHandler;
     case FMC_CONTROL_ENABLE:     return ControlEnablePinsMsgHandler;
     case FMC_ANALOG_INPUT:       return AnalogInputMsgHandler;
+    case FMC_READ_ANALOG:        return ReadAnalogPinMsgHandler;
+    case FMC_READ_THERM:         return ReadThermistorPinMsgHandler
   //case FMC_PERIODIC:           return AnalogSensorTaskPeriodicMsgHandler;
  // case FMC_WATCHDOG_CHALLENGE: return Watchdog_ChallengeHandler;
     default:                     return NULL;
@@ -186,27 +191,9 @@ static void InitializeEnablePins(void)
     //Port1
     gpio_pin_configure(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, GPIO_OUTPUT_LOW);
 }
-static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-    UNUSED_PARAMETER(pMsgRxer);
-    SetEnablePinMsg_t *pControlPinMsg = (SetEnablePinMsg_t *)pMsg;
-
-    ControlAnalogEnablePin(pControlPinMsg->control.analogEnable);
-    ControlThermistorEnablePin(pControlPinMsg->control.thermEnable);
-    return DISPATCH_OK;
-}
-static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-    UNUSED_PARAMETER(pMsgRxer);
-    AnalogPinMsg_t *pAnalogMsg = (AnalogPinMsg_t *)pMsg;
-
-    ExpanderAnalogSetup(pAnalogMsg->inputConfig);
-    return DISPATCH_OK;
-}
-
 static void ControlAnalogEnablePin(bool enable)
 {
-    LOG_DBG("Analog Enable Set\n");
+ //   LOG_DBG("Analog Enable Set\n");
     gpio_pin_set(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, enable);
     
 }
@@ -252,6 +239,51 @@ static void ExpanderAnalogSetup(AnalogInput_t analogInput)
 
 	k_sleep(K_MSEC(1));
 	(void)memset(datas, 0, sizeof(datas));
+    FRAMEWORK_MSG_SEND_TO_SELF(analogSensorTaskObject.msgTask.rxer.id, FMC_READ_ANALOG);
+}
+
+static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    SetEnablePinMsg_t *pControlPinMsg = (SetEnablePinMsg_t *)pMsg;
+
+    ControlAnalogEnablePin(pControlPinMsg->control.analogEnable);
+    ControlThermistorEnablePin(pControlPinMsg->control.thermEnable);
+    return DISPATCH_OK;
+}
+static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    AnalogPinMsg_t *pAnalogMsg = (AnalogPinMsg_t *)pMsg;
+
+    ExpanderAnalogSetup(pAnalogMsg->inputConfig);
+    return DISPATCH_OK;
+}
+static DispatchResult_t ReadAnalogPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    UNUSED_PARAMETER(pMsg);
+    uint32_t adcReading;
+    uint8_t index =0;
+    for(index =0; index < 10; index++)
+    {
+        adcReading = AnalogRead(ANALOG_SENSOR_1_CH);
+        LOG_DBG("Analog Reading = %d\n", adcReading);
+    }
+    return DISPATCH_OK;
+}
+static DispatchResult_t ReadThermistorPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    UNUSED_PARAMETER(pMsg);
+    uint32_t adcReading;
+    uint8_t index =0;
+    for(index =0; index < 10; index++)
+    {
+        adcReading = AnalogRead(ANALOG_SENSOR_2_CH);
+        LOG_DBG("Thermistor Reading = %d\n", adcReading);
+    }
+    return DISPATCH_OK;
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

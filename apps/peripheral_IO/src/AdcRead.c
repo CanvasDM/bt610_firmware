@@ -27,7 +27,8 @@ LOG_MODULE_REGISTER(AdcRead);
 #define ADC_DEVICE_NAME		    DT_LABEL(DT_INST(0, nordic_nrf_saadc))//(DT_LABEL(DT_NODELABEL(adc)))//DT_ALIAS_ADC_0_LABEL
 #define ADC_RESOLUTION		    (12)
 #define ADC_GAIN			    ADC_GAIN_1_4
-#define ADC_REFERENCE		    ADC_REF_INTERNAL
+#define ADC_REFERENCE_BATTERY   ADC_REF_INTERNAL
+#define ADC_REFERENCE_VDD       ADC_REF_VDD_1_4
 #define ADC_ACQUISITION_TIME	ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)
 #define ADC_VDD_CHANNEL_INPUT   NRF_SAADC_INPUT_VDD
 #define BUFFER_SIZE			    (6)
@@ -39,7 +40,7 @@ LOG_MODULE_REGISTER(AdcRead);
 #define ADC_RESULT_IN_MILLI_VOLTS(ADC_VALUE) \
     ((((ADC_VALUE) * ADC_REF_VOLTAGE_IN_MILLIVOLTS) / ADC_RES_12BIT) * ADC_PRE_SCALING_COMPENSATION)
 
-
+#define ADC_IN1                 NRF_SAADC_INPUT_AIN0
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -54,7 +55,7 @@ static int16_t m_sample_buffer[BUFFER_SIZE];
 // the channel configuration with channel not yet filled in
 static struct adc_channel_cfg m_1st_channel_cfg = {
 	.gain             = ADC_GAIN,
-	.reference        = ADC_REFERENCE,
+	.reference        = ADC_REFERENCE_BATTERY,
 	.acquisition_time = ADC_ACQUISITION_TIME,
 	.channel_id       = 0, // gets set during init
 	.differential	  = 0,
@@ -93,12 +94,11 @@ uint32_t ADC_GetBatteryMv(void)
 // ------------------------------------------------
 uint32_t AnalogRead(AnalogTypesChannel_t channelReading)
 {
-
 	int16_t sv = readOneChannel(channelReading, channelReading);
-	if(sv == BAD_ANALOG_READ)
-	{
-		return sv;
-	}
+//	if(sv == BAD_ANALOG_READ)
+//	{
+//		return sv;
+//	}
 
 	// Convert the result to voltage
 	// Result = [V(p) - V(n)] * GAIN/REFERENCE / 2^(RESOLUTION)
@@ -123,7 +123,7 @@ uint32_t AnalogRead(AnalogTypesChannel_t channelReading)
 
 	// the 3.6 relates to the voltage divider being used in my circuit
 	float fout = (sv * 3.6 / multip);
-	return fout;
+	return (uint32_t)sv;
 }
 
 // ------------------------------------------------
@@ -154,6 +154,10 @@ struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 	{
 
 		m_1st_channel_cfg.channel_id = channelReading;
+		if(channelReading != BATTERY_ADC_CH)
+		{
+			m_1st_channel_cfg.reference = ADC_REFERENCE_VDD;
+		}
 #if defined(CONFIG_ADC_CONFIGURABLE_INPUTS)
         m_1st_channel_cfg.input_positive = inputPin;//channel+1,
 #endif

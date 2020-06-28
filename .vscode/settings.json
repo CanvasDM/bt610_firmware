@@ -19,5 +19,6 @@
         "led_strip.h": "c",
         "reboot.h": "c"
     },
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "cmake.configureOnOpen": true
 }

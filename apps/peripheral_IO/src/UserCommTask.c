@@ -16,7 +16,7 @@
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include "Framework.h"
+#include "FrameworkIncludes.h"
 #include "Bracket.h"
 
 #include "UserCommTask.h"
@@ -66,8 +66,6 @@ typedef struct UserCommTaskTag
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static UserCommTaskObj_t userCommTaskObject;
-
-static struct gpio_callback button_cb_data;
 
 K_THREAD_STACK_DEFINE(userCommTaskStack, USER_COMM_TASK_STACK_DEPTH);
 
@@ -128,7 +126,9 @@ void UserCommTask_Initialize(void)
 
   k_thread_name_set(userCommTaskObject.msgTask.pTid, THIS_FILE);
 
-  userCommTaskObject.pBracket = Bracket_Initialize(1536);
+  userCommTaskObject.pBracket = 		
+    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	//userCommTaskObject.conn = NULL;
 
 }

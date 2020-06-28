@@ -16,7 +16,7 @@
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include "Framework.h"
+#include "FrameworkIncludes.h"
 #include "Bracket.h"
 #include <shell/shell.h>
 #include <shell/shell_uart.h>
@@ -55,6 +55,20 @@ LOG_MODULE_REGISTER(UserInterface);
 #define MEDIUM_BUTTON_PRESS_MAX_DURATION_MS 10000
 #define LONG_BUTTON_PRESS_MIN_DURATION_MS   10000
 #define LONG_BUTTON_PRESS_MAX_DURATION_MS   20000
+
+#define FLAGS_OR_ZERO(node)						\
+	COND_CODE_1(DT_PHA_HAS_CELL(node, gpios, flags),		\
+		    (DT_GPIO_FLAGS(node, gpios)),			\
+		    (0))
+
+#define BUTTON1_NODE DT_ALIAS(sw1)
+#if DT_NODE_HAS_STATUS(BUTTON1_NODE, okay)
+#define BUTTON1_DEV DT_GPIO_LABEL(BUTTON1_NODE, gpios)
+#define BUTTON1_PIN DT_GPIO_PIN(BUTTON1_NODE, gpios)
+#define BUTTON1_FLAGS	(GPIO_INPUT | FLAGS_OR_ZERO(BUTTON1_NODE))
+#else
+#error "Unsupported board: sw1 devicetree alias is not defined"
+#endif
 
 typedef enum AnalogSelectonTag
 {
@@ -103,7 +117,7 @@ enum
 static void UserIfTaskThread(void *, void *, void *);
 
 static void InitializeButton(void);
-static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, u32_t pins);
+static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 
 //static DispatchResult_t UserIfTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //static DispatchResult_t ButtonIsrMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -159,8 +173,10 @@ void UserInterfaceTask_Initialize(void)
 
   k_thread_name_set(userIfTaskObject.msgTask.pTid, THIS_FILE);
 
-  userIfTaskObject.pBracket = Bracket_Initialize(1536);
-	//userIfTaskObject.conn = NULL;
+  userIfTaskObject.pBracket = 		
+    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
+	
   userIfTaskObject.AnalogType = UNKOWN_READING;
 
 }
@@ -185,34 +201,33 @@ static void InitializeButton(void)
   struct device *buttonDevice;
   int ret;
 
-	buttonDevice = device_get_binding(DT_ALIAS_SW0_GPIOS_CONTROLLER);
+	buttonDevice = device_get_binding(BUTTON1_DEV);
 	if (buttonDevice == NULL) 
   {
 		printk("Error: didn't find %s device\n",
-			DT_ALIAS_SW0_GPIOS_CONTROLLER);
+			BUTTON1_DEV);
 		return;
 	}
 
-  ret = gpio_pin_configure(buttonDevice, DT_ALIAS_SW0_GPIOS_PIN,
-				 DT_ALIAS_SW0_GPIOS_FLAGS | GPIO_INPUT);
+  ret = gpio_pin_configure(buttonDevice, BUTTON1_PIN, BUTTON1_FLAGS);
 	if (ret != 0) 
   {
-		printk("Error %d: failed to configure pin %d '%s'\n",
-			ret, DT_ALIAS_SW0_GPIOS_PIN, DT_ALIAS_SW0_LABEL);
+		printk("Error %d: failed to configure %s pin %d\n",
+			ret, BUTTON1_DEV, BUTTON1_PIN);
 		return;
 	}
 
-	ret = gpio_pin_interrupt_configure(buttonDevice, DT_ALIAS_SW0_GPIOS_PIN,
+	ret = gpio_pin_interrupt_configure(buttonDevice, BUTTON1_PIN,
 					   GPIO_INT_EDGE_TO_ACTIVE);
 	if (ret != 0) 
   {
-		printk("Error %d: failed to configure interrupt on pin %d '%s'\n",
-			ret, DT_ALIAS_SW0_GPIOS_PIN, DT_ALIAS_SW0_LABEL);
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, BUTTON1_DEV, BUTTON1_PIN);
 		return;
 	}
 
   gpio_init_callback(&button_cb_data, ButtonHandlerIsr,
-			   BIT(DT_ALIAS_SW0_GPIOS_PIN));
+			   BIT(BUTTON1_PIN));
 	gpio_add_callback(buttonDevice, &button_cb_data);
   
 }
@@ -223,7 +238,17 @@ static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv)
   uint8_t enabled = 0;
   enabled= atoi(argv[1]);
 
-
+  SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
+  if( pMsg != NULL )
+  {
+    pMsg->header.msgCode = FMC_CONTROL_ENABLE;
+    pMsg->header.txId = FWK_ID_USER_IF_TASK;
+    pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
+    pMsg->control.analogEnable = enabled; 
+    pMsg->control.thermEnable = 0;
+    FRAMEWORK_MSG_SEND(pMsg);
+  } 
+  
   shell_print(shell, "ANALOG_EN = %d \n",enabled);
 
   return(0);
@@ -248,28 +273,78 @@ static int readAin(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
 	uint8_t ainSelected = 0;
+  uint8_t index = 0;
+  uint8_t maxReadings = 10;
   ainSelected= atoi(argv[1]);
+
   
   if(userIfTaskObject.AnalogType == UNKOWN_READING)
   {
     shell_print(shell, "Analog Type not set");
   }
+  else if( (ainSelected ==0) || (ainSelected > 4))
+  {
+    shell_print(shell, "Analog out of bounds");
+  }
   else
   {
+    AnalogPinMsg_t * pMsg = (AnalogPinMsg_t*)BufferPool_Take(sizeof(AnalogPinMsg_t));
+
     switch(ainSelected)
     {
       case AIN1:
+        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
+        {
+          pMsg->inputConfig = VOLTAGE_AIN1;
+        }
+        else
+        {
+          pMsg->inputConfig = CURRENT_AIN1;
+        }      
         break;
       case AIN2:
+        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
+        {
+          pMsg->inputConfig = VOLTAGE_AIN2;
+        }
+        else
+        {
+          pMsg->inputConfig = CURRENT_AIN2;
+        }   
         break;
       case AIN3:
+        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
+        {
+          pMsg->inputConfig = VOLTAGE_AIN3;
+        }
+        else
+        {
+          pMsg->inputConfig = CURRENT_AIN3;
+        }   
         break;
       case AIN4:
+        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
+        {
+          pMsg->inputConfig = VOLTAGE_AIN4;
+        }
+        else
+        {
+          pMsg->inputConfig = CURRENT_AIN4;
+        }   
         break;       
       default:
         FRAMEWORK_ASSERT(FORCED);
       break;
     }
+
+      if( pMsg != NULL )
+      {
+        pMsg->header.msgCode = FMC_ANALOG_INPUT;
+        pMsg->header.txId = FWK_ID_USER_IF_TASK;
+        pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;      
+        FRAMEWORK_MSG_SEND(pMsg);
+      } 
+
     shell_print(shell, "Analog pin %d", ainSelected);
   }
 
@@ -302,6 +377,16 @@ static int ennableThermistorPin(const struct shell *shell, size_t argc, char **a
   enabled= atoi(argv[1]);
   userIfTaskObject.AnalogType = THERMISTOR_READING;
 
+  SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
+  if( pMsg != NULL )
+  {
+    pMsg->header.msgCode = FMC_CONTROL_ENABLE;
+    pMsg->header.txId = FWK_ID_USER_IF_TASK;
+    pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
+    pMsg->control.analogEnable = 0; 
+    pMsg->control.thermEnable = enabled;
+    FRAMEWORK_MSG_SEND(pMsg);
+  } 
   shell_print(shell, "THERM_EN = %d \n",enabled);
 
   return(0);
@@ -311,7 +396,7 @@ static int ennableThermistorPin(const struct shell *shell, size_t argc, char **a
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
 void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
-		    u32_t pins)
+		    uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
