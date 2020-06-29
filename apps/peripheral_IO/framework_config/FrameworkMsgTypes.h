@@ -23,15 +23,12 @@ extern "C" {
 /******************************************************************************/
 typedef enum
 {
-    VOLTAGE_AIN1 = 0x00,
-    VOLTAGE_AIN2 = 0X10,
-    VOLTAGE_AIN3 = 0X20,
-    VOLTAGE_AIN4 = 0X30,
-    CURRENT_AIN1 = 0X0F,
-    CURRENT_AIN2 = 0X1F,
-    CURRENT_AIN3 = 0X2F,
-    CURRENT_AIN4 = 0X3F,
-} AnalogInput_t;
+    UNKOWN_INPUT = 0, 
+    VOLTAGE_AIN,
+    CURRENT_AIN,
+    THERMISTOR,
+}AnalogInput_t;
+
 
 /******************************************************************************/
 /* Project Specific Message Types                                             */
@@ -59,6 +56,7 @@ typedef struct
 {
   FwkMsgHeader_t header;
   AnalogInput_t inputConfig;
+  uint8_t externalPin;
   
 } AnalogPinMsg_t;
 

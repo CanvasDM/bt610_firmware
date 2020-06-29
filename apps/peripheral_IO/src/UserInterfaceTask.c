@@ -70,19 +70,19 @@ LOG_MODULE_REGISTER(UserInterface);
 #error "Unsupported board: sw1 devicetree alias is not defined"
 #endif
 
-typedef enum AnalogSelectonTag
+/*typedef enum AnalogSelectonTag
 {
   UNKOWN_READING = 0,
   VOLTAGE_READING,
   CURRENT_READING,
   THERMISTOR_READING,
 } AnalogType_t;
-
+*/
 typedef struct UserIfTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
-  AnalogType_t AnalogType;
+  AnalogInput_t AnalogType;
 
 } UserIfTaskObj_t;
 
@@ -106,10 +106,10 @@ K_MSGQ_DEFINE(userIfTaskQueue,
 
 enum
 {
-  AIN1 = 1,
-  AIN2,
-  AIN3,
-  AIN4,
+  IN1 = 1,
+  IN2,
+  IN3,
+  IN4,
 };              
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -177,7 +177,7 @@ void UserInterfaceTask_Initialize(void)
     Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
 				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	
-  userIfTaskObject.AnalogType = UNKOWN_READING;
+  userIfTaskObject.AnalogType = UNKOWN_INPUT;
 
 }
 /******************************************************************************/
@@ -245,7 +245,7 @@ static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv)
     pMsg->header.txId = FWK_ID_USER_IF_TASK;
     pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
     pMsg->control.analogEnable = enabled; 
-    pMsg->control.thermEnable = 0;
+    pMsg->control.thermEnable = 1; //disable
     FRAMEWORK_MSG_SEND(pMsg);
   } 
   
@@ -273,12 +273,10 @@ static int readAin(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
 	uint8_t ainSelected = 0;
-  uint8_t index = 0;
-  uint8_t maxReadings = 10;
   ainSelected= atoi(argv[1]);
 
   
-  if(userIfTaskObject.AnalogType == UNKOWN_READING)
+  if(userIfTaskObject.AnalogType == UNKOWN_INPUT)
   {
     shell_print(shell, "Analog Type not set");
   }
@@ -289,61 +287,15 @@ static int readAin(const struct shell *shell, size_t argc, char **argv)
   else
   {
     AnalogPinMsg_t * pMsg = (AnalogPinMsg_t*)BufferPool_Take(sizeof(AnalogPinMsg_t));
-
-    switch(ainSelected)
+    if( pMsg != NULL )
     {
-      case AIN1:
-        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
-        {
-          pMsg->inputConfig = VOLTAGE_AIN1;
-        }
-        else
-        {
-          pMsg->inputConfig = CURRENT_AIN1;
-        }      
-        break;
-      case AIN2:
-        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
-        {
-          pMsg->inputConfig = VOLTAGE_AIN2;
-        }
-        else
-        {
-          pMsg->inputConfig = CURRENT_AIN2;
-        }   
-        break;
-      case AIN3:
-        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
-        {
-          pMsg->inputConfig = VOLTAGE_AIN3;
-        }
-        else
-        {
-          pMsg->inputConfig = CURRENT_AIN3;
-        }   
-        break;
-      case AIN4:
-        if(userIfTaskObject.AnalogType == VOLTAGE_READING)
-        {
-          pMsg->inputConfig = VOLTAGE_AIN4;
-        }
-        else
-        {
-          pMsg->inputConfig = CURRENT_AIN4;
-        }   
-        break;       
-      default:
-        FRAMEWORK_ASSERT(FORCED);
-      break;
-    }
-
-      if( pMsg != NULL )
-      {
-        pMsg->header.msgCode = FMC_ANALOG_INPUT;
-        pMsg->header.txId = FWK_ID_USER_IF_TASK;
-        pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;      
-        FRAMEWORK_MSG_SEND(pMsg);
-      } 
+      pMsg->header.msgCode = FMC_ANALOG_INPUT;
+      pMsg->header.txId = FWK_ID_USER_IF_TASK;
+      pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;  
+      pMsg->inputConfig = userIfTaskObject.AnalogType; 
+      pMsg->externalPin = ainSelected;      
+      FRAMEWORK_MSG_SEND(pMsg);
+    } 
 
     shell_print(shell, "Analog pin %d", ainSelected);
   }
@@ -354,7 +306,7 @@ static int analogVoltage(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
   ARG_UNUSED(argv);
-  userIfTaskObject.AnalogType = VOLTAGE_READING;
+  userIfTaskObject.AnalogType = VOLTAGE_AIN;
 
   shell_print(shell, "Set To Voltage\n");
 
@@ -364,7 +316,7 @@ static int analogCurrent(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
   ARG_UNUSED(argv);
-  userIfTaskObject.AnalogType = CURRENT_READING;
+  userIfTaskObject.AnalogType = CURRENT_AIN;
 
   shell_print(shell, "Set To Current\n");
 
@@ -375,7 +327,7 @@ static int ennableThermistorPin(const struct shell *shell, size_t argc, char **a
   ARG_UNUSED(argc);
   uint8_t enabled = 0;
   enabled= atoi(argv[1]);
-  userIfTaskObject.AnalogType = THERMISTOR_READING;
+  userIfTaskObject.AnalogType = THERMISTOR;
 
   SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
   if( pMsg != NULL )
@@ -388,6 +340,34 @@ static int ennableThermistorPin(const struct shell *shell, size_t argc, char **a
     FRAMEWORK_MSG_SEND(pMsg);
   } 
   shell_print(shell, "THERM_EN = %d \n",enabled);
+
+  return(0);
+}
+static int readTherm(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+	uint8_t thermSelected = 0;
+  thermSelected= atoi(argv[1]);
+
+  if( (thermSelected ==0) || (thermSelected > 4))
+  {
+    shell_print(shell, "Analog out of bounds");
+  }
+  else
+  {
+    AnalogPinMsg_t * pMsg = (AnalogPinMsg_t*)BufferPool_Take(sizeof(AnalogPinMsg_t));
+    if( pMsg != NULL )
+    {
+      pMsg->header.msgCode = FMC_ANALOG_INPUT;
+      pMsg->header.txId = FWK_ID_USER_IF_TASK;
+      pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;     
+      pMsg->inputConfig = THERMISTOR; 
+      pMsg->externalPin = thermSelected;  
+      FRAMEWORK_MSG_SEND(pMsg);
+    } 
+
+    shell_print(shell, "Analog pin %d", thermSelected);
+  }
 
   return(0);
 }
@@ -412,6 +392,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
   SHELL_CMD(voltage, NULL, "Voltage Input", analogVoltage),
   SHELL_CMD(current, NULL, "Current Input", analogCurrent),
   SHELL_CMD(enableTherm, NULL, "Enable/Disable Thermistor", ennableThermistorPin),  
+  SHELL_CMD(therm, NULL, "Read Thermx", readTherm),
   SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
 

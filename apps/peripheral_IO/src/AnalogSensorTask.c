@@ -51,7 +51,7 @@ LOG_MODULE_REGISTER(AnalogSensor);
 #endif
 
 #define ANALOG_ENABLE_PIN        (13)//SIO_45 Port1
-#define THERM_ENABLE_PIN         (29)//SIO_10 Port0
+#define THERM_ENABLE_PIN         (10)//SIO_10 Port0
 
 #define EXPANDER_ADDRESS         (0X70)
 #define TCA9538_REG_INPUT		 (0x00)
@@ -95,7 +95,7 @@ static void AnalogSensorTaskThread(void *, void *, void *);
 static void InitializeEnablePins(void);
 static void ControlAnalogEnablePin(bool enable);
 static void ControlThermistorEnablePin(bool enable);
-static void ExpanderAnalogSetup(AnalogInput_t analogInput);
+static bool ExpanderAnalogSetup(uint8_t analogInput);
 
 static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -114,7 +114,7 @@ static FwkMsgHandler_t AnalogSenosrTaskMsgDispatcher(FwkMsgCode_t MsgCode)
     case FMC_CONTROL_ENABLE:     return ControlEnablePinsMsgHandler;
     case FMC_ANALOG_INPUT:       return AnalogInputMsgHandler;
     case FMC_READ_ANALOG:        return ReadAnalogPinMsgHandler;
-    case FMC_READ_THERM:         return ReadThermistorPinMsgHandler
+    case FMC_READ_THERM:         return ReadThermistorPinMsgHandler;
   //case FMC_PERIODIC:           return AnalogSensorTaskPeriodicMsgHandler;
  // case FMC_WATCHDOG_CHALLENGE: return Watchdog_ChallengeHandler;
     default:                     return NULL;
@@ -204,7 +204,7 @@ static void ControlThermistorEnablePin(bool enable)
     
 }
 
-static void ExpanderAnalogSetup(AnalogInput_t analogInput)
+static bool ExpanderAnalogSetup(uint8_t analogInput)
 {
 	unsigned char datas[2];
 	struct device *i2c_dev = device_get_binding(I2C_DEV_NAME);
@@ -212,12 +212,14 @@ static void ExpanderAnalogSetup(AnalogInput_t analogInput)
 	if (!i2c_dev)
     {
 		LOG_ERR("Cannot get I2C device\n");
+        return(0);
 	}
 
 	/* 1. Verify i2c_configure() */
 	if (i2c_configure(i2c_dev, i2c_cfg)) 
     {
 		LOG_ERR("I2C config failed\n");
+        return(0);
 	}
 
 	datas[0] = TCA9538_REG_CONFIG;
@@ -226,7 +228,8 @@ static void ExpanderAnalogSetup(AnalogInput_t analogInput)
 	/* 2. verify i2c_write() */
 	if (i2c_write(i2c_dev, datas, 2, EXPANDER_ADDRESS)) 
     {
-		LOG_ERR("Fail to configure sensor GY271\n");
+		LOG_ERR("Fail to configure expander\n");
+        return(0);
 	}
 
 	datas[0] = TCA9538_REG_OUTPUT;
@@ -234,12 +237,13 @@ static void ExpanderAnalogSetup(AnalogInput_t analogInput)
     LOG_DBG("Analog input Set %d\n", analogInput);
 	if (i2c_write(i2c_dev, datas, 2, EXPANDER_ADDRESS))
      {
-		LOG_ERR("Fail to configure sensor GY271\n");
+		LOG_ERR("Fail to configure output\n");
+        return(0);
 	}
 
 	k_sleep(K_MSEC(1));
 	(void)memset(datas, 0, sizeof(datas));
-    FRAMEWORK_MSG_SEND_TO_SELF(analogSensorTaskObject.msgTask.rxer.id, FMC_READ_ANALOG);
+    return(1);
 }
 
 static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
@@ -254,9 +258,36 @@ static DispatchResult_t ControlEnablePinsMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
 static DispatchResult_t AnalogInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
     UNUSED_PARAMETER(pMsgRxer);
+    bool analogExpanderResult = 0;
+    uint8_t activeOutputs = 0;
     AnalogPinMsg_t *pAnalogMsg = (AnalogPinMsg_t *)pMsg;
 
-    ExpanderAnalogSetup(pAnalogMsg->inputConfig);
+    //The ain selector is zero base no one. Need to subtract 1
+    activeOutputs = pAnalogMsg->externalPin - 1;
+    //AIN_A0 and AIN_A1 are the high nibble
+    activeOutputs = activeOutputs << 4;
+    if(pAnalogMsg->inputConfig == CURRENT_AIN)
+    {
+        //For Current the output pins need to high
+        activeOutputs = activeOutputs | 0X0F;
+    }
+
+    analogExpanderResult = ExpanderAnalogSetup(activeOutputs);
+    if( (analogExpanderResult == 1) && 
+        ( (pAnalogMsg->inputConfig == CURRENT_AIN) ||
+          (pAnalogMsg->inputConfig == VOLTAGE_AIN) ))
+    {
+        FRAMEWORK_MSG_SEND_TO_SELF(analogSensorTaskObject.msgTask.rxer.id, FMC_READ_ANALOG);
+    }
+    else if( (analogExpanderResult == 1) && (pAnalogMsg->inputConfig == THERMISTOR) )
+    {
+        FRAMEWORK_MSG_SEND_TO_SELF(analogSensorTaskObject.msgTask.rxer.id, FMC_READ_THERM);
+    }
+    else 
+    {
+        LOG_ERR("Fail to change I/O expander\n");
+    }
+
     return DISPATCH_OK;
 }
 static DispatchResult_t ReadAnalogPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)

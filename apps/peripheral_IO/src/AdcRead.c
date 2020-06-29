@@ -158,6 +158,10 @@ struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 		{
 			m_1st_channel_cfg.reference = ADC_REFERENCE_VDD;
 		}
+		else
+		{
+			m_1st_channel_cfg.reference = ADC_REFERENCE_BATTERY;
+		}
 #if defined(CONFIG_ADC_CONFIGURABLE_INPUTS)
         m_1st_channel_cfg.input_positive = inputPin;//channel+1,
 #endif
