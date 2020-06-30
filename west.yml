@@ -1,0 +1,33 @@
+manifest:
+  remotes:
+    - name: JsmnRepo
+      url-base: https://github.com/zserge
+    - name: LairdProdEng
+      url-base: git@git.devops.rfpros.com:prod_eng
+
+  # Please add items below based on alphabetical order.
+  # These dependencies may need updating if new features are added to the firmware.
+  projects:
+    - name: zephyr
+      repo-path: zephyr
+      west-commands: scripts/west-commands.yml
+      revision: v2.3.0
+    - name: framework_zephyr
+      path: modules/framework
+      revision: master
+      remote: LairdProdEng
+    - name: jsmn
+      path: modules/jsmn
+      revision: 7b6858a5855299d173c5ab2b46e611bf9961cbef
+      remote: JsmnRepo      
+    - name: zephyr_boards
+      path: zephyr/boards/arm
+      revision: master
+      remote: LairdProdEng
+    - name: zephyr_lib
+      path: component_lib
+      revision: master
+      remote: LairdProdEng      
+
+  self:
+    path: manifest_repo

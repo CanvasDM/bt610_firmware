@@ -26,9 +26,10 @@ LOG_MODULE_REGISTER(AdcRead);
 //#define CONFIG_ADC_CONFIGURABLE_INPUTS
 #define ADC_DEVICE_NAME		    DT_LABEL(DT_INST(0, nordic_nrf_saadc))//(DT_LABEL(DT_NODELABEL(adc)))//DT_ALIAS_ADC_0_LABEL
 #define ADC_RESOLUTION		    (12)
-#define ADC_GAIN			    ADC_GAIN_1_4
+#define ADC_GAIN_BATTERY	    ADC_GAIN_1_6
 #define ADC_REFERENCE_BATTERY   ADC_REF_INTERNAL
-#define ADC_REFERENCE_VDD       ADC_REF_VDD_1_4
+#define ADC_GAIN	    		ADC_GAIN_1_4
+#define ADC_REFERENCE       	ADC_REF_VDD_1_4
 #define ADC_ACQUISITION_TIME	ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)
 #define ADC_VDD_CHANNEL_INPUT   NRF_SAADC_INPUT_VDD
 #define BUFFER_SIZE			    (6)
@@ -85,8 +86,13 @@ uint32_t ADC_GetBatteryMv(void)
     //Reset battery math
     //adcControl.batteryMath = 0;
     //GIVE_SEMAPHORE(adcControl.adcBusy);
-	millivolts = ADC_RESULT_IN_MILLI_VOLTS(analogValue);
-    return(millivolts);
+	//millivolts = ADC_RESULT_IN_MILLI_VOLTS(analogValue);
+	millivolts = analogValue;
+	//LOG_DBG("anlogBatt = %d\n",analogValue);
+	adc_raw_to_millivolts(ADC_REFERENCE_BATTERY,
+				ADC_GAIN_BATTERY, ADC_RESOLUTION,
+				&millivolts);
+    return(analogValue);
 }
 
 // ------------------------------------------------
@@ -156,11 +162,13 @@ struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 		m_1st_channel_cfg.channel_id = channelReading;
 		if(channelReading != BATTERY_ADC_CH)
 		{
-			m_1st_channel_cfg.reference = ADC_REFERENCE_VDD;
+			m_1st_channel_cfg.reference = ADC_REFERENCE;
+			m_1st_channel_cfg.gain = ADC_GAIN;
 		}
 		else
 		{
 			m_1st_channel_cfg.reference = ADC_REFERENCE_BATTERY;
+			m_1st_channel_cfg.gain = ADC_GAIN_BATTERY;
 		}
 #if defined(CONFIG_ADC_CONFIGURABLE_INPUTS)
         m_1st_channel_cfg.input_positive = inputPin;//channel+1,
