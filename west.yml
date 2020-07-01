@@ -13,6 +13,7 @@ manifest:
       west-commands: scripts/west-commands.yml
       revision: v2.3.0
       remote: zephyr  
+      import: true
     - name: framework_zephyr
       path: modules/framework
       revision: master
