@@ -8,12 +8,6 @@ manifest:
   # Please add items below based on alphabetical order.
   # These dependencies may need updating if new features are added to the firmware.
   projects:
-    - name: zephyr
-      repo-path: zephyr
-      west-commands: scripts/west-commands.yml
-      revision: v2.3.0
-      remote: zephyr  
-      import: true
     - name: framework_zephyr
       path: modules/framework
       revision: master
@@ -21,7 +15,13 @@ manifest:
     - name: jsmn
       path: modules/jsmn
       revision: 7b6858a5855299d173c5ab2b46e611bf9961cbef
-      remote: JsmnRepo      
+      remote: JsmnRepo    
+    - name: zephyr
+      repo-path: zephyr
+      west-commands: scripts/west-commands.yml
+      revision: v2.3.0
+      remote: zephyr  
+      import: true      
     - name: zephyr_boards
       path: zephyr/boards/arm
       revision: master
