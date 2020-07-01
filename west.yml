@@ -12,6 +12,7 @@ manifest:
       repo-path: zephyr
       west-commands: scripts/west-commands.yml
       revision: v2.3.0
+      remote: zephyr  
     - name: framework_zephyr
       path: modules/framework
       revision: master
@@ -25,7 +26,7 @@ manifest:
       revision: master
       remote: LairdProdEng
     - name: zephyr_lib
-      path: component_lib
+      path: modules/zephyr_lib
       revision: master
       remote: LairdProdEng      
 
