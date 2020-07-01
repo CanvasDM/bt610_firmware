@@ -19,7 +19,7 @@ manifest:
     - name: zephyr
       repo-path: zephyr
       west-commands: scripts/west-commands.yml
-      revision: v2.3.0
+      revision: master
       remote: zephyr  
       import: true      
     - name: zephyr_boards
