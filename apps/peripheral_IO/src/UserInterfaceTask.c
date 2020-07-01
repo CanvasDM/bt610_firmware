@@ -343,24 +343,18 @@ static int ennableThermistorPin(const struct shell *shell, size_t argc, char **a
 
   return(0);
 }
-static int ennableVrefPin(const struct shell *shell, size_t argc, char **argv)
+static int readVrefPin(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
-  uint8_t enabled = 0;
-  enabled= atoi(argv[1]);
-  userIfTaskObject.AnalogType = THERMISTOR;
+  uint32_t adcVrefValue = 0;
+  uint8_t index = 0;
+  uint8_t maxReadings = 10;
 
-  SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
-  if( pMsg != NULL )
+  for(index =0; index < maxReadings; index++)
   {
-    pMsg->header.msgCode = FMC_CONTROL_ENABLE;
-    pMsg->header.txId = FWK_ID_USER_IF_TASK;
-    pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
-    pMsg->control.analogEnable = 0; 
-    pMsg->control.thermEnable = enabled;
-    FRAMEWORK_MSG_SEND(pMsg);
-  } 
-  shell_print(shell, "VREF Set = %d \n",enabled);
+    adcVrefValue = AnalogRead(ANALOG_SENSOR_5_CH);
+    shell_print(shell,"Vref = %d \n", adcVrefValue);
+  }
 
   return(0);
 }
@@ -413,7 +407,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
   SHELL_CMD(voltage, NULL, "Voltage Input", analogVoltage),
   SHELL_CMD(current, NULL, "Current Input", analogCurrent),
   SHELL_CMD(enableTherm, NULL, "Enable/Disable Thermistor", ennableThermistorPin),  
-  SHELL_CMD(enableVREF, NULL, "Use VREF as ADC reference", ennableVrefPin), 
+  SHELL_CMD(readVREF, NULL, "Read VREF ADC value", readVrefPin), 
   SHELL_CMD(therm, NULL, "Read Thermx", readTherm),
   SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);

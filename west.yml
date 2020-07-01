@@ -32,4 +32,4 @@ manifest:
       remote: LairdProdEng      
 
   self:
-    path: manifest_repo
+    path: zephyr/manifest_repo
