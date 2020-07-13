@@ -23,6 +23,14 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
+typedef enum 
+{
+    UART_COMM = 0,
+    I2C_COMM,
+    SPI_CS1_COMM,
+    SPI_CS2_COMM,
+    NUMBER_COMMS,
+}commType_t;
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -40,7 +48,17 @@ extern "C" {
  * @retval
  */
 void UserCommTask_Initialize(void);
-
+/******************************************************************************/
+/**
+ * @brief
+ *  Send a message out using one of the COMM ports (UART,SPI,I2C)
+ * @param
+ * @param
+ *
+ * @retval
+ */
+uint8_t UserCommTask_SendData(commType_t comm,
+			  const uint8_t *data, size_t len);
 
 #ifdef __cplusplus
 }

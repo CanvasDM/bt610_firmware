@@ -70,20 +70,18 @@ LOG_MODULE_REGISTER(UserInterface);
 #error "Unsupported board: sw1 devicetree alias is not defined"
 #endif
 
-/*typedef enum AnalogSelectonTag
-{
-  UNKOWN_READING = 0,
-  VOLTAGE_READING,
-  CURRENT_READING,
-  THERMISTOR_READING,
-} AnalogType_t;
-*/
+#define BATT_OUT_ENABLE_PIN        (30)//SIO_30 Port0
+#define FIVE_VOLT_ENABLE_PIN       (12)//SIO_44 Port1
+#define DO1_PIN                    (12)//SIO_12 Port0
+#define DO2_PIN                    (11)//SIO_11 Port0
+
 typedef struct UserIfTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
   AnalogInput_t AnalogType;
-
+  struct device *port0;
+  struct device *port1;
 } UserIfTaskObj_t;
 
 /******************************************************************************/
@@ -116,6 +114,7 @@ enum
 /******************************************************************************/
 static void UserIfTaskThread(void *, void *, void *);
 
+static void InitializeEnablePins(void);
 static void InitializeButton(void);
 static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 
@@ -188,12 +187,35 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
   UserIfTaskObj_t *pObj = (UserIfTaskObj_t*)pArg1;
 
   InitializeButton();
+  InitializeEnablePins();
 
 
   while( true )
   {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
+}
+static void InitializeEnablePins(void)
+{
+  userIfTaskObject.port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
+	if (!userIfTaskObject.port0) 
+    {
+        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio0)));
+	}
+
+  userIfTaskObject.port1 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio1)));
+	if (!userIfTaskObject.port1) 
+  {
+        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio1)));
+	}
+
+    //Port0
+    gpio_pin_configure(userIfTaskObject.port0, BATT_OUT_ENABLE_PIN, GPIO_OUTPUT_LOW);
+    gpio_pin_configure(userIfTaskObject.port0, DO1_PIN, GPIO_OUTPUT_LOW);
+    gpio_pin_configure(userIfTaskObject.port0, DO2_PIN, GPIO_OUTPUT_LOW);
+
+    //Port1
+    gpio_pin_configure(userIfTaskObject.port1, FIVE_VOLT_ENABLE_PIN, GPIO_OUTPUT_LOW);
 }
 
 static void InitializeButton(void)
@@ -386,6 +408,41 @@ static int readTherm(const struct shell *shell, size_t argc, char **argv)
 
   return(0);
 }
+static int fiveEnable(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  uint8_t enable = 0;
+  enable= atoi(argv[1]);
+
+  shell_print(shell, "Set To 5V\n");
+  gpio_pin_set(userIfTaskObject.port1, FIVE_VOLT_ENABLE_PIN, enable);
+
+  return(0);
+}
+static int batteryEnable(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  uint8_t enable = 0;
+  enable= atoi(argv[1]);
+
+  shell_print(shell, "Set To Battery Enable\n");
+  gpio_pin_set(userIfTaskObject.port0, BATT_OUT_ENABLE_PIN, enable);
+
+  return(0);
+}
+
+static int DOtoggle(const struct shell *shell, size_t argc, char **argv)
+{
+  ARG_UNUSED(argc);
+  uint8_t enable = 0;
+  enable= atoi(argv[1]);
+
+  shell_print(shell, "Toggle DO1 and DO2\n");
+  gpio_pin_toggle(userIfTaskObject.port0, DO1_PIN);
+  gpio_pin_toggle(userIfTaskObject.port0, DO2_PIN);
+
+  return(0);
+}
 
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
@@ -409,6 +466,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
   SHELL_CMD(enableTherm, NULL, "Enable/Disable Thermistor", ennableThermistorPin),  
   SHELL_CMD(readVREF, NULL, "Read VREF ADC value", readVrefPin), 
   SHELL_CMD(therm, NULL, "Read Thermx", readTherm),
+  SHELL_CMD(enable5v, NULL, "Enable 5V", fiveEnable),
+  SHELL_CMD(enableBatt, NULL, "Enable Battery Out", batteryEnable),
+  SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DOtoggle),
   SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
 

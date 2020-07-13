@@ -172,9 +172,6 @@ static void AnalogSensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 }
 static void InitializeEnablePins(void)
 {
-    //struct device *gpio0;
-    //struct device *gpio1;
-
     LOG_DBG("Analog Enable Init\n");
     analogSensorTaskObject.port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
 	if (!analogSensorTaskObject.port0) 
@@ -316,6 +313,7 @@ static DispatchResult_t ReadThermistorPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
     }
     return DISPATCH_OK;
 }
+
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/

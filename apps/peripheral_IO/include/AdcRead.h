@@ -30,6 +30,7 @@ typedef enum
 	ANALOG_SENSOR_2_CH,
 	ANALOG_SENSOR_3_CH,
 	ANALOG_SENSOR_4_CH,
+	ANALOG_SENSOR_5_CH,
 }AnalogTypesChannel_t;
 
 /******************************************************************************/

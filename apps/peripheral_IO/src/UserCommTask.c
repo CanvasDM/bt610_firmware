@@ -20,7 +20,7 @@
 #include "Bracket.h"
 
 #include "UserCommTask.h"
-#include "AdcRead.h"
+#include <drivers/spi.h>
 
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -43,14 +43,12 @@ LOG_MODULE_REGISTER(UserComm);
   #define USER_COMM_TASK_QUEUE_DEPTH 8
 #endif
 
-#define BUTTON_POLL_RATE_MS 100
 
-#define QUICK_BUTTON_PRESS_MIN_DURATION_MS  100
-#define QUICK_BUTTON_PRESS_MAX_DURATION_MS  1000
-#define MEDIUM_BUTTON_PRESS_MIN_DURATION_MS 3000
-#define MEDIUM_BUTTON_PRESS_MAX_DURATION_MS 10000
-#define LONG_BUTTON_PRESS_MIN_DURATION_MS   10000
-#define LONG_BUTTON_PRESS_MAX_DURATION_MS   20000
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(spi1), okay)
+#define SPI_DEV_NAME	DT_LABEL(DT_NODELABEL(spi1))
+#else
+#error "Please set the correct spi device"
+#endif
 
 typedef struct UserCommTaskTag
 {
@@ -77,7 +75,9 @@ K_MSGQ_DEFINE(userCommTaskQueue,
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void UserCommTaskThread(void *, void *, void *);
-
+static uint8_t UserCommSpiSend(struct device *spi,
+			  const struct spi_config *spi_cfg,
+			  const uint8_t *data, size_t len);
 
 //static DispatchResult_t UserCommTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //=================================================================================================
@@ -132,6 +132,38 @@ void UserCommTask_Initialize(void)
 	//userCommTaskObject.conn = NULL;
 
 }
+void UserCommTask_ConfigSPI()
+{
+
+}
+uint8_t UserCommTask_SendData(commType_t comm,
+			  const uint8_t *data, size_t len)
+{
+  uint8_t returnStatus;
+  struct device *spiDevice;
+  switch(comm)
+  {
+    case UART_COMM:
+      break;
+    case I2C_COMM:
+      break;
+    case SPI_CS1_COMM:
+      spiDevice = device_get_binding(SPI_DEV_NAME);
+   //   returnStatus = UserCommSpiSend(spiDevice, ,data, len);
+      LOG_ERR("Code %d", returnStatus);
+      break;
+    case SPI_CS2_COMM:
+      break;
+    default:
+      LOG_ERR("Not valid COMM");
+      break;
+  };
+  if(returnStatus == 1)
+  {
+    LOG_ERR("Comm Type %d Code %d failed",comm, returnStatus);
+  }
+  return(returnStatus);
+}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -156,6 +188,20 @@ void uartCallBack(struct device *x)
 //		uart_buf[data_length] = 0;
 //	}
 //	printk("%s", uart_buf);
+}
+static uint8_t UserCommSpiSend(struct device *spi,
+			  const struct spi_config *spi_cfg,
+			  const uint8_t *data, size_t len)
+{
+	const struct spi_buf_set tx = {
+		.buffers = &(const struct spi_buf){
+			.buf = (uint8_t *)data,
+			.len = len,
+		},
+		.count = 1,
+	};
+
+	return spi_write(spi, spi_cfg, &tx);
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
