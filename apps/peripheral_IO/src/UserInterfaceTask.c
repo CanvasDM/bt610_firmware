@@ -76,7 +76,7 @@ LOG_MODULE_REGISTER(UserInterface);
 #define DO2_PIN                    (11)//SIO_11 Port0
 #define DIN1_ENABLE_PIN            (05)//SIO_37 Port1
 #define DIN2_ENABLE_PIN            (10)//SIO_42 Port1
-#define DIN1_MCU_PIN               (09)//SIO_09 Port0
+#define DIN1_MCU_PIN               (9) //SIO_09 Port0
 #define DIN2_MCU_PIN               (11)//SIO_43 Port1
 
 typedef struct UserIfTaskTag
@@ -98,7 +98,8 @@ typedef struct UserIfTaskTag
 static UserIfTaskObj_t userIfTaskObject;
 
 static struct gpio_callback button_cb_data;
-static struct gpio_callback digitalIn_cb_data;
+static struct gpio_callback digitalIn1_cb_data;
+static struct gpio_callback digitalIn2_cb_data;
 
 K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 
@@ -124,7 +125,8 @@ static void InitializeButton(void);
 static void InitializeDigitalPinsNoPull(void);
 static void InitializeDigitalPinsPull(void);
 static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
-static void DigitalInHandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
+static void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
+static void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 
 
 //static DispatchResult_t UserIfTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -267,51 +269,47 @@ static void InitializeButton(void)
 }
 static void InitializeDigitalPinsNoPull(void)
 {
-  uint16_t ret;
-  ret = gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, GPIO_INPUT);
-	if (ret != 0) 
-  {
-		printk("Error %d: failed to configure %s pin %d\n",
-			ret, BUTTON1_DEV, DIN2_MCU_PIN);
-		return;
-	}
-  ret = gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-	if (ret != 0) 
-  {
-		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-			ret, BUTTON1_DEV, DIN2_MCU_PIN);
-		return;
-	}
 
-  gpio_init_callback(&digitalIn_cb_data, DigitalInHandlerIsr,
+  gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, GPIO_INPUT);
+
+  //DIN1
+  gpio_pin_interrupt_configure(userIfTaskObject.port0, DIN1_MCU_PIN,
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+			   BIT(DIN1_MCU_PIN));
+	gpio_add_callback(userIfTaskObject.port0, &digitalIn1_cb_data);
+
+  //DIN2
+  gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
 			   BIT(DIN2_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port1, &digitalIn_cb_data);
+	gpio_add_callback(userIfTaskObject.port1, &digitalIn2_cb_data);
 
 }
 static void InitializeDigitalPinsPull(void)
 {
-  uint16_t ret;
-  ret = gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, 
+  gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, 
                           (GPIO_INPUT|GPIO_PULL_UP));
-	if (ret != 0) 
-  {
-		printk("Error %d: failed to configure %s pin %d\n",
-			ret, BUTTON1_DEV, DIN2_MCU_PIN);
-		return;
-	}
-  ret = gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-	if (ret != 0) 
-  {
-		printk("Error %d: failed to configure interrupt on %s pin %d\n",
-			ret, BUTTON1_DEV, DIN2_MCU_PIN);
-		return;
-	}
 
-  gpio_init_callback(&digitalIn_cb_data, DigitalInHandlerIsr,
+
+  //DIN1
+  gpio_pin_interrupt_configure(userIfTaskObject.port0, DIN1_MCU_PIN,
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+			   BIT(DIN1_MCU_PIN));
+	gpio_add_callback(userIfTaskObject.port0, &digitalIn1_cb_data);
+
+  //DIN2
+  gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
 			   BIT(DIN2_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port1, &digitalIn_cb_data);
+	gpio_add_callback(userIfTaskObject.port1, &digitalIn2_cb_data);
 
 }
 
@@ -499,8 +497,9 @@ static int DOtoggle(const struct shell *shell, size_t argc, char **argv)
   enable= atoi(argv[1]);
 
   shell_print(shell, "Toggle DO1 and DO2\n");
-  gpio_pin_toggle(userIfTaskObject.port0, DO1_PIN);
-  gpio_pin_toggle(userIfTaskObject.port0, DO2_PIN);
+  gpio_pin_set(userIfTaskObject.port0, DO1_PIN, 1);
+  //gpio_pin_toggle(userIfTaskObject.port0, DO1_PIN);
+  //gpio_pin_toggle(userIfTaskObject.port0, DO2_PIN);
 
   return(0);
 }
@@ -510,17 +509,19 @@ static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
   uint8_t enable = 0;
   enable= atoi(argv[1]);
 
-  shell_print(shell, "Set To DIN_EN =\n", enable);
+  shell_print(shell, "Set To DIN_EN = %d\n", enable);
   gpio_pin_set(userIfTaskObject.port1, DIN1_ENABLE_PIN, enable);
   gpio_pin_set(userIfTaskObject.port1, DIN2_ENABLE_PIN, enable);
 
   if(enable == 1)
   {
+    shell_print(shell, "No pullup");
     InitializeDigitalPinsNoPull();
   }
   else
   {
     /* set as pull up */
+    shell_print(shell, "pullup on");
     InitializeDigitalPinsPull();
   }
   
@@ -535,18 +536,15 @@ void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
 
-void DigitalInHandlerIsr(struct device *dev, struct gpio_callback *cb,
+void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
-  if(pins == DIN2_MCU_PIN)
-  {
-	  LOG_DBG("Digital pin%d is %u"  "\n",pins, gpio_pin_get(userIfTaskObject.port1, pins));
-  }
-  else
-  {
-    LOG_DBG("Digital pin%d is %u"  "\n",pins, gpio_pin_get(userIfTaskObject.port0, pins));
-  }
-  
+	LOG_DBG("Digital pin%d is %u"  "\n",DIN1_MCU_PIN, gpio_pin_get(userIfTaskObject.port0, DIN1_MCU_PIN)); 
+}
+void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	LOG_DBG("Digital pin%d is %u"  "\n",DIN2_MCU_PIN, gpio_pin_get(userIfTaskObject.port1, DIN2_MCU_PIN)); 
 }
 /******************************************************************************/
 /* SHELL Service                                                  */
