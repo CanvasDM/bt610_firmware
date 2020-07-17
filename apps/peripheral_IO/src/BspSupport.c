@@ -70,14 +70,14 @@ uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
     case DO2_PIN:
     case DO1_PIN:
     case BATT_OUT_ENABLE_PIN:
-      gpioReturn = gpio_pin_set(port0, pin, value);
+      gpioReturn = gpio_pin_set(port0, GPIO_PIN_MAP(pin), value);
       break;
-//    case DIN1_ENABLE_PIN:
-//    case FIVE_VOLT_ENABLE_PIN:
-//    case DIN2_ENABLE_PIN:
-//    case ANALOG_ENABLE_PIN:
-//      gpioReturn = gpio_pin_set(port1, pin, value);
-//      break;
+    case DIN1_ENABLE_PIN:
+    case FIVE_VOLT_ENABLE_PIN:
+    case DIN2_ENABLE_PIN:
+    case ANALOG_ENABLE_PIN:
+      gpioReturn = gpio_pin_set(port1, GPIO_PIN_MAP(pin), value);
+      break;
     default:
       LOG_ERR("Cannot find output pin\n");
       gpioReturn = ENODEV;	/* No such device */
@@ -85,31 +85,32 @@ uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
   }
   return(gpioReturn);
 }
+uint16_t BSP_PinGet(uint8_t pin, uint16_t value)
+{
+  
+}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 static void ConfigureInputs(void)
 {
-  volatile uint8_t testpin;
-
-  testpin = GPIO_PIN_MAP(DIN2_MCU_PIN);
   //Port0
-  gpio_pin_configure(port1, DIN1_MCU_PIN, GPIO_INPUT);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
   //Port1
-  gpio_pin_configure(port1, testpin, GPIO_INPUT);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
 }
 static void ConfigureOutputs(void)
 {
   //Port0
-  gpio_pin_configure(port0, BATT_OUT_ENABLE_PIN, GPIO_OUTPUT_LOW);    
-  gpio_pin_configure(port0, DO1_PIN, GPIO_OUTPUT_LOW);
-  gpio_pin_configure(port0, DO2_PIN, GPIO_OUTPUT_LOW);
-  gpio_pin_configure(port0, THERM_ENABLE_PIN, GPIO_OUTPUT_HIGH);
+  gpio_pin_configure(port0, GPIO_PIN_MAP(BATT_OUT_ENABLE_PIN), GPIO_OUTPUT_LOW);    
+  gpio_pin_configure(port0, GPIO_PIN_MAP(DO1_PIN), GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port0, GPIO_PIN_MAP(DO2_PIN), GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port0, GPIO_PIN_MAP(THERM_ENABLE_PIN), GPIO_OUTPUT_HIGH);
 
   //Port1
-  gpio_pin_configure(port1, FIVE_VOLT_ENABLE_PIN, GPIO_OUTPUT_LOW);
-  gpio_pin_configure(port1, DIN2_ENABLE_PIN, GPIO_OUTPUT_LOW);
-  gpio_pin_configure(port1, DIN1_ENABLE_PIN, GPIO_OUTPUT_LOW);
-  gpio_pin_configure(port1, ANALOG_ENABLE_PIN, GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(FIVE_VOLT_ENABLE_PIN), GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_ENABLE_PIN), GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_ENABLE_PIN), GPIO_OUTPUT_LOW);
+  gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN), GPIO_OUTPUT_LOW);
 
 }

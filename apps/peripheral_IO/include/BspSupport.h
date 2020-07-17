@@ -34,10 +34,10 @@ extern "C" {
 #define DO1_PIN                    (12)//SIO_12 Port0
 #define BATT_OUT_ENABLE_PIN        (30)//SIO_30 Port0
 //PORT1
-#define DIN1_ENABLE_PIN            (5)//SIO_37 Port1
-#define FIVE_VOLT_ENABLE_PIN       (12)//SIO_44 Port1
-#define DIN2_ENABLE_PIN            (10)//SIO_42 Port1
-#define ANALOG_ENABLE_PIN          (13)//SIO_45 Port1
+#define DIN1_ENABLE_PIN            (37)//SIO_37 Port1
+#define FIVE_VOLT_ENABLE_PIN       (44)//SIO_44 Port1
+#define DIN2_ENABLE_PIN            (42)//SIO_42 Port1
+#define ANALOG_ENABLE_PIN          (45)//SIO_45 Port1
 
 #define GPIO_PIN_MAP(p)           ((p>32)?(p-32):p)
 
@@ -58,6 +58,7 @@ extern "C" {
  */
 void BSP_Init(void);
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value);
+uint16_t BSP_PinGet(uint8_t pin, uint16_t value);
 #ifdef __cplusplus
 }
 #endif
