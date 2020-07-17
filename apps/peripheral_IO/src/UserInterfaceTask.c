@@ -25,6 +25,7 @@
 
 #include "UserInterfaceTask.h"
 #include "AdcRead.h"
+#include "BspSupport.h"
 
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -70,22 +71,10 @@ LOG_MODULE_REGISTER(UserInterface);
 #error "Unsupported board: sw1 devicetree alias is not defined"
 #endif
 
-#define BATT_OUT_ENABLE_PIN        (30)//SIO_30 Port0
-#define FIVE_VOLT_ENABLE_PIN       (12)//SIO_44 Port1
-#define DO1_PIN                    (12)//SIO_12 Port0
-#define DO2_PIN                    (11)//SIO_11 Port0
-#define DIN1_ENABLE_PIN            (05)//SIO_37 Port1
-#define DIN2_ENABLE_PIN            (10)//SIO_42 Port1
-#define DIN1_MCU_PIN               (9) //SIO_09 Port0
-#define DIN2_MCU_PIN               (11)//SIO_43 Port1
-
 typedef struct UserIfTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
-  AnalogInput_t AnalogType;
-  struct device *port0;
-  struct device *port1;
 } UserIfTaskObj_t;
 
 /******************************************************************************/
@@ -96,10 +85,8 @@ typedef struct UserIfTaskTag
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static UserIfTaskObj_t userIfTaskObject;
-
 static struct gpio_callback button_cb_data;
-static struct gpio_callback digitalIn1_cb_data;
-static struct gpio_callback digitalIn2_cb_data;
+
 
 K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 
@@ -119,14 +106,10 @@ enum
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void UserIfTaskThread(void *, void *, void *);
-
-static void InitializeEnablePins(void);
 static void InitializeButton(void);
-static void InitializeDigitalPinsNoPull(void);
-static void InitializeDigitalPinsPull(void);
+
 static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
-static void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
-static void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
+
 
 
 //static DispatchResult_t UserIfTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -187,8 +170,6 @@ void UserInterfaceTask_Initialize(void)
     Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
 				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	
-  userIfTaskObject.AnalogType = UNKOWN_INPUT;
-
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -198,40 +179,12 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
   UserIfTaskObj_t *pObj = (UserIfTaskObj_t*)pArg1;
 
   InitializeButton();
-  InitializeEnablePins();
-
 
   while( true )
   {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
 }
-static void InitializeEnablePins(void)
-{
-  userIfTaskObject.port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
-	if (!userIfTaskObject.port0) 
-    {
-        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio0)));
-	}
-
-  userIfTaskObject.port1 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio1)));
-	if (!userIfTaskObject.port1) 
-  {
-        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio1)));
-	}
-
-    //Port0
-    gpio_pin_configure(userIfTaskObject.port0, BATT_OUT_ENABLE_PIN, GPIO_OUTPUT_LOW);
-    gpio_pin_configure(userIfTaskObject.port0, DO1_PIN, GPIO_OUTPUT_LOW);
-    gpio_pin_configure(userIfTaskObject.port0, DO2_PIN, GPIO_OUTPUT_LOW);
-    //Port1
-    gpio_pin_configure(userIfTaskObject.port1, FIVE_VOLT_ENABLE_PIN, GPIO_OUTPUT_LOW);
-    gpio_pin_configure(userIfTaskObject.port1, DIN2_ENABLE_PIN, GPIO_OUTPUT_LOW);
-    gpio_pin_configure(userIfTaskObject.port1, DIN1_ENABLE_PIN, GPIO_OUTPUT_LOW);
-
-
-}
-
 static void InitializeButton(void)
 {
   struct device *buttonDevice;
@@ -267,266 +220,7 @@ static void InitializeButton(void)
 	gpio_add_callback(buttonDevice, &button_cb_data);
   
 }
-static void InitializeDigitalPinsNoPull(void)
-{
 
-  gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, GPIO_INPUT);
-
-  //DIN1
-  gpio_pin_interrupt_configure(userIfTaskObject.port0, DIN1_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-
-  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
-			   BIT(DIN1_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port0, &digitalIn1_cb_data);
-
-  //DIN2
-  gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-
-  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
-			   BIT(DIN2_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port1, &digitalIn2_cb_data);
-
-}
-static void InitializeDigitalPinsPull(void)
-{
-  gpio_pin_configure(userIfTaskObject.port1, DIN2_MCU_PIN, 
-                          (GPIO_INPUT|GPIO_PULL_UP));
-
-
-  //DIN1
-  gpio_pin_interrupt_configure(userIfTaskObject.port0, DIN1_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-
-  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
-			   BIT(DIN1_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port0, &digitalIn1_cb_data);
-
-  //DIN2
-  gpio_pin_interrupt_configure(userIfTaskObject.port1, DIN2_MCU_PIN,
-					   GPIO_INT_EDGE_BOTH);
-
-  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
-			   BIT(DIN2_MCU_PIN));
-	gpio_add_callback(userIfTaskObject.port1, &digitalIn2_cb_data);
-
-}
-
-static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enabled = 0;
-  enabled= atoi(argv[1]);
-
-  SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
-  if( pMsg != NULL )
-  {
-    pMsg->header.msgCode = FMC_CONTROL_ENABLE;
-    pMsg->header.txId = FWK_ID_USER_IF_TASK;
-    pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
-    pMsg->control.analogEnable = enabled; 
-    pMsg->control.thermEnable = 1; //disable
-    FRAMEWORK_MSG_SEND(pMsg);
-  } 
-  
-  shell_print(shell, "ANALOG_EN = %d \n",enabled);
-
-  return(0);
-}
-static int batteryMeasurement(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-	ARG_UNUSED(argv);
-  static volatile uint32_t adcTestValue = 0;
-  uint8_t index = 0;
-  uint8_t maxReadings = 10;
-
-  for(index =0; index < maxReadings; index++)
-  {
-    adcTestValue = ADC_GetBatteryMv();
-    shell_print(shell,"Battery%d = %d \n", index, adcTestValue);
-  }
-
-  return(0);
-}
-static int readAin(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-	uint8_t ainSelected = 0;
-  ainSelected= atoi(argv[1]);
-
-  
-  if(userIfTaskObject.AnalogType == UNKOWN_INPUT)
-  {
-    shell_print(shell, "Analog Type not set");
-  }
-  else if( (ainSelected ==0) || (ainSelected > 4))
-  {
-    shell_print(shell, "Analog out of bounds");
-  }
-  else
-  {
-    AnalogPinMsg_t * pMsg = (AnalogPinMsg_t*)BufferPool_Take(sizeof(AnalogPinMsg_t));
-    if( pMsg != NULL )
-    {
-      pMsg->header.msgCode = FMC_ANALOG_INPUT;
-      pMsg->header.txId = FWK_ID_USER_IF_TASK;
-      pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;  
-      pMsg->inputConfig = userIfTaskObject.AnalogType; 
-      pMsg->externalPin = ainSelected;      
-      FRAMEWORK_MSG_SEND(pMsg);
-    } 
-
-    shell_print(shell, "Analog pin %d", ainSelected);
-  }
-
-  return(0);
-}
-static int analogVoltage(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  ARG_UNUSED(argv);
-  userIfTaskObject.AnalogType = VOLTAGE_AIN;
-
-  shell_print(shell, "Set To Voltage\n");
-
-  return(0);
-}
-static int analogCurrent(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  ARG_UNUSED(argv);
-  userIfTaskObject.AnalogType = CURRENT_AIN;
-
-  shell_print(shell, "Set To Current\n");
-
-  return(0);
-}
-static int ennableThermistorPin(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enabled = 0;
-  enabled= atoi(argv[1]);
-  userIfTaskObject.AnalogType = THERMISTOR;
-
-  SetEnablePinMsg_t * pMsg = (SetEnablePinMsg_t*)BufferPool_Take(sizeof(SetEnablePinMsg_t));
-  if( pMsg != NULL )
-  {
-    pMsg->header.msgCode = FMC_CONTROL_ENABLE;
-    pMsg->header.txId = FWK_ID_USER_IF_TASK;
-    pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
-    pMsg->control.analogEnable = 0; 
-    pMsg->control.thermEnable = enabled;
-    FRAMEWORK_MSG_SEND(pMsg);
-  } 
-  shell_print(shell, "THERM_EN = %d \n",enabled);
-
-  return(0);
-}
-static int readVrefPin(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint32_t adcVrefValue = 0;
-  uint8_t index = 0;
-  uint8_t maxReadings = 10;
-
-  for(index =0; index < maxReadings; index++)
-  {
-    adcVrefValue = AnalogRead(ANALOG_SENSOR_5_CH);
-    shell_print(shell,"Vref = %d \n", adcVrefValue);
-  }
-
-  return(0);
-}
-static int readTherm(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-	uint8_t thermSelected = 0;
-  thermSelected= atoi(argv[1]);
-
-  if( (thermSelected ==0) || (thermSelected > 4))
-  {
-    shell_print(shell, "Analog out of bounds");
-  }
-  else
-  {
-    AnalogPinMsg_t * pMsg = (AnalogPinMsg_t*)BufferPool_Take(sizeof(AnalogPinMsg_t));
-    if( pMsg != NULL )
-    {
-      pMsg->header.msgCode = FMC_ANALOG_INPUT;
-      pMsg->header.txId = FWK_ID_USER_IF_TASK;
-      pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;     
-      pMsg->inputConfig = THERMISTOR; 
-      pMsg->externalPin = thermSelected;  
-      FRAMEWORK_MSG_SEND(pMsg);
-    } 
-
-    shell_print(shell, "Analog pin %d", thermSelected);
-  }
-
-  return(0);
-}
-static int fiveEnable(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enable = 0;
-  enable= atoi(argv[1]);
-
-  shell_print(shell, "Set To 5V\n");
-  gpio_pin_set(userIfTaskObject.port1, FIVE_VOLT_ENABLE_PIN, enable);
-
-  return(0);
-}
-static int batteryEnable(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enable = 0;
-  enable= atoi(argv[1]);
-
-  shell_print(shell, "Set To Battery Enable\n");
-  gpio_pin_set(userIfTaskObject.port0, BATT_OUT_ENABLE_PIN, enable);
-
-  return(0);
-}
-
-static int DOtoggle(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enable = 0;
-  enable= atoi(argv[1]);
-
-  shell_print(shell, "Toggle DO1 and DO2\n");
-  gpio_pin_set(userIfTaskObject.port0, DO1_PIN, 1);
-  //gpio_pin_toggle(userIfTaskObject.port0, DO1_PIN);
-  //gpio_pin_toggle(userIfTaskObject.port0, DO2_PIN);
-
-  return(0);
-}
-static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
-{
-  ARG_UNUSED(argc);
-  uint8_t enable = 0;
-  enable= atoi(argv[1]);
-
-  shell_print(shell, "Set To DIN_EN = %d\n", enable);
-  gpio_pin_set(userIfTaskObject.port1, DIN1_ENABLE_PIN, enable);
-  gpio_pin_set(userIfTaskObject.port1, DIN2_ENABLE_PIN, enable);
-
-  if(enable == 1)
-  {
-    shell_print(shell, "No pullup");
-    InitializeDigitalPinsNoPull();
-  }
-  else
-  {
-    /* set as pull up */
-    shell_print(shell, "pullup on");
-    InitializeDigitalPinsPull();
-  }
-  
-  return(0);
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -536,34 +230,6 @@ void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
 
-void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb,
-		    uint32_t pins)
-{
-	LOG_DBG("Digital pin%d is %u"  "\n",DIN1_MCU_PIN, gpio_pin_get(userIfTaskObject.port0, DIN1_MCU_PIN)); 
-}
-void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb,
-		    uint32_t pins)
-{
-	LOG_DBG("Digital pin%d is %u"  "\n",DIN2_MCU_PIN, gpio_pin_get(userIfTaskObject.port1, DIN2_MCU_PIN)); 
-}
-/******************************************************************************/
-/* SHELL Service                                                  */
-/******************************************************************************/
-SHELL_STATIC_SUBCMD_SET_CREATE(
-	sub_inputs, 
-  SHELL_CMD(enableAlog, NULL, "Enable/Disable Analog", ennableAnalogPin), 
-  SHELL_CMD(battery, NULL, "Take Battery Measure", batteryMeasurement),
-  SHELL_CMD(ain, NULL, "Read AINx", readAin),  
-  SHELL_CMD(voltage, NULL, "Voltage Input", analogVoltage),
-  SHELL_CMD(current, NULL, "Current Input", analogCurrent),
-  SHELL_CMD(enableTherm, NULL, "Enable/Disable Thermistor", ennableThermistorPin),  
-  SHELL_CMD(readVREF, NULL, "Read VREF ADC value", readVrefPin), 
-  SHELL_CMD(therm, NULL, "Read Thermx", readTherm),
-  SHELL_CMD(enable5v, NULL, "Enable 5V", fiveEnable),
-  SHELL_CMD(enableBatt, NULL, "Enable Battery Out", batteryEnable),
-  SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DOtoggle),
-  SHELL_CMD(enableDin, NULL, "Set DIN1_EN and DIN2_EN value", digitalEnable),
-  SHELL_SUBCMD_SET_END);
-SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
+
 
 

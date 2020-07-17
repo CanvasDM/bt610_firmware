@@ -27,6 +27,7 @@
 
 #include "AnalogSensorTask.h"
 #include "AdcRead.h"
+#include "BspSupport.h"
 
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -50,9 +51,6 @@ LOG_MODULE_REGISTER(AnalogSensor);
   #define ANALOG_SENSOR_TASK_QUEUE_DEPTH 8
 #endif
 
-#define ANALOG_ENABLE_PIN        (13)//SIO_45 Port1
-#define THERM_ENABLE_PIN         (10)//SIO_10 Port0
-
 #define EXPANDER_ADDRESS         (0X70)
 #define TCA9538_REG_INPUT		 (0x00)
 #define TCA9538_REG_OUTPUT		 (0x01)
@@ -72,8 +70,6 @@ typedef struct AnalogSensorTaskTag
 {
     FwkMsgTask_t msgTask; 
     BracketObj_t *pBracket; 
-    struct device *port0;
-    struct device *port1;
 } AnalogSensorTaskObj_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -162,43 +158,20 @@ static void AnalogSensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {  
   AnalogSensorTaskObj_t *pObj = (AnalogSensorTaskObj_t*)pArg1;
 
-  InitializeEnablePins();
-
-
   while( true )
   {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
 }
-static void InitializeEnablePins(void)
-{
-    LOG_DBG("Analog Enable Init\n");
-    analogSensorTaskObject.port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
-	if (!analogSensorTaskObject.port0) 
-    {
-        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio0)));
-	}
-    analogSensorTaskObject.port1 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio1)));
-	if (!analogSensorTaskObject.port1) 
-    {
-        LOG_ERR("Cannot find %s!\n", DT_LABEL(DT_NODELABEL(gpio1)));
-	}
-    //Port0
-    gpio_pin_configure(analogSensorTaskObject.port0, THERM_ENABLE_PIN, GPIO_OUTPUT_HIGH);
-    //Port1
-    gpio_pin_configure(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, GPIO_OUTPUT_LOW);
-}
 static void ControlAnalogEnablePin(bool enable)
 {
  //   LOG_DBG("Analog Enable Set\n");
-    gpio_pin_set(analogSensorTaskObject.port1, ANALOG_ENABLE_PIN, enable);
-    
+  BSP_PinSet(ANALOG_ENABLE_PIN, enable);    
 }
 static void ControlThermistorEnablePin(bool enable)
 {
-    LOG_DBG("Therm Enable Set\n");
-    gpio_pin_set(analogSensorTaskObject.port0, THERM_ENABLE_PIN, enable);
-    
+  LOG_DBG("Therm Enable Set\n");
+  BSP_PinSet(THERM_ENABLE_PIN, enable);      
 }
 
 static bool ExpanderAnalogSetup(uint8_t analogInput)
