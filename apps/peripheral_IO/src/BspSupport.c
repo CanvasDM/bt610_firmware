@@ -34,11 +34,11 @@ LOG_MODULE_REGISTER(BspSupport);
 /******************************************************************************/
 static struct device *port0;
 static  struct device *port1;
+static struct gpio_callback digitalIn1_cb_data;
+static struct gpio_callback digitalIn2_cb_data;
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static void InitializeDigitalPinsNoPull(void);
-static void InitializeDigitalPinsPull(void);
 static void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 static void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 static void ConfigureInputs(void);
@@ -85,10 +85,81 @@ uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
   }
   return(gpioReturn);
 }
+uint16_t BSP_PinToggle(uint8_t pin)
+{
+  uint16_t gpioReturn;
+  switch(pin)
+  {
+    case THERM_ENABLE_PIN:
+    case DO2_PIN:
+    case DO1_PIN:
+    case BATT_OUT_ENABLE_PIN:
+      gpioReturn = gpio_pin_toggle(port0, GPIO_PIN_MAP(pin));
+      break;
+    case DIN1_ENABLE_PIN:
+    case FIVE_VOLT_ENABLE_PIN:
+    case DIN2_ENABLE_PIN:
+    case ANALOG_ENABLE_PIN:
+      gpioReturn = gpio_pin_toggle(port1, GPIO_PIN_MAP(pin));
+      break;
+    default:
+      LOG_ERR("Cannot find output pin\n");
+      gpioReturn = ENODEV;	/* No such device */
+      break;
+  }
+  return(gpioReturn);
+}
 uint16_t BSP_PinGet(uint8_t pin, uint16_t value)
 {
-  
+
 }
+
+/****Used for hardware test****/
+void InitializeDigitalPinsPull(void)
+{
+  //DIN1
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), 
+                          (GPIO_INPUT|GPIO_PULL_UP));
+  gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
+  gpio_add_callback(port0, &digitalIn1_cb_data);
+
+  //DIN2
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), 
+                          (GPIO_INPUT|GPIO_PULL_UP));
+  gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
+  gpio_add_callback(port1, &digitalIn2_cb_data);
+
+}
+void InitializeDigitalPinsNoPull(void)
+{
+  //DIN1
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
+  gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
+	gpio_add_callback(port0, &digitalIn1_cb_data);
+
+  //DIN2
+  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
+  gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+					   GPIO_INT_EDGE_BOTH);
+
+  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
+	gpio_add_callback(port1, &digitalIn2_cb_data);
+
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -113,4 +184,21 @@ static void ConfigureOutputs(void)
   gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_ENABLE_PIN), GPIO_OUTPUT_LOW);
   gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN), GPIO_OUTPUT_LOW);
 
+}
+/******************************************************************************/
+/* Interrupt Service Routines                                                 */
+/******************************************************************************/
+
+void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	LOG_DBG("Digital pin%d is %u"  "\n",DIN1_MCU_PIN, 
+    gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN))); 
+}
+void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	LOG_DBG("Digital pin%d is %u"  "\n",DIN2_MCU_PIN, 
+    gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN)));
+    //BSP_PinGet 
 }

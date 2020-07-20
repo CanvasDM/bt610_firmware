@@ -58,7 +58,14 @@ extern "C" {
  */
 void BSP_Init(void);
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value);
+uint16_t BSP_PinToggle(uint8_t pin);
 uint16_t BSP_PinGet(uint8_t pin, uint16_t value);
+
+
+/*** Used in hardware test ****/
+void InitializeDigitalPinsNoPull(void);
+void InitializeDigitalPinsPull(void);
+
 #ifdef __cplusplus
 }
 #endif
