@@ -27,10 +27,10 @@ typedef enum
 {
 	BATTERY_ADC_CH = 0,
 	ANALOG_SENSOR_1_CH,
-	ANALOG_SENSOR_2_CH,
-	ANALOG_SENSOR_3_CH,
-	ANALOG_SENSOR_4_CH,
-	ANALOG_SENSOR_5_CH,
+	THERMISTOR_SENSOR_2_CH,
+	ADC_3_CH,
+	ADC_4_CH,
+	VREF_5_CH,
 }AnalogTypesChannel_t;
 
 /******************************************************************************/

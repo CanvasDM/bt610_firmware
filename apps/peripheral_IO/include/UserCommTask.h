@@ -60,6 +60,8 @@ void UserCommTask_Initialize(void);
 uint8_t UserCommTask_SendData(commType_t comm,
 			  const uint8_t *data, size_t len);
 
+//void UserCommTask_ConfigSPI(struct spi_config *spi_cfg);
+
 #ifdef __cplusplus
 }
 #endif

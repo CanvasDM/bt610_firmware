@@ -281,7 +281,7 @@ static DispatchResult_t ReadThermistorPinMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
     uint8_t index =0;
     for(index =0; index < 10; index++)
     {
-        adcReading = AnalogRead(ANALOG_SENSOR_2_CH);
+        adcReading = AnalogRead(THERMISTOR_SENSOR_2_CH);
         LOG_DBG("Thermistor Reading = %d\n", adcReading);
     }
     return DISPATCH_OK;

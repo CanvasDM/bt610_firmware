@@ -71,6 +71,15 @@ K_MSGQ_DEFINE(userCommTaskQueue,
               FWK_QUEUE_ENTRY_SIZE, 
               USER_COMM_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
+//default values can be changed              
+static struct spi_config spi_conf = 
+  {
+    .frequency = 10000,
+    .operation = (SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) |
+            SPI_LINES_SINGLE),
+    .slave     = 0,
+    .cs        = NULL,
+  };
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -132,10 +141,10 @@ void UserCommTask_Initialize(void)
 	//userCommTaskObject.conn = NULL;
 
 }
-void UserCommTask_ConfigSPI()
-{
-
-}
+//void UserCommTask_ConfigSPI(struct spi_config *spi_cfg)
+//{
+  //memset(&spi_conf,spi_cfg, sizeof(spi_cfg));
+//}
 uint8_t UserCommTask_SendData(commType_t comm,
 			  const uint8_t *data, size_t len)
 {
@@ -149,8 +158,11 @@ uint8_t UserCommTask_SendData(commType_t comm,
       break;
     case SPI_CS1_COMM:
       spiDevice = device_get_binding(SPI_DEV_NAME);
-   //   returnStatus = UserCommSpiSend(spiDevice, ,data, len);
-      LOG_ERR("Code %d", returnStatus);
+      returnStatus = UserCommSpiSend(spiDevice, &spi_conf, data, len);
+      if(returnStatus != 0)
+      { 
+        LOG_ERR("Code %d", returnStatus);
+      }
       break;
     case SPI_CS2_COMM:
       break;
@@ -193,8 +205,10 @@ static uint8_t UserCommSpiSend(struct device *spi,
 			  const struct spi_config *spi_cfg,
 			  const uint8_t *data, size_t len)
 {
-	const struct spi_buf_set tx = {
-		.buffers = &(const struct spi_buf){
+	const struct spi_buf_set tx =
+   {
+		.buffers = &(const struct spi_buf)
+    {
 			.buf = (uint8_t *)data,
 			.len = len,
 		},

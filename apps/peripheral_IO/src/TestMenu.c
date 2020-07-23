@@ -173,7 +173,7 @@ static int readVrefPin(const struct shell *shell, size_t argc, char **argv)
 
   for(index =0; index < maxReadings; index++)
   {
-    adcVrefValue = AnalogRead(ANALOG_SENSOR_5_CH);
+    adcVrefValue = AnalogRead(VREF_5_CH);
     shell_print(shell,"Vref = %d \n", adcVrefValue);
   }
 
