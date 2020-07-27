@@ -161,7 +161,7 @@ struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 	{
 
 		m_1st_channel_cfg.channel_id = channelReading;
-		if(channelReading != THERMISTOR_SENSOR_2_CH)
+		if(channelReading == THERMISTOR_SENSOR_2_CH)
 		{
 			m_1st_channel_cfg.reference = ADC_REFERENCE_THERMISTOR;
 			m_1st_channel_cfg.gain = ADC_GAIN_THERMISTOR;

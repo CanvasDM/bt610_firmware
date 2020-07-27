@@ -148,7 +148,7 @@ void UserCommTask_Initialize(void)
 uint8_t UserCommTask_SendData(commType_t comm,
 			  const uint8_t *data, size_t len)
 {
-  uint8_t returnStatus;
+  uint8_t returnStatus = 0;
   struct device *spiDevice;
   switch(comm)
   {

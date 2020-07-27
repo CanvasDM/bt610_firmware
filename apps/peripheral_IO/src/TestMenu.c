@@ -38,17 +38,6 @@ LOG_MODULE_REGISTER(TestMenu);
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static  AnalogInput_t AnalogType;
-
-/******************************************************************************/
-/* Local Function Prototypes                                                  */
-/******************************************************************************/
-
-static void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
-static void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
-/******************************************************************************/
-/* Global Function Definitions                                                */
-/******************************************************************************/
-
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
