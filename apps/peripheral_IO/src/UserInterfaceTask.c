@@ -228,6 +228,8 @@ void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
+  LOG_DBG("Button pressed\n");
+  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FMC_CODE_SENSOR);
 }
 
 

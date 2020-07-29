@@ -169,6 +169,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
   ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
 
 
+    BleTask_Initialize();
  // FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
   FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_LED_TEST);
 
@@ -204,12 +205,11 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
   Framework_StartTimer(pMsgTask);
 #endif
 
-#if 0
   // @ref ENABLE_BLE
   // If the softdevice is running, then breakpoints will cause a hardfault.
-  ControlTaskObj_t *pObj = (ControlTaskObj_t*)pMsgTask->pContainer;
-  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.id, MSG_CODE_BLE_START);
-#endif
+  //ControlTaskObj_t *pObj = (ControlTaskObj_t*)pMsgRxer->pContainer;
+  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FMC_CODE_BLE_START);
+
 
   return DISPATCH_OK;
 }

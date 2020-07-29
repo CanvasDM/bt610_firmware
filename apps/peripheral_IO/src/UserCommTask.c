@@ -141,7 +141,7 @@ void UserCommTask_Initialize(void)
 	//userCommTaskObject.conn = NULL;
 
 }
-//void UserCommTask_ConfigSPI(struct spi_config *spi_cfg)
+//void UserCommTask_ConfigSPI(spi_config *config)
 //{
   //memset(&spi_conf,spi_cfg, sizeof(spi_cfg));
 //}
