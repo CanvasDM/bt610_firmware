@@ -135,9 +135,9 @@ void UserCommTask_Initialize(void)
 
   k_thread_name_set(userCommTaskObject.msgTask.pTid, THIS_FILE);
 
-  userCommTaskObject.pBracket = 		
-    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
+//  userCommTaskObject.pBracket = 		
+//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	//userCommTaskObject.conn = NULL;
 
 }

@@ -166,9 +166,9 @@ void UserInterfaceTask_Initialize(void)
 
   k_thread_name_set(userIfTaskObject.msgTask.pTid, THIS_FILE);
 
-  userIfTaskObject.pBracket = 		
-    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
+//  userIfTaskObject.pBracket = 		
+//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	
 }
 /******************************************************************************/

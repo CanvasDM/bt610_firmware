@@ -49,11 +49,14 @@ LOG_MODULE_REGISTER(BleTask);
   #define BLE_TASK_QUEUE_DEPTH 8
 #endif
 
+#define MAX_SENSOR_NAME_LENGTH      (23+1)
+
 typedef struct BleTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
   bool initialized;
+  struct bt_conn *default_conn;
 
 } BleTaskObj_t;
 /*
@@ -87,13 +90,8 @@ K_MSGQ_DEFINE(bleTaskQueue,
               BLE_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
 
-static const struct bt_data ad[] = 
-{
-	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0x00, 0x03),
-	BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0x1a, 0x18),
-	/* TODO: Include Service Data AD */
-};
+static struct bt_data ad[] = {};
+
 static struct bt_le_scan_param scan_param = 
 {
 		.type       = BT_HCI_LE_SCAN_PASSIVE,
@@ -106,7 +104,9 @@ static struct bt_le_scan_param scan_param =
 /******************************************************************************/
 static void BleTaskThread(void *, void *, void *);
 static void ConfigureAndStartBle(void);
-static void bt_ready(int err);
+static void ParamsInit(void);
+static void AdvertisementEncoder(void);
+static void BleReadyCB(int err);
 static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 		    struct net_buf_simple *buf);
 
@@ -162,9 +162,9 @@ void BleTask_Initialize(void)
 
   k_thread_name_set(bleTaskObject.msgTask.pTid, THIS_FILE);
 
-  bleTaskObject.pBracket = 		
-    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
+//  bleTaskObject.pBracket = 		
+//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	//bleTaskObject.conn = NULL;
 }
 /******************************************************************************/
@@ -192,24 +192,55 @@ static void ConfigureAndStartBle(void)
 
   //ConfigureMaxPacketsPerConnectionEvent(ramStart);
 
-    // This must occur before the initialization items below.
-    err_code = bt_enable(bt_ready);
-    if (err_code) {
-        printk("Bluetooth init failed (err %d)\n", err_code);
-        LOG_ERR("Bluetooth init failed (err %d)\n", err_code);
-        //FRAMEWORK_ASSERT(err_code == NRF_SUCCESS); 
-        return;
-    }
-  
+  // This must occur before the initialization items below.
+  err_code = bt_enable(BleReadyCB);
+  if (err_code) 
+  {
+      printk("Bluetooth init failed (err %d)\n", err_code);
+      LOG_ERR("Bluetooth init failed (err %d)\n", err_code);
+      //FRAMEWORK_ASSERT(err_code == NRF_SUCCESS); 
+      return;
+  }
+}
+static void ParamsInit(void)
+{
+  uint32_t err;
+  //Device Name
+  char name[MAX_SENSOR_NAME_LENGTH] = CONFIG_BT_DEVICE_NAME;
+//  AttributeTask_GetString(name, ATTR_INDEX_sensorName, MAX_SENSOR_NAME_LENGTH);
+  err = bt_set_name((const char *)name);
+  if (err) 
+  {
+    LOG_ERR("Failed to set device name (%d)", err);
+  }
+  //FRAMEWORK_ASSERT(err == NRF_SUCCESS);
+
+  //Security
+  err = bt_conn_set_security(bleTaskObject.default_conn, BT_SECURITY_L3);
+  if (err) 
+  {
+    LOG_ERR("Setting security failed (err %d)", err);
+  }
 
 }
-static void bt_ready(int err)
+#define OFFSETFLAG 4
+static void AdvertisementEncoder(void)
 {
-    bleTaskObject.initialized = true;
-    if (IS_ENABLED(CONFIG_SETTINGS)) 
-    {
-		settings_load();
-	}
+  size_t index = 0; 
+  static struct bt_data adTest[31] = {0};
+
+ // index++;// = index + OFFSETFLAG;
+  adTest[0] = BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0x00, 0x03);
+}
+static void BleReadyCB(int err)
+{
+  bleTaskObject.initialized = true;
+  if (IS_ENABLED(CONFIG_SETTINGS)) 
+  {
+    ParamsInit();
+    settings_load();
+    FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_BLE_TASK, FMC_CODE_SENSOR);
+  }
 }
 static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 		    struct net_buf_simple *buf)
