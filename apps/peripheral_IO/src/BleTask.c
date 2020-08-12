@@ -90,7 +90,11 @@ K_MSGQ_DEFINE(bleTaskQueue,
               BLE_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
 
-static struct bt_data ad[] = {};
+static struct bt_data standardAdvert[] = 
+{
+  BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+  //BT_DATA_BYTES(BT_DATA_FLAGS
+};
 
 static struct bt_le_scan_param scan_param = 
 {
@@ -227,10 +231,10 @@ static void ParamsInit(void)
 static void AdvertisementEncoder(void)
 {
   size_t index = 0; 
-  static struct bt_data adTest[31] = {0};
+  //struct bt_data adTest[1];
 
  // index++;// = index + OFFSETFLAG;
-  adTest[0] = BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0x00, 0x03);
+  //adTest[0] = {BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0x00, 0x03)};
 }
 static void BleReadyCB(int err)
 {
@@ -269,7 +273,7 @@ static DispatchResult_t BleReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
     {
         printk("Bluetooth initialized\n");
 
-        err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
+        err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, standardAdvert, ARRAY_SIZE(standardAdvert), NULL, 0);
         if (err) 
         {
             printk("Advertising failed to start (err %d)\n", err);
