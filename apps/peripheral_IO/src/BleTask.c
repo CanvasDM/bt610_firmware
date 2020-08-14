@@ -72,24 +72,6 @@ typedef struct BleTaskTag
   struct bt_conn *default_conn;
 
 } BleTaskObj_t;
-/*
-typedef struct
-{
-  FrameworkMsgTask_t msgTask;  // The name "task" is used by macros.
-
-  uint16_t connectionHandle;
-  ble_gap_addr_t bdAddr;
-  QueueHandle_t pAdvQueue;
-  bool advQueueBusy;
-  bool sdInitialized;
-  bool factoryReset;
-  
-  TimerHandle_t ShelfModeAdvTimerHandle;
-  
-} BleTaskObj_t;*/
-/******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
