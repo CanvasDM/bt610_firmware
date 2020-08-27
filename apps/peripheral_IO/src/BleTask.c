@@ -62,6 +62,7 @@ LOG_MODULE_REGISTER(BleTask);
 #define UINT32_BYTE_2(v) (uint8_t) (((v) & 0x00FF0000) >> 16)
 #define UINT32_BYTE_3(v) (uint8_t) (((v) & 0xFF000000) >> 24)
 
+
 typedef struct BleTaskTag
 {
   FwkMsgTask_t msgTask; 
