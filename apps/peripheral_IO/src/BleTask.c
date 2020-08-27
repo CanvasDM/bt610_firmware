@@ -36,14 +36,13 @@ LOG_MODULE_REGISTER(BleTask);
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
 #define THIS_FILE "BleTask"
-#if !BLE_TASK_USES_MAIN_THREAD
-  #ifndef BLE_TASK_PRIORITY
-    #define BLE_TASK_PRIORITY K_PRIO_PREEMPT(1)
-  #endif
 
-  #ifndef BLE_TASK_STACK_DEPTH
-    #define BLE_TASK_STACK_DEPTH 4096
-  #endif
+#ifndef BLE_TASK_PRIORITY
+  #define BLE_TASK_PRIORITY K_PRIO_PREEMPT(1)
+#endif
+
+#ifndef BLE_TASK_STACK_DEPTH
+  #define BLE_TASK_STACK_DEPTH 4096
 #endif
 
 #ifndef BLE_TASK_QUEUE_DEPTH
@@ -62,7 +61,6 @@ LOG_MODULE_REGISTER(BleTask);
 #define UINT32_BYTE_1(v) (uint8_t) (((v) & 0x0000FF00) >> 8)
 #define UINT32_BYTE_2(v) (uint8_t) (((v) & 0x00FF0000) >> 16)
 #define UINT32_BYTE_3(v) (uint8_t) (((v) & 0xFF000000) >> 24)
-
 
 typedef struct BleTaskTag
 {
@@ -85,7 +83,7 @@ K_MSGQ_DEFINE(bleTaskQueue,
               BLE_TASK_QUEUE_DEPTH, 
               FWK_QUEUE_ALIGNMENT);
 
-//Advertisment Protocol Parameters
+/*Advertisment Protocol Parameters*/
 struct standAdvData
 {
 
@@ -123,13 +121,6 @@ static struct bt_data standardAdvert[] =
 
 };
 
-static struct bt_le_scan_param scan_param = 
-{
-  .type       = BT_HCI_LE_SCAN_PASSIVE,
-  .options    = BT_LE_SCAN_OPT_NONE,
-  .interval   = 0x0010,
-  .window     = 0x0010,
-};
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -157,9 +148,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
   {
   case FMC_INVALID:            return Framework_UnknownMsgHandler;
   case FMC_CODE_BLE_START:     return BleStartMsgHandler;
-  case FMC_CODE_SENSOR:        return BleReadyMsgHandler;
-  //case FMC_PERIODIC:           return BleTaskPeriodicMsgHandler;
- // case FMC_WATCHDOG_CHALLENGE: return Watchdog_ChallengeHandler;
+  case FMC_CODE_BLE_TRANSMIT:  return BleReadyMsgHandler;
   default:                     return NULL;
   }
 }
@@ -194,10 +183,6 @@ void BleTask_Initialize(void)
 
   k_thread_name_set(bleTaskObject.msgTask.pTid, THIS_FILE);
 
-//  bleTaskObject.pBracket = 		
-//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
-	//bleTaskObject.conn = NULL;
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -216,21 +201,21 @@ static void ConfigureAndStartBle(void)
 {  
     uint32_t err_code;
   
-  // This must occur before the initialization items below.
+  /* This must occur before the initialization items below.*/
   err_code = bt_enable(BleReadyCB);
   if (err_code) 
   {
-      printk("Bluetooth init failed (err %d)\n", err_code);
       LOG_ERR("Bluetooth init failed (err %d)\n", err_code);
       //FRAMEWORK_ASSERT(err_code == NRF_SUCCESS); 
       return;
   }
   AdvertisingInit();
 }
+
 static void ParamsInit(void)
 {
   uint32_t err;
-  //Device Name
+  /*Device Name*/
   char name[MAX_SENSOR_NAME_LENGTH] = CONFIG_BT_DEVICE_NAME;
 //  AttributeTask_GetString(name, ATTR_INDEX_sensorName, MAX_SENSOR_NAME_LENGTH);
   err = bt_set_name((const char *)name);
@@ -240,7 +225,7 @@ static void ParamsInit(void)
   }
   //FRAMEWORK_ASSERT(err == NRF_SUCCESS);
 
-  //Security
+  /*Security*/
   err = bt_conn_set_security(bleTaskObject.default_conn, BT_SECURITY_L3);
   if (err) 
   {
@@ -250,30 +235,29 @@ static void ParamsInit(void)
 }
 static void AdvertisingInit(void)
 {
-  mfgData->companyId[0] = UINT16_BYTE_0(LAIRD_COMPANY_ID1);
-  mfgData->companyId[1] = UINT16_BYTE_1(LAIRD_COMPANY_ID1);
-
+  mfgData->companyId[0] = UINT16_BYTE_0(LAIRD_CONNECTIVITY);
+  mfgData->companyId[1] = UINT16_BYTE_1(LAIRD_CONNECTIVITY);
 }
 static void AdvertisementEncoder(void)
 {
   size_t index = 0; 
 
-  // protocol id
+  /* protocol id */
   mfgData->protocolId[0] = UINT16_BYTE_0(LAIRD_ADV_PROTOCOL_ID_SENTRIUS);
   mfgData->protocolId[1] = UINT16_BYTE_1(LAIRD_ADV_PROTOCOL_ID_SENTRIUS);
 
-  // network id
-  uint32_t networkId = 0;
-  //AttributeTask_GetUint32(&networkId, ATTR_INDEX_networkId);
-  mfgData->networkId[0] = UINT32_BYTE_0(networkId);
-  mfgData->networkId[1] = UINT32_BYTE_1(networkId);
+  /* network id */
+  uint16_t networkId = 0;
+  //AttributeTask_GetUint16(&networkId, ATTR_INDEX_networkId);
+  mfgData->networkId[0] = UINT16_BYTE_0(networkId);
+  mfgData->networkId[1] = UINT16_BYTE_1(networkId);
 
-  // flags
-  uint32_t flags = Flags_Get();
-  mfgData->flags[0] = UINT32_BYTE_0(flags);
-  mfgData->flags[1] = UINT32_BYTE_1(flags);
+  /* flags */
+  uint16_t flags = Flags_Get();
+  mfgData->flags[0] = UINT16_BYTE_0(flags);
+  mfgData->flags[1] = UINT16_BYTE_1(flags);
 
-  // BD addr
+  /* BD addr */
   mfgData->bdAddress[0] = bleObj.bdAddr.addr[0];
   mfgData->bdAddress[1] = bleObj.bdAddr.addr[1];
   mfgData->bdAddress[2] = bleObj.bdAddr.addr[2];
@@ -281,29 +265,29 @@ static void AdvertisementEncoder(void)
   mfgData->bdAddress[4] = bleObj.bdAddr.addr[4];
   mfgData->bdAddress[5] = bleObj.bdAddr.addr[5];
 
-  // event type
+  /* event type */
   mfgData->recordType =pSensorMsg->event.type;
 
-  // id
+  /* id */
   mfgData->recordNumber[0] = UINT16_BYTE_0(pSensorMsg->id);
   mfgData->recordNumber[1] = UINT16_BYTE_1(pSensorMsg->id);
 
-  // epoch
+  /* epoch */
   mfgData->epoch[0] = UINT32_BYTE_0(pSensorMsg->event.timestamp);
   mfgData->epoch[1] = UINT32_BYTE_1(pSensorMsg->event.timestamp);
   mfgData->epoch[2] = UINT32_BYTE_2(pSensorMsg->event.timestamp);
   mfgData->epoch[3] = UINT32_BYTE_3(pSensorMsg->event.timestamp);
 
-  // data
+  /* data */
   mfgData->data[0] = UINT16_BYTE_0(pSensorMsg->event.data.u16);
   mfgData->data[1] = UINT16_BYTE_1(pSensorMsg->event.data.u16);
   mfgData->data[2] = 0;
   mfgData->data[3] = 0;
 
-  // reset count LSB
-  uint32_t resetCount = 0;
+  /* reset count LSB */
+  uint8_t resetCount = 0;
   //AttributeTask_GetUint32(&resetCount, ATTR_INDEX_resetCount);
-  mfgData->resetCount = UINT32_BYTE_0(resetCount);
+  mfgData->resetCount = resetCount;
 
 }
 static void BleReadyCB(int err)
@@ -314,14 +298,10 @@ static void BleReadyCB(int err)
     ParamsInit();
     
     settings_load();
-    FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_BLE_TASK, FMC_CODE_SENSOR);
+    FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_BLE_TASK, FMC_CODE_BLE_TRANSMIT);
   }
 }
-static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
-		    struct net_buf_simple *buf)
-{
-	//mfg_data[2]++;
-}
+
 /******************************************************************************/
 /* Framework Message Functions                                               */
 /******************************************************************************/
@@ -339,19 +319,14 @@ static DispatchResult_t BleReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 {
     UNUSED_PARAMETER(pMsg);
     UNUSED_PARAMETER(pMsgRxer);
-	uint32_t err;
-    if( bleTaskObject.initialized )
-    {
-        printk("Bluetooth initialized\n");
+    uint32_t err;
 
-        err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, standardAdvert, ARRAY_SIZE(standardAdvert), NULL, 0);
-        if (err) 
-        {
-            printk("Advertising failed to start (err %d)\n", err);
-            LOG_ERR("Advertising failed to start (err %d)\n", err);
-            return 0;
-        }
-        LOG_DBG("Advertising\n");
+    err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, standardAdvert, ARRAY_SIZE(standardAdvert), NULL, 0);
+    if (err) 
+    {
+        LOG_ERR("Advertising failed to start (err %d)\n", err);
     }
+    LOG_DBG("Advertising\n");
+
     return DISPATCH_OK;
 }

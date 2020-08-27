@@ -145,10 +145,6 @@ void AnalogSensorTask_Initialize(void)
                     K_NO_WAIT);
 
   k_thread_name_set(analogSensorTaskObject.msgTask.pTid, THIS_FILE);
-
-//  analogSensorTaskObject.pBracket = 		
-//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	
 }
 /******************************************************************************/

@@ -144,11 +144,6 @@ void ControlTask_Initialize(void)
 
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE);
 
-//  controlTaskObject.pBracket = 		
-//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
-	//controlTaskObject.conn = NULL;
-
 #endif
 }
 
