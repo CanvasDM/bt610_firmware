@@ -17,6 +17,7 @@
 #include <inttypes.h>
 #include "FrameworkIncludes.h"
 #include "Bracket.h"
+#include "settings/settings.h"
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/conn.h>
@@ -68,6 +69,7 @@ typedef struct BleTaskTag
 {
 	FwkMsgTask_t msgTask; 
 	BracketObj_t *pBracket; 
+        bt_addr_le_t bdAddr;
 	bool initialized;
 	struct bt_conn *default_conn;
 
@@ -100,6 +102,22 @@ struct standAdvData
 	uint8_t resetCount;
 
 };
+struct scanAdvData
+{
+	uint8_t companyId[2];
+	uint8_t protocolId[2];
+	uint8_t productId[2];
+	uint8_t FirmwareVersionMajor;
+        uint8_t FirmwareVersionMinor;
+        uint8_t FirmwareVersionPatch;
+        uint8_t FirmwareType;
+        uint8_t ConfigVersion;
+        uint8_t BootLoaderVersionMajor;
+        uint8_t BootLoaderVersionMinor;
+        uint8_t BootLoaderVersionPatch;
+        uint8_t HardwareVersion;	
+
+};
 struct standAdvData mfgData[] =
 {
 	{
@@ -114,11 +132,32 @@ struct standAdvData mfgData[] =
 		.resetCount = 0x00,
 	}
 };
+struct scanAdvData scanMfgData[] =
+{
+	{
+		.companyId =			{0xaa, 0xbb },
+		.protocolId =			{0xcc, 0xdd },
+		.productId =			{0xee, 0xff },
+		.FirmwareVersionMajor =		0xDE,
+		.FirmwareVersionMinor =		0xAD,
+		.FirmwareVersionPatch =		0x00,
+		.FirmwareType =			0xCA,
+		.ConfigVersion =		0xFE,
+		.BootLoaderVersionMajor =	0xBE,
+                .BootLoaderVersionMinor =	0xEF,
+                .BootLoaderVersionPatch =	0x00,
+                .HardwareVersion =		0xFF,
+	}
+};
 
 static struct bt_data standardAdvert[] = 
 {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, mfgData, BLE_ADV_LENGTH_MANUFACTURER_SPECIFIC)
+};
+static struct bt_data scanAdvert[] = 
+{
+	BT_DATA(BT_DATA_MANUFACTURER_DATA, scanMfgData, BLE_ADV_LENGTH_MANUFACTURER_SPECIFIC)
 };
 
 /******************************************************************************/
@@ -237,6 +276,13 @@ static void AdvertisingInit(void)
 {
 	mfgData->companyId[0] = UINT16_BYTE_0(LAIRD_CONNECTIVITY);
 	mfgData->companyId[1] = UINT16_BYTE_1(LAIRD_CONNECTIVITY);
+
+	/* Read Bluetooth address and store it into attributes and save it for use when
+	   building the manufacturer specific data.*/
+	bt_id_get(&bleTaskObject.bdAddr, 1);
+        char addr_str[BT_ADDR_LE_STR_LEN];
+
+	bt_addr_le_to_str(&bleTaskObject.bdAddr, addr_str, sizeof(addr_str));
 }
 static void AdvertisementEncoder(void)
 {
@@ -258,29 +304,29 @@ static void AdvertisementEncoder(void)
 	mfgData->flags[1] = UINT16_BYTE_1(flags);
 
 	/* BD addr */
-	mfgData->bdAddress[0] = bleObj.bdAddr.addr[0];
-	mfgData->bdAddress[1] = bleObj.bdAddr.addr[1];
-	mfgData->bdAddress[2] = bleObj.bdAddr.addr[2];
-	mfgData->bdAddress[3] = bleObj.bdAddr.addr[3];
-	mfgData->bdAddress[4] = bleObj.bdAddr.addr[4];
-	mfgData->bdAddress[5] = bleObj.bdAddr.addr[5];
+	mfgData->bdAddress[0] = bleTaskObject.bdAddr.a.val[0];
+	mfgData->bdAddress[1] = bleTaskObject.bdAddr.a.val[1];
+	mfgData->bdAddress[2] = bleTaskObject.bdAddr.a.val[2];
+	mfgData->bdAddress[3] = bleTaskObject.bdAddr.a.val[3];
+	mfgData->bdAddress[4] = bleTaskObject.bdAddr.a.val[4];
+	mfgData->bdAddress[5] = bleTaskObject.bdAddr.a.val[5];
 
 	/* event type */
-	mfgData->recordType =pSensorMsg->event.type;
+	//mfgData->recordType =pSensorMsg->event.type;
 
 	/* id */
-	mfgData->recordNumber[0] = UINT16_BYTE_0(pSensorMsg->id);
-	mfgData->recordNumber[1] = UINT16_BYTE_1(pSensorMsg->id);
+	mfgData->recordNumber[0] = UINT16_BYTE_0(0);//pSensorMsg->id);
+	mfgData->recordNumber[1] = UINT16_BYTE_1(1);//pSensorMsg->id);
 
 	/* epoch */
-	mfgData->epoch[0] = UINT32_BYTE_0(pSensorMsg->event.timestamp);
-	mfgData->epoch[1] = UINT32_BYTE_1(pSensorMsg->event.timestamp);
-	mfgData->epoch[2] = UINT32_BYTE_2(pSensorMsg->event.timestamp);
-	mfgData->epoch[3] = UINT32_BYTE_3(pSensorMsg->event.timestamp);
+	mfgData->epoch[0] = UINT32_BYTE_0(0x0C);//pSensorMsg->event.timestamp);
+	mfgData->epoch[1] = UINT32_BYTE_1(0x0C);//pSensorMsg->event.timestamp);
+	mfgData->epoch[2] = UINT32_BYTE_2(0x0C);//pSensorMsg->event.timestamp);
+	mfgData->epoch[3] = UINT32_BYTE_3(0x0C);//pSensorMsg->event.timestamp);
 
 	/* data */
-	mfgData->data[0] = UINT16_BYTE_0(pSensorMsg->event.data.u16);
-	mfgData->data[1] = UINT16_BYTE_1(pSensorMsg->event.data.u16);
+	mfgData->data[0] = UINT16_BYTE_0(0x0F);//pSensorMsg->event.data.u16);
+	mfgData->data[1] = UINT16_BYTE_1(0x0F);//pSensorMsg->event.data.u16);
 	mfgData->data[2] = 0;
 	mfgData->data[3] = 0;
 
@@ -321,7 +367,7 @@ static DispatchResult_t BleReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t 
 	UNUSED_PARAMETER(pMsgRxer);
 	uint32_t err;
 
-	err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, standardAdvert, ARRAY_SIZE(standardAdvert), NULL, 0);
+	err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, standardAdvert, ARRAY_SIZE(standardAdvert), scanAdvert, ARRAY_SIZE(scanAdvert));
 	if (err) 
 	{
 		LOG_ERR("Advertising failed to start (err %d)\n", err);

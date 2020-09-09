@@ -228,7 +228,7 @@ void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {	
   LOG_DBG("Button pressed\n");
-  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FMC_CODE_SENSOR);
+  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FMC_CODE_BLE_TRANSMIT);
 }
 
 
