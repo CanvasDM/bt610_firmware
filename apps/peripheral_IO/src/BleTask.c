@@ -272,10 +272,32 @@ static void ParamsInit(void)
 	}
 
 }
+#if 0
+static void UpdateNonEventDataInAdvertisement(void)
+{
+  // Update advertisement values that may be set during a connection.
+  
+  // network id
+  uint32_t networkId = 0;
+  AttributeTask_GetUint32(&networkId, ATTR_INDEX_networkId);
+  bleAdvObj.enc_advdata[BLE_ENC_ADV_NETWORK_ID_OFFSET+0] = UINT32_BYTE_0(networkId);
+  bleAdvObj.enc_advdata[BLE_ENC_ADV_NETWORK_ID_OFFSET+1] = UINT32_BYTE_1(networkId);
+  // flags
+  uint32_t flags = Flags_Get();
+  bleAdvObj.enc_advdata[BLE_ENC_ADV_FLAGS_OFFSET+0] = UINT32_BYTE_0(flags);
+  bleAdvObj.enc_advdata[BLE_ENC_ADV_FLAGS_OFFSET+1] = UINT32_BYTE_1(flags);
+
+  uint32_t useCodedPhy = 0;
+  AttributeTask_GetUint32(&useCodedPhy, ATTR_INDEX_useCodedPhy);
+  UpdateConfigVersionInAdvertisement(useCodedPhy);
+}
+#endif
 static void AdvertisingInit(void)
 {
 	mfgData->companyId[0] = UINT16_BYTE_0(LAIRD_CONNECTIVITY);
 	mfgData->companyId[1] = UINT16_BYTE_1(LAIRD_CONNECTIVITY);
+
+	/*Setup up either the scan response packet or the extended*/
 
 	/* Read Bluetooth address and store it into attributes and save it for use when
 	   building the manufacturer specific data.*/
