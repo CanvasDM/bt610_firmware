@@ -64,7 +64,7 @@ void BSP_Init(void)
 }
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
 {
-	uint16_t gpioReturn;
+	uint16_t gpioReturn =0;
 	switch(pin)
 	{
 		/*Port 0*/
@@ -120,44 +120,44 @@ uint16_t BSP_PinGet(uint8_t pin, uint16_t value)
 /****Used for hardware test****/
 void InitializeDigitalPinsPull(void)
 {
-  //DIN1
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), 
-                          (GPIO_INPUT|GPIO_PULL_UP));
-  gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+	//DIN1
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), 
+			  (GPIO_INPUT|GPIO_PULL_UP));
+	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
 					   GPIO_INT_EDGE_BOTH);
 
-  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
 			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
-  gpio_add_callback(port0, &digitalIn1_cb_data);
+	gpio_add_callback(port0, &digitalIn1_cb_data);
 
-  //DIN2
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), 
-                          (GPIO_INPUT|GPIO_PULL_UP));
-  gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+	//DIN2
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), 
+			  (GPIO_INPUT|GPIO_PULL_UP));
+	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
 					   GPIO_INT_EDGE_BOTH);
 
-  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
 			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
-  gpio_add_callback(port1, &digitalIn2_cb_data);
+	gpio_add_callback(port1, &digitalIn2_cb_data);
 
 }
 void InitializeDigitalPinsNoPull(void)
 {
-  //DIN1
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
-  gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+	//DIN1
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
+	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
 					   GPIO_INT_EDGE_BOTH);
 
-  gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
 			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
 	gpio_add_callback(port0, &digitalIn1_cb_data);
 
-  //DIN2
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
-  gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+	//DIN2
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
+	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
 					   GPIO_INT_EDGE_BOTH);
 
-  gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
 			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
 	gpio_add_callback(port1, &digitalIn2_cb_data);
 
@@ -168,10 +168,10 @@ void InitializeDigitalPinsNoPull(void)
 /******************************************************************************/
 static void ConfigureInputs(void)
 {
-  //Port0
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
-  //Port1
-  gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
+	//Port0
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
+	//Port1
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
 }
 static void ConfigureOutputs(void)
 {
@@ -196,12 +196,12 @@ void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
 	LOG_DBG("Digital pin%d is %u"  "\n",DIN1_MCU_PIN, 
-    gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN))); 
+	gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN))); 
 }
 void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
 	LOG_DBG("Digital pin%d is %u"  "\n",DIN2_MCU_PIN, 
-    gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN)));
-    //BSP_PinGet 
+	gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN)));
+	//BSP_PinGet 
 }
