@@ -241,19 +241,7 @@ static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
   shell_print(shell, "Set To DIN_EN = %d\n", enable);
   BSP_PinSet(DIN1_ENABLE_PIN, enable);
   BSP_PinSet(DIN2_ENABLE_PIN, enable);
-
-  if(enable == 1)
-  {
-    shell_print(shell, "No pullup");
-    InitializeDigitalPinsNoPull();
-  }
-  else
-  {
-    /* set as pull up */
-    shell_print(shell, "pullup on");
-    InitializeDigitalPinsPull();
-  }
-  
+ 
   return(0);
 }
 

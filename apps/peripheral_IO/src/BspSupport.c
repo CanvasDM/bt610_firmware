@@ -183,8 +183,8 @@ static void ConfigureOutputs(void)
 
 	//Port1
 	gpio_pin_configure(port1, GPIO_PIN_MAP(FIVE_VOLT_ENABLE_PIN), GPIO_OUTPUT_LOW);
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_ENABLE_PIN), GPIO_OUTPUT_LOW);
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_ENABLE_PIN), GPIO_OUTPUT_LOW);
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_ENABLE_PIN), GPIO_OUTPUT_HIGH);
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_ENABLE_PIN), GPIO_OUTPUT_HIGH);
 	gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN), GPIO_OUTPUT_LOW);
 
 }
