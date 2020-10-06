@@ -48,8 +48,9 @@ LOG_MODULE_REGISTER(SystemUart);
   #define SYSTEM_UART_TASK_QUEUE_DEPTH 8
 #endif
 
-static const char fifo_data[] = "This is a FIFO test.\r\n";
-#define UART_DATA_SIZE	(sizeof(fifo_data) - 1)
+static char fifo_data[55] = "This is a FIFO test.\r\n";
+
+#define UART_DATA_SIZE	55//(sizeof(fifo_data) - 1)
 
 typedef struct SystemUartTaskTag
 {
@@ -82,6 +83,7 @@ static void SystemUartTaskThread(void *, void *, void *);
 static void SetupUartRead(void);
 static void DisableUartRead(void);
 static void uartHandlerIsr(struct device *dev);
+static void ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -91,6 +93,7 @@ static FwkMsgHandler_t SystemUartTaskMsgDispatcher(FwkMsgCode_t MsgCode)
   switch( MsgCode )
   {
   case FMC_INVALID:            return Framework_UnknownMsgHandler;
+  case FMC_READ_UART_BUFFER:   return ReadRxBufferMsgHandler;
   default:                     return NULL;
   }
 }
@@ -169,12 +172,20 @@ static void DisableUartRead(void)
 	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 	uart_irq_rx_disable(uart_dev);
 }
+static void ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+    UNUSED_PARAMETER(pMsgRxer);
+    UNUSED_PARAMETER(pMsg);
+
+    return DISPATCH_OK;
+}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
 static void uartHandlerIsr(struct device *dev)
 {
 	uint8_t recvData;
+	uint16_t rx = 0;
 	static int tx_data_idx;
 
 	/* Verify uart_irq_update() */
@@ -208,8 +219,37 @@ static void uartHandlerIsr(struct device *dev)
 		}
 	}
 #endif
+
+	/* Read all data off UART, and send to RX worker for unmuxing */
+	while (uart_irq_update(dev) &&
+	       uart_irq_rx_ready(dev)) 
+	{
+		rx = uart_fifo_read(dev, fifo_data,
+				    UART_DATA_SIZE);
+		LOG_DBG("%c", fifo_data);			
+
+	}
+	//	wrote = ring_buf_put(real_uart->rx_ringbuf,
+	//			     real_uart->rx_buf, rx);
+	//	if (wrote < rx) {
+	//		LOG_ERR("Ring buffer full, drop %d bytes",
+	//			rx - wrote);
+	//	}
+		//k_work_submit_to_queue(&uart_mux_workq, &real_uart->rx_work);
+	
+	UartMsg_t *pUartMsg = BufferPool_Take(sizeof(UartMsg_t));
+    if( pUartMsg != NULL )
+    {
+		pUartMsg->size = UART_DATA_SIZE;//Bracket_Copy(pObj->pBracketObj, pUartMsg->buffer);
+		pUartMsg->header.msgCode = FMC_READ_UART_BUFFER;
+		pUartMsg->header.txId = FWK_ID_SYSTEM_UART_TASK;
+		pUartMsg->header.rxId = FWK_ID_SYSTEM_UART_TASK;
+		FRAMEWORK_MSG_UNICAST(pUartMsg);
+	}
+#ifdef RXTEST
 	/* Verify uart_irq_rx_ready() */
-	if (uart_irq_rx_ready(dev)) {
+	if (uart_irq_rx_ready(dev)) 
+	{
 		/* Verify uart_fifo_read() */
 		uart_fifo_read(dev, &recvData, 1);
 		LOG_DBG("%c", recvData);
@@ -219,4 +259,5 @@ static void uartHandlerIsr(struct device *dev)
 			DisableUartRead();
 		}
 	}
+#endif
 }
