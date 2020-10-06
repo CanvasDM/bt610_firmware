@@ -12,6 +12,7 @@
 #include <zephyr.h>
 #include <device.h>
 #include <drivers/gpio.h>
+#include <drivers/uart.h>
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
@@ -33,9 +34,18 @@ LOG_MODULE_REGISTER(BspSupport);
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static struct device *port0;
-static  struct device *port1;
+static struct device *port1;
 static struct gpio_callback digitalIn1_cb_data;
 static struct gpio_callback digitalIn2_cb_data;
+
+struct uart_config uart_cfg_check;
+const struct uart_config uart_cfg = {
+		.baudrate = 115200,
+		.parity = UART_CFG_PARITY_NONE,
+		.stop_bits = UART_CFG_STOP_BITS_1,
+		.data_bits = UART_CFG_DATA_BITS_8,
+		.flow_ctrl = UART_CFG_FLOW_CTRL_NONE
+	};
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -43,6 +53,7 @@ static void DigitalIn1HandlerIsr(struct device *dev, struct gpio_callback *cb, u
 static void DigitalIn2HandlerIsr(struct device *dev, struct gpio_callback *cb, uint32_t pins);
 static void ConfigureInputs(void);
 static void ConfigureOutputs(void);
+static void ConfigureUART(void);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -61,6 +72,7 @@ void BSP_Init(void)
 	}
 	ConfigureInputs();
 	ConfigureOutputs();
+        ConfigureUART();
 }
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
 {
@@ -186,6 +198,24 @@ static void ConfigureOutputs(void)
 	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_ENABLE_PIN), GPIO_OUTPUT_HIGH);
 	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_ENABLE_PIN), GPIO_OUTPUT_HIGH);
 	gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN), GPIO_OUTPUT_LOW);
+
+}
+static void ConfigureUART(void)
+{
+	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
+
+	if (!uart_dev) 
+	{
+		LOG_DBG("Cannot get UART device\n");
+	}
+
+	/* Verify configure() - set device configuration using data in cfg */
+	int ret = uart_configure(uart_dev, &uart_cfg);
+
+	if (ret == -ENOTSUP) 
+	{
+		LOG_DBG("UART Skip\n");
+	}
 
 }
 /******************************************************************************/

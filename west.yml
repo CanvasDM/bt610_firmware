@@ -10,7 +10,7 @@ manifest:
   projects:
     - name: framework_zephyr
       path: modules/framework
-      revision: master
+      revision: b9a4603436a34d61120b68a10a6cbc74d1e6a3fd
       remote: LairdProdEng
     - name: jsmn
       path: modules/jsmn

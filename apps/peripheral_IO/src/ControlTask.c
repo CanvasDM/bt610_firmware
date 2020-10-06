@@ -187,6 +187,7 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 #endif
 
 //  SensorTask_Initialize();
+  SystemUartTask_Initialize();
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
   UserCommTask_Initialize();
   AnalogSensorTask_Initialize();

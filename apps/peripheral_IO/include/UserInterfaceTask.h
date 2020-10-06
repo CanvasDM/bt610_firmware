@@ -46,4 +46,4 @@ void UserInterfaceTask_Initialize(void);
 }
 #endif
 
-#endif /* __TEMPLATE_H__ */
+#endif /* __USER_INTERFACE_TASK_H__ */

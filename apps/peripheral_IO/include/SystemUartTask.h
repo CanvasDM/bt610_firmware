@@ -1,13 +1,13 @@
 /**
- * @file BspSupport.h
+ * @file SystemUartTask.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __BSP_SUPPORT_H__
-#define __BSP_SUPPORT_H__
+#ifndef __SYSTEM_UART_TASK_H__
+#define __SYSTEM_UART_TASK_H__
 
 /* (Remove Empty Sections) */
 /******************************************************************************/
@@ -23,25 +23,6 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-#define UART_DEVICE_NAME DT_LABEL(DT_NODELABEL(uart0))
-
-//***Inputs*****
-#define DIN1_MCU_PIN               (9) //SIO_09 Port0
-#define DIN2_MCU_PIN               (43)//SIO_43 Port1
-
-//***Output*****
-//PORT0
-#define THERM_ENABLE_PIN           (10)//SIO_10 Port0
-#define DO2_PIN                    (11)//SIO_11 Port0
-#define DO1_PIN                    (12)//SIO_12 Port0
-#define BATT_OUT_ENABLE_PIN        (30)//SIO_30 Port0
-//PORT1
-#define DIN1_ENABLE_PIN            (37)//SIO_37 Port1
-#define FIVE_VOLT_ENABLE_PIN       (44)//SIO_44 Port1
-#define DIN2_ENABLE_PIN            (42)//SIO_42 Port1
-#define ANALOG_ENABLE_PIN          (45)//SIO_45 Port1
-
-#define GPIO_PIN_MAP(p)           ((p>32)?(p-32):p)
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -52,24 +33,17 @@ extern "C" {
 /******************************************************************************/
 /**
  * @brief
- *
+ *  The setup of the thread parameters
  * @param
  * @param
  *
  * @retval
  */
-void BSP_Init(void);
-uint16_t BSP_PinSet(uint8_t pin, uint16_t value);
-uint16_t BSP_PinToggle(uint8_t pin);
-uint16_t BSP_PinGet(uint8_t pin, uint16_t value);
+void SystemUartTask_Initialize(void);
 
-
-/*** Used in hardware test ****/
-void InitializeDigitalPinsNoPull(void);
-void InitializeDigitalPinsPull(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __BSP_SUPPORT_H__ */
+#endif /* __SYSTEM_UART_TASK_H__ */

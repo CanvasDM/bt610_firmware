@@ -69,7 +69,7 @@ typedef struct BleTaskTag
 {
 	FwkMsgTask_t msgTask; 
 	BracketObj_t *pBracket; 
-        bt_addr_le_t bdAddr;
+    bt_addr_le_t bdAddr;
 	bool initialized;
 	struct bt_conn *default_conn;
 
@@ -108,14 +108,14 @@ struct scanAdvData
 	uint8_t protocolId[2];
 	uint8_t productId[2];
 	uint8_t FirmwareVersionMajor;
-        uint8_t FirmwareVersionMinor;
-        uint8_t FirmwareVersionPatch;
-        uint8_t FirmwareType;
-        uint8_t ConfigVersion;
-        uint8_t BootLoaderVersionMajor;
-        uint8_t BootLoaderVersionMinor;
-        uint8_t BootLoaderVersionPatch;
-        uint8_t HardwareVersion;	
+	uint8_t FirmwareVersionMinor;
+	uint8_t FirmwareVersionPatch;
+	uint8_t FirmwareType;
+	uint8_t ConfigVersion;
+	uint8_t BootLoaderVersionMajor;
+	uint8_t BootLoaderVersionMinor;
+	uint8_t BootLoaderVersionPatch;
+	uint8_t HardwareVersion;	
 
 };
 struct standAdvData mfgData[] =
@@ -144,9 +144,9 @@ struct scanAdvData scanMfgData[] =
 		.FirmwareType =			0xCA,
 		.ConfigVersion =		0xFE,
 		.BootLoaderVersionMajor =	0xBE,
-                .BootLoaderVersionMinor =	0xEF,
-                .BootLoaderVersionPatch =	0x00,
-                .HardwareVersion =		0xFF,
+		.BootLoaderVersionMinor =	0xEF,
+		.BootLoaderVersionPatch =	0x00,
+		.HardwareVersion =		0xFF,
 	}
 };
 
@@ -308,7 +308,7 @@ static void AdvertisingInit(void)
 }
 static void AdvertisementEncoder(void)
 {
-	size_t index = 0; 
+	//size_t index = 0; 
 
 	/* protocol id */
 	mfgData->protocolId[0] = UINT16_BYTE_0(LAIRD_ADV_PROTOCOL_ID_SENTRIUS);

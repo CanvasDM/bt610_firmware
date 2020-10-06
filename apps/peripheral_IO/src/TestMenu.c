@@ -41,7 +41,7 @@ static  AnalogInput_t AnalogType;
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-
+#if CONFIG_SHELL
 static int ennableAnalogPin(const struct shell *shell, size_t argc, char **argv)
 {
   ARG_UNUSED(argc);
@@ -262,5 +262,8 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
   SHELL_CMD(enableBatt, NULL, "Enable Battery Out", batteryEnable),
   SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DOtoggle),
   SHELL_CMD(enableDin, NULL, "Set DIN1_EN and DIN2_EN value", digitalEnable),
+  
   SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
+
+#endif /* CONFIG_SHELL */

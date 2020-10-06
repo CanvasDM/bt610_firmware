@@ -8,6 +8,9 @@ zephyr_include_directories(${ZEPHYR_BASE}/include/power)
 zephyr_include_directories(${ZEPHYR_BASE}/include/drivers)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+#target_include_directories(TINYCBOR INTERFACE include/tinycbor)
+#target_include_directories(TINYCBOR INTERFACE include)
+
 
 FILE(GLOB fwk_sources ./../../modules/framework/source/*.c)
 target_sources(app PRIVATE ${fwk_sources})
