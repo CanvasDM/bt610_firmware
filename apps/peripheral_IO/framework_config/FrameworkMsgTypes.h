@@ -21,7 +21,7 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-#define UART_BUFFER_SIZE (2*1024)
+
 
 typedef enum
 {
@@ -60,14 +60,10 @@ typedef struct
   
 } AnalogPinMsg_t;
 
-
 typedef struct
 {
   FwkMsgHeader_t header;
-  size_t size;
-  char buffer[UART_BUFFER_SIZE];
-  bool wasValid;
-  
+  size_t size;  
 } UartMsg_t;
 
 #ifdef __cplusplus

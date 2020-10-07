@@ -48,17 +48,28 @@ LOG_MODULE_REGISTER(SystemUart);
   #define SYSTEM_UART_TASK_QUEUE_DEPTH 8
 #endif
 
+#define CBOR_START_BYTE 0xA4
+#define CBOR_END_BYTE 0x30
+
 static char fifo_data[55] = "This is a FIFO test.\r\n";
 
 #define UART_DATA_SIZE	55//(sizeof(fifo_data) - 1)
 
+#define UART_BUFFER_SIZE (2*1024)
+typedef struct
+{
+  size_t size;
+  char buffer[UART_BUFFER_SIZE];
+  bool wasValid;
+  
+} UartMessage_t;
 typedef struct SystemUartTaskTag
 {
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
   bool data_received;
   bool data_transmitted;
-  uint16_t char_sent;
+  UartMessage_t uartData;
 
 } SystemUartTaskObj_t;
 /******************************************************************************/
@@ -128,7 +139,7 @@ void SystemUartTask_Initialize(void)
 
   k_thread_name_set(systemUartTaskObject.msgTask.pTid, THIS_FILE);
 
-  systemUartTaskObject.char_sent = 0;
+  systemUartTaskObject.uartData.size = 0;
 
 }
 /******************************************************************************/
@@ -184,8 +195,8 @@ static void ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 /******************************************************************************/
 static void uartHandlerIsr(struct device *dev)
 {
-	uint8_t recvData;
-	uint16_t rx = 0;
+	uint8_t recvData = 0;
+	static bool cborMessage = false;
 	static int tx_data_idx;
 
 	/* Verify uart_irq_update() */
@@ -219,16 +230,46 @@ static void uartHandlerIsr(struct device *dev)
 		}
 	}
 #endif
-
-	/* Read all data off UART, and send to RX worker for unmuxing */
-	while (uart_irq_update(dev) &&
-	       uart_irq_rx_ready(dev)) 
+	uint16_t length = 0;
+	if (uart_irq_rx_ready(dev)) 
 	{
-		rx = uart_fifo_read(dev, fifo_data,
-				    UART_DATA_SIZE);
-		LOG_DBG("%c", fifo_data);			
+		length = uart_fifo_read(dev, &recvData, 1);
+		LOG_DBG("%c", recvData);
+		if( ((systemUartTaskObject.uartData.size == 0) &&
+			(recvData == CBOR_START_BYTE)) ||
+			(cborMessage == true) )
+		{
+			systemUartTaskObject.uartData.buffer[systemUartTaskObject.uartData.size] = recvData;
+			systemUartTaskObject.uartData.size = systemUartTaskObject.uartData.size + 1;
+			cborMessage = true; 
+		}
+		else
+		{
+			/* Not vaild CBOR message*/
+		}
+		if( (cborMessage == true) && (recvData == CBOR_END_BYTE))
+		{
+			cborMessage = false;
+			UartMsg_t *pUartMsg = BufferPool_Take(sizeof(UartMsg_t));
+			if( pUartMsg != NULL )
+			{
+				pUartMsg->size = systemUartTaskObject.uartData.size;//Bracket_Copy(pObj->pBracketObj, pUartMsg->buffer);
+				pUartMsg->header.msgCode = FMC_READ_UART_BUFFER;
+				pUartMsg->header.txId = FWK_ID_SYSTEM_UART_TASK;
+				pUartMsg->header.rxId = FWK_ID_SYSTEM_UART_TASK;
+				FRAMEWORK_MSG_UNICAST(pUartMsg);
+			}
+		}
 
-	}
+			
+			
+		
+	}		
+
+	
+	
+	/* Read all data off UART, and send to RX worker for unmuxing */
+
 	//	wrote = ring_buf_put(real_uart->rx_ringbuf,
 	//			     real_uart->rx_buf, rx);
 	//	if (wrote < rx) {
@@ -237,15 +278,7 @@ static void uartHandlerIsr(struct device *dev)
 	//	}
 		//k_work_submit_to_queue(&uart_mux_workq, &real_uart->rx_work);
 	
-	UartMsg_t *pUartMsg = BufferPool_Take(sizeof(UartMsg_t));
-    if( pUartMsg != NULL )
-    {
-		pUartMsg->size = UART_DATA_SIZE;//Bracket_Copy(pObj->pBracketObj, pUartMsg->buffer);
-		pUartMsg->header.msgCode = FMC_READ_UART_BUFFER;
-		pUartMsg->header.txId = FWK_ID_SYSTEM_UART_TASK;
-		pUartMsg->header.rxId = FWK_ID_SYSTEM_UART_TASK;
-		FRAMEWORK_MSG_UNICAST(pUartMsg);
-	}
+
 #ifdef RXTEST
 	/* Verify uart_irq_rx_ready() */
 	if (uart_irq_rx_ready(dev)) 
