@@ -13,6 +13,7 @@
 #include "FrameworkIncludes.h"
 #include "Bracket.h"
 //#include "SensorTask.h"
+#include "SystemUartTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
 #include "AnalogSensorTask.h"

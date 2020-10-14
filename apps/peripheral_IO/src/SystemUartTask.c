@@ -19,8 +19,9 @@
 #include <inttypes.h>
 #include "FrameworkIncludes.h"
 #include "Bracket.h"
-#include <tinycbor/cbor_mbuf_writer.h>
-#include <tinycbor/cbor_mbuf_reader.h>
+#include "cbor.h"
+//#include <tinycbor/cbor_mbuf_writer.h>
+//#include <tinycbor/cbor_mbuf_reader.h>
 
 #include "SystemUartTask.h"
 #include "BspSupport.h"
@@ -92,9 +93,11 @@ K_MSGQ_DEFINE(systemUartTaskQueue,
 /******************************************************************************/
 static void SystemUartTaskThread(void *, void *, void *);
 static void SetupUartRead(void);
+static void cborTestFun(void);
 static void DisableUartRead(void);
 static void uartHandlerIsr(struct device *dev);
-static void ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static CborError cbor_stream(void *token, const char *fmt, ...);
+static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -183,11 +186,43 @@ static void DisableUartRead(void)
 	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 	uart_irq_rx_disable(uart_dev);
 }
-static void ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+static CborError cbor_stream(void *token, const char *fmt, ...)
+{
+	va_list ap;
+
+	(void)token;
+	va_start(ap, fmt);
+	vprintk(fmt, ap);
+	va_end(ap);
+
+	return CborNoError;
+}
+static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
     UNUSED_PARAMETER(pMsgRxer);
     UNUSED_PARAMETER(pMsg);
 
+	CborParser parser; 
+	CborValue value;
+
+	cbor_parser_init(systemUartTaskObject.uartData.buffer, 
+		systemUartTaskObject.uartData.size, 0, &parser, &value);
+
+	cbor_value_to_pretty_stream(cbor_stream,NULL,&value,
+		CborPrettyDefaultFlags);
+
+	/*
+	   
+    int result;
+    cbor_parser_init(systemUartTaskObject.uartData.buffer, 
+	systemUartTaskObject.uartData.size, 0, &parser, &value);
+    cbor_value_get_int(&value, &result);
+	LOG_DBG("Decode CBOR = %d\n", result);
+	*/
+
+
+
+	systemUartTaskObject.uartData.size = 0;
     return DISPATCH_OK;
 }
 /******************************************************************************/
@@ -234,7 +269,7 @@ static void uartHandlerIsr(struct device *dev)
 	if (uart_irq_rx_ready(dev)) 
 	{
 		length = uart_fifo_read(dev, &recvData, 1);
-		LOG_DBG("%c", recvData);
+		//LOG_DBG("%c", recvData);
 		if( ((systemUartTaskObject.uartData.size == 0) &&
 			(recvData == CBOR_START_BYTE)) ||
 			(cborMessage == true) )
@@ -259,38 +294,6 @@ static void uartHandlerIsr(struct device *dev)
 				pUartMsg->header.rxId = FWK_ID_SYSTEM_UART_TASK;
 				FRAMEWORK_MSG_UNICAST(pUartMsg);
 			}
-		}
-
-			
-			
-		
+		}		
 	}		
-
-	
-	
-	/* Read all data off UART, and send to RX worker for unmuxing */
-
-	//	wrote = ring_buf_put(real_uart->rx_ringbuf,
-	//			     real_uart->rx_buf, rx);
-	//	if (wrote < rx) {
-	//		LOG_ERR("Ring buffer full, drop %d bytes",
-	//			rx - wrote);
-	//	}
-		//k_work_submit_to_queue(&uart_mux_workq, &real_uart->rx_work);
-	
-
-#ifdef RXTEST
-	/* Verify uart_irq_rx_ready() */
-	if (uart_irq_rx_ready(dev)) 
-	{
-		/* Verify uart_fifo_read() */
-		uart_fifo_read(dev, &recvData, 1);
-		LOG_DBG("%c", recvData);
-
-		if ((recvData == '\n') || (recvData == '\r')) {
-			systemUartTaskObject.data_received = true;
-			DisableUartRead();
-		}
-	}
-#endif
 }

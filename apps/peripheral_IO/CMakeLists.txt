@@ -11,6 +11,13 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 #target_include_directories(TINYCBOR INTERFACE include/tinycbor)
 #target_include_directories(TINYCBOR INTERFACE include)
 
+#FILE(GLOB cbor_sources ./../../modules/lib/tinycbor/src/*.c)
+#target_sources(app PRIVATE ${cbor_sources})
+#include_directories(${CMAKE_SOURCE_DIR}/../../modules/lib/tinycbor/include/tinycbor)
+
+FILE(GLOB cbor_sources ./../../modules/lib/tinycbor-master/src/*.c)
+target_sources(app PRIVATE ${cbor_sources})
+include_directories(${CMAKE_SOURCE_DIR}/../../modules/lib/tinycbor-master/src)
 
 FILE(GLOB fwk_sources ./../../modules/framework/source/*.c)
 target_sources(app PRIVATE ${fwk_sources})
