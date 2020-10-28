@@ -20,12 +20,17 @@
 #include "FrameworkIncludes.h"
 #include "Bracket.h"
 #include "cbor.h"
-//#include <tinycbor/cbor_mbuf_writer.h>
-//#include <tinycbor/cbor_mbuf_reader.h>
 
+//#include "JsonBuilder.h"
 #include "SystemUartTask.h"
 #include "BspSupport.h"
 #include <drivers/spi.h>
+
+#include <sys/stat.h>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
@@ -52,15 +57,17 @@ LOG_MODULE_REGISTER(SystemUart);
 #define CBOR_START_BYTE 0xA4
 #define CBOR_END_BYTE 0x30
 
-static char fifo_data[55] = "This is a FIFO test.\r\n";
+static char fifo_data[] = "A46269641825666D6574686F646D47657453656E736F724E616D6566706172616D7380676A736F6E72706363322E309B4B";
+//"This is a FIFO test.\r\n";
 
-#define UART_DATA_SIZE	55//(sizeof(fifo_data) - 1)
+#define UART_DATA_SIZE	(sizeof(fifo_data) - 1)
 
-#define UART_BUFFER_SIZE (2*1024)
+#define UART_BUFFER_SIZE (128)
 typedef struct
 {
   size_t size;
-  char buffer[UART_BUFFER_SIZE];
+  char Rxbuffer[UART_BUFFER_SIZE];
+  char Txbuffer[UART_BUFFER_SIZE];
   bool wasValid;
   
 } UartMessage_t;
@@ -93,11 +100,9 @@ K_MSGQ_DEFINE(systemUartTaskQueue,
 /******************************************************************************/
 static void SystemUartTaskThread(void *, void *, void *);
 static void SetupUartRead(void);
-static void cborTestFun(void);
 static void DisableUartRead(void);
 static void uartHandlerIsr(struct device *dev);
-static CborError cbor_stream(void *token, const char *fmt, ...);
-static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t TxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -107,7 +112,7 @@ static FwkMsgHandler_t SystemUartTaskMsgDispatcher(FwkMsgCode_t MsgCode)
   switch( MsgCode )
   {
   case FMC_INVALID:            return Framework_UnknownMsgHandler;
-  case FMC_READ_UART_BUFFER:   return ReadRxBufferMsgHandler;
+  case FMC_TRANSMIT_BUFFER:    return TxBufferMsgHandler;
   default:                     return NULL;
   }
 }
@@ -174,9 +179,6 @@ static void SetupUartRead(void)
 
 	LOG_INF("Please send characters to serial console\n");
 
-	//systemUartTaskObject.data_received = false;
-	///while (systemUartTaskObject.data_received == false) {
-	//}
 
 	/* Verify uart_irq_rx_disable() */
 	//uart_irq_rx_disable(uart_dev);
@@ -186,45 +188,20 @@ static void DisableUartRead(void)
 	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 	uart_irq_rx_disable(uart_dev);
 }
-static CborError cbor_stream(void *token, const char *fmt, ...)
+static DispatchResult_t TxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
-	va_list ap;
+	UartMsg_t *pTxMsg = (UartMsg_t *)pMsg;
+	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 
-	(void)token;
-	va_start(ap, fmt);
-	vprintk(fmt, ap);
-	va_end(ap);
-
-	return CborNoError;
+	memset(systemUartTaskObject.uartData.Txbuffer, 0, UART_BUFFER_SIZE);
+	/* Verify uart_irq_callback_set() */
+	uart_irq_callback_set(uart_dev, uartHandlerIsr);
+	memcpy(systemUartTaskObject.uartData.Txbuffer,pTxMsg->buffer, pTxMsg->size);
+	/* Enable Tx/Rx interrupt before using fifo */
+	/* Verify uart_irq_tx_enable() */
+	uart_irq_tx_enable(uart_dev);
 }
-static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-    UNUSED_PARAMETER(pMsgRxer);
-    UNUSED_PARAMETER(pMsg);
 
-	CborParser parser; 
-	CborValue value;
-
-	cbor_parser_init(systemUartTaskObject.uartData.buffer, 
-		systemUartTaskObject.uartData.size, 0, &parser, &value);
-
-	cbor_value_to_pretty_stream(cbor_stream,NULL,&value,
-		CborPrettyDefaultFlags);
-
-	/*
-	   
-    int result;
-    cbor_parser_init(systemUartTaskObject.uartData.buffer, 
-	systemUartTaskObject.uartData.size, 0, &parser, &value);
-    cbor_value_get_int(&value, &result);
-	LOG_DBG("Decode CBOR = %d\n", result);
-	*/
-
-
-
-	systemUartTaskObject.uartData.size = 0;
-    return DISPATCH_OK;
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -245,16 +222,16 @@ static void uartHandlerIsr(struct device *dev)
 	 * still return true when ISR is called for another UART interrupt,
 	 * hence additional check for i < UART_DATA_SIZE.
 	 */
-#ifdef TXTEST
+
 	if (uart_irq_tx_ready(dev) && tx_data_idx < UART_DATA_SIZE) {
 		/* We arrive here by "tx ready" interrupt, so should always
 		 * be able to put at least one byte into a FIFO. If not,
 		 * well, we'll fail test.
 		 */
 		if (uart_fifo_fill(dev,
-				   (uint8_t *)&fifo_data[tx_data_idx++], 1) > 0) {
+				   (uint8_t *)systemUartTaskObject.uartData.Txbuffer[tx_data_idx++], 1) > 0) 
+		{
 			systemUartTaskObject.data_transmitted = true;
-			systemUartTaskObject.char_sent++;
 		}
 
 		if (tx_data_idx == UART_DATA_SIZE) {
@@ -264,17 +241,16 @@ static void uartHandlerIsr(struct device *dev)
 			uart_irq_tx_disable(dev);
 		}
 	}
-#endif
-	uint16_t length = 0;
+
 	if (uart_irq_rx_ready(dev)) 
 	{
-		length = uart_fifo_read(dev, &recvData, 1);
+		uart_fifo_read(dev, &recvData, 1);
 		//LOG_DBG("%c", recvData);
 		if( ((systemUartTaskObject.uartData.size == 0) &&
 			(recvData == CBOR_START_BYTE)) ||
 			(cborMessage == true) )
 		{
-			systemUartTaskObject.uartData.buffer[systemUartTaskObject.uartData.size] = recvData;
+			systemUartTaskObject.uartData.Rxbuffer[systemUartTaskObject.uartData.size] = recvData;
 			systemUartTaskObject.uartData.size = systemUartTaskObject.uartData.size + 1;
 			cborMessage = true; 
 		}
@@ -289,11 +265,13 @@ static void uartHandlerIsr(struct device *dev)
 			if( pUartMsg != NULL )
 			{
 				pUartMsg->size = systemUartTaskObject.uartData.size;//Bracket_Copy(pObj->pBracketObj, pUartMsg->buffer);
-				pUartMsg->header.msgCode = FMC_READ_UART_BUFFER;
+				pUartMsg->header.msgCode = FMC_READ_BUFFER;
 				pUartMsg->header.txId = FWK_ID_SYSTEM_UART_TASK;
-				pUartMsg->header.rxId = FWK_ID_SYSTEM_UART_TASK;
+				pUartMsg->header.rxId = FWK_ID_PROTOCOL_TASK;
+				memcpy(pUartMsg->buffer,systemUartTaskObject.uartData.Rxbuffer,systemUartTaskObject.uartData.size);
 				FRAMEWORK_MSG_UNICAST(pUartMsg);
 			}
+			systemUartTaskObject.uartData.size = 0;
 		}		
 	}		
 }

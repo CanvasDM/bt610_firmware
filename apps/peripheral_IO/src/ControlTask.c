@@ -14,6 +14,7 @@
 #include "Bracket.h"
 //#include "SensorTask.h"
 #include "SystemUartTask.h"
+#include "ProtocolTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
 #include "AnalogSensorTask.h"
@@ -192,6 +193,8 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
   UserCommTask_Initialize();
   AnalogSensorTask_Initialize();
+  ProtocolTask_Initialize();
+  
   
 #if 0
   FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL, 
