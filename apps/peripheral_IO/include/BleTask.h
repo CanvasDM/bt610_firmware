@@ -40,6 +40,7 @@ extern "C" {
  * @retval
  */
 void BleTask_Initialize(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -28,6 +28,7 @@ extern "C" {
 //***Inputs*****
 #define DIN1_MCU_PIN               (9) //SIO_09 Port0
 #define DIN2_MCU_PIN               (43)//SIO_43 Port1
+#define UART_RXD_PIN               (6)//SIO_06 Port0
 
 //***Output*****
 //PORT0
@@ -62,7 +63,8 @@ void BSP_Init(void);
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value);
 uint16_t BSP_PinToggle(uint8_t pin);
 uint16_t BSP_PinGet(uint8_t pin, uint16_t value);
-
+void BSP_ConfigureUART(void);
+bool BSP_TestPinUartChecker(void);
 
 /*** Used in hardware test ****/
 void InitializeDigitalPinsNoPull(void);

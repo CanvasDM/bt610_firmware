@@ -119,35 +119,38 @@ static FwkMsgHandler_t SystemUartTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
-void SystemUartTask_Initialize(void)
-
+void SystemUartTask_Initialize(bool Enable)
 {
-  memset(&systemUartTaskObject, 0, sizeof(SystemUartTaskObj_t));
+	memset(&systemUartTaskObject, 0, sizeof(SystemUartTaskObj_t));
+	if( !Enable )
+	{
+		return;
+	}
 
-  systemUartTaskObject.msgTask.rxer.id               = FWK_ID_SYSTEM_UART_TASK;
-  systemUartTaskObject.msgTask.rxer.rxBlockTicks     = K_FOREVER;
-  systemUartTaskObject.msgTask.rxer.pMsgDispatcher   = SystemUartTaskMsgDispatcher;
-  systemUartTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
-  systemUartTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
-  systemUartTaskObject.msgTask.rxer.pQueue           = &systemUartTaskQueue;
-  
-  Framework_RegisterTask(&systemUartTaskObject.msgTask);
-  
-  systemUartTaskObject.msgTask.pTid = 
-    k_thread_create(&systemUartTaskObject.msgTask.threadData, 
-                    systemUartTaskStack,
-                    K_THREAD_STACK_SIZEOF(systemUartTaskStack),
-                    SystemUartTaskThread,
-                    &systemUartTaskObject, 
-                    NULL, 
-                    NULL,
-                    SYSTEM_UART_TASK_PRIORITY, 
-                    0, 
-                    K_NO_WAIT);
+	systemUartTaskObject.msgTask.rxer.id               = FWK_ID_SYSTEM_UART_TASK;
+	systemUartTaskObject.msgTask.rxer.rxBlockTicks     = K_FOREVER;
+	systemUartTaskObject.msgTask.rxer.pMsgDispatcher   = SystemUartTaskMsgDispatcher;
+	systemUartTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
+	systemUartTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
+	systemUartTaskObject.msgTask.rxer.pQueue           = &systemUartTaskQueue;
 
-  k_thread_name_set(systemUartTaskObject.msgTask.pTid, THIS_FILE);
+	Framework_RegisterTask(&systemUartTaskObject.msgTask);
 
-  systemUartTaskObject.uartData.size = 0;
+	systemUartTaskObject.msgTask.pTid = 
+	k_thread_create(&systemUartTaskObject.msgTask.threadData, 
+					systemUartTaskStack,
+					K_THREAD_STACK_SIZEOF(systemUartTaskStack),
+					SystemUartTaskThread,
+					&systemUartTaskObject, 
+					NULL, 
+					NULL,
+					SYSTEM_UART_TASK_PRIORITY, 
+					0, 
+					K_NO_WAIT);
+
+	k_thread_name_set(systemUartTaskObject.msgTask.pTid, THIS_FILE);
+
+	systemUartTaskObject.uartData.size = 0;
 
 }
 /******************************************************************************/
@@ -157,7 +160,9 @@ static void SystemUartTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	SystemUartTaskObj_t *pObj = (SystemUartTaskObj_t*)pArg1;
 
-        SetupUartRead();
+	BSP_ConfigureUART();
+	ProtocolTask_Initialize();
+	SetupUartRead();
 
 
 	while( true )

@@ -72,7 +72,6 @@ void BSP_Init(void)
 	}
 	ConfigureInputs();
 	ConfigureOutputs();
-        ConfigureUART();
 }
 uint16_t BSP_PinSet(uint8_t pin, uint16_t value)
 {
@@ -128,7 +127,39 @@ uint16_t BSP_PinGet(uint8_t pin, uint16_t value)
 {
 
 }
+void BSP_ConfigureUART(void)
+{
+	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 
+	if (!uart_dev) 
+	{
+		LOG_DBG("Cannot get UART device\n");
+	}
+
+	/* Verify configure() - set device configuration using data in cfg */
+	int ret = uart_configure(uart_dev, &uart_cfg);
+
+	if (ret == -ENOTSUP) 
+	{
+		LOG_DBG("UART Skip\n");
+	}
+
+}
+bool BSP_TestPinUartChecker(void)
+{
+	bool uartPinStatus;
+	// If the PC is driving CTS (Test Mode) low, then the terminal is present and the UART should be 
+	// configured for CLI/debug mode.  This prevents low power operation.
+	gpio_pin_configure(port0, GPIO_PIN_MAP(UART_RXD_PIN), GPIO_INPUT);
+	//nrf_gpio_cfg_input(TM_PIN, NRF_GPIO_PIN_PULLUP);
+	k_sleep(K_MSEC(100));	
+	uartPinStatus = (gpio_pin_get(port0, GPIO_PIN_MAP(UART_RXD_PIN)) == 1) ? true : false;
+	//nrf_gpio_input_disconnect(TM_PIN);
+	gpio_pin_configure(port0, GPIO_PIN_MAP(UART_RXD_PIN), GPIO_DISCONNECTED);
+	
+
+	return(uartPinStatus);
+}
 /****Used for hardware test****/
 void InitializeDigitalPinsPull(void)
 {
@@ -200,24 +231,8 @@ static void ConfigureOutputs(void)
 	gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN), GPIO_OUTPUT_LOW);
 
 }
-static void ConfigureUART(void)
-{
-	struct device *uart_dev = device_get_binding(UART_DEVICE_NAME);
 
-	if (!uart_dev) 
-	{
-		LOG_DBG("Cannot get UART device\n");
-	}
 
-	/* Verify configure() - set device configuration using data in cfg */
-	int ret = uart_configure(uart_dev, &uart_cfg);
-
-	if (ret == -ENOTSUP) 
-	{
-		LOG_DBG("UART Skip\n");
-	}
-
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/

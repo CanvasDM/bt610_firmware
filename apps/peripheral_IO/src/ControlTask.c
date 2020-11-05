@@ -13,12 +13,14 @@
 #include "FrameworkIncludes.h"
 #include "Bracket.h"
 //#include "SensorTask.h"
+#include "BspSupport.h"
 #include "SystemUartTask.h"
 #include "ProtocolTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
 #include "AnalogSensorTask.h"
 #include "LedPwm.h"
+#include "Version.h"
 
 //#include "lte.h"
 //#include "aws.h"
@@ -83,7 +85,7 @@ K_MSGQ_DEFINE(controlTaskQueue,
 // Local Function Prototypes
 //=================================================================================================
 static void ControlTaskThread(void *, void *, void *);
-
+static void HardwareTestInit(void);
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgTask_t *pMsgTask, FwkMsg_t *pMsg);
 //static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -163,22 +165,34 @@ void ControlTask_Thread(void)
 //=================================================================================================
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
-  ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
+    ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
 
-
+    HardwareTestInit();
     BleTask_Initialize();
  // FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
-  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_LED_TEST);
+ //Test only
+    FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_LED_TEST);
 
-  //For test only
-  FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_ALL_TASKS);
+  
+    FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_ALL_TASKS);
 
-  while( true )
-  {
-    Framework_MsgReceiver(&pObj->msgTask.rxer);
-  }
+    while( true )
+    {
+      Framework_MsgReceiver(&pObj->msgTask.rxer);
+    }
 }
+static void HardwareTestInit(void)
+{
+    bool terminalPresent = false;
+    terminalPresent = BSP_TestPinUartChecker();
 
+    SystemUartTask_Initialize(terminalPresent);
+
+    printk("Version ");
+    printk(TIMESTAMPED_VERSION_STRING);
+    printk("\r\n");
+    //log_printk("Reset Reason %s\r\n", Bsp_GetResetReasonString());
+}
 static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsg);
@@ -189,11 +203,9 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 #endif
 
 //  SensorTask_Initialize();
-  SystemUartTask_Initialize();
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
   UserCommTask_Initialize();
   AnalogSensorTask_Initialize();
-  ProtocolTask_Initialize();
   
   
 #if 0

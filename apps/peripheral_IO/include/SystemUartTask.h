@@ -39,7 +39,7 @@ extern "C" {
  *
  * @retval
  */
-void SystemUartTask_Initialize(void);
+void SystemUartTask_Initialize(bool Enable);
 
 
 #ifdef __cplusplus

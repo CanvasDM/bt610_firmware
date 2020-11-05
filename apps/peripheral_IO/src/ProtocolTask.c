@@ -310,8 +310,8 @@ static CborError dumprecursive(CborValue *it, int nestingLevel)
     }
     //This is the end of the message build the reply
     JsonMsg_t * pRsp = (JsonMsg_t *)BufferPool_Take(sizeof(JsonMsg_t));
-    JsonBuilder_Start(pRsp, idValue);
-    JsonBuilder_FinalizeOk(pRsp);
+//    JsonBuilder_Start(pRsp, idValue);
+//    JsonBuilder_FinalizeOk(pRsp);
     encodeStringCbor(pRsp, idValue);
 
 

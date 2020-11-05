@@ -25,6 +25,7 @@
 #include <bluetooth/gatt.h>
 #include <bluetooth/services/bas.h>
 
+#include "Version.h"
 #include "UserCommTask.h"
 #include "BleTask.h"
 #include "LairdAdvFormat.h"
@@ -255,7 +256,7 @@ static void ParamsInit(void)
 {
 	uint32_t err;
 	/*Device Name*/
-	char name[MAX_SENSOR_NAME_LENGTH] = CONFIG_BT_DEVICE_NAME;
+	char name[MAX_SENSOR_NAME_LENGTH] = DEVICE_NAME;
 	//  AttributeTask_GetString(name, ATTR_INDEX_sensorName, MAX_SENSOR_NAME_LENGTH);
 	err = bt_set_name((const char *)name);
 	if (err) 
