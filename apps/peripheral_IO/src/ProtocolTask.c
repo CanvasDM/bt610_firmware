@@ -22,7 +22,6 @@
 #include "cbor.h"
 
 #include "CborBuilder.h"
-#include "JsonBuilder.h"
 #include "ProtocolTask.h"
 #include "BspSupport.h"
 #include <drivers/spi.h>
