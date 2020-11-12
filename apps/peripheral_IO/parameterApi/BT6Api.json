@@ -2,7 +2,8 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.0"
+    "version": "1.0",
+    "serialbleuuid": null
   },
   "methods": [
     {
@@ -33,7 +34,10 @@
             "x-ctype": "char",
             "x-sequencenumber": 1,
             "x-default": "BT610",
-            "x-example": "BT610"
+            "x-example": "BT610",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -87,7 +91,10 @@
             "x-ctype": "char",
             "x-sequencenumber": 1,
             "x-default": "NA",
-            "x-example": "myRoom"
+            "x-example": "myRoom",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -141,7 +148,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "1000",
-            "x-example": "1000"
+            "x-example": "1000",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -195,7 +205,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "15000"
+            "x-example": "15000",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -249,7 +262,10 @@
             "x-ctype": "char",
             "x-sequencenumber": 1,
             "x-default": "123456",
-            "x-example": "123456"
+            "x-example": "123456",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -303,7 +319,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -357,7 +376,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "60"
+            "x-example": "60",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -411,7 +433,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "60"
+            "x-example": "60",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -465,7 +490,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "1",
-            "x-example": "5"
+            "x-example": "5",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -519,7 +547,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "50"
+            "x-example": "50",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -573,7 +604,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "50"
+            "x-example": "50",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -627,7 +661,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -681,7 +718,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -735,7 +775,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -752,7 +795,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -769,7 +815,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -786,7 +835,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -840,7 +892,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 1,
             "x-default": "127",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -857,7 +912,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 2,
             "x-default": "127",
-            "x-example": "120"
+            "x-example": "120",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -874,7 +932,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 3,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -891,7 +952,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 4,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -908,7 +972,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "255",
-            "x-example": "255"
+            "x-example": "255",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -962,7 +1029,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 1,
             "x-default": "127",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -979,7 +1049,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 2,
             "x-default": "127",
-            "x-example": "120"
+            "x-example": "120",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -996,7 +1069,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 3,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1013,7 +1089,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 4,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1030,7 +1109,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "255",
-            "x-example": "255"
+            "x-example": "255",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1084,7 +1166,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 1,
             "x-default": "127",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1101,7 +1186,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 2,
             "x-default": "127",
-            "x-example": "120"
+            "x-example": "120",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1118,7 +1206,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 3,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1135,7 +1226,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 4,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1152,7 +1246,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "255",
-            "x-example": "255"
+            "x-example": "255",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1206,7 +1303,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 1,
             "x-default": "127",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1223,7 +1323,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 2,
             "x-default": "127",
-            "x-example": "120"
+            "x-example": "120",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1240,7 +1343,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 3,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1257,7 +1363,10 @@
             "x-ctype": "int16_t",
             "x-sequencenumber": 4,
             "x-default": "-127",
-            "x-example": "-40"
+            "x-example": "-40",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1274,7 +1383,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "255",
-            "x-example": "255"
+            "x-example": "255",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1328,7 +1440,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1345,7 +1460,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1362,7 +1480,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 3,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1379,7 +1500,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 3,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1396,7 +1520,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1450,7 +1577,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1467,7 +1597,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 2,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1484,7 +1617,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 3,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1501,7 +1637,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 4,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1518,7 +1657,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1572,7 +1714,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1589,7 +1734,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 2,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1606,7 +1754,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 3,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1623,7 +1774,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 4,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1640,7 +1794,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1694,7 +1851,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1711,7 +1871,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 2,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1728,7 +1891,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 3,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1745,7 +1911,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 4,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         },
         {
@@ -1762,7 +1931,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 5,
             "x-default": "4096",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1816,7 +1988,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1870,7 +2045,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "0"
+            "x-example": "0",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1924,7 +2102,10 @@
             "x-ctype": "int8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "8"
+            "x-example": "8",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -1978,7 +2159,10 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "100"
+            "x-example": "100",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -2032,7 +2216,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "10"
+            "x-example": "10",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -2086,7 +2273,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "3"
+            "x-example": "3",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -2112,7 +2302,7 @@
         }
       }
     },
-	{
+    {
       "name": "SetLedTest",
       "summary": "Turns on LED test squence",
       "description": "This is for hardware testing only",
@@ -2140,7 +2330,10 @@
             "x-ctype": "uint8_t",
             "x-sequencenumber": 1,
             "x-default": "0",
-            "x-example": "500"
+            "x-example": "500",
+            "x-backup": 0,
+            "x-lockable": 0,
+            "x-broadcast": 0
           }
         }
       ],
@@ -2194,10 +2387,12 @@
               "minimum": -128000.0,
               "maximum": 127000.0,
               "x-ctype": "int32_t",
-              "backup": false,
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250"
+              "x-example": "250",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2233,7 +2428,10 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250"
+              "x-example": "250",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2269,7 +2467,10 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250"
+              "x-example": "250",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2305,7 +2506,10 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250"
+              "x-example": "250",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2341,7 +2545,10 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250"
+              "x-example": "250",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2377,7 +2584,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2413,7 +2623,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "3000"
+              "x-example": "3000",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -2449,7 +2662,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "digitalInput2Alarm",
@@ -2463,8 +2679,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "1"
-            }            
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2499,7 +2718,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemperature1Alarm",
@@ -2513,7 +2735,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaTemperature1Alarm",
@@ -2527,8 +2752,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2563,7 +2791,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemperature2Alarm",
@@ -2577,7 +2808,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaTemperature2Alarm",
@@ -2591,8 +2825,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2627,7 +2864,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemperature3Alarm",
@@ -2641,7 +2881,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaTemperature3Alarm",
@@ -2655,8 +2898,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2691,7 +2937,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemperature4Alarm",
@@ -2705,7 +2954,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaTemperature4Alarm",
@@ -2719,8 +2971,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2755,7 +3010,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog1Alarm",
@@ -2769,7 +3027,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaAnalog1Alarm",
@@ -2783,8 +3044,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2819,7 +3083,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog2Alarm",
@@ -2833,7 +3100,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaAnalog2Alarm",
@@ -2847,8 +3117,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2883,7 +3156,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog3Alarm",
@@ -2897,7 +3173,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaAnalog3Alarm",
@@ -2911,8 +3190,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -2947,7 +3229,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog4Alarm",
@@ -2961,7 +3246,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "deltaAnalog4Alarm",
@@ -2975,8 +3263,11 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 5,
               "x-default": "NA",
-              "x-example": "0"
-            }            
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
+            }
           ]
         }
       }
@@ -3011,7 +3302,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3047,7 +3341,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1.0"
+              "x-example": "1.0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3083,7 +3380,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3119,7 +3419,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "010203040506"
+              "x-example": "010203040506",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3155,7 +3458,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "20",
-              "x-example": "20"
+              "x-example": "20",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3191,7 +3497,10 @@
               "x-ctype": "uint32_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3227,7 +3536,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3263,7 +3575,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "BT610",
-              "x-example": "BT610"
+              "x-example": "BT610",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3299,7 +3614,10 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "myRoom"
+              "x-example": "myRoom",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3335,7 +3653,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "1000",
-              "x-example": "1000"
+              "x-example": "1000",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3371,7 +3692,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "15000"
+              "x-example": "15000",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3407,7 +3731,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3443,7 +3770,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "60"
+              "x-example": "60",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3479,7 +3809,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "60"
+              "x-example": "60",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3515,7 +3848,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "1",
-              "x-example": "5"
+              "x-example": "5",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3551,7 +3887,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "50"
+              "x-example": "50",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3587,7 +3926,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "50"
+              "x-example": "50",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3623,7 +3965,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3659,7 +4004,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3695,7 +4043,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analogInput2Type_duplicate",
@@ -3709,7 +4060,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analogInput3Type_duplicate",
@@ -3723,7 +4077,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analogInput4Type_duplicate",
@@ -3737,12 +4094,15 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
       }
-    },    
+    },
     {
       "name": "GetTemperature1AlarmThreshold",
       "summary": "Get Temperature Alarm Thresholds",
@@ -3773,7 +4133,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highTemp1Thresh2_duplicate",
@@ -3787,7 +4150,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120"
+              "x-example": "120",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp1Thresh1_duplicate",
@@ -3801,7 +4167,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30"
+              "x-example": "-30",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp1Thresh2_duplicate",
@@ -3815,7 +4184,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40"
+              "x-example": "-40",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "temp1DeltaThresh_duplicate",
@@ -3829,7 +4201,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255"
+              "x-example": "255",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3865,7 +4240,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highTemp2Thresh2_duplicate",
@@ -3879,7 +4257,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120"
+              "x-example": "120",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp2Thresh1_duplicate",
@@ -3893,7 +4274,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30"
+              "x-example": "-30",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp2Thresh2_duplicate",
@@ -3907,7 +4291,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40"
+              "x-example": "-40",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "temp2DeltaThresh_duplicate",
@@ -3921,7 +4308,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255"
+              "x-example": "255",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -3957,7 +4347,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highTemp3Thresh2_duplicate",
@@ -3971,7 +4364,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120"
+              "x-example": "120",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp3Thresh1_duplicate",
@@ -3985,7 +4381,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30"
+              "x-example": "-30",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp3Thresh2c",
@@ -3999,7 +4398,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40"
+              "x-example": "-40",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "temp3DeltaThresh_duplicate",
@@ -4013,7 +4415,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255"
+              "x-example": "255",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4049,7 +4454,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highTemp4Thresh2_duplicate",
@@ -4063,7 +4471,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120"
+              "x-example": "120",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp4Thresh1_duplicate",
@@ -4077,7 +4488,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30"
+              "x-example": "-30",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowTemp4Thresh2_duplicate",
@@ -4091,7 +4505,10 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40"
+              "x-example": "-40",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "temp4DeltaThresh_duplicate",
@@ -4105,7 +4522,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255"
+              "x-example": "255",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4141,7 +4561,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highAnalog1Thresh2_duplicate",
@@ -4155,7 +4578,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog1Thresh1_duplicate",
@@ -4169,7 +4595,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog1Thresh2_duplicate",
@@ -4183,7 +4612,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analog1DeltaThresh_duplicate",
@@ -4197,7 +4629,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4233,7 +4668,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highAnalog2Thresh2_duplicate",
@@ -4247,7 +4685,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog2Thresh1_duplicate",
@@ -4261,7 +4702,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog2Thresh2_duplicate",
@@ -4275,7 +4719,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analog2DeltaThresh_duplicate",
@@ -4289,7 +4736,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4325,7 +4775,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highAnalog3Thresh2_duplicate",
@@ -4339,7 +4792,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog3Thresh1_duplicate",
@@ -4353,7 +4809,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog3Thresh2_duplicate",
@@ -4367,7 +4826,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analog3DeltaThresh_duplicate",
@@ -4381,7 +4843,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4417,7 +4882,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "highAnalog4Thresh2_duplicate",
@@ -4431,7 +4899,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog4Thresh1_duplicate",
@@ -4445,7 +4916,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "lowAnalog4Thresh2_duplicate",
@@ -4459,7 +4933,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             },
             {
               "name": "analog4DeltaThresh_duplicate",
@@ -4473,7 +4950,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4509,7 +4989,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4545,7 +5028,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0"
+              "x-example": "0",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4581,7 +5067,10 @@
               "x-ctype": "int8_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "8"
+              "x-example": "8",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4617,7 +5106,10 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "100"
+              "x-example": "100",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
@@ -4653,13 +5145,16 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "10"
+              "x-example": "10",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }
       }
     },
-	{
+    {
       "name": "GetMagnetState",
       "summary": "Get Magnet State",
       "description": "Read the status of the magnet sensor",
@@ -4689,7 +5184,10 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1"
+              "x-example": "1",
+              "x-backup": 0,
+              "x-lockable": 0,
+              "x-broadcast": 0
             }
           ]
         }

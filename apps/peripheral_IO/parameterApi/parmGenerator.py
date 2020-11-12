@@ -38,6 +38,9 @@ class attributes:
         self.AttributeMin = []
         self.AttributeName = []
         self.AttributeType = []
+        self.AttributeBackup = []
+        self.AttributeLockable = []
+        self.AttributeBroadcast = []
         self.AttributeStringMax = []
         self.AttributeDefault = []
         self.resultName = []
@@ -77,6 +80,9 @@ class attributes:
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
                         self.AttributeType.append(self.paramList[j]['schema']['x-ctype'])                        
                         self.AttributeStringMax.append(self.paramList[j]['schema']['maximumlength'])
+                        self.AttributeBackup.append(self.paramList[j]['schema']['x-backup'])
+                        self.AttributeLockable.append(self.paramList[j]['schema']['x-lockable'])
+                        self.AttributeBroadcast.append(self.paramList[j]['schema']['x-broadcast'])
                 else:
                     #Read only because it is a get function 
                     self.AttributeTotal = self.AttributeTotal + self.resultSizeList
@@ -90,9 +96,55 @@ class attributes:
                             self.AttributeType.append(self.resultList[k]['x-ctype']) 
                             self.AttributeStringMax.append(self.resultList[k]['maximumlength'])
                             self.AttributeDefault.append(self.resultList[k]['x-default'])
-                            #self.AttributeMax.append(self.paramList[k]['maximum'])
-                            #self.AttributeMin.append(self.paramList[k]['minimum'])
+                            self.AttributeMax.append(self.resultList[k]['maximum'])
+                            self.AttributeMin.append(self.resultList[k]['minimum'])
+                            self.AttributeBackup.append(self.resultList[k]['x-backup'])
+                            self.AttributeLockable.append(self.resultList[k]['x-lockable'])
+                            self.AttributeBroadcast.append(self.resultList[k]['x-broadcast'])
             pass    
+
+    def _GetAttributeMacro(self, itype: str, category: str, name: str) -> str:
+        """Get the c-macro for the RW or RO attribute"""
+        # the order is important here because all protocol values are read-only
+        if category == "protocol":
+            if itype == "char":
+                return "RP_ATTRS(" + name + ")"
+            else: 
+                return "RP_ATTRX(" + name + ")"
+        elif itype == "char":
+            if category == "ro":
+                return "RO_ATTRS(" + name + ")"
+            else: # rw
+                return "RW_ATTRS(" + name + ")"
+        elif category == "ro":
+            return "RO_ATTRX(" + name + ")"
+        else:
+            return "RW_ATTRX(" + name + ")"
+
+    def _GetValidatorString(self, i_type: str) -> str:
+        if i_type == "char":
+            return "AttributeValidator_" + "GenericString"
+        else:
+            return "AttributeValidator_" + (i_type)
+
+    def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
+        """Create the min/max portion of the attribute table entry"""
+        if i_type == "char":
+            # string validation is different and doesn't use min/max
+            return "0, 0"
+        elif i_type == "float":
+            return "(uint32_t)" + str(imin) + ", " + "(uint32_t)" + str(imax)
+        else:
+            if int(imin) < 0:
+                s_min = "(uint8_t)" + str(imin)
+            else:
+                s_min = str(imin)
+            if int(imax) < 0:
+                s_max = "(uint32_t)" + str(imax)
+            else:
+                s_max = str(imax)
+            return s_min + ", " + s_max
+
     def _CreateAttrTable(self) -> str:
         """
         Create the attribute (property) table from the dictionary of lists 
@@ -100,29 +152,29 @@ class attributes:
         """
         attributeTable = []
         for i in range(0, self.AttributeTotal):
-            category = self.props["Category"][i]
+            category = self.functionCategory[i]
             name = self.AttributeName[i]
             i_type = self.AttributeType[i]
             i_min = self.AttributeMin[i]
             i_max = self.AttributeMax[i]
-            backup = self.props["Backup"][i]
-            lockable = self.props["Lockable"][i]
-            broadcast = self.props["Broadcast"][i]
-            validator = self.props["Validator"][i].strip()
-            i_hash = self.props["Hash"][i]
-            result = f"  [{i_hash:<2}] = " \
+            backup = self.AttributeBackup[i]
+            lockable = self.AttributeLockable[i]
+            broadcast = self.AttributeBroadcast[i]
+            #validator = self.props["Validator"][i].strip()
+            number = i
+            result = f"  [{number:<2}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {i_type}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(validator):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {i_type}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
 
         attributeTable.append("\n")
         
-        for unused in self.unusedHashes:
-            result = f"  [{unused:<2}] = " \
-                    + "{ATTR_UNUSED},\n"
-            attributeTable.append(result)
+        #for unused in self.unusedHashes:
+        #    result = f"  [{unused:<2}] = " \
+        #            + "{ATTR_UNUSED},\n"
+        #    attributeTable.append(result)
 
         string = ''.join(attributeTable)
         return string[:string.rfind(',')]  + '\n'
@@ -203,13 +255,13 @@ class attributes:
         with open(name, 'w') as fout:
             for index, line in enumerate(lst):
                 if "pystart - " in line:
-                    #if "attribute table" in line:
-                    #    lst.insert(index + 1, self._CreateAttrTable())
+                    if "attribute table" in line:
+                        lst.insert(index + 1, self._CreateAttrTable())
                     #elif "asso values" in line:
                     #    lst.insert(index + 1, self._GetAssoTable())
                     #elif "hash function" in line:
                     #    lst.insert(index + 1, self._GetHashBlock())
-                    if "rw attributes" in line:
+                    elif "rw attributes" in line:
                         lst.insert(index + 1, self._CreateStruct("rw", False, False))
                     elif "rw defaults" in line:
                         lst.insert(index + 1, self._CreateStruct("rw", True, True))
@@ -224,9 +276,9 @@ class attributes:
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
         indices = []
-        for i in range(0, self.toatalFunctions):
-            name = self.functionNames[i]
-            id = self.functionId[i]
+        for i in range(0, self.AttributeTotal):
+            name = self.AttributeName[i]
+            id = i
             result = f"#define ATTR_INDEX_{name:<37} {id}" + "\n"
             indices.append(result)
         return ''.join(indices)
@@ -234,7 +286,7 @@ class attributes:
     def _CreateAttrDefinitions(self) -> str:
         """Create some definitinons for header file"""
         defs = []
-        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.toatalFunctions}\n\n")
+        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.AttributeTotal}\n\n")
         #defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.totalKeywords}\n")
         return ''.join(defs)
 
