@@ -7,6 +7,7 @@
  */
 #include "Framework.h"
 #include "ControlTask.h"
+<<<<<<< HEAD
 #include "BspSupport.h"
 
 void main(void)
@@ -14,6 +15,13 @@ void main(void)
 	BSP_Init();
 	Framework_Initialize();
 
+=======
+
+void main(void)
+{
+	Framework_Initialize();
+	
+>>>>>>> made changes to the firmware filese that were updated
 	ControlTask_Initialize();
 	ControlTask_Thread();
 }

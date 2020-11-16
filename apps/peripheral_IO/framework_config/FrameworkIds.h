@@ -28,12 +28,15 @@ enum FwkIdEnum {
 	/* Application */
   	FWK_ID_CONTROL_TASK,
   	FWK_ID_SENSOR_TASK,
+<<<<<<< HEAD
 	FWK_ID_USER_IF_TASK,  
 	FWK_ID_USER_COMM_TASK,
 	FWK_ID_ANALOG_SENSOR_TASK,
     FWK_ID_SYSTEM_UART_TASK,
 	FWK_ID_PROTOCOL_TASK,
 	FWK_ID_BLE_TASK,
+=======
+>>>>>>> made changes to the firmware filese that were updated
 	/* Reserved for framework (DO NOT DELETE, and it must be LAST) */
 	__FRAMEWORK_MAX_MSG_RECEIVERS
 };

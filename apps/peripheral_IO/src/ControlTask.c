@@ -1,5 +1,9 @@
 //=================================================================================================
 //!
+<<<<<<< HEAD
+=======
+#define THIS_FILE "ControlTask"
+>>>>>>> made changes to the firmware filese that were updated
 //!
 //! @copyright Copyright 2019 Laird
 //!            All Rights Reserved.
@@ -8,6 +12,7 @@
 //=================================================================================================
 // Includes
 //=================================================================================================
+<<<<<<< HEAD
 #include <zephyr.h>
 #include <power/reboot.h>
 #include "FrameworkIncludes.h"
@@ -22,6 +27,13 @@
 #include "LedPwm.h"
 #include "Version.h"
 
+=======
+//#include <misc/reboot.h>
+#include "Framework.h"
+//#include "SensorTask.h"
+
+//#include "led.h"
+>>>>>>> made changes to the firmware filese that were updated
 //#include "lte.h"
 //#include "aws.h"
 //#include "nv.h"
@@ -38,8 +50,11 @@ LOG_MODULE_REGISTER(ControlTask);
 //=================================================================================================
 // Local Constant, Macro and Type Definitions
 //=================================================================================================
+<<<<<<< HEAD
 #define THIS_FILE "ControlTask"
 
+=======
+>>>>>>> made changes to the firmware filese that were updated
 #if !CONTROL_TASK_USES_MAIN_THREAD
   #ifndef CONTROL_TASK_PRIORITY
     #define CONTROL_TASK_PRIORITY K_PRIO_PREEMPT(1)
@@ -58,8 +73,12 @@ LOG_MODULE_REGISTER(ControlTask);
 
 typedef struct ControlTaskTag
 {
+<<<<<<< HEAD
   FwkMsgTask_t msgTask; 
   BracketObj_t *pBracket; 
+=======
+  FwkMsgTask_t msgTask;  
+>>>>>>> made changes to the firmware filese that were updated
 
 } ControlTaskObj_t;
 
@@ -85,11 +104,19 @@ K_MSGQ_DEFINE(controlTaskQueue,
 // Local Function Prototypes
 //=================================================================================================
 static void ControlTaskThread(void *, void *, void *);
+<<<<<<< HEAD
 static void HardwareTestInit(void);
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgTask_t *pMsgTask, FwkMsg_t *pMsg);
 //static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+=======
+
+static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg);
+//static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg);
+static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg);
+static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg);
+>>>>>>> made changes to the firmware filese that were updated
 
 
 //=================================================================================================
@@ -102,7 +129,11 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
   {
   case FMC_INVALID:           return Framework_UnknownMsgHandler;
 //  case FMC_PERIODIC:          return PeriodicMsgHandler;
+<<<<<<< HEAD
   case FMC_INIT_ALL_TASKS:    return InitializeAllTasksMsgHandler;
+=======
+  case FMC_INIT_ALL_TASKS:    return InitializeAllTasks;
+>>>>>>> made changes to the firmware filese that were updated
   case FMC_SOFTWARE_RESET:    return SoftwareResetMsgHandler;
  // case FRAMEWORK_MSG_CODE_INIT_NV:           return InitNvMsgHander;
 //  case FRAMEWORK_MSG_CODE_INIT_BLE:          return InitBleMsgHandler;
@@ -126,15 +157,26 @@ void ControlTask_Initialize(void)
   controlTaskObject.msgTask.rxer.pMsgDispatcher   = ControlTaskMsgDispatcher;
   controlTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
   controlTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
+<<<<<<< HEAD
+=======
+  controlTaskObject.msgTask.pContainer            = &controlTaskObject;
+>>>>>>> made changes to the firmware filese that were updated
   controlTaskObject.msgTask.rxer.pQueue           = &controlTaskQueue;
   
   Framework_RegisterTask(&controlTaskObject.msgTask);
   
 #if CONTROL_TASK_USES_MAIN_THREAD
+<<<<<<< HEAD
   controlTaskObject.msgTask.pTid = k_current_get();
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE " is main thread");
 #else
   controlTaskObject.msgTask.pTid = 
+=======
+  controlTaskObject.msgTask->ptid = k_current_get();
+  k_thread_name_set(controlTaskObject.msgTask.tid, THIS_FILE " is main thread");
+#else
+  controlTaskObject.msgTask->ptid = 
+>>>>>>> made changes to the firmware filese that were updated
     k_thread_create(&controlTaskObject.msgTask.threadData, 
                     controlTaskStack,
                     K_THREAD_STACK_SIZEOF(controlTaskStack),
@@ -146,13 +188,21 @@ void ControlTask_Initialize(void)
                     0, 
                     K_NO_WAIT);
 
+<<<<<<< HEAD
   k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE);
 
+=======
+  k_thread_name_set(controlTaskObject.msgTask.tid, THIS_FILE);
+>>>>>>> made changes to the firmware filese that were updated
 #endif
 }
 
 
+<<<<<<< HEAD
 #ifdef TEST_ME 1
+=======
+
+>>>>>>> made changes to the firmware filese that were updated
 void ControlTask_Thread(void)
 {
 #if CONTROL_TASK_USES_MAIN_THREAD
@@ -165,6 +215,7 @@ void ControlTask_Thread(void)
 //=================================================================================================
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
+<<<<<<< HEAD
     ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
 
     HardwareTestInit();
@@ -194,6 +245,21 @@ static void HardwareTestInit(void)
     //log_printk("Reset Reason %s\r\n", Bsp_GetResetReasonString());
 }
 static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+=======
+  ControlTaskObj_t *pObj = (ControlTaskObj_t*)pArg1;
+
+Led_Initialize();
+
+   FRAMEWORK_MSG_SEND_DIRECT_TO_SELF(pObj->msgTask, FMC_INIT_NV);
+
+  while( true )
+  {
+    Framework_MsgReceiver(&pObj->msgTask);
+  }
+}
+
+static DispatchResult_t InitializeAllTasks(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+>>>>>>> made changes to the firmware filese that were updated
 {
   UNUSED_PARAMETER(pMsg);
 
@@ -203,10 +269,13 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 #endif
 
 //  SensorTask_Initialize();
+<<<<<<< HEAD
   UserInterfaceTask_Initialize();  // sends messages to SensorTask
   UserCommTask_Initialize();
   AnalogSensorTask_Initialize();
   
+=======
+>>>>>>> made changes to the firmware filese that were updated
   
 #if 0
   FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL, 
@@ -217,28 +286,51 @@ static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
   Framework_StartTimer(pMsgTask);
 #endif
 
+<<<<<<< HEAD
   // @ref ENABLE_BLE
   // If the softdevice is running, then breakpoints will cause a hardfault.
   //ControlTaskObj_t *pObj = (ControlTaskObj_t*)pMsgRxer->pContainer;
   FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FMC_CODE_BLE_START);
 
+=======
+#if 0
+  // @ref ENABLE_BLE
+  // If the softdevice is running, then breakpoints will cause a hardfault.
+  ControlTaskObj_t *pObj = (ControlTaskObj_t*)pMsgTask->pContainer;
+  FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.id, MSG_CODE_BLE_START);
+#endif
+>>>>>>> made changes to the firmware filese that were updated
 
   return DISPATCH_OK;
 }
 /*
+<<<<<<< HEAD
 static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsg);
   int32_t nextTickMs = appStateRunFsm();
+=======
+static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+{
+  UNUSED_PARAMETER(pMsg);
+  s32_t nextTickMs = appStateRunFsm();
+>>>>>>> made changes to the firmware filese that were updated
   Framework_ChangeTimerPeriod(pMsgTask, nextTickMs, 0);
   return DISPATCH_OK;
 }
 */
 
+<<<<<<< HEAD
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgTask_t *pMsgTask, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsg);
   k_thread_priority_set(pMsgTask->pTid, -CONFIG_NUM_COOP_PRIORITIES);
+=======
+static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+{
+  UNUSED_PARAMETER(pMsg);
+  k_thread_priority_set(pMsgTask->tid, -CONFIG_NUM_COOP_PRIORITIES);
+>>>>>>> made changes to the firmware filese that were updated
   LOG_ERR("Software Reset in ~5 seconds");
   k_sleep(K_SECONDS(5));
   sys_reboot(SYS_REBOOT_WARM);
@@ -247,7 +339,11 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgTask_t *pMsgTask, FwkMsg_t
 
 
 /*
+<<<<<<< HEAD
 static DispatchResult_t InitNvMsgHander(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+=======
+static DispatchResult_t InitNvMsgHander(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+>>>>>>> made changes to the firmware filese that were updated
 {
 	int rc = nvInit();
   LOG_INF("NV init (%d)", rc);
@@ -260,7 +356,11 @@ static DispatchResult_t InitNvMsgHander(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pM
 }
 */
 /*
+<<<<<<< HEAD
 static DispatchResult_t InitBleMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+=======
+static DispatchResult_t InitBleMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+>>>>>>> made changes to the firmware filese that were updated
 {
   appStateSetupBleCellularService();
   int rc = oob_ble_initialize();
@@ -272,6 +372,7 @@ static DispatchResult_t InitBleMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *
   return DISPATCH_DO_NOT_FREE; 
 }
 */
+<<<<<<< HEAD
 static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
   UNUSED_PARAMETER(pMsgRxer);
@@ -292,6 +393,28 @@ static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *
   return DISPATCH_OK;
 }
 static DispatchResult_t AppReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+=======
+static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+{
+  UNUSED_PARAMETER(pMsgTask);
+  LedTestMsg_t * pLedMsg = (LedTestMsg_t *)pMsg;
+  uint32_t delayMs = pLedMsg->durationMs;
+  delayMs = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, delayMs);
+  /*Led_TurnOff();
+  k_sleep(delayMs);
+  Led_TurnOn(GREEN);
+  k_sleep(delayMs);
+  Led_TurnOn(RED);
+  k_sleep(delayMs);
+  Led_TurnOn(YELLOW);
+  k_sleep(delayMs);
+  Led_TurnOff();
+  k_sleep(delayMs);
+  */
+  return DISPATCH_OK;
+}
+static DispatchResult_t AppReadyMsgHandler(FwkMsgReceiver_t *pMsgTask, FwkMsg_t *pMsg)
+>>>>>>> made changes to the firmware filese that were updated
 {
   UNUSED_PARAMETER(pMsg);
   //appStateSetReady();
