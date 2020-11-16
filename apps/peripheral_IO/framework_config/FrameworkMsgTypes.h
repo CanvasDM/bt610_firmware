@@ -84,6 +84,13 @@ typedef struct
   
 } JsonMsg_t;
 
+typedef struct
+{
+  FwkMsgHeader_t header;
+  uint32_t durationMs;
+  
+} LedTestMsg_t;
+
 #ifdef __cplusplus
 }
 #endif

@@ -17,9 +17,13 @@
         "hl7800.h": "c",
         "buf.h": "c",
         "led_strip.h": "c",
+<<<<<<< HEAD
         "reboot.h": "c",
         "sstream": "c",
         "random": "c"
+=======
+        "reboot.h": "c"
+>>>>>>> made changes to get it compile correctly
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "cmake.configureOnOpen": true,

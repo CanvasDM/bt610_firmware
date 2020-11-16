@@ -15,6 +15,8 @@
 /* Includes                                                                   */
 /******************************************************************************/
 #include "Framework.h"
+#include <stdio.h>
+#include <string.h>
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */

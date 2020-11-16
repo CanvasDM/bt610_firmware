@@ -5,7 +5,10 @@ project(peripheral_hids)
 FILE(GLOB app_sources src/*.c)
 target_sources(app PRIVATE ${app_sources})
 zephyr_include_directories(${ZEPHYR_BASE}/include/power)
+<<<<<<< HEAD
 zephyr_include_directories(${ZEPHYR_BASE}/include/drivers)
+=======
+>>>>>>> made changes to get it compile correctly
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 #target_include_directories(TINYCBOR INTERFACE include/tinycbor)
