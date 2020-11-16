@@ -152,7 +152,7 @@ void ControlTask_Initialize(void)
 }
 
 
-
+#ifdef TEST_ME 1
 void ControlTask_Thread(void)
 {
 #if CONTROL_TASK_USES_MAIN_THREAD

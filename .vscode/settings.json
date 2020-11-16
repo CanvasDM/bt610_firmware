@@ -22,5 +22,6 @@
         "random": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "editor.formatOnSave": true
 }

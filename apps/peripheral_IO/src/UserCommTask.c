@@ -199,7 +199,7 @@ void uartCallBack(struct device *x)
 //		data_length = uart_fifo_read(x, uart_buf, sizeof(uart_buf));
 //		uart_buf[data_length] = 0;
 //	}
-//	printk("%s", uart_buf);
+  //	printk("%s", uart_buf);
 }
 static uint8_t UserCommSpiSend(struct device *spi,
 			  const struct spi_config *spi_cfg,
@@ -215,7 +215,7 @@ static uint8_t UserCommSpiSend(struct device *spi,
 		.count = 1,
 	};
 
-	return spi_write(spi, spi_cfg, &tx);
+  	return spi_write(spi, spi_cfg, &tx);
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

@@ -74,7 +74,7 @@ class attributes:
                     self.AttributeTotal = self.AttributeTotal + self.paramSizeList
                     for j in range(self.paramSizeList):
                         self.functionCategory.append("rw")
-                        self.AttributeName.append(self.paramList[j]['name'])
+                        self.AttributeName.append(self.paramList[j]['summary'])
                         self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
                         self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
@@ -88,11 +88,11 @@ class attributes:
                     self.AttributeTotal = self.AttributeTotal + self.resultSizeList
                     for k in range(self.resultSizeList):
                         self.functionCategory.append("ro")
-                        if "_duplicate" in self.resultList[k]['name']:
+                        if "_duplicate" in self.resultList[k]['summary']:
                             # don't add already placed in code as Read/Write
                             self.AttributeTotal = self.AttributeTotal - 1
                         else:    
-                            self.AttributeName.append(self.resultList[k]['name'])       
+                            self.AttributeName.append(self.resultList[k]['summary'])       
                             self.AttributeType.append(self.resultList[k]['x-ctype']) 
                             self.AttributeStringMax.append(self.resultList[k]['maximumlength'])
                             self.AttributeDefault.append(self.resultList[k]['x-default'])
@@ -161,8 +161,8 @@ class attributes:
             lockable = self.AttributeLockable[i]
             broadcast = self.AttributeBroadcast[i]
             #validator = self.props["Validator"][i].strip()
-            number = i
-            result = f"  [{number:<2}] = " \
+            i_hash = i
+            result = f"  [{i_hash:<2}] = " \
                     + "{ " \
                     + f"{self._GetAttributeMacro(i_type, category, name):<48}, {i_type}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
@@ -276,9 +276,9 @@ class attributes:
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
         indices = []
-        for i in range(0, self.AttributeTotal):
-            name = self.AttributeName[i]
-            id = i
+        for i in range(0, self.toatalFunctions):
+            name = self.functionNames[i]
+            id = self.functionId[i]
             result = f"#define ATTR_INDEX_{name:<37} {id}" + "\n"
             indices.append(result)
         return ''.join(indices)
@@ -287,7 +287,7 @@ class attributes:
         """Create some definitinons for header file"""
         defs = []
         defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.AttributeTotal}\n\n")
-        #defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.totalKeywords}\n")
+        defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.toatalFunctions}\n")
         return ''.join(defs)
 
     def _CreateAttributeHeaderFile(self, lst: list) -> None:

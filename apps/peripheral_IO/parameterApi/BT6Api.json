@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.0",
+    "version": "1.2",
     "serialbleuuid": null
   },
   "methods": [
@@ -21,8 +21,8 @@
       ],
       "params": [
         {
-          "name": "sensorName",
-          "summary": "Sensor Name string",
+          "name": "p1",
+          "summary": "sensorName",
           "description": "Sensor Name",
           "required": true,
           "schema": {
@@ -35,9 +35,9 @@
             "x-sequencenumber": 1,
             "x-default": "BT610",
             "x-example": "BT610",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -46,6 +46,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -78,8 +81,8 @@
       ],
       "params": [
         {
-          "name": "sensorLocation",
-          "summary": "Sensor Location value",
+          "name": "p1",
+          "summary": "sensorLocation",
           "description": "Sensor Location",
           "required": true,
           "schema": {
@@ -92,9 +95,9 @@
             "x-sequencenumber": 1,
             "x-default": "NA",
             "x-example": "myRoom",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -103,6 +106,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -135,8 +141,8 @@
       ],
       "params": [
         {
-          "name": "advertisingInterval",
-          "summary": "Interval",
+          "name": "p1",
+          "summary": "advertisingInterval",
           "description": "Advertising Interval in milliseconds",
           "required": true,
           "schema": {
@@ -149,9 +155,9 @@
             "x-sequencenumber": 1,
             "x-default": "1000",
             "x-example": "1000",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -160,6 +166,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -192,8 +201,8 @@
       ],
       "params": [
         {
-          "name": "advertisingDuration",
-          "summary": "Interval",
+          "name": "p1",
+          "summary": "advertisingDuration",
           "description": "Advertising Interval in milliseconds",
           "required": true,
           "schema": {
@@ -206,9 +215,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "15000",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -217,6 +226,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -249,8 +261,8 @@
       ],
       "params": [
         {
-          "name": "passkey",
-          "summary": "Passkey value",
+          "name": "p1",
+          "summary": "passkey",
           "description": "Six-Digit Numberic Passkey",
           "required": true,
           "schema": {
@@ -263,9 +275,9 @@
             "x-sequencenumber": 1,
             "x-default": "123456",
             "x-example": "123456",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -274,6 +286,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -306,8 +321,8 @@
       ],
       "params": [
         {
-          "name": "lock",
-          "summary": "Lock value",
+          "name": "p1",
+          "summary": "lock",
           "description": "1 = locked",
           "required": true,
           "schema": {
@@ -320,9 +335,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -331,6 +346,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -363,8 +381,8 @@
       ],
       "params": [
         {
-          "name": "batterySenseInterval",
-          "summary": "Interval",
+          "name": "p1",
+          "summary": "batterySenseInterval",
           "description": "Battery Sense interval in seconds",
           "required": true,
           "schema": {
@@ -377,9 +395,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "60",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -388,6 +406,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -420,8 +441,8 @@
       ],
       "params": [
         {
-          "name": "temperatureSenseInterval",
-          "summary": "Interval",
+          "name": "p1",
+          "summary": "temperatureSenseInterval",
           "description": "Temperature Sense interval in seconds",
           "required": true,
           "schema": {
@@ -434,9 +455,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "60",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -445,6 +466,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -477,8 +501,8 @@
       ],
       "params": [
         {
-          "name": "temperatureAggregationCount",
-          "summary": "Interval",
+          "name": "p1",
+          "summary": "temperatureAggregationCount",
           "description": "Temperature Aggregation value",
           "required": true,
           "schema": {
@@ -491,9 +515,9 @@
             "x-sequencenumber": 1,
             "x-default": "1",
             "x-example": "5",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -502,6 +526,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -534,8 +561,8 @@
       ],
       "params": [
         {
-          "name": "digitalOutput1Mv",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "digitalOutput1Mv",
           "description": "Value in millivolts",
           "required": true,
           "schema": {
@@ -548,9 +575,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "50",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -559,6 +586,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -591,8 +621,8 @@
       ],
       "params": [
         {
-          "name": "digitalOutput2Mv",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "digitalOutput2Mv",
           "description": "Value in millivolts",
           "required": true,
           "schema": {
@@ -605,9 +635,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "50",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -616,6 +646,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -648,8 +681,8 @@
       ],
       "params": [
         {
-          "name": "digitalInput1",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "digitalInput1",
           "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
           "required": true,
           "schema": {
@@ -662,9 +695,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -673,6 +706,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -705,8 +741,8 @@
       ],
       "params": [
         {
-          "name": "digitalInput2",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "digitalInput2",
           "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
           "required": true,
           "schema": {
@@ -719,9 +755,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -730,6 +766,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -762,8 +801,8 @@
       ],
       "params": [
         {
-          "name": "analogInput1Type",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "analogInput1Type",
           "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
           "required": true,
           "schema": {
@@ -776,14 +815,14 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analogInput2Type",
-          "summary": "Value",
+          "name": "p2",
+          "summary": "analogInput2Type",
           "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
           "required": true,
           "schema": {
@@ -793,17 +832,17 @@
             "minimum": 0.0,
             "maximum": 2.0,
             "x-ctype": "uint8_t",
-            "x-sequencenumber": 1,
+            "x-sequencenumber": 2,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analogInput3Type",
-          "summary": "Value",
+          "name": "p3",
+          "summary": "analogInput3Type",
           "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
           "required": true,
           "schema": {
@@ -813,17 +852,17 @@
             "minimum": 0.0,
             "maximum": 2.0,
             "x-ctype": "uint8_t",
-            "x-sequencenumber": 1,
+            "x-sequencenumber": 3,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analogInput4Type",
-          "summary": "Value",
+          "name": "p4",
+          "summary": "analogInput4Type",
           "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
           "required": true,
           "schema": {
@@ -833,12 +872,12 @@
             "minimum": 0.0,
             "maximum": 2.0,
             "x-ctype": "uint8_t",
-            "x-sequencenumber": 1,
+            "x-sequencenumber": 4,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -847,6 +886,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -879,8 +921,8 @@
       ],
       "params": [
         {
-          "name": "highTemp1Thresh1",
-          "summary": "High Temp Thresh1 value",
+          "name": "p1",
+          "summary": "highTemp1Thresh1",
           "description": "High Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -893,14 +935,14 @@
             "x-sequencenumber": 1,
             "x-default": "127",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highTemp1Thresh2",
-          "summary": "High Temp Thresh2 value",
+          "name": "p2",
+          "summary": "highTemp1Thresh2",
           "description": "High Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -913,14 +955,14 @@
             "x-sequencenumber": 2,
             "x-default": "127",
             "x-example": "120",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp1Thresh1",
-          "summary": "Low Temp Thresh1 value",
+          "name": "p3",
+          "summary": "lowTemp1Thresh1",
           "description": "Low Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -933,14 +975,14 @@
             "x-sequencenumber": 3,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp1Thresh2",
-          "summary": "Low Temp Thresh2 value",
+          "name": "p4",
+          "summary": "lowTemp1Thresh2",
           "description": "Low Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -953,14 +995,14 @@
             "x-sequencenumber": 4,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "temp1DeltaThresh",
-          "summary": "Delta Thresh value",
+          "name": "p5",
+          "summary": "temp1DeltaThresh",
           "description": "Delta Temperature Alarm Threshold",
           "required": true,
           "schema": {
@@ -973,9 +1015,9 @@
             "x-sequencenumber": 5,
             "x-default": "255",
             "x-example": "255",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -984,6 +1026,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1016,8 +1061,8 @@
       ],
       "params": [
         {
-          "name": "highTemp2Thresh1",
-          "summary": "High Temp Thresh1 value",
+          "name": "p1",
+          "summary": "highTemp2Thresh1",
           "description": "High Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1030,14 +1075,14 @@
             "x-sequencenumber": 1,
             "x-default": "127",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highTemp2Thresh2",
-          "summary": "High Temp Thresh2 value",
+          "name": "p2",
+          "summary": "highTemp2Thresh2",
           "description": "High Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1050,14 +1095,14 @@
             "x-sequencenumber": 2,
             "x-default": "127",
             "x-example": "120",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp2Thresh1",
-          "summary": "Low Temp Thresh1 value",
+          "name": "p3",
+          "summary": "lowTemp2Thresh1",
           "description": "Low Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1070,14 +1115,14 @@
             "x-sequencenumber": 3,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp2Thresh2",
-          "summary": "Low Temp Thresh2 value",
+          "name": "p4",
+          "summary": "lowTemp2Thresh2",
           "description": "Low Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1090,14 +1135,14 @@
             "x-sequencenumber": 4,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "temp2DeltaThresh",
-          "summary": "Delta Thresh value",
+          "name": "p5",
+          "summary": "temp2DeltaThreshe",
           "description": "Delta Temperature Alarm Threshold",
           "required": true,
           "schema": {
@@ -1110,9 +1155,9 @@
             "x-sequencenumber": 5,
             "x-default": "255",
             "x-example": "255",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1121,6 +1166,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1153,8 +1201,8 @@
       ],
       "params": [
         {
-          "name": "highTemp3Thresh1",
-          "summary": "High Temp Thresh1 value",
+          "name": "p1",
+          "summary": "highTemp3Thresh1",
           "description": "High Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1167,14 +1215,14 @@
             "x-sequencenumber": 1,
             "x-default": "127",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highTemp3Thresh2",
-          "summary": "High Temp Thresh2 value",
+          "name": "p2",
+          "summary": "highTemp3Thresh2",
           "description": "High Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1187,14 +1235,14 @@
             "x-sequencenumber": 2,
             "x-default": "127",
             "x-example": "120",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp3Thresh1",
-          "summary": "Low Temp Thresh1 value",
+          "name": "p3",
+          "summary": "lowTemp3Thresh1",
           "description": "Low Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1207,14 +1255,14 @@
             "x-sequencenumber": 3,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp3Thresh2",
-          "summary": "Low Temp Thresh2 value",
+          "name": "p4",
+          "summary": "lowTemp3Thresh2",
           "description": "Low Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1227,14 +1275,14 @@
             "x-sequencenumber": 4,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "temp3DeltaThresh",
-          "summary": "Delta Thresh value",
+          "name": "p5",
+          "summary": "temp3DeltaThresh",
           "description": "Delta Temperature Alarm Threshold",
           "required": true,
           "schema": {
@@ -1247,9 +1295,9 @@
             "x-sequencenumber": 5,
             "x-default": "255",
             "x-example": "255",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1258,6 +1306,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1290,8 +1341,8 @@
       ],
       "params": [
         {
-          "name": "highTemp4Thresh1",
-          "summary": "High Temp Thresh1 value",
+          "name": "p1",
+          "summary": "highTemp4Thresh1",
           "description": "High Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1304,14 +1355,14 @@
             "x-sequencenumber": 1,
             "x-default": "127",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highTemp4Thresh2",
-          "summary": "High Temp Thresh2 value",
+          "name": "p2",
+          "summary": "highTemp4Thresh2",
           "description": "High Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1324,14 +1375,14 @@
             "x-sequencenumber": 2,
             "x-default": "127",
             "x-example": "120",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp4Thresh1",
-          "summary": "Low Temp Thresh1 value",
+          "name": "p3",
+          "summary": "lowTemp4Thresh1",
           "description": "Low Temperature Alarm Threshold 1 in degrees C",
           "required": true,
           "schema": {
@@ -1344,14 +1395,14 @@
             "x-sequencenumber": 3,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowTemp4Thresh2",
-          "summary": "Low Temp Thresh2 value",
+          "name": "p4",
+          "summary": "lowTemp4Thresh2",
           "description": "Low Temperature Alarm Threshold 2 in degrees C",
           "required": true,
           "schema": {
@@ -1364,14 +1415,14 @@
             "x-sequencenumber": 4,
             "x-default": "-127",
             "x-example": "-40",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "temp4DeltaThresh",
-          "summary": "Delta Thresh value",
+          "name": "p5",
+          "summary": "temp4DeltaThresh",
           "description": "Delta Temperature Alarm Threshold",
           "required": true,
           "schema": {
@@ -1384,9 +1435,9 @@
             "x-sequencenumber": 5,
             "x-default": "255",
             "x-example": "255",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1395,6 +1446,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1427,8 +1481,8 @@
       ],
       "params": [
         {
-          "name": "highAnalog1Thresh1",
-          "summary": "High Analog 1 Thresh1 value",
+          "name": "p1",
+          "summary": "highAnalog1Thresh1",
           "description": "High Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1441,14 +1495,14 @@
             "x-sequencenumber": 1,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highAnalog1Thresh2",
-          "summary": "High Analog 1 Thresh1 value",
+          "name": "p2",
+          "summary": "highAnalog1Thresh2",
           "description": "High Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1458,17 +1512,17 @@
             "minimum": 0.0,
             "maximum": 4096.0,
             "x-ctype": "uint16_t",
-            "x-sequencenumber": 1,
+            "x-sequencenumber": 2,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog1Thresh1",
-          "summary": "Low Analog 1 Thresh1 value",
+          "name": "p3",
+          "summary": "lowAnalog1Thresh1",
           "description": "Low Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1481,14 +1535,14 @@
             "x-sequencenumber": 3,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog1Thresh2",
-          "summary": "Low Analog 2 Thresh1 value",
+          "name": "p4",
+          "summary": "lowAnalog1Thresh2",
           "description": "Low Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1498,17 +1552,17 @@
             "minimum": 0.0,
             "maximum": 4096.0,
             "x-ctype": "uint16_t",
-            "x-sequencenumber": 3,
+            "x-sequencenumber": 4,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analog1DeltaThresh",
-          "summary": "Delta Thresh value",
+          "name": "p5",
+          "summary": "analog1DeltaThresh",
           "description": "Delta Analog Alarm Threshold Counts",
           "required": true,
           "schema": {
@@ -1521,9 +1575,9 @@
             "x-sequencenumber": 5,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1532,6 +1586,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1564,8 +1621,8 @@
       ],
       "params": [
         {
-          "name": "highAnalog2Thresh1",
-          "summary": "High Analog 2 Thresh1 value",
+          "name": "p1",
+          "summary": "highAnalog2Thresh1",
           "description": "High Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1578,14 +1635,14 @@
             "x-sequencenumber": 1,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highAnalog2Thresh2",
-          "summary": "High Analog 2 Thresh2 value",
+          "name": "p2",
+          "summary": "highAnalog2Thresh2",
           "description": "High Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1598,14 +1655,14 @@
             "x-sequencenumber": 2,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog2Thresh1",
-          "summary": "Low Analog 2 Thresh1 value",
+          "name": "p3",
+          "summary": "lowAnalog2Thresh1",
           "description": "Low Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1618,14 +1675,14 @@
             "x-sequencenumber": 3,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog2Thresh2",
-          "summary": "Low Analog 2 Thresh2 value",
+          "name": "p4",
+          "summary": "lowAnalog2Thresh2",
           "description": "Low Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1638,14 +1695,14 @@
             "x-sequencenumber": 4,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analog2DeltaThresh",
-          "summary": "analog 2 Delta Thresh value",
+          "name": "p5",
+          "summary": "analog2DeltaThresh",
           "description": "Delta Analog Alarm Threshold Counts",
           "required": true,
           "schema": {
@@ -1658,9 +1715,9 @@
             "x-sequencenumber": 5,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1669,6 +1726,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1701,8 +1761,8 @@
       ],
       "params": [
         {
-          "name": "highAnalog3Thresh1",
-          "summary": "High Analog 3 Thresh1 value",
+          "name": "p1",
+          "summary": "highAnalog3Thresh1",
           "description": "High Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1715,14 +1775,14 @@
             "x-sequencenumber": 1,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highAnalog3Thresh2",
-          "summary": "High Analog 3 Thresh2 value",
+          "name": "p2",
+          "summary": "highAnalog3Thresh2",
           "description": "High Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1735,14 +1795,14 @@
             "x-sequencenumber": 2,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog3Thresh1",
-          "summary": "Low Analog 3 Thresh1 value",
+          "name": "p3",
+          "summary": "lowAnalog3Thresh1",
           "description": "Low Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1755,14 +1815,14 @@
             "x-sequencenumber": 3,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog3Thresh2",
-          "summary": "Low Analog 3Thresh2 value",
+          "name": "p4",
+          "summary": "lowAnalog3Thresh2",
           "description": "Low Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1775,14 +1835,14 @@
             "x-sequencenumber": 4,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analog3DeltaThresh",
-          "summary": "DeltaThresh value",
+          "name": "p5",
+          "summary": "analog3DeltaThresh",
           "description": "Delta Analog Alarm Threshold Counts",
           "required": true,
           "schema": {
@@ -1795,9 +1855,9 @@
             "x-sequencenumber": 5,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1806,6 +1866,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1838,8 +1901,8 @@
       ],
       "params": [
         {
-          "name": "highAnalog4Thresh1",
-          "summary": "High Analog 4 Thresh1 value",
+          "name": "p1",
+          "summary": "highAnalog4Thresh1",
           "description": "High Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1852,14 +1915,14 @@
             "x-sequencenumber": 1,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "highAnalog4Thresh2",
-          "summary": "High Analog 4 Thresh2 value",
+          "name": "p2",
+          "summary": "highAnalog4Thresh2",
           "description": "High Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1872,14 +1935,14 @@
             "x-sequencenumber": 2,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog4Thresh1",
-          "summary": "Low Analog 4 Thresh1 value",
+          "name": "p3",
+          "summary": "lowAnalog4Thresh1",
           "description": "Low Analog Alarm Threshold 1 Counts",
           "required": true,
           "schema": {
@@ -1892,14 +1955,14 @@
             "x-sequencenumber": 3,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "lowAnalog4Thresh2",
-          "summary": "Low Analog 4Thresh2 value",
+          "name": "p4",
+          "summary": "lowAnalog4Thresh2",
           "description": "Low Analog Alarm Threshold 2 Counts",
           "required": true,
           "schema": {
@@ -1912,14 +1975,14 @@
             "x-sequencenumber": 4,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         },
         {
-          "name": "analog4DeltaThresh",
-          "summary": "DeltaThresh",
+          "name": "p5",
+          "summary": "analog4DeltaThresh",
           "description": "Delta Analog Alarm Threshold Counts",
           "required": true,
           "schema": {
@@ -1932,9 +1995,9 @@
             "x-sequencenumber": 5,
             "x-default": "4096",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -1943,6 +2006,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -1975,8 +2041,8 @@
       ],
       "params": [
         {
-          "name": "activeMode",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "activeMode",
           "description": "0 = inactive\r\n1 = active (RTC enabled, sample enabled)",
           "required": true,
           "schema": {
@@ -1989,9 +2055,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2000,6 +2066,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2032,8 +2101,8 @@
       ],
       "params": [
         {
-          "name": "useCodedPhy",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "useCodedPhy",
           "description": "Coded Phy Value",
           "required": true,
           "schema": {
@@ -2046,9 +2115,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "0",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2057,6 +2126,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2089,8 +2161,8 @@
       ],
       "params": [
         {
-          "name": "txPower",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "txPower",
           "description": "Tx Power (dBm)",
           "required": true,
           "schema": {
@@ -2103,9 +2175,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "8",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2114,6 +2186,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2146,8 +2221,8 @@
       ],
       "params": [
         {
-          "name": "networkId",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "networkId",
           "description": "Network Id",
           "required": true,
           "schema": {
@@ -2160,9 +2235,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "100",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2171,6 +2246,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2203,8 +2281,8 @@
       ],
       "params": [
         {
-          "name": "configVersion",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "configVersion",
           "description": "Config Version",
           "required": true,
           "schema": {
@@ -2217,9 +2295,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "10",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2228,6 +2306,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2260,8 +2341,8 @@
       ],
       "params": [
         {
-          "name": "hardwareMinorVersion",
-          "summary": "Value",
+          "name": "p1",
+          "summary": "hardwareMinorVersion",
           "description": "Minor Revision",
           "required": true,
           "schema": {
@@ -2274,9 +2355,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "3",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2285,6 +2366,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2317,8 +2401,8 @@
       ],
       "params": [
         {
-          "name": "ledTestActive",
-          "summary": "Time Ms",
+          "name": "p1",
+          "summary": "ledTestActive",
           "description": "On off time of each LED",
           "required": true,
           "schema": {
@@ -2331,9 +2415,9 @@
             "x-sequencenumber": 1,
             "x-default": "0",
             "x-example": "500",
-            "x-backup": 0,
-            "x-lockable": 0,
-            "x-broadcast": 0
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
           }
         }
       ],
@@ -2342,6 +2426,9 @@
         "schema": {
           "items": [
             {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
               "name": "r1",
               "summary": "Status",
               "description": "0 = success",
@@ -2378,8 +2465,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureAll",
-              "summary": "Status",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureAll",
               "description": "Temperature in hundreds of a degree C",
               "type": "integer",
               "minimumlength": 0,
@@ -2389,10 +2479,7 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "250"
             }
           ]
         }
@@ -2417,8 +2504,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureResult1",
-              "summary": "Status",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult1",
               "description": "Temperature in hundreds of a degree C",
               "type": "integer",
               "minimumlength": 0,
@@ -2428,10 +2518,7 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "250"
             }
           ]
         }
@@ -2456,8 +2543,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureResult2",
-              "summary": "Status",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult2",
               "description": "Temperature in hundreds of a degree C",
               "type": "integer",
               "minimumlength": 0,
@@ -2467,10 +2557,7 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "250"
             }
           ]
         }
@@ -2495,8 +2582,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureResult3",
-              "summary": "Status",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult3",
               "description": "Temperature in hundreds of a degree C",
               "type": "integer",
               "minimumlength": 0,
@@ -2506,10 +2596,7 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "250"
             }
           ]
         }
@@ -2534,8 +2621,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureResult4",
-              "summary": "Status",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult4",
               "description": "Temperature in hundreds of a degree C",
               "type": "integer",
               "minimumlength": 0,
@@ -2545,10 +2635,7 @@
               "x-ctype": "int32_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "250",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "250"
             }
           ]
         }
@@ -2573,8 +2660,11 @@
         "schema": {
           "items": [
             {
-              "name": "currentReadingMa",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "currentReadingMa",
               "description": "Current in milliamps",
               "type": "integer",
               "minimumlength": 0,
@@ -2584,10 +2674,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -2612,8 +2699,11 @@
         "schema": {
           "items": [
             {
-              "name": "batteryVoltageMv",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "batteryVoltageMv",
               "description": "Battery Voltage in millivolts",
               "type": "integer",
               "minimumlength": 0,
@@ -2623,10 +2713,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "3000",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "3000"
             }
           ]
         }
@@ -2651,8 +2738,11 @@
         "schema": {
           "items": [
             {
-              "name": "digitalInput1Alarm",
-              "summary": "Value1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInput1Alarm",
               "description": "Digital Input 1 Alarm.\r\n0 = Current State\r\n1 = State Changed",
               "type": "integer",
               "minimumlength": 0,
@@ -2662,14 +2752,14 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             },
             {
-              "name": "digitalInput2Alarm",
-              "summary": "Value2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "digitalInput2Alarm",
               "description": "Digital Input 2 Alarm.\r\n0 = Current State\r\n1 = State Changed",
               "type": "integer",
               "minimumlength": 0,
@@ -2679,10 +2769,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -2707,8 +2794,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemperature1Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature1Alarm",
               "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -2716,16 +2806,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowTemperature1Alarm",
-              "summary": "Value4",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature1Alarm",
               "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -2733,16 +2823,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaTemperature1Alarm",
-              "summary": "Value5",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature1Alarm",
               "description": "Delta Temperature Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -2750,12 +2840,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -2780,8 +2867,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemperature2Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature2Alarm",
               "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -2789,16 +2879,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowTemperature2Alarm",
-              "summary": "Value4",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature2Alarm",
               "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -2806,16 +2896,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaTemperature2Alarm",
-              "summary": "Value5",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature2Alarm",
               "description": "Delta Temperature Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -2823,12 +2913,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -2853,8 +2940,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemperature3Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature3Alarm",
               "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -2862,16 +2952,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowTemperature3Alarm",
-              "summary": "Value4",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature3Alarm",
               "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -2879,16 +2969,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaTemperature3Alarm",
-              "summary": "Value5",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature3Alarm",
               "description": "Delta Temperature Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -2896,12 +2986,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -2926,8 +3013,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemperature4Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature4Alarm",
               "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -2935,16 +3025,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowTemperature4Alarm",
-              "summary": "Value4",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature4Alarm",
               "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -2952,16 +3042,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaTemperature4Alarm",
-              "summary": "Value5",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature4Alarm",
               "description": "Delta Temperature Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -2969,12 +3059,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -2999,8 +3086,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog1Alarm",
-              "summary": "Value1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog1Alarm",
               "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -3008,16 +3098,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowAnalog1Alarm",
-              "summary": "Value2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog1Alarm",
               "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -3025,16 +3115,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaAnalog1Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog1Alarm",
               "description": "Delta Analog Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -3042,12 +3132,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3072,8 +3159,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog2Alarm",
-              "summary": "Value1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog2Alarm",
               "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -3081,16 +3171,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowAnalog2Alarm",
-              "summary": "Value2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog2Alarm",
               "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -3098,16 +3188,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaAnalog2Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog2Alarm",
               "description": "Delta Analog Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -3115,12 +3205,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3145,8 +3232,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog3Alarm",
-              "summary": "Value1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog3Alarm",
               "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -3154,16 +3244,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowAnalog3Alarm",
-              "summary": "Value2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog3Alarm",
               "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -3171,16 +3261,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaAnalog3Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog3Alarm",
               "description": "Delta Analog Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -3188,12 +3278,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3218,8 +3305,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog4Alarm",
-              "summary": "Value1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog4Alarm",
               "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
               "type": "integer",
               "minimumlength": 0,
@@ -3227,16 +3317,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 3,
+              "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "lowAnalog4Alarm",
-              "summary": "Value2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog4Alarm",
               "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
               "type": "integer",
               "minimumlength": 0,
@@ -3244,16 +3334,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 4,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "deltaAnalog4Alarm",
-              "summary": "Value3",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog4Alarm",
               "description": "Delta Analog Alarm",
               "type": "integer",
               "minimumlength": 0,
@@ -3261,12 +3351,9 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 5,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3291,8 +3378,11 @@
         "schema": {
           "items": [
             {
-              "name": "hwVersion",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "hwVersion",
               "description": "Hardware Version",
               "type": "integer",
               "minimumlength": 0,
@@ -3302,10 +3392,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -3330,8 +3417,11 @@
         "schema": {
           "items": [
             {
-              "name": "firmwareVersion",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "firmwareVersion",
               "description": "Firmware Version.\r\nFormat = Major.Minor",
               "type": "string",
               "minimumlength": 3,
@@ -3341,10 +3431,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1.0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1.0"
             }
           ]
         }
@@ -3369,8 +3456,11 @@
         "schema": {
           "items": [
             {
-              "name": "resetReason",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "resetReason",
               "description": "For Development",
               "type": "string",
               "minimumlength": 0,
@@ -3380,10 +3470,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -3408,8 +3495,11 @@
         "schema": {
           "items": [
             {
-              "name": "bluetoothAddress",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "bluetoothAddress",
               "description": "Bluetooth MAC",
               "type": "string",
               "minimumlength": 12,
@@ -3419,10 +3509,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "010203040506",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "010203040506"
             }
           ]
         }
@@ -3447,8 +3534,11 @@
         "schema": {
           "items": [
             {
-              "name": "mtu",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "mtu",
               "description": "MTU bytes",
               "type": "integer",
               "minimumlength": 0,
@@ -3458,10 +3548,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "20",
-              "x-example": "20",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "20"
             }
           ]
         }
@@ -3486,8 +3573,11 @@
         "schema": {
           "items": [
             {
-              "name": "flags",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "flags",
               "description": "Flags",
               "type": "integer",
               "minimumlength": 0,
@@ -3497,10 +3587,7 @@
               "x-ctype": "uint32_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -3525,8 +3612,11 @@
         "schema": {
           "items": [
             {
-              "name": "resetCount",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "resetCount",
               "description": "Count",
               "type": "integer",
               "minimumlength": 0,
@@ -3536,10 +3626,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
@@ -3564,8 +3651,11 @@
         "schema": {
           "items": [
             {
-              "name": "sensorName_duplicate",
-              "summary": "SensorName",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "sensorName_duplicate",
               "description": "Sensor Name",
               "type": "string",
               "minimumlength": 1,
@@ -3575,10 +3665,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "BT610",
-              "x-example": "BT610",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "BT610"
             }
           ]
         }
@@ -3603,8 +3690,11 @@
         "schema": {
           "items": [
             {
-              "name": "sensorLocation_duplicate",
-              "summary": "SensorLocation",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "sensorLocation_duplicate",
               "description": "Sensor Location",
               "type": "string",
               "minimumlength": 0,
@@ -3614,10 +3704,7 @@
               "x-ctype": "char",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "myRoom",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "myRoom"
             }
           ]
         }
@@ -3642,8 +3729,11 @@
         "schema": {
           "items": [
             {
-              "name": "advertisingInterval_duplicate",
-              "summary": "Interval",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "advertisingInterval_duplicate",
               "description": "Advertising Interval in milliseconds",
               "type": "integer",
               "minimumlength": 0,
@@ -3653,10 +3743,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "1000",
-              "x-example": "1000",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1000"
             }
           ]
         }
@@ -3681,8 +3768,11 @@
         "schema": {
           "items": [
             {
-              "name": "advertisingDuration_duplicate",
-              "summary": "Interval",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "advertisingDuration_duplicate",
               "description": "Advertising Interval in milliseconds",
               "type": "integer",
               "minimumlength": 0,
@@ -3692,10 +3782,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "15000",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "15000"
             }
           ]
         }
@@ -3720,8 +3807,11 @@
         "schema": {
           "items": [
             {
-              "name": "lock_duplicate",
-              "summary": "Lock",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "lock_duplicate",
               "description": "1 = locked",
               "type": "integer",
               "minimumlength": 0,
@@ -3731,10 +3821,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3759,8 +3846,11 @@
         "schema": {
           "items": [
             {
-              "name": "batterySenseInterval_duplicate",
-              "summary": "Interval",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "batterySenseInterval_duplicate",
               "description": "Battery Sense interval in seconds",
               "type": "integer",
               "minimumlength": 0,
@@ -3770,10 +3860,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "60",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "60"
             }
           ]
         }
@@ -3798,8 +3885,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureSenseInterval_duplicate",
-              "summary": "Interval",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureSenseInterval_duplicate",
               "description": "Temperature Sense interval in seconds",
               "type": "integer",
               "minimumlength": 0,
@@ -3809,10 +3899,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "60",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "60"
             }
           ]
         }
@@ -3837,8 +3924,11 @@
         "schema": {
           "items": [
             {
-              "name": "temperatureAggregationCount_duplicate",
-              "summary": "Interval",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureAggregationCount_duplicate",
               "description": "Temperature Aggregation value",
               "type": "integer",
               "minimumlength": 0,
@@ -3848,10 +3938,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "1",
-              "x-example": "5",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "5"
             }
           ]
         }
@@ -3876,8 +3963,11 @@
         "schema": {
           "items": [
             {
-              "name": "digitalOut1Mv_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalOut1Mv_duplicate",
               "description": "Value in millivolts",
               "type": "integer",
               "minimumlength": 0,
@@ -3887,10 +3977,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "50",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "50"
             }
           ]
         }
@@ -3915,8 +4002,11 @@
         "schema": {
           "items": [
             {
-              "name": "digitalOut2Mv_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalOut2Mv_duplicate",
               "description": "Value in millivolts",
               "type": "integer",
               "minimumlength": 0,
@@ -3926,10 +4016,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "50",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "50"
             }
           ]
         }
@@ -3954,8 +4041,11 @@
         "schema": {
           "items": [
             {
-              "name": "digitalInput1Mv",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInput1Mv",
               "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
               "type": "integer",
               "minimumlength": 0,
@@ -3965,10 +4055,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -3993,8 +4080,11 @@
         "schema": {
           "items": [
             {
-              "name": "digitalInpu21Mv",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInpu21Mv",
               "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
               "type": "integer",
               "minimumlength": 0,
@@ -4004,10 +4094,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -4032,8 +4119,11 @@
         "schema": {
           "items": [
             {
-              "name": "analogInput1Type_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "analogInput1Type_duplicate",
               "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
               "type": "integer",
               "minimumlength": 0,
@@ -4043,14 +4133,14 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "analogInput2Type_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "analogInput2Type_duplicate",
               "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
               "type": "integer",
               "minimumlength": 0,
@@ -4058,16 +4148,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 1,
+              "x-sequencenumber": 2,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "analogInput3Type_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "analogInput3Type_duplicate",
               "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
               "type": "integer",
               "minimumlength": 0,
@@ -4075,16 +4165,16 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 1,
+              "x-sequencenumber": 3,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             },
             {
-              "name": "analogInput4Type_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "analogInput4Type_duplicate",
               "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
               "type": "integer",
               "minimumlength": 0,
@@ -4092,12 +4182,9 @@
               "minimum": 0.0,
               "maximum": 2.0,
               "x-ctype": "uint8_t",
-              "x-sequencenumber": 1,
+              "x-sequencenumber": 4,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -4122,8 +4209,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemp1Thresh1_duplicate",
-              "summary": "HighTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp1Thresh1_duplicate",
               "description": "High Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4133,14 +4223,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highTemp1Thresh2_duplicate",
-              "summary": "HighTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp1Thresh2_duplicate",
               "description": "High Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4150,14 +4240,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "120"
             },
             {
-              "name": "lowTemp1Thresh1_duplicate",
-              "summary": "LowTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp1Thresh1_duplicate",
               "description": "Low Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4167,14 +4257,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-30"
             },
             {
-              "name": "lowTemp1Thresh2_duplicate",
-              "summary": "LowTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp1Thresh2_duplicate",
               "description": "Low Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4184,14 +4274,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-40"
             },
             {
-              "name": "temp1DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp1DeltaThresh_duplicate",
               "description": "Delta Temperature Alarm Threshold",
               "type": "integer",
               "minimumlength": 0,
@@ -4201,10 +4291,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "255"
             }
           ]
         }
@@ -4229,8 +4316,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemp2Thresh1_duplicate",
-              "summary": "HighTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp2Thresh1_duplicate",
               "description": "High Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4240,14 +4330,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highTemp2Thresh2_duplicate",
-              "summary": "HighTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp2Thresh2_duplicate",
               "description": "High Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4257,14 +4347,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "120"
             },
             {
-              "name": "lowTemp2Thresh1_duplicate",
-              "summary": "LowTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp2Thresh1_duplicate",
               "description": "Low Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4274,14 +4364,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-30"
             },
             {
-              "name": "lowTemp2Thresh2_duplicate",
-              "summary": "LowTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp2Thresh2_duplicate",
               "description": "Low Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4291,14 +4381,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-40"
             },
             {
-              "name": "temp2DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp2DeltaThresh_duplicate",
               "description": "Delta Temperature Alarm Threshold",
               "type": "integer",
               "minimumlength": 0,
@@ -4308,10 +4398,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "255"
             }
           ]
         }
@@ -4336,8 +4423,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemp3Thresh1_duplicate",
-              "summary": "HighTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp3Thresh1_duplicate",
               "description": "High Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4347,14 +4437,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highTemp3Thresh2_duplicate",
-              "summary": "HighTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp3Thresh2_duplicate",
               "description": "High Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4364,14 +4454,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "120"
             },
             {
-              "name": "lowTemp3Thresh1_duplicate",
-              "summary": "LowTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp3Thresh1_duplicate",
               "description": "Low Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4381,14 +4471,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-30"
             },
             {
-              "name": "lowTemp3Thresh2c",
-              "summary": "LowTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp3Thresh2c",
               "description": "Low Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4398,14 +4488,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-40"
             },
             {
-              "name": "temp3DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp3DeltaThresh_duplicate",
               "description": "Delta Temperature Alarm Threshold",
               "type": "integer",
               "minimumlength": 0,
@@ -4415,10 +4505,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "255"
             }
           ]
         }
@@ -4443,8 +4530,11 @@
         "schema": {
           "items": [
             {
-              "name": "highTemp4Thresh1_duplicate",
-              "summary": "HighTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp4Thresh1_duplicate",
               "description": "High Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4454,14 +4544,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 1,
               "x-default": "127",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highTemp4Thresh2_duplicate",
-              "summary": "HighTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp4Thresh2_duplicate",
               "description": "High Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4471,14 +4561,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 2,
               "x-default": "127",
-              "x-example": "120",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "120"
             },
             {
-              "name": "lowTemp4Thresh1_duplicate",
-              "summary": "LowTempThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp4Thresh1_duplicate",
               "description": "Low Temperature Alarm Threshold 1 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4488,14 +4578,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 3,
               "x-default": "-127",
-              "x-example": "-30",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-30"
             },
             {
-              "name": "lowTemp4Thresh2_duplicate",
-              "summary": "LowTempThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp4Thresh2_duplicate",
               "description": "Low Temperature Alarm Threshold 2 in degrees C",
               "type": "integer",
               "minimumlength": 0,
@@ -4505,14 +4595,14 @@
               "x-ctype": "int16_t",
               "x-sequencenumber": 4,
               "x-default": "-127",
-              "x-example": "-40",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "-40"
             },
             {
-              "name": "temp4DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp4DeltaThresh_duplicate",
               "description": "Delta Temperature Alarm Threshold",
               "type": "integer",
               "minimumlength": 0,
@@ -4522,10 +4612,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "255",
-              "x-example": "255",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "255"
             }
           ]
         }
@@ -4550,8 +4637,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog1Thresh1_duplicate",
-              "summary": "HighAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog1Thresh1_duplicate",
               "description": "High Analog Alarm Threshold 1 Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4561,14 +4651,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highAnalog1Thresh2_duplicate",
-              "summary": "HighAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog1Thresh2_duplicate",
               "description": "High Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4578,14 +4668,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog1Thresh1_duplicate",
-              "summary": "LowAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog1Thresh1_duplicate",
               "description": "Low Analog Alarm Threshold 1  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4595,14 +4685,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog1Thresh2_duplicate",
-              "summary": "LowAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog1Thresh2_duplicate",
               "description": "Low Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4612,14 +4702,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "analog1DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog1DeltaThresh_duplicate",
               "description": "Delta Analog Alarm Threshold  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4629,10 +4719,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             }
           ]
         }
@@ -4657,8 +4744,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog2Thresh1_duplicate",
-              "summary": "HighAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog2Thresh1_duplicate",
               "description": "High Analog Alarm Threshold 1 Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4668,14 +4758,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highAnalog2Thresh2_duplicate",
-              "summary": "HighAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog2Thresh2_duplicate",
               "description": "High Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4685,14 +4775,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog2Thresh1_duplicate",
-              "summary": "LowAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog2Thresh1_duplicate",
               "description": "Low Analog Alarm Threshold 1  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4702,14 +4792,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog2Thresh2_duplicate",
-              "summary": "LowAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog2Thresh2_duplicate",
               "description": "Low Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4719,14 +4809,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "analog2DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog2DeltaThresh_duplicate",
               "description": "Delta Analog Alarm Threshold  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4736,10 +4826,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             }
           ]
         }
@@ -4764,8 +4851,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog3Thresh1_duplicate",
-              "summary": "HighAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog3Thresh1_duplicate",
               "description": "High Analog Alarm Threshold 1 Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4775,14 +4865,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highAnalog3Thresh2_duplicate",
-              "summary": "HighAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog3Thresh2_duplicate",
               "description": "High Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4792,14 +4882,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog3Thresh1_duplicate",
-              "summary": "LowAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog3Thresh1_duplicate",
               "description": "Low Analog Alarm Threshold 1  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4809,14 +4899,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog3Thresh2_duplicate",
-              "summary": "LowAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog3Thresh2_duplicate",
               "description": "Low Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4826,14 +4916,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "analog3DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog3DeltaThresh_duplicate",
               "description": "Delta Analog Alarm Threshold  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4843,10 +4933,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             }
           ]
         }
@@ -4871,8 +4958,11 @@
         "schema": {
           "items": [
             {
-              "name": "highAnalog4Thresh1_duplicate",
-              "summary": "HighAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog4Thresh1_duplicate",
               "description": "High Analog Alarm Threshold 1 Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4882,14 +4972,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "highAnalog4Thresh2_duplicate",
-              "summary": "HighAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog4Thresh2_duplicate",
               "description": "High Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4899,14 +4989,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 2,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog4Thresh1_duplicate",
-              "summary": "LowAnalogThresh1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog4Thresh1_duplicate",
               "description": "Low Analog Alarm Threshold 1  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4916,14 +5006,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 3,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "lowAnalog4Thresh2_duplicate",
-              "summary": "LowAnalogThresh2",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog4Thresh2_duplicate",
               "description": "Low Analog Alarm Threshold 2  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4933,14 +5023,14 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 4,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             },
             {
-              "name": "analog4DeltaThresh_duplicate",
-              "summary": "DeltaThresh",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog4DeltaThresh_duplicate",
               "description": "Delta Analog Alarm Threshold  Counts",
               "type": "integer",
               "minimumlength": 0,
@@ -4950,10 +5040,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 5,
               "x-default": "4096",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             }
           ]
         }
@@ -4978,8 +5065,11 @@
         "schema": {
           "items": [
             {
-              "name": "activeMode_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "activeMode_duplicate",
               "description": "0 = inactive\r\n1 = active (RTC enabled, sample enabled)",
               "type": "integer",
               "minimumlength": 0,
@@ -4989,10 +5079,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -5017,8 +5104,11 @@
         "schema": {
           "items": [
             {
-              "name": "useCodedPhy_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "useCodedPhy_duplicate",
               "description": "Coded Phy Value",
               "type": "integer",
               "minimumlength": 0,
@@ -5028,10 +5118,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "0",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "0"
             }
           ]
         }
@@ -5056,8 +5143,11 @@
         "schema": {
           "items": [
             {
-              "name": "txPower_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "txPower_duplicate",
               "description": "Tx Power (dBm)",
               "type": "integer",
               "minimumlength": 0,
@@ -5067,10 +5157,7 @@
               "x-ctype": "int8_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "8",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "8"
             }
           ]
         }
@@ -5095,8 +5182,11 @@
         "schema": {
           "items": [
             {
-              "name": "networkId_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "networkId_duplicate",
               "description": "Network Id",
               "type": "integer",
               "minimumlength": 0,
@@ -5106,10 +5196,7 @@
               "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": "0",
-              "x-example": "100",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "100"
             }
           ]
         }
@@ -5134,8 +5221,11 @@
         "schema": {
           "items": [
             {
-              "name": "configVersion_duplicate",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "configVersion_duplicate",
               "description": "Config Version",
               "type": "integer",
               "minimumlength": 0,
@@ -5145,10 +5235,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "10",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "10"
             }
           ]
         }
@@ -5173,8 +5260,11 @@
         "schema": {
           "items": [
             {
-              "name": "magnetState",
-              "summary": "Value",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "magnetState",
               "description": "Magnet status",
               "type": "integer",
               "minimumlength": 0,
@@ -5184,10 +5274,7 @@
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
-              "x-example": "1",
-              "x-backup": 0,
-              "x-lockable": 0,
-              "x-broadcast": 0
+              "x-example": "1"
             }
           ]
         }
