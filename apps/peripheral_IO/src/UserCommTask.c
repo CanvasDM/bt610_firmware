@@ -7,6 +7,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <logging/log.h>
+#define LOG_LEVEL LOG_LEVEL_DBG
+LOG_MODULE_REGISTER(UserComm);
+#define THIS_FILE "UserComm"
+
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
@@ -16,33 +21,26 @@
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include "FrameworkIncludes.h"
-#include "Bracket.h"
-
-#include "UserCommTask.h"
 #include <drivers/spi.h>
 
-#include <logging/log.h>
-#define LOG_LEVEL LOG_LEVEL_DBG
-LOG_MODULE_REGISTER(UserComm);
+#include "FrameworkIncludes.h"
+#include "UserCommTask.h"
+
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
-#define THIS_FILE "UserCommTask"
-#if !USER_COMM_TASK_USES_MAIN_THREAD
-  #ifndef USER_COMM_TASK_PRIORITY
-    #define USER_COMM_TASK_PRIORITY K_PRIO_PREEMPT(1)
-  #endif
 
-  #ifndef USER_COMM_TASK_STACK_DEPTH
-    #define USER_COMM_TASK_STACK_DEPTH 4096
-  #endif
+#ifndef USER_COMM_TASK_PRIORITY
+#define USER_COMM_TASK_PRIORITY K_PRIO_PREEMPT(1)
+#endif
+
+#ifndef USER_COMM_TASK_STACK_DEPTH
+#define USER_COMM_TASK_STACK_DEPTH 4096
 #endif
 
 #ifndef USER_COMM_TASK_QUEUE_DEPTH
-  #define USER_COMM_TASK_QUEUE_DEPTH 8
+#define USER_COMM_TASK_QUEUE_DEPTH 8
 #endif
-
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(spi1), okay)
 #define SPI_DEV_NAME	DT_LABEL(DT_NODELABEL(spi1))
@@ -50,15 +48,10 @@ LOG_MODULE_REGISTER(UserComm);
 #error "Please set the correct spi device"
 #endif
 
-typedef struct UserCommTaskTag
-{
+typedef struct UserCommTaskTag {
   FwkMsgTask_t msgTask; 
-  BracketObj_t *pBracket; 
 
 } UserCommTaskObj_t;
-/******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -67,19 +60,17 @@ static UserCommTaskObj_t userCommTaskObject;
 
 K_THREAD_STACK_DEFINE(userCommTaskStack, USER_COMM_TASK_STACK_DEPTH);
 
-K_MSGQ_DEFINE(userCommTaskQueue, 
-              FWK_QUEUE_ENTRY_SIZE, 
-              USER_COMM_TASK_QUEUE_DEPTH, 
-              FWK_QUEUE_ALIGNMENT);
+K_MSGQ_DEFINE(userCommTaskQueue, FWK_QUEUE_ENTRY_SIZE,
+	      USER_COMM_TASK_QUEUE_DEPTH, FWK_QUEUE_ALIGNMENT);
 //default values can be changed              
-static struct spi_config spi_conf = 
-  {
+static struct spi_config spi_conf = {
     .frequency = 10000,
     .operation = (SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) |
             SPI_LINES_SINGLE),
     .slave     = 0,
     .cs        = NULL,
-  };
+};
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -89,21 +80,20 @@ static uint8_t UserCommSpiSend(struct device *spi,
 			  const uint8_t *data, size_t len);
 
 //static DispatchResult_t UserCommTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-//=================================================================================================
-// Framework Message Dispatcher
-//=================================================================================================
 
+/******************************************************************************/
+/* Framework Message Dispatcher                                               */
+/******************************************************************************/
 static FwkMsgHandler_t UserCommTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
-  switch( MsgCode )
-  {
+	/* clang-format off */
+	switch (MsgCode) {
   case FMC_INVALID:            return Framework_UnknownMsgHandler;
-  //case FMC_PERIODIC:           return UserCommTaskPeriodicMsgHandler;
- // case FMC_CODE_BUTTON_ISR:    return ButtonIsrMsgHandler;
- // case FMC_WATCHDOG_CHALLENGE: return Watchdog_ChallengeHandler;
   default:                     return NULL;
   }
+	/* clang-format on */
 }
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -114,9 +104,11 @@ void UserCommTask_Initialize(void)
 
   userCommTaskObject.msgTask.rxer.id               = FWK_ID_USER_COMM_TASK;
   userCommTaskObject.msgTask.rxer.rxBlockTicks     = K_FOREVER;
-  userCommTaskObject.msgTask.rxer.pMsgDispatcher   = UserCommTaskMsgDispatcher;
+	userCommTaskObject.msgTask.rxer.pMsgDispatcher =
+		UserCommTaskMsgDispatcher;
   userCommTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
-  userCommTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
+	userCommTaskObject.msgTask.timerPeriodTicks =
+		K_MSEC(0); // 0 for one shot
   userCommTaskObject.msgTask.rxer.pQueue           = &userCommTaskQueue;
   
   Framework_RegisterTask(&userCommTaskObject.msgTask);
@@ -125,33 +117,25 @@ void UserCommTask_Initialize(void)
     k_thread_create(&userCommTaskObject.msgTask.threadData, 
                     userCommTaskStack,
                     K_THREAD_STACK_SIZEOF(userCommTaskStack),
-                    UserCommTaskThread,
-                    &userCommTaskObject, 
-                    NULL, 
-                    NULL,
-                    USER_COMM_TASK_PRIORITY, 
-                    0, 
-                    K_NO_WAIT);
+				UserCommTaskThread, &userCommTaskObject, NULL,
+				NULL, USER_COMM_TASK_PRIORITY, 0, K_NO_WAIT);
 
   k_thread_name_set(userCommTaskObject.msgTask.pTid, THIS_FILE);
 
-//  userCommTaskObject.pBracket = 		
-//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
+	//  userCommTaskObject.pBracket =
+	//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+	//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 	//userCommTaskObject.conn = NULL;
-
 }
 //void UserCommTask_ConfigSPI(spi_config *config)
 //{
-  //memset(&spi_conf,spi_cfg, sizeof(spi_cfg));
+//memset(&spi_conf,spi_cfg, sizeof(spi_cfg));
 //}
-uint8_t UserCommTask_SendData(commType_t comm,
-			  const uint8_t *data, size_t len)
+uint8_t UserCommTask_SendData(commType_t comm, const uint8_t *data, size_t len)
 {
   uint8_t returnStatus = 0;
   struct device *spiDevice;
-  switch(comm)
-  {
+	switch (comm) {
     case UART_COMM:
       break;
     case I2C_COMM:
@@ -159,8 +143,7 @@ uint8_t UserCommTask_SendData(commType_t comm,
     case SPI_CS1_COMM:
       spiDevice = device_get_binding(SPI_DEV_NAME);
       returnStatus = UserCommSpiSend(spiDevice, &spi_conf, data, len);
-      if(returnStatus != 0)
-      { 
+		if (returnStatus != 0) {
         LOG_ERR("Code %d", returnStatus);
       }
       break;
@@ -170,45 +153,41 @@ uint8_t UserCommTask_SendData(commType_t comm,
       LOG_ERR("Not valid COMM");
       break;
   };
-  if(returnStatus == 1)
-  {
-    LOG_ERR("Comm Type %d Code %d failed",comm, returnStatus);
+	if (returnStatus == 1) {
+		LOG_ERR("Comm Type %d Code %d failed", comm, returnStatus);
   }
-  return(returnStatus);
+	return (returnStatus);
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 static void UserCommTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
-   UserCommTaskObj_t *pObj = (UserCommTaskObj_t*)pArg1;
-
+	UserCommTaskObj_t *pObj = (UserCommTaskObj_t *)pArg1;
   
-  while( true )
-  {
+	while (true) {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
 }
 
 void uartCallBack(struct device *x)
 {
-//	uart_irq_update(x);
-//	int data_length = 0;
+	//	uart_irq_update(x);
+	//	int data_length = 0;
 
-//	if (uart_irq_rx_ready(x)) {
-//		data_length = uart_fifo_read(x, uart_buf, sizeof(uart_buf));
-//		uart_buf[data_length] = 0;
-//	}
+	//	if (uart_irq_rx_ready(x)) {
+	//		data_length = uart_fifo_read(x, uart_buf, sizeof(uart_buf));
+	//		uart_buf[data_length] = 0;
+	//	}
   //	printk("%s", uart_buf);
 }
 static uint8_t UserCommSpiSend(struct device *spi,
 			  const struct spi_config *spi_cfg,
 			  const uint8_t *data, size_t len)
 {
-	const struct spi_buf_set tx =
-   {
-		.buffers = &(const struct spi_buf)
-    {
+	const struct spi_buf_set tx = {
+		.buffers =
+			&(const struct spi_buf){
 			.buf = (uint8_t *)data,
 			.len = len,
 		},

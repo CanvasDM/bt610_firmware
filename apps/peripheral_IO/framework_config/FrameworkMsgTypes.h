@@ -90,7 +90,6 @@ typedef struct
   uint32_t durationMs;
   
 } LedTestMsg_t;
-
 #ifdef __cplusplus
 }
 #endif

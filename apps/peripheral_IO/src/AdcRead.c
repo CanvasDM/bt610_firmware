@@ -10,8 +10,7 @@
 /* Includes                                                                   */
 /******************************************************************************/
 #include "AdcRead.h"
-//#include "AnalogIn.h"
-#include <adc.h>
+#include <drivers/adc.h>
 #include <string.h>
 #include <hal/nrf_saadc.h>
 #include <zephyr.h>
@@ -24,7 +23,10 @@ LOG_MODULE_REGISTER(AdcRead);
 /******************************************************************************/
 // ADC Sampling Settings
 //#define CONFIG_ADC_CONFIGURABLE_INPUTS
-#define ADC_DEVICE_NAME		           DT_LABEL(DT_INST(0, nordic_nrf_saadc))//(DT_LABEL(DT_NODELABEL(adc)))//DT_ALIAS_ADC_0_LABEL
+#define ADC_DEVICE_NAME                                                        \
+	DT_LABEL(DT_INST(                                                      \
+		0,                                                             \
+		nordic_nrf_saadc)) //(DT_LABEL(DT_NODELABEL(adc)))//DT_ALIAS_ADC_0_LABEL
 #define ADC_RESOLUTION		           (12)
 #define ADC_GAIN	                   ADC_GAIN_1_6
 #define ADC_REFERENCE                  ADC_REF_INTERNAL
@@ -34,12 +36,15 @@ LOG_MODULE_REGISTER(AdcRead);
 #define ADC_VDD_CHANNEL_INPUT          NRF_SAADC_INPUT_VDD
 #define BUFFER_SIZE			           (6)
 #define BAD_ANALOG_READ                (0)
-#define ADC_REF_VOLTAGE_IN_MILLIVOLTS  600  //!< Reference voltage (in milli volts) used by ADC while doing conversion.
+#define ADC_REF_VOLTAGE_IN_MILLIVOLTS                                          \
+	600 //!< Reference voltage (in milli volts) used by ADC while doing conversion.
 #define ADC_RES_10BIT                  1024 //!< Maximum digital value for 10-bit ADC conversion.
 #define ADC_RES_12BIT                  4096
-#define ADC_PRE_SCALING_COMPENSATION   6    //!< The ADC is configured to use VDD with 1/3 prescaling as input. And hence the result of conversion is to be multiplied by 3 to get the actual value of the battery voltage.
+#define ADC_PRE_SCALING_COMPENSATION                                           \
+	6 //!< The ADC is configured to use VDD with 1/3 prescaling as input. And hence the result of conversion is to be multiplied by 3 to get the actual value of the battery voltage.
 #define ADC_RESULT_IN_MILLI_VOLTS(ADC_VALUE) \
-    ((((ADC_VALUE) * ADC_REF_VOLTAGE_IN_MILLIVOLTS) / ADC_RES_12BIT) * ADC_PRE_SCALING_COMPENSATION)
+	((((ADC_VALUE)*ADC_REF_VOLTAGE_IN_MILLIVOLTS) / ADC_RES_12BIT) *       \
+	 ADC_PRE_SCALING_COMPENSATION)
 
 #define ADC_IN1                 NRF_SAADC_INPUT_AIN0
 /******************************************************************************/
@@ -54,8 +59,7 @@ static uint8_t _LastChannel = 250;
 static int16_t m_sample_buffer[BUFFER_SIZE];
 
 // the channel configuration with channel not yet filled in
-static struct adc_channel_cfg m_1st_channel_cfg = 
-{
+static struct adc_channel_cfg m_1st_channel_cfg = {
 	.gain             = ADC_GAIN,
 	.reference        = ADC_REFERENCE,
 	.acquisition_time = ADC_ACQUISITION_TIME,
@@ -69,9 +73,10 @@ static struct adc_channel_cfg m_1st_channel_cfg =
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static struct device* getAdcDevice(void);
-static int16_t readOneChannel(AnalogTypesChannel_t channelReading, uint8_t input);
-struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin);
+static struct device *getAdcDevice(void);
+static int16_t readOneChannel(AnalogTypesChannel_t channelReading,
+			      uint8_t input);
+struct device *init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -89,11 +94,10 @@ uint32_t ADC_GetBatteryMv(void)
     //GIVE_SEMAPHORE(adcControl.adcBusy);
 	//millivolts = ADC_RESULT_IN_MILLI_VOLTS(analogValue);
 	millivolts = analogValue;
-	//LOG_DBG("anlogBatt = %d\n",analogValue);
-	adc_raw_to_millivolts(ADC_REFERENCE,
-				ADC_GAIN, ADC_RESOLUTION,
+	//LOG_DBG("analogBatt = %d\n",analogValue);
+	adc_raw_to_millivolts(ADC_REFERENCE, ADC_GAIN, ADC_RESOLUTION,
 				&millivolts);
-    return(analogValue);
+	return (analogValue);
 }
 
 // ------------------------------------------------
@@ -102,34 +106,33 @@ uint32_t ADC_GetBatteryMv(void)
 uint32_t AnalogRead(AnalogTypesChannel_t channelReading)
 {
 	int16_t sv = readOneChannel(channelReading, channelReading);
-//	if(sv == BAD_ANALOG_READ)
-//	{
-//		return sv;
-//	}
+	//	if(sv == BAD_ANALOG_READ)
+	//	{
+	//		return sv;
+	//	}
 
 	// Convert the result to voltage
 	// Result = [V(p) - V(n)] * GAIN/REFERENCE / 2^(RESOLUTION)
 	int multip = 256;
 	// find 2**adc_resolution
-	switch(ADC_RESOLUTION)
-	{
-		default :
-		case 8 :
+	switch (ADC_RESOLUTION) {
+	default:
+	case 8:
 			multip = 256;
 			break;
-		case 10 :
+	case 10:
 			multip = 1024;
 			break;
-		case 12 :
+	case 12:
 			multip = 4096;
 			break;
-		case 14 :
+	case 14:
 			multip = 16384;
 			break;
 	}
 
 	// the 3.6 relates to the voltage divider being used in my circuit
-	float fout = (sv * 3.6 / multip);
+	//float fout = (sv * 3.6 / multip); todo ?
 	return (uint32_t)sv;
 }
 
@@ -145,44 +148,36 @@ double TestAnalog(int channel)
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 // initialize the adc channel
-struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
+struct device *init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 {
 	int ret;
 	struct device *adc_dev = getAdcDevice();
     __ASSERT(adc_dev, "Failed to get device binding");
 
-	if(_LastChannel != channelReading)
-	{
+	if (_LastChannel != channelReading) {
 		_IsInitialized = false;
 		_LastChannel = channelReading;
 	}
 
-	if ( adc_dev != NULL && !_IsInitialized)
-	{
-
+	if (adc_dev != NULL && !_IsInitialized) {
 		m_1st_channel_cfg.channel_id = channelReading;
-		if(channelReading == THERMISTOR_SENSOR_2_CH)
-		{
+		if (channelReading == THERMISTOR_SENSOR_2_CH) {
 			m_1st_channel_cfg.reference = ADC_REFERENCE_THERMISTOR;
 			m_1st_channel_cfg.gain = ADC_GAIN_THERMISTOR;
-		}
-		else
-		{
+		} else {
 			m_1st_channel_cfg.reference = ADC_REFERENCE;
 			m_1st_channel_cfg.gain = ADC_GAIN;
 		}
 #if defined(CONFIG_ADC_CONFIGURABLE_INPUTS)
-        m_1st_channel_cfg.input_positive = inputPin;//channel+1,
+		m_1st_channel_cfg.input_positive = inputPin; //channel+1,
 #endif
 		ret = adc_channel_setup(adc_dev, &m_1st_channel_cfg);
-		if(ret != 0)
-		{
+		if (ret != 0) {
 			//ASeries.printf("Setting up of the first channel failed with code %d", ret);
 			adc_dev = NULL;
-		}
-		else
-		{
-			_IsInitialized = true;	// we don't have any other analog users
+		} else {
+			_IsInitialized =
+				true; // we don't have any other analog users
 		}
 	}
 
@@ -191,14 +186,15 @@ struct device* init_adc(AnalogTypesChannel_t channelReading, uint8_t inputPin)
 	return adc_dev;
 }
 // return device* for the adc
-static struct device* getAdcDevice(void)
+static struct device *getAdcDevice(void)
 {
 	return device_get_binding(ADC_DEVICE_NAME);
 }
 // ------------------------------------------------
 // read one channel of adc
 // ------------------------------------------------
-static int16_t readOneChannel(AnalogTypesChannel_t channelReading, uint8_t inputPin)
+static int16_t readOneChannel(AnalogTypesChannel_t channelReading,
+			      uint8_t inputPin)
 {
 	const struct adc_sequence sequence = {
 		.options     = NULL,				// extra samples and callback
@@ -215,11 +211,9 @@ static int16_t readOneChannel(AnalogTypesChannel_t channelReading, uint8_t input
 
 	struct device *adc_dev = init_adc(channelReading, inputPin);
 
-	if (adc_dev)
-	{
+	if (adc_dev) {
 		ret = adc_read(adc_dev, &sequence);
-		if(ret == 0)
-		{
+		if (ret == 0) {
 			sample_value = m_sample_buffer[0];
 		}
 	}

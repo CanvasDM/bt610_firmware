@@ -1,4 +1,4 @@
-//=================================================================================================
+/******************************************************************************/
 //!
 #define THIS_FILE "AttributeFunctions.c"
 //!
@@ -9,12 +9,11 @@
 //!
 //! Copyright (c) 2020 Laird Connectivity
 //! All Rights Reserved.
-//=================================================================================================
+/******************************************************************************/
 
-
-//=================================================================================================
-// Includes
-//=================================================================================================
+/******************************************************************************/
+/* Includes                                                                   */
+/******************************************************************************/
 #include <zephyr.h>
 #include <device.h>
 #include <stdint.h>
@@ -24,42 +23,41 @@
 #include "BspSupport.h"
 #include "AttributeFunctions.h"
 
-//=================================================================================================
+/******************************************************************************/
 // Local Constant, Macro and Type Definitions
-//=================================================================================================
+/******************************************************************************/
 
 // pystart - hash info
 // pyend
 
 #ifndef ATTRIBUTE_TABLE_SIZE
-  #define ATTRIBUTE_TABLE_SIZE (MAX_HASH_VALUE + 1)
+#define ATTRIBUTE_TABLE_SIZE (MAX_HASH_VALUE + 1)
 #endif
 
 #if ATTRIBUTE_TABLE_SIZE != (MAX_HASH_VALUE + 1)
-  //#error "Invalid Attribute Table Size"
+//#error "Invalid Attribute Table Size"
 #endif
 
 #if MAX_WORD_LENGTH >= ATTRIBUTE_NAME_MAX_LENGTH
-  //#error "Attribute Name Too Small"
+//#error "Attribute Name Too Small"
 #endif
 
 #if ATTRIBUTE_TOTAL_KEYWORDS != TOTAL_KEYWORDS
-  //#error "Header doesn't match source"
+//#error "Header doesn't match source"
 #endif
 
 #define BYPASS_STRING_LENGTH 2
 
-//=================================================================================================
+/******************************************************************************/
 // Add things to the end!  Do not remove items.
 
-typedef struct RwAttributesTag
-{
+typedef struct RwAttributesTag {
     // pystart - rw attributes
-  char sensorName[23+1];
-  char sensorLocation[32+1];
+	char sensorName[23 + 1];
+	char sensorLocation[32 + 1];
   uint16_t advertisingInterval;
   uint16_t advertisingDuration;
-  char passkey[6+1];
+	char passkey[6 + 1];
   uint8_t lock;
   uint16_t batterySenseInterval;
   uint16_t temperatureSenseInterval;
@@ -81,7 +79,7 @@ typedef struct RwAttributesTag
   int16_t highTemp2Thresh2;
   int16_t lowTemp2Thresh1;
   int16_t lowTemp2Thresh2;
-  uint16_t temp2DeltaThreshe;
+	uint16_t temp2DeltaThresh;
   int16_t highTemp3Thresh1;
   int16_t highTemp3Thresh2;
   int16_t lowTemp3Thresh1;
@@ -123,8 +121,8 @@ typedef struct RwAttributesTag
 } RwAttribute_t;
 //static_assert( ((sizeof(RwAttribute_t) % 4) == 0), "FDS requires 32-bit sized data");
 
-static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES =
-{
+#if 0
+static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
   // pystart - rw defaults
   .sensorName = "BT610",
   .sensorLocation = "",
@@ -152,7 +150,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES =
   .highTemp2Thresh2 = 127,
   .lowTemp2Thresh1 = -127,
   .lowTemp2Thresh2 = -127,
-  .temp2DeltaThreshe = 255,
+	.temp2DeltaThresh = 255,
   .highTemp3Thresh1 = 127,
   .highTemp3Thresh2 = 127,
   .lowTemp3Thresh1 = -127,
@@ -192,9 +190,9 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES =
   .ledTestActive = 0
   // pyend
 };
+#endif
 
-typedef struct RoAttributesTag
-{
+typedef struct RoAttributesTag {
   // pystart - ro attributes
   int32_t temperatureAll;
   int32_t temperatureResult1;
@@ -229,10 +227,10 @@ typedef struct RoAttributesTag
   uint8_t highAnalog4Alarm;
   uint8_t lowAnalog4Alarm;
   uint8_t deltaAnalog4Alarm;
-  char hwVersion[1+1];
-  char firmwareVersion[11+1];
-  char resetReason[8+1];
-  char bluetoothAddress[12+1];
+	char hwVersion[1 + 1];
+	char firmwareVersion[11 + 1];
+	char resetReason[8 + 1];
+	char bluetoothAddress[12 + 1];
   uint8_t mtu;
   uint32_t flags;
   uint16_t resetCount;
@@ -243,8 +241,8 @@ typedef struct RoAttributesTag
   // pyend
 } RoAttribute_t;
 
-static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES =
-{
+#if 0
+static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
   // pystart - ro defaults
   .temperatureAll = 0,
   .temperatureResult1 = 0,
@@ -292,23 +290,28 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES =
   .magnetState = 0
   // pyend
 };
+#endif
 
-//=================================================================================================
-// Local Data Definitions
-//=================================================================================================
+/******************************************************************************/
+/* Local Data Definitions                                                     */
+/******************************************************************************/
 
+#if 0
 static RwAttribute_t rw;
 static RoAttribute_t ro;
+#endif
 
-//=================================================================================================
+/******************************************************************************/
 // Local Function Prototypes
-//=================================================================================================
-bool AttributeValidator_Passkey(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_TxPower(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+/******************************************************************************/
+bool AttributeValidator_Passkey(uint32_t Index, void *pValue, size_t Length,
+				bool DoWrite);
+bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
+				bool DoWrite);
 
-//=================================================================================================
-// Global Data Definitions
-//=================================================================================================
+/******************************************************************************/
+/* Global Data Definitions                                                    */
+/******************************************************************************/
 
 // Expander for string and other values
 //
@@ -320,12 +323,13 @@ bool AttributeValidator_TxPower(uint32_t Index, void * pValue, size_t Length, bo
 #define RP_ATTRS(n) STR(n), ro.n, DRO.n, sizeof(ro.n), PROTOCOL
 #define RP_ATTRX(n) STR(n), &ro.n, &DRO.n, sizeof(ro.n), PROTOCOL
 
-#define ATTR_UNUSED "\0" , NULL , NULL , 0, RESEVED_CATEGORY, u , 0, 0, 0, NULL, 0, 0 
+#define ATTR_UNUSED                                                            \
+	"\0", NULL, NULL, 0, RESEVED_CATEGORY, u, 0, 0, 0, NULL, 0, 0
 
 // If min == max then range isn't checked.
+#ifdef STILL_WORKING_ON
 //index.....name.......................................type.backup.lockable.broadcast.validator.................min...max.
-EXTERNED AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] =
-{
+EXTERNED AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] = {
   // pystart - attribute table
   [0 ] = { RW_ATTRS(sensorName)                            , char, False, False, False, AttributeValidator_GenericString , 0, 0 },
   [1 ] = { RW_ATTRS(sensorLocation)                        , char, False, False, False, AttributeValidator_GenericString , 0, 0 },
@@ -448,7 +452,7 @@ void Attribute_Initialize(void)
   memcpy(&ro, &DRO, sizeof(RoAttribute_t));
 }
 
-void * Attribute_GetRwPointer(void)
+void *Attribute_GetRwPointer(void)
 {
   return &rw;
 }
@@ -479,18 +483,17 @@ bool Attribute_DeprecationHandler(void)
 void Attribute_SetNonBackupValuesToDefault(void)
 {
   size_t i = 0;
-  for( i = 0; i < ATTRIBUTE_TABLE_SIZE; i++ )
-  {
-    if( !attrTable[i].backup )
-    {  
-      memcpy(attrTable[i].pData, attrTable[i].pDefault, attrTable[i].size);
+	for (i = 0; i < ATTRIBUTE_TABLE_SIZE; i++) {
+		if (!attrTable[i].backup) {
+			memcpy(attrTable[i].pData, attrTable[i].pDefault,
+			       attrTable[i].size);
     }
   }
 }
 
-//=================================================================================================
+/******************************************************************************/
 // Attribute Hash Table (allows near constant time lookup of names)
-//=================================================================================================
+/******************************************************************************/
 
 uint32_t Attribute_GetMaxHashValue(void)
 {
@@ -499,8 +502,7 @@ uint32_t Attribute_GetMaxHashValue(void)
 
 uint32_t Attribute_Hash(const char *str, size_t len)
 {
-  static uint8_t asso_values[] =
-  {
+	static uint8_t asso_values[] = {
     // pystart - asso values
     // pyend
   };
@@ -513,30 +515,27 @@ uint32_t Attribute_Hash(const char *str, size_t len)
   }
 }
 
-//=================================================================================================
+/******************************************************************************/
 // Local Function Definitions
-//=================================================================================================
+/******************************************************************************/
 
-bool AttributeValidator_Passkey(uint32_t Index, void * pValue, size_t Length, bool DoWrite)
+bool AttributeValidator_Passkey(uint32_t Index, void *pValue, size_t Length,
+				bool DoWrite)
 {
   AttributeEntry_t *pEntry = &attrTable[Index];
-  char * p = (char *)pValue;
+	char *p = (char *)pValue;
   
-  if( Length == (PASSKEY_LENGTH-1) ) // -1 to account for NUL
+	if (Length == (PASSKEY_LENGTH - 1)) // -1 to account for NUL
   {
     size_t i;
-    for( i = 0; i < Length; i++ )
-    {
-      if( (p[i] < '0') || (p[i] > '9') )
-      {
+		for (i = 0; i < Length; i++) {
+			if ((p[i] < '0') || (p[i] > '9')) {
         return false;
       }
     }
     
     // Don't use strncmp because pValue isn't NUL terminated when coming from JSON
-    if( DoWrite 
-       && ( (memcmp(pEntry->pData, pValue, Length) != 0) ) )
-    {
+		if (DoWrite && ((memcmp(pEntry->pData, pValue, Length) != 0))) {
       pEntry->modified = true;
       memset(pEntry->pData, 0, pEntry->size);
       strncpy(pEntry->pData, pValue, Length);
@@ -546,16 +545,16 @@ bool AttributeValidator_Passkey(uint32_t Index, void * pValue, size_t Length, bo
   return false;
 }
 
-bool AttributeValidator_TxPower(uint32_t Index, void * pValue, size_t Length, bool DoWrite)
+bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
+				bool DoWrite)
 {
   UNUSED_PARAMETER(Length);
   AttributeEntry_t *pEntry = &attrTable[Index];
-  int32_t value = *((int32_t*)pValue);
+	int32_t value = *((int32_t *)pValue);
 
   // Values supported by nRF52840
   bool valid = false;
-  switch( value )
-  {
+	switch (value) {
   case -40: 
   case -20: 
   case -16: 
@@ -578,13 +577,10 @@ bool AttributeValidator_TxPower(uint32_t Index, void * pValue, size_t Length, bo
     break;
   }
   
-  if( valid )
-  {
-    if( DoWrite
-       && value != *((int32_t*)pEntry->pData) )
-    {
+	if (valid) {
+		if (DoWrite && value != *((int32_t *)pEntry->pData)) {
       pEntry->modified = true;
-      *((int32_t*)pEntry->pData) = value;
+			*((int32_t *)pEntry->pData) = value;
     }
     return true;
   }

@@ -86,9 +86,7 @@ K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 K_MSGQ_DEFINE(userIfTaskQueue, FWK_QUEUE_ENTRY_SIZE, USER_IF_TASK_QUEUE_DEPTH,
               FWK_QUEUE_ALIGNMENT);
 
-enum
-{
-  IN1 = 1,
+enum { IN1 = 1,
   IN2,
   IN3,
   IN4,
@@ -117,8 +115,7 @@ static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
 static FwkMsgHandler_t UserIfTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
   /* clang-format off */
-  switch (MsgCode) 
-  {
+	switch (MsgCode) {
     case FMC_INVALID:            return Framework_UnknownMsgHandler;
     default:                     return NULL;
   }
@@ -145,20 +142,14 @@ void UserInterfaceTask_Initialize(void)
     k_thread_create(&userIfTaskObject.msgTask.threadData, 
                     userIfTaskStack,
                     K_THREAD_STACK_SIZEOF(userIfTaskStack),
-                    UserIfTaskThread,
-                    &userIfTaskObject, 
-                    NULL, 
-                    NULL,
-                    USER_IF_TASK_PRIORITY, 
-                    0, 
-                    K_NO_WAIT);
+				UserIfTaskThread, &userIfTaskObject, NULL, NULL,
+				USER_IF_TASK_PRIORITY, 0, K_NO_WAIT);
 
   k_thread_name_set(userIfTaskObject.msgTask.pTid, THIS_FILE);
 
-//  userIfTaskObject.pBracket = 		
-//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
-//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
-	
+	//  userIfTaskObject.pBracket =
+	//    Bracket_Initialize(CONFIG_JSON_BRACKET_BUFFER_SIZE,
+	//				   k_malloc(CONFIG_JSON_BRACKET_BUFFER_SIZE));
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -169,8 +160,7 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
   InitializeButton();
 
-  while( true )
-  {
+	while (true) {
     Framework_MsgReceiver(&pObj->msgTask.rxer);
   }
 }
@@ -180,15 +170,13 @@ static void InitializeButton(void)
   uint16_t ret;
 
 	buttonDevice = device_get_binding(BUTTON1_DEV);
-	if (buttonDevice == NULL) 
-	{
+	if (buttonDevice == NULL) {
 		printk("Error: didn't find %s device\n", BUTTON1_DEV);
 		return;
 	}
 
   ret = gpio_pin_configure(buttonDevice, BUTTON1_PIN, BUTTON1_FLAGS);
-	if (ret != 0) 
-	{
+	if (ret != 0) {
 		printk("Error %d: failed to configure %s pin %d\n", ret,
 		       BUTTON1_DEV, BUTTON1_PIN);
 		return;
@@ -196,15 +184,14 @@ static void InitializeButton(void)
 
 	ret = gpio_pin_interrupt_configure(buttonDevice, BUTTON1_PIN,
 					   GPIO_INT_EDGE_TO_ACTIVE);
-	if (ret != 0) 
-	{
+	if (ret != 0) {
 		printk("Error %d: failed to configure interrupt on %s pin %d\n",
 			ret, BUTTON1_DEV, BUTTON1_PIN);
 		return;
 	}
+
 	gpio_init_callback(&button_cb_data, ButtonHandlerIsr, BIT(BUTTON1_PIN));
 	gpio_add_callback(buttonDevice, &button_cb_data);
-  
 }
 
 /******************************************************************************/

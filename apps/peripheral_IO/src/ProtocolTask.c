@@ -7,6 +7,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <logging/log.h>
+#define LOG_LEVEL LOG_LEVEL_DBG
+LOG_MODULE_REGISTER(ProtocolTask);
+#define THIS_FILE "ProtocolTask"
+
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
@@ -17,51 +22,39 @@
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include "FrameworkIncludes.h"
-#include "Bracket.h"
-#include "cbor.h"
-
-#include "CborBuilder.h"
-#include "ProtocolTask.h"
-#include "BspSupport.h"
-#include <drivers/spi.h>
-
+#include <tinycbor/cbor.h>
 #include <sys/stat.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <drivers/spi.h>
 
-#include <logging/log.h>
-#define LOG_LEVEL LOG_LEVEL_DBG
-LOG_MODULE_REGISTER(ProtocolMsg);
+#include "FrameworkIncludes.h"
+#include "CborBuilder.h"
+#include "BspSupport.h"
+#include "ProtocolTask.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
-#define THIS_FILE "ProtocolTask"
-#if !PROTOCOL_TASK_USES_MAIN_THREAD
-  #ifndef PROTOCOL_TASK_PRIORITY
-    #define PROTOCOL_TASK_PRIORITY K_PRIO_PREEMPT(1)
-  #endif
+#ifndef PROTOCOL_TASK_PRIORITY
+#define PROTOCOL_TASK_PRIORITY K_PRIO_PREEMPT(1)
+#endif
 
-  #ifndef PROTOCOL_TASK_STACK_DEPTH
-    #define PROTOCOL_TASK_STACK_DEPTH 4096
-  #endif
+#ifndef PROTOCOL_TASK_STACK_DEPTH
+#define PROTOCOL_TASK_STACK_DEPTH 4096
 #endif
 
 #ifndef PROTOCOL_TASK_QUEUE_DEPTH
-  #define PROTOCOL_TASK_QUEUE_DEPTH 8
+#define PROTOCOL_TASK_QUEUE_DEPTH 8
 #endif
 
 #define CBOR_START_BYTE 0xA4
 #define CBOR_END_BYTE 0x30
 
-
-typedef struct ProtocolTaskTag
-{
+typedef struct ProtocolTaskTag {
   FwkMsgTask_t msgTask; 
-  BracketObj_t *pBracket; 
   bool data_received;
   bool data_transmitted;
   //UartMessage_t uartData;
@@ -78,33 +71,33 @@ static ProtocolTaskObj_t protocolTaskObject;
 
 K_THREAD_STACK_DEFINE(protocolTaskStack, PROTOCOL_TASK_STACK_DEPTH);
 
-K_MSGQ_DEFINE(protocolTaskQueue, 
-              FWK_QUEUE_ENTRY_SIZE, 
-              PROTOCOL_TASK_QUEUE_DEPTH, 
-              FWK_QUEUE_ALIGNMENT);
+K_MSGQ_DEFINE(protocolTaskQueue, FWK_QUEUE_ENTRY_SIZE,
+	      PROTOCOL_TASK_QUEUE_DEPTH, FWK_QUEUE_ALIGNMENT);
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void ProtocolTaskThread(void *, void *, void *);
 static void indent(int nestingLevel);
 static void dumpbytes(const uint8_t *buf, size_t len);
-static CborError cbor_stream(void *token, const char *fmt, ...);
+//static CborError cbor_stream(void *token, const char *fmt, ...);
 static CborError dumprecursive(CborValue *it, int nestingLevel);
-static void encodeStringCbor(JsonMsg_t * pJsonMsg, uint16_t id);
-static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-//=================================================================================================
-// Framework Message Dispatcher
-//=================================================================================================
-
+static void encodeStringCbor(JsonMsg_t *pJsonMsg, uint16_t id);
+static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg);
+/******************************************************************************/
+/* Framework Message Dispatcher                                               */
+/******************************************************************************/
 static FwkMsgHandler_t ProtocolTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
-  switch( MsgCode )
-  {
+	/* clang-format off */
+	switch (MsgCode) {
   case FMC_INVALID:            return Framework_UnknownMsgHandler;
   case FMC_READ_BUFFER:        return ReadRxBufferMsgHandler;
   default:                     return NULL;
   }
+	/* clang-format on */
 }
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -115,9 +108,11 @@ void ProtocolTask_Initialize(void)
 
   protocolTaskObject.msgTask.rxer.id               = FWK_ID_PROTOCOL_TASK;
   protocolTaskObject.msgTask.rxer.rxBlockTicks     = K_FOREVER;
-  protocolTaskObject.msgTask.rxer.pMsgDispatcher   = ProtocolTaskMsgDispatcher;
+	protocolTaskObject.msgTask.rxer.pMsgDispatcher =
+		ProtocolTaskMsgDispatcher;
   protocolTaskObject.msgTask.timerDurationTicks    = K_MSEC(1000);
-  protocolTaskObject.msgTask.timerPeriodTicks      = K_MSEC(0); // 0 for one shot 
+	protocolTaskObject.msgTask.timerPeriodTicks =
+		K_MSEC(0); // 0 for one shot
   protocolTaskObject.msgTask.rxer.pQueue           = &protocolTaskQueue;
   
   Framework_RegisterTask(&protocolTaskObject.msgTask);
@@ -126,43 +121,36 @@ void ProtocolTask_Initialize(void)
     k_thread_create(&protocolTaskObject.msgTask.threadData, 
                     protocolTaskStack,
                     K_THREAD_STACK_SIZEOF(protocolTaskStack),
-                    ProtocolTaskThread,
-                    &protocolTaskObject, 
-                    NULL, 
-                    NULL,
-                    PROTOCOL_TASK_PRIORITY, 
-                    0, 
-                    K_NO_WAIT);
+				ProtocolTaskThread, &protocolTaskObject, NULL,
+				NULL, PROTOCOL_TASK_PRIORITY, 0, K_NO_WAIT);
 
   k_thread_name_set(protocolTaskObject.msgTask.pTid, THIS_FILE);
-
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 static void ProtocolTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
-	ProtocolTaskObj_t *pObj = (ProtocolTaskObj_t*)pArg1;
+	ProtocolTaskObj_t *pObj = (ProtocolTaskObj_t *)pArg1;
 
- 	while( true )
-	{
+	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
 }
 static void indent(int nestingLevel)
 {
-    while (nestingLevel--)
-	{
+	while (nestingLevel--) {
         puts("  ");
 	}
 }
 static void dumpbytes(const uint8_t *buf, size_t len)
 {
-    while (len--)
-	{
+	while (len--) {
         printf("%02X ", *buf++);
 	}
 }
+
+#if 0
 static CborError cbor_stream(void *token, const char *fmt, ...)
 {
 	va_list ap;
@@ -174,22 +162,21 @@ static CborError cbor_stream(void *token, const char *fmt, ...)
 	
 	return CborNoError;
 }
+#endif
+
 static CborError dumprecursive(CborValue *it, int nestingLevel)
 {
     static bool idFound = false;
     static uint16_t idValue = 0;
     
-
-	while (!cbor_value_at_end(it)) 
-	{
+	while (!cbor_value_at_end(it)) {
         CborError err;
         CborType type = cbor_value_get_type(it);
 
         indent(nestingLevel);
         switch (type) {
         case CborArrayType:
-        case CborMapType: 
-		{
+		case CborMapType: {
             // recursive type
             CborValue recursed;
             //assert(cbor_value_is_container(it));
@@ -211,13 +198,11 @@ static CborError dumprecursive(CborValue *it, int nestingLevel)
             continue;
         }
 
-        case CborIntegerType: 
-        {
+		case CborIntegerType: {
             int64_t val;
             cbor_value_get_int64(it, &val);     // can't fail
             printf("%lld\n", (long long)val);
-            if( (idFound == false) && (nestingLevel > 0))
-            {
+			if ((idFound == false) && (nestingLevel > 0)) {
                 //This is the ID number
                 idValue = val;
                 idFound = true;
@@ -237,8 +222,7 @@ static CborError dumprecursive(CborValue *it, int nestingLevel)
             continue;
         }
 
-        case CborTextStringType: 
-		{
+		case CborTextStringType: {
             char *buf;
             size_t n;
             err = cbor_value_dup_text_string(it, &buf, &n, it);
@@ -308,18 +292,17 @@ static CborError dumprecursive(CborValue *it, int nestingLevel)
             return err;
     }
     //This is the end of the message build the reply
-    JsonMsg_t * pRsp = (JsonMsg_t *)BufferPool_Take(sizeof(JsonMsg_t));
-//    JsonBuilder_Start(pRsp, idValue);
-//    JsonBuilder_FinalizeOk(pRsp);
+	JsonMsg_t *pRsp = (JsonMsg_t *)BufferPool_Take(sizeof(JsonMsg_t));
+	//    JsonBuilder_Start(pRsp, idValue);
+	//    JsonBuilder_FinalizeOk(pRsp);
     encodeStringCbor(pRsp, idValue);
-
 
     return CborNoError;
 }
-static void encodeStringCbor(JsonMsg_t * pJsonMsg, uint16_t id)
+static void encodeStringCbor(JsonMsg_t *pJsonMsg, uint16_t id)
 {
     UartMsg_t *pUartMsg = BufferPool_Take(sizeof(UartMsg_t));
-/*
+	/*
     uint8_t buf[25] ={0};
     CborEncoder encoder, mapEncoder;
     cbor_encoder_init(&encoder, &buf, sizeof(buf), 0);
@@ -335,8 +318,7 @@ static void encodeStringCbor(JsonMsg_t * pJsonMsg, uint16_t id)
     //memcpy(pUartMsg->buffer, &buf, sizeof(buf));
     //pUartMsg->size = sizeof(buf);
     
-    if( pUartMsg != NULL )
-    {
+	if (pUartMsg != NULL) {
         //pUartMsg->size = systemUartTaskObject.uartData.size;//Bracket_Copy(pObj->pBracketObj, pUartMsg->buffer);
         pUartMsg->header.msgCode = FMC_TRANSMIT_BUFFER;
         pUartMsg->header.txId = FWK_ID_PROTOCOL_TASK;
@@ -344,20 +326,19 @@ static void encodeStringCbor(JsonMsg_t * pJsonMsg, uint16_t id)
         //memcpy(pUartMsg->buffer,systemUartTaskObject.uartData.buffer,systemUartTaskObject.uartData.size);
         FRAMEWORK_MSG_UNICAST(pUartMsg);
     }
-
 }
 
-
-static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg)
 {
     UNUSED_PARAMETER(pMsgRxer);
-    UartMsg_t * pCborMsg = (UartMsg_t *)pMsg;
+	UartMsg_t *pCborMsg = (UartMsg_t *)pMsg;
 
 	CborParser parser; 
 	CborValue value;
 
-	cbor_parser_init(pCborMsg->buffer, 
-		pCborMsg->size, 0, &parser, &value);
+	cbor_parser_init((struct cbor_decoder_reader *)pCborMsg->buffer,
+			 pCborMsg->size, &parser, &value);
 
 	dumprecursive(&value, 0);
 

@@ -43,8 +43,7 @@ static int enableAnalogPin(const struct shell *shell, size_t argc, char **argv)
 
 	SetEnablePinMsg_t *pMsg =
 		(SetEnablePinMsg_t *)BufferPool_Take(sizeof(SetEnablePinMsg_t));
-	if (pMsg != NULL) 
-	{
+	if (pMsg != NULL) {
     	pMsg->header.msgCode = FMC_CONTROL_ENABLE;
     	pMsg->header.txId = FWK_ID_USER_IF_TASK;
     	pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
@@ -66,10 +65,9 @@ static int batteryMeasurement(const struct shell *shell, size_t argc,
     uint8_t index = 0;
     uint8_t maxReadings = 10;
 
-	for (index = 0; index < maxReadings; index++) 
-	{
+	for (index = 0; index < maxReadings; index++) {
     	adcTestValue = ADC_GetBatteryMv();
-    	shell_print(shell,"Battery%d = %d \n", index, adcTestValue);
+		shell_print(shell, "Battery%d = %d \n", index, adcTestValue);
   	}
 
 	return (0);
@@ -80,20 +78,14 @@ static int readAin(const struct shell *shell, size_t argc, char **argv)
 	uint8_t ainSelected = 0;
 	ainSelected = atoi(argv[1]);
 
-	if (AnalogType == UNKOWN_INPUT) 
-	{
+	if (AnalogType == UNKOWN_INPUT) {
     	shell_print(shell, "Analog Type not set");
-  	}
-  	else if( (ainSelected == 0) || (ainSelected > 4))
-  	{
+	} else if ((ainSelected == 0) || (ainSelected > 4)) {
     	shell_print(shell, "Analog out of bounds");
-  	}
-  	else
-  	{
+	} else {
     	AnalogPinMsg_t *pMsg = (AnalogPinMsg_t *)BufferPool_Take(
     	sizeof(AnalogPinMsg_t));
-    	if(pMsg != NULL)
-    	{
+		if (pMsg != NULL) {
       		pMsg->header.msgCode = FMC_ANALOG_INPUT;
       		pMsg->header.txId = FWK_ID_USER_IF_TASK;
       		pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;  
@@ -137,8 +129,7 @@ static int enableThermistorPin(const struct shell *shell, size_t argc,
 
 	SetEnablePinMsg_t *pMsg =
 		(SetEnablePinMsg_t *)BufferPool_Take(sizeof(SetEnablePinMsg_t));
-	if (pMsg != NULL) 
-	{
+	if (pMsg != NULL) {
     	pMsg->header.msgCode = FMC_CONTROL_ENABLE;
     	pMsg->header.txId = FWK_ID_USER_IF_TASK;
     	pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;
@@ -157,8 +148,7 @@ static int readVrefPin(const struct shell *shell, size_t argc, char **argv)
   	uint8_t index = 0;
   	uint8_t maxReadings = 10;
 
-	for (index = 0; index < maxReadings; index++) 
-	{
+	for (index = 0; index < maxReadings; index++) {
     	adcVrefValue = AnalogRead(VREF_5_CH);
 		shell_print(shell, "Vref = %d \n", adcVrefValue);
   	}
@@ -171,16 +161,12 @@ static int readTherm(const struct shell *shell, size_t argc, char **argv)
 	uint8_t thermSelected = 0;
 	thermSelected = atoi(argv[1]);
 
-	if ((thermSelected == 0) || (thermSelected > 4)) 
-	{
+	if ((thermSelected == 0) || (thermSelected > 4)) {
     	shell_print(shell, "Analog out of bounds");
-	} 
-	else 
-	{
+	} else {
 		AnalogPinMsg_t *pMsg = (AnalogPinMsg_t *)BufferPool_Take(
 			sizeof(AnalogPinMsg_t));
-		if (pMsg != NULL) 
-		{
+		if (pMsg != NULL) {
       		pMsg->header.msgCode = FMC_ANALOG_INPUT;
       		pMsg->header.txId = FWK_ID_USER_IF_TASK;
       		pMsg->header.rxId = FWK_ID_ANALOG_SENSOR_TASK;     
