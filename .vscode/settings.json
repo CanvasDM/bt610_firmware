@@ -20,6 +20,7 @@
         "reboot.h": "c",
         "sstream": "c",
         "random": "c"
+        "reboot.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "cmake.configureOnOpen": true,

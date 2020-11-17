@@ -28,7 +28,7 @@ LOG_MODULE_REGISTER(ControlTask);
 #include "AnalogSensorTask.h"
 #include "LedPwm.h"
 #include "Version.h"
-#include "mcumgr_wrapper.h"
+//#include "mcumgr_wrapper.h"
 
 #include "ControlTask.h"
 
@@ -148,7 +148,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	LOG_WRN("Version %s", VERSION_STRING);
 
-	mcumgr_wrapper_register_subsystems();
+	//mcumgr_wrapper_register_subsystems();
 
     HardwareTestInit();
     BleTask_Initialize();

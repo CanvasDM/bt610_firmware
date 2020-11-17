@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(ProtocolTask);
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include <tinycbor/cbor.h>
+#include <cbor.h>
 #include <sys/stat.h>
 #include <assert.h>
 #include <stdio.h>

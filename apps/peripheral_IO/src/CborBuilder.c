@@ -13,7 +13,7 @@
 #include <device.h>
 #include <string.h>
 #include <sys/util.h>
-#include <tinycbor/cbor.h>
+#include <cbor.h>
 
 #include "FrameworkIncludes.h"
 #include "CborBuilder.h"
