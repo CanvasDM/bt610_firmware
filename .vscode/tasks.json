@@ -71,10 +71,6 @@
             "type": "pickString",
             "options": [
                 "apps/peripheral_IO",
-                "apps/peripheral_hids",
-                "apps/blink_led",
-                "apps/button",
-                "apps/blinky_pwm",
             ]
         },
         {
@@ -83,10 +79,7 @@
             "default": "boards/arm/bt6",
             "type": "pickString",
             "options": [
-                "bl654_dvk",
-                "bt710",
                 "bt6",
-                "nrf52840dk_nrf52840",
             ]
         }
     ]
