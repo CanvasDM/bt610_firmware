@@ -327,7 +327,7 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 	"\0", NULL, NULL, 0, RESEVED_CATEGORY, u, 0, 0, 0, NULL, 0, 0
 
 // If min == max then range isn't checked.
-#ifdef STILL_WORKING_ON
+#if 0
 //index.....name.......................................type.backup.lockable.broadcast.validator.................min...max.
 EXTERNED AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] = {
   // pystart - attribute table
@@ -441,6 +441,7 @@ EXTERNED AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] = {
   [107] = { RO_ATTRX(magnetState)                           , uint8_t, False, False, False, AttributeValidator_uint8_t       , 0.0, 255.0 }
   // pyend
 };
+#endif
 #ifdef STILL_WORKING_ON
 //=================================================================================================
 // Global Function Definitions

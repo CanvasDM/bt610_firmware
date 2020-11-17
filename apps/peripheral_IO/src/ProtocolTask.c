@@ -337,8 +337,8 @@ static DispatchResult_t ReadRxBufferMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	CborParser parser; 
 	CborValue value;
 
-	cbor_parser_init((struct cbor_decoder_reader *)pCborMsg->buffer,
-			 pCborMsg->size, &parser, &value);
+	cbor_parser_init(pCborMsg->buffer, 
+		pCborMsg->size, 0, &parser, &value);
 
 	dumprecursive(&value, 0);
 

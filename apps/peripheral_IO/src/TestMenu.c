@@ -6,7 +6,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-
+#if CONFIG_SHELL
 #include <logging/log.h>
 #define LOG_LEVEL LOG_LEVEL_DBG
 LOG_MODULE_REGISTER(TestMenu);
@@ -251,3 +251,5 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
   
   	SHELL_SUBCMD_SET_END);
 SHELL_CMD_REGISTER(Test, &sub_inputs, "Test", NULL);
+
+#endif //CONFIG_SHELL

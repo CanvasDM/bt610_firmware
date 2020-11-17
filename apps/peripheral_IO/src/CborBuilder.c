@@ -45,7 +45,7 @@ void CborBuilder_Start(UartMsg_t *pMsg, uint32_t Id)
 
     memset(pMsg->buffer, 0, UART_BUFFER_SIZE);
     pMsg->size = 0;
-	cbor_encoder_init(&encoder, (cbor_encoder_writer *)pMsg->buffer, 0);
+    cbor_encoder_init(&encoder, pMsg->buffer, UART_BUFFER_SIZE, 0);
     cbor_encoder_create_map(&encoder, &mapEncoder, CborIndefiniteLength);
     cbor_encode_text_stringz(&mapEncoder, "id");
 	cbor_encode_uint(&mapEncoder, Id);
@@ -61,7 +61,7 @@ void CborBuilder_FinalizeOk(UartMsg_t *pMsg)
   cbor_encode_text_stringz(&mapEncoder, "result");
   cbor_encode_text_stringz(&mapEncoder, "ok");
   cbor_encoder_close_container(&encoder, &mapEncoder);
-	pMsg->size = encoder.writer->bytes_written;
+  pMsg->size = cbor_encoder_get_buffer_size(&encoder, pMsg->buffer);
 }
 
 void CborBuilder_FinalizeIntegerResult(UartMsg_t *pJsonMsg, uint32_t Value)
