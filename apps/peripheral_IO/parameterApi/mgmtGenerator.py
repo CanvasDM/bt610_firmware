@@ -12,18 +12,18 @@ class attributes:
         # The following items are loaded from the configuration file
         self.methodList = 0
         self.toatalFunctions = 0
-        self.paramList = 0
-        self.paramSizeList = 0
+        self.paramList = 0        
         self.paramListTotal = 0
         self.resultList = 0
         self.resultSizeList = 0
         self.AttributeTotal = 0
         self.headerFilePath = "../include/"
         self.sourceFilePath = "../src/"
-        self.fileName = "BT610_mgmt"
+        self.fileName = "Sentrius_mgmt"
+        self.handlerfileName = "Sentrius_mgmtHandlers"
         self.minName = 'minimum'
         self.maxName = 'maximum'
-        self.mgmtIdPrefex = 'BT610_MGMT_ID_'
+        self.mgmtIdPrefex = 'SENTRIUS_MGMT_ID_'
 
         self.inputHeaderFileName = ""
         self.outputHeaderFileName = ""
@@ -34,10 +34,12 @@ class attributes:
         self.xlsx_tab = ""
         self.functionCategory =[]
         self.functionNames = []
+        self.paramSizeList = []
         self.functionId = []      
         self.AttributeMax = []
         self.AttributeMin = []
         self.AttributeName = []
+        self.AttributeSummary = []
         self.AttributeType = []
         self.AttributeBackup = []
         self.AttributeLockable = []
@@ -46,6 +48,7 @@ class attributes:
         self.AttributeDefault = []
         self.resultName = []
         self.indices = []
+        self.handlerFunctionName = []
         self._LoadConfig(fname)
 
     def _LoadConfig(self, fname: str) -> None:
@@ -53,12 +56,18 @@ class attributes:
             data = json.load(f)
             self.methodList = data['methods']
             self.toatalFunctions = len(self.methodList)
+
             file_name = self.headerFilePath +self.fileName
             self.inputHeaderFileName = file_name
             self.outputHeaderFileName = file_name + ""
+
             file_name = self.sourceFilePath +self.fileName
             self.inputSourceFileName = file_name
             self.outputSourceFileName = file_name + ""
+
+            file_name = self.sourceFilePath +self.handlerfileName
+            self.inputSourceHandlerfileName = file_name
+            self.outputSourceHandlerfileName = file_name + ""
 
 
             for i in range(self.toatalFunctions):
@@ -67,16 +76,17 @@ class attributes:
 
                 #Parameter Data
                 self.paramList = self.methodList[i]['params']
-                self.paramSizeList = len(self.paramList)
+                self.paramSizeList.append(len(self.paramList))
                 #Result Data
                 self.resultList = self.methodList[i]['result']['schema']['items']
                 self.resultSizeList = len(self.resultList)
-                if self.paramSizeList > 0:
+                if self.paramSizeList[i] > 0:
                     #Read Write because it is a set functions                    
-                    self.AttributeTotal = self.AttributeTotal + self.paramSizeList
-                    for j in range(self.paramSizeList):
+                    self.AttributeTotal = self.AttributeTotal + self.paramSizeList[i]
+                    for j in range(self.paramSizeList[i]):
                         self.functionCategory.append("rw")
-                        self.AttributeName.append(self.paramList[j]['summary'])
+                        self.AttributeName.append(self.paramList[j]['name'])
+                        self.AttributeSummary.append(self.paramList[j]['summary'])
                         self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
                         self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
@@ -94,7 +104,8 @@ class attributes:
                             # don't add already placed in code as Read/Write
                             self.AttributeTotal = self.AttributeTotal - 1
                         else:    
-                            self.AttributeName.append(self.resultList[k]['summary'])       
+                            self.AttributeName.append(self.resultList[k]['name'])  
+                            self.AttributeSummary.append(self.resultList[k]['summary'])     
                             self.AttributeType.append(self.resultList[k]['x-ctype']) 
                             self.AttributeStringMax.append(self.resultList[k]['maximumlength'])
                             self.AttributeDefault.append(self.resultList[k]['x-default'])
@@ -199,7 +210,16 @@ class attributes:
             if itype == "char":
                 return ('"' + default + '"')
             else:
-                return default            
+                return default     
+    def _GetCborType(self, itype: str) -> str:
+        if itype == "char":
+            return "CborAttrTextStringType"
+        elif itype == "float":
+            return "CborAttrFloatType"
+        elif (itype == "uint8_t") or (itype == "uint16_t") or (itype == "uint32_t"):
+            return "CborAttrUnsignedIntegerType"
+        else:
+            return "CborAttrIntegerType"                        
 
     def UpdateFiles(self) -> None:
         """Update the attribute c/h files.  
@@ -208,6 +228,7 @@ class attributes:
         #self._CheckLists()
         self._CreateAttributeHeaderFile(self._CreateInsertionList(self.inputHeaderFileName + ".h"))
         self._CreateAttributeSourceFile(self._CreateInsertionList(self.inputSourceFileName + ".c"))
+        self._CreateMgmtHandlerFile(self._CreateInsertionList(self.inputSourceHandlerfileName + ".c"))
         
 
     def _CreateInsertionList(self, name: str) -> list:
@@ -228,40 +249,135 @@ class attributes:
                     lst.append(line)
 
         return lst
-
-    def _CreateStruct(self, category: str, default_values: bool, remove_last_comma: bool) -> str:
-        """Creates the structures and default values for RW and RO attributes"""
-        struct = []
+    def _CreateStringDefinitions(self) -> str:
+        """Create some definitinons for header file"""
+        defs = []
         for i in range(0, self.AttributeTotal):
-            if category == self.functionCategory[i]:
-                name = self.AttributeName[i]
-                i_type = self.AttributeType[i]
-                i_max = self.AttributeStringMax[i]
-                default = self.AttributeDefault[i]
-                if default_values:
-                    result = f"  .{name} = {self._GetDefault(i_type, default)}," + "\n"
-                else:
-                    result = f"  {i_type} {name}{self._GetStringSize(i_type, i_max)};" + "\n"
-                struct.append(result)
+            name = self.AttributeSummary[i]
+            i_type = self.AttributeType[i]
+            i_max = self.AttributeStringMax[i]
+            if i_type == "char":
+                defs.append( f"static char {name}{self._GetStringSize(i_type, i_max)};" + "\n")
+        return ''.join(defs)        
 
+    def _CreateHandlerFunction(self) -> str:
+        """Creates the functions and default values for the attributes"""
+        struct = []
+        parameterNumber = 0
+        defineParameter = 0
+        for i in range(0, self.toatalFunctions):
+            function = f"int {self.handlerFunctionName[i]}(struct mgmt_ctxt *ctxt)\n"
+            struct.append(function)
+            function = "{" + "\n"
+            struct.append(function)
+
+            function = "{:>28}".format("const uint16_t msgID = ")
+            struct.append(function)
+            function = f"{i};\n"
+            struct.append(function)
+            function = "{:>23}".format("int readCbor = 0;\n")
+            struct.append(function)
+
+            for j in range(0, self.paramSizeList[i]):
+                if self.AttributeType[defineParameter] != "char":
+                    function = f"     {self.AttributeType[defineParameter]} "
+                    struct.append(function)
+                    function = f"{self.AttributeSummary[defineParameter]};\n"
+                    struct.append(function)
+                defineParameter = defineParameter + 1 
+
+            function = "{:>48}".format("const struct cbor_attr_t params_attr[] = {\n")
+            #48 is to give it tab pad
+            struct.append(function)
+
+            for k in range(0, self.paramSizeList[i]):
+                function = "{:>12}".format("{\n")
+                struct.append(function)
+                function = "{:>34}".format(".attribute = " + '"' + f"{self.AttributeName[parameterNumber]}" + '"' +",\n")
+                struct.append(function)
+                function = "{:>23}".format(".type = ")
+                struct.append(function)
+                function = f"{self._GetCborType(self.AttributeType[parameterNumber])},\n"
+                struct.append(function)
+                function = "{:>21}".format(".addr.")
+                struct.append(function)
+                if self.AttributeType[parameterNumber] == "char":
+                    function = "string = "
+                    struct.append(function)
+                    function = f"{self.AttributeSummary[parameterNumber]},\n"
+                    struct.append(function)
+                    function = "{:>29}".format(".len = sizeof(")
+                    struct.append(function)
+                    function = f"{self.AttributeSummary[parameterNumber]}),\n"
+                    struct.append(function)
+                elif (self.AttributeType[parameterNumber] == "uint8_t") or (self.AttributeType[parameterNumber] == "uint16_t") or (self.AttributeType[parameterNumber] == "uint32_t"):
+                    function = "uinteger = "
+                    struct.append(function)
+                    function = f"&{self.AttributeSummary[parameterNumber]},\n"
+                    struct.append(function)
+                else:
+                    function = "integer = "
+                    struct.append(function)
+                    function = f"&{self.AttributeSummary[parameterNumber]},\n"
+                    struct.append(function)
+
+                function = "{:>13}".format("},\n")
+                struct.append(function)
+                parameterNumber = parameterNumber + 1         
+            
+            function = "{:>8}".format("};\n") #end of params_attr
+            struct.append(function)
+
+            function = "{:>58}".format("readCbor = cbor_read_object(&ctxt->it, params_attr);\n")
+            struct.append(function)
+            function = "{:>26}".format("if (readCbor != 0) {\n")
+            struct.append(function)
+            function = "{:>34}".format("return MGMT_ERR_EINVAL;\n")
+            struct.append(function)
+            function = "{:>7}".format("}\n")
+            struct.append(function)
+
+            function = self._CreateCborResponse(i)
+            struct.append(function)
+
+            function = "}" + "\n" # end of mgmt function
+            struct.append(function)
         string = ''.join(struct)
-        if default_values and remove_last_comma:
-            return string[:string.rfind(',')] + '\n'
-        else:
-            return string
+        return string
+
+    def _CreateCborResponse(self, mId: str) -> str:
+        response = []
+
+        errorStart = "{:>12}".format("err |= ")
+        cborStringsz = "cbor_encode_text_stringz(&ctxt->encoder, "
+        cborUint = "cbor_encode_uint(&ctxt->encoder, "
+
+        response.append("{:>24}".format("CborError err = 0;\n"))
+        
+        response.append(errorStart)
+        response.append(cborStringsz)
+        response.append('"'+"id" + '");\n')
+        response.append(errorStart)
+        response.append(cborUint)
+        response.append("msgID);\n")
+        
+
+        string = ''.join(response)
+        return string
 
     def _CreateHandler(self, category: str) -> str:
-        """Creates the structures and default values for RW and RO attributes"""
+        """Creates the structures and default values for Set and Get attributes"""
         struct = []
         for i in range(0, self.toatalFunctions):
             if category in self.indices[i]:
                 name = self.functionNames[i]
                 result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " +"{" + "\n"
                 struct.append(result)
-                result = "    .mh_read = bt610_mgmt_read" + "\n"
-                struct.append(result)
                 if category == "_SET":
-                    result = "    .mh_write = bt610_mgmt_write" + "\n"
+                    result = f"         .mh_write = {self.handlerFunctionName[i]}" + "\n"
+                    struct.append(result)
+                else:    
+                    result = f"         .mh_read = {self.handlerFunctionName[i]}" + "\n"
                     struct.append(result)
                 result = "    }," + "\n"
                 struct.append(result)
@@ -276,27 +392,23 @@ class attributes:
         with open(name, 'w') as fout:
             for index, line in enumerate(lst):
                 if "pystart - " in line:
-                    if "attribute table" in line:
-                        lst.insert(index + 1, self._CreateAttrTable())
-                    #elif "asso values" in line:
-                    #    lst.insert(index + 1, self._GetAssoTable())
-                    #elif "hash function" in line:
-                    #    lst.insert(index + 1, self._GetHashBlock())
-                    elif "rw attributes" in line:
-                        lst.insert(index + 1, self._CreateStruct("rw", False, False))
-                    elif "rw defaults" in line:
-                        lst.insert(index + 1, self._CreateStruct("rw", True, True))
-                    elif "ro attributes" in line:
-                        lst.insert(index + 1, self._CreateStruct("ro", False, True))
-                    elif "ro defaults" in line:
-                        lst.insert(index + 1, self._CreateStruct("ro", True, True))
-                    elif "mgmt handlers" in line:
+                    if "mgmt handlers" in line:
                         lst.insert(index + 1, self._CreateHandler("_SET"))
                         lst.insert(index + 1, self._CreateHandler("_GET"))  
-                             
-                    #elif "hash info" in line:
-                    #    lst.insert(index + 1, self._GetHashInfo())
-            fout.writelines(lst)        
+            fout.writelines(lst)   
+
+    def _CreateMgmtHandlerFile(self, lst: list) -> None:
+        """Create the settings/attributes/properties *.c file"""
+        name = self.outputSourceHandlerfileName + ".c"
+        print("Writing " + name)
+        with open(name, 'w') as fout:
+            for index, line in enumerate(lst):
+                if "pystart - " in line:
+                    if "mgmt handlers" in line:
+                        lst.insert(index + 1, self._CreateHandlerFunction())
+                    elif "string array defines" in line:
+                        lst.insert(index + 1, self._CreateStringDefinitions()) 
+            fout.writelines(lst)                
 
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
@@ -310,8 +422,10 @@ class attributes:
     def _CreateAttrDefinitions(self) -> str:
         """Create some definitinons for header file"""
         defs = []
-        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.AttributeTotal}\n\n")
-        defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.toatalFunctions}\n")
+        for i in range(0, self.toatalFunctions):
+            name = self.functionNames[i]
+            self.handlerFunctionName.append(f"{self.fileName}" + "_" + f"{name}")
+            defs.append( f"mgmt_handler_fn {self.handlerFunctionName[i]};\n")
         return ''.join(defs)
 
     def _CreateAttributeHeaderFile(self, lst: list) -> None:
@@ -323,7 +437,7 @@ class attributes:
                 if "pystart - " in line:
                     if "mgmt function indices" in line:
                         lst.insert(index + 1, self._CreateAttrIndices())
-                    elif "attribute function definitions" in line:
+                    elif "mgmt handler function defines" in line:
                         lst.insert(index + 1, self._CreateAttrDefinitions())
 
             fout.writelines(lst)    

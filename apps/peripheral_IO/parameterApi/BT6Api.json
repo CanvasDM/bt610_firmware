@@ -1142,7 +1142,7 @@
         },
         {
           "name": "p5",
-          "summary": "temp2DeltaThreshe",
+          "summary": "temp2DeltaThresh",
           "description": "Delta Temperature Alarm Threshold",
           "required": true,
           "schema": {
