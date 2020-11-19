@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#include "mgmt/mgmt.h"
+
 // pystart - mgmt handler function defines
 mgmt_handler_fn Sentrius_mgmt_SetSensorName;
 mgmt_handler_fn Sentrius_mgmt_SetSensorLocation;
@@ -193,7 +195,7 @@ mgmt_handler_fn Sentrius_mgmt_GetMagnetState;
 /**
  * @brief Registers the file system management command handler group.
  */ 
-void bt610_mgmt_register_group(void);
+void Sentrius_mgmt_register_group(void);
 
 #ifdef __cplusplus
 }

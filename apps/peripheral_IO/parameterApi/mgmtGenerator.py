@@ -17,6 +17,7 @@ class attributes:
         self.resultList = 0
         self.resultSizeList = 0
         self.AttributeTotal = 0
+        self.cborParameterNumber = 0
         self.headerFilePath = "../include/"
         self.sourceFilePath = "../src/"
         self.fileName = "Sentrius_mgmt"
@@ -279,11 +280,19 @@ class attributes:
             struct.append(function)
 
             for j in range(0, self.paramSizeList[i]):
-                if self.AttributeType[defineParameter] != "char":
-                    function = f"     {self.AttributeType[defineParameter]} "
+                if "uint" in self.AttributeType[defineParameter]:
+                    function = f"     long long unsigned int "
                     struct.append(function)
                     function = f"{self.AttributeSummary[defineParameter]};\n"
+                elif "int" in self.AttributeType[defineParameter]:
+                    function = f"     long long int "
                     struct.append(function)
+                    function = f"{self.AttributeSummary[defineParameter]};\n"
+                elif "char" in self.AttributeType[defineParameter]:
+                    function = f"     char {self.AttributeSummary[defineParameter]}{self._GetStringSize(self.AttributeType[defineParameter], self.AttributeStringMax[defineParameter])};\n"
+                   # struct.append(function)
+                
+                struct.append(function)
                 defineParameter = defineParameter + 1 
 
             function = "{:>48}".format("const struct cbor_attr_t params_attr[] = {\n")
@@ -337,20 +346,27 @@ class attributes:
             function = "{:>7}".format("}\n")
             struct.append(function)
 
-            function = self._CreateCborResponse(i)
+            function = self._CreateCborResponse(i,"uin8_t")
             struct.append(function)
 
-            function = "}" + "\n" # end of mgmt function
+            
+            function = "{:>15}".format("return 0;\n")
+            struct.append(function)
+
+            function = "}" + "\n" # end of mgmt function 
             struct.append(function)
         string = ''.join(struct)
         return string
 
-    def _CreateCborResponse(self, mId: str) -> str:
+    def _CreateCborResponse(self, mId: str, i_type: str) -> str:
         response = []
-
         errorStart = "{:>12}".format("err |= ")
         cborStringsz = "cbor_encode_text_stringz(&ctxt->encoder, "
         cborUint = "cbor_encode_uint(&ctxt->encoder, "
+        cborInt = "cbor_encode_int(&ctxt->encoder, "
+        cborString = "cbor_encode_byte_string(&ctxt->encoder, "
+        cborFloat = "cbor_encode_floating_point(&ctxt->encoder, "
+        responseName = f"{self.functionNames[mId]}Result"
 
         response.append("{:>24}".format("CborError err = 0;\n"))
         
@@ -360,6 +376,31 @@ class attributes:
         response.append(errorStart)
         response.append(cborUint)
         response.append("msgID);\n")
+        response.append(errorStart)
+        response.append(cborStringsz)
+        response.append('"'+ f"{responseName}" + '");\n')                
+        for i in range(0, self.paramSizeList[mId]):
+            response.append(errorStart)
+            response.append(cborStringsz)
+            response.append('"'+f"r{i+1}" + '");\n')
+            response.append(errorStart)  
+            if self.AttributeType[self.cborParameterNumber] == "char":
+                #response.append(cborString)
+                response.append(cborStringsz)                
+            elif self.AttributeType[self.cborParameterNumber] == "float":
+                response.append(cborFloat)
+            elif (self.AttributeType[self.cborParameterNumber] == "uint8_t") or (self.AttributeType[self.cborParameterNumber] == "uint16_t") or (self.AttributeType[self.cborParameterNumber] == "uint32_t"):            
+                response.append(cborUint)
+            else:
+                response.append(cborInt)
+            response.append(f"{self.AttributeSummary[self.cborParameterNumber]});\n")
+            self.cborParameterNumber = self.cborParameterNumber + 1
+        response.append(errorStart)
+        response.append(cborStringsz)
+        response.append('"'+"result" + '");\n')
+        response.append(errorStart)
+        response.append(cborStringsz)
+        response.append('"'+"ok" + '");\n')
         
 
         string = ''.join(response)
@@ -406,8 +447,6 @@ class attributes:
                 if "pystart - " in line:
                     if "mgmt handlers" in line:
                         lst.insert(index + 1, self._CreateHandlerFunction())
-                    elif "string array defines" in line:
-                        lst.insert(index + 1, self._CreateStringDefinitions()) 
             fout.writelines(lst)                
 
     def _CreateAttrIndices(self) -> str:

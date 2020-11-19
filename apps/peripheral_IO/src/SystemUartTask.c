@@ -22,7 +22,7 @@ LOG_MODULE_REGISTER(SystemUart);
 #include <sys/util.h>
 #include <sys/printk.h>
 #include <inttypes.h>
-#include <cbor.h>
+#include "tinycbor/cbor.h"
 #include <drivers/spi.h>
 #include <sys/stat.h>
 #include <assert.h>
@@ -149,9 +149,8 @@ void SystemUartTask_Initialize(bool Enable)
 static void SystemUartTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	SystemUartTaskObj_t *pObj = (SystemUartTaskObj_t *)pArg1;
-
 	BSP_ConfigureUART();
-	ProtocolTask_Initialize();
+	//ProtocolTask_Initialize();
 	SetupUartRead();
 
 	while (true) {
