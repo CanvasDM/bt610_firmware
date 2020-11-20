@@ -29,7 +29,7 @@ LOG_MODULE_REGISTER(ControlTask);
 #include "Sentrius_mgmt.h"
 #include "LedPwm.h"
 #include "Version.h"
-#include "mcumgr_wrapper.h"
+//#include "mcumgr_wrapper.h"
 
 #include "ControlTask.h"
 
@@ -149,11 +149,11 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	LOG_WRN("Version %s", VERSION_STRING);
 
-	mcumgr_wrapper_register_subsystems();
+	//mcumgr_wrapper_register_subsystems();
 
     HardwareTestInit();
     BleTask_Initialize();
-    //Sentrius_mgmt_register_group();
+    Sentrius_mgmt_register_group();
 
  // FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
  //Test only

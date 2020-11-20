@@ -42,6 +42,7 @@ config BT_SCAN_VERBOSE_ADV_HANDLER
 
 endif # USER_APPLICATION
 
-
+source "../modules/framework/Kconfig"
+source "../component_lib/Kconfig"
 
 source "Kconfig.zephyr"
