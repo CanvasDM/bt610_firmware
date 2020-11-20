@@ -3,7 +3,8 @@
   "info": {
     "title": "BT6 API",
     "version": "1.2",
-    "serialbleuuid": null
+    "x-serialbleuuid": null,
+    "x-smpgroupid": 65
   },
   "methods": [
     {
