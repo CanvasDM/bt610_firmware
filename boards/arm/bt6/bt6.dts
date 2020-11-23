@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Laird Connectivity
+ * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,14 +8,15 @@
 #include <nordic/nrf52840_qiaa.dtsi>
 
 / {
-	model = "Pinnacle 100 Dev Kit";
-	compatible = "lairdconnect,pinnacle100-dvk";
+	model = "Laird BT6 Sensor";
+	compatible = "nordic,nrf52840-dk-nrf52840";
 
 	chosen {
 		zephyr,console = &uart0;
 		zephyr,shell-uart = &uart0;
 		zephyr,uart-mcumgr = &uart0;
 		zephyr,bt-mon-uart = &uart0;
+		zephyr,bt-c2h-uart = &uart0;
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,code-partition = &slot0_partition;
@@ -23,77 +24,91 @@
 
 	leds {
 		compatible = "gpio-leds";
-		led1: led_1 {
-			gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
-			label = "Blue LED 1";
+		led1red: led_1 {
+			gpios = <&gpio0 35 GPIO_ACTIVE_HIGH>;
+			label = "Red LED 1";
 		};
-		led2: led_2 {
-			gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
-			label = "Green LED 2";
+		led2green: led_2 {
+			gpios = <&gpio0 39 GPIO_ACTIVE_HIGH>;
+			label = "Green LED 1";
 		};
-		led3: led_3 {
-			gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
-			label = "Red LED 3";
+	};
+
+    pwmleds {
+		compatible = "pwm-leds";
+		
+		led1redpwm: led_pwm_1 {
+			pwms = <&pwm0 35>;
+			label = "PWM LED 1 RED";
 		};
-		led4: led_4 {
-			gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
-			label = "Green LED 4";
+
+        led2greenpwm: led_pwm_2 {
+			pwms = <&pwm1 39>;
+			label = "PWM LED 2 Green";
 		};
+
 	};
 
 	buttons {
 		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = <&gpio0 18 GPIO_PULL_UP>;
+			label = "Reset button switch 0 (SW0)";
+		};
 		button1: button_1 {
-			gpios = <&gpio0 31 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "Push button switch 1";
+			gpios = <&gpio0 24 GPIO_PULL_UP>;
+			label = "Boot button switch 1 (SW1)";
 		};
 		button2: button_2 {
-			gpios = <&gpio0 3 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "Push button switch 2";
-		};
-		button3: button_3 {
-			gpios = <&gpio0 4 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "Push button switch 3";
-		};
-		button4: button_4 {
-			gpios = <&gpio0 2 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "Push button switch 4";
+			gpios = <&gpio0 33 GPIO_PULL_UP>;
+			label = "Tamper switch 2 (SW2)";
 		};
 	};
 
-	/* These aliases are provided for compatibility with samples */
+
 	aliases {
-		led0 = &led1;
-		led1 = &led2;
-		led2 = &led3;
-		led3 = &led4;
-		sw0 = &button1;
-		sw1 = &button2;
-		sw2 = &button3;
-		sw3 = &button4;
+		led1 = &led1red;
+        led2 = &led2green;
+        led1pwm = &led1redpwm;
+        led2pwm = &led2greenpwm;
+		sw0 = &button0;
+		sw1 = &button1;
+        sw2 = &button2;
 	};
 };
 
+&pwm0 {
+	status = "okay";
+	ch0-pin = <35>;
+};
+
+&pwm1 {
+    status = "okay";
+    ch0-pin = <39>;
+
+};
+
+
 &adc {
-	status ="okay";
+	status = "okay";
 };
 
 &gpiote {
-	status ="okay";
+	status = "okay";
 };
 
 &gpio0 {
-	status ="okay";
+	status = "okay";
 };
 
 &gpio1 {
-	status ="okay";
+	status = "okay";
 };
 
 &uart0 {
 	compatible = "nordic,nrf-uart";
-	status = "okay";
 	current-speed = <115200>;
+	status = "okay";
 	tx-pin = <6>;
 	rx-pin = <8>;
 	rts-pin = <5>;
@@ -101,40 +116,29 @@
 };
 
 &uart1 {
-	status = "okay";
+	compatible = "nordic,nrf-uart";
 	current-speed = <115200>;
+	status = "okay";
 	tx-pin = <14>;
 	rx-pin = <16>;
-	rts-pin = <13>;
-	cts-pin = <15>;
-	hl7800 {
-		compatible = "swi,hl7800";
-		status = "okay";
-		label = "hl7800";
-		mdm-reset-gpios = <&gpio1 15 0>;
-		mdm-wake-gpios = <&gpio1 13 0>;
-		mdm-pwr-on-gpios = <&gpio1 2 0>;
-		mdm-fast-shutd-gpios = <&gpio1 14 0>;
-		mdm-uart-dtr-gpios = <&gpio0 24 0>;
-		mdm-vgpio-gpios = <&gpio1 11 0>;
-		mdm-uart-dsr-gpios = <&gpio0 25 0>;
-		mdm-uart-cts-gpios = <&gpio0 15 0>;
-		mdm-gpio6-gpios = <&gpio1 12 0>;
-	};
+	rts-pin = <15>;
+	cts-pin = <13>;
 };
 
 &i2c0 {
+	compatible = "nordic,nrf-twi";
 	status = "okay";
 	sda-pin = <26>;
 	scl-pin = <27>;
 };
 
-&spi0 {
-	/* Cannot be used together with i2c0. */
-	/* status = "okay"; */
-	sck-pin = <27>;
-	mosi-pin = <26>;
-	miso-pin = <29>;
+&spi1 {
+    compatible = "nordic,nrf-spi";
+	status = "okay";
+	sck-pin = <41>;
+	mosi-pin = <40>;
+	miso-pin = <4>;
+    cs-gpios = <&gpio0 18 0>;
 };
 
 &qspi {
@@ -219,7 +223,3 @@
 	};
 };
 
-&usbd {
-	compatible = "nordic,nrf-usbd";
-	status = "okay";
-};

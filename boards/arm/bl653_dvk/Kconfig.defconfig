@@ -1,12 +1,12 @@
-# Pinnacle(TM) 100 DVK board configuration
+# BL653 DVK board configuration
 
-# Copyright (c) 2019 Laird Connectivity
+# Copyright (c) 2020 Laird Connectivity
 # SPDX-License-Identifier: Apache-2.0
 
-if BOARD_PINNACLE_100_DVK
+if BOARD_BL653_DVK
 
 config BOARD
-	default "pinnacle_100_dvk"
+	default "bl653_dvk"
 
 if USB
 
@@ -25,4 +25,4 @@ config IEEE802154_NRF5
 config BT_CTLR
 	default BT
 
-endif # BOARD_PINNACLE_100_DVK
+endif # BOARD_BL653_DVK
