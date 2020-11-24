@@ -1,0 +1,31 @@
+# Copyright (c) 2020 Laird Connectivity
+# SPDX-License-Identifier: Apache-2.0
+
+
+menuconfig APPLICATION_COMMON
+     bool "Config Common Application Modules"
+	 default y
+
+if APPLICATION_COMMON
+
+config ADC_BT6
+    bool "Enable BT6 ADC Module"
+    depends on ADC_NRFX_SAADC
+    depends on ADC_CONFIGURABLE_INPUTS
+    default y
+
+config ADC_BT6_LOG_LEVEL
+    int "Log level for BT6xx ADC module"
+    range 0 4
+    default 3
+
+config ADC_BT6_OVERSAMPLING
+    int "(2**THIS_VALUE samples to average for each ADC reading"
+    range 0 8
+    default 4
+
+config TEST_MENU
+    bool "Enable test menu shell"
+    depends on SHELL
+
+endif # APPLICATION_COMMON

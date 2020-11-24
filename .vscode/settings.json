@@ -1,0 +1,30 @@
+{
+    "mcuboot_config_unix": "${workspaceRoot}/../modules/zephyr_lib/mcuboot_config/mcuboot-qspi.conf ${workspaceRoot}/../modules/zephyr_lib/mcuboot_config/disable-slot0-validate.conf",
+    "mcuboot_config_windows": "${workspaceRoot}\\..\\modules\\zephyr_lib\\mcuboot_config\\mcuboot-qspi.conf ${workspaceRoot}\\..\\modules\\zephyr_lib\\mcuboot_config\\disable-slot0-validate.conf",
+    "app_mcuboot_config_unix": "${workspaceRoot}/../modules/zephyr_lib/mcumgr_wrapper/config/overlay-mcuboot.conf",
+    "app_mcuboot_config_windows": "${workspaceRoot}\\..\\modules\\zephyr_lib\\mcumgr_wrapper\\config\\overlay-mcuboot.conf",
+    "setup_static_partitions_unix": "cp ${workspaceRoot}/../modules/zephyr_lib/mcuboot_config/pm_static.bt6.yml ${workspaceRoot}/pm_static.yml",
+    "setup_static_partitions_windows": "copy ${workspaceRoot}\\..\\modules\\zephyr_lib\\mcuboot_config\\pm_static.bt6.yml ${workspaceRoot}\\pm_static.yml",
+    "clear_static_partitions_unix": "rm -f ${workspaceRoot}/pm_static.yml",
+    "clear_static_partitions_windows": "del ${workspaceRoot}\\pm_static.yml",
+    "board_unix": "${workspaceRoot}/../boards/arm/bt6",
+    "board_windows": "${workspaceRoot}\\..\\boards\\arm\\bt6\\",
+    "kconfig.zephyr.base": "${workspaceRoot}/../zephyr",
+    "kconfig.zephyr.board": {
+      "board": "bt6"
+    },
+    "cSpell.ignoreWords": [
+      "bplus",
+      "fout",
+      "psysart",
+      "pyend",
+      "recursed",
+      "saadc",
+      "stringz",
+      "vprintk",
+      "vref"
+    ],
+    "C_Cpp.errorSquiggles": "Disabled",
+    "cmake.configureOnOpen": false,
+    "editor.formatOnSave": true
+}

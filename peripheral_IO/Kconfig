@@ -1,0 +1,25 @@
+# Copyright (c) 2020 Laird Connectivity
+# SPDX-License-Identifier: Apache-2.0
+
+
+menuconfig USER_APPLICATION
+     bool "Config User Application"
+	 default y
+
+if USER_APPLICATION
+
+config LAIRD_CONNECTIVITY_DEBUG
+    bool
+    default n
+
+config JSON_BRACKET_BUFFER_SIZE
+    int "The maximum size JSON message that can be processed"
+    default 1536
+    help
+        This applies to sensor messages received over Bluetooth.
+
+endif # USER_APPLICATION
+
+rsource "../common/Kconfig"
+
+source "Kconfig.zephyr"

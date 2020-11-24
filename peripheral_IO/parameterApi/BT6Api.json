@@ -1,0 +1,5285 @@
+{
+  "openrpc": "1.2.6",
+  "info": {
+    "title": "BT6 API",
+    "version": "1.2",
+    "x-serialbleuuid": null,
+    "x-smpgroupid": 65
+  },
+  "methods": [
+    {
+      "name": "SetSensorName",
+      "summary": "Set Sensor Name",
+      "description": "Set Sensor Name Request.  Note that the Sensor Name is part of the BLE advertisement.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 1,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "sensorName",
+          "description": "Sensor Name",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 1,
+            "maximumlength": 23,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "char",
+            "x-sequencenumber": 1,
+            "x-default": "BT610",
+            "x-example": "BT610",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetSensorNameResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetSensorLocation",
+      "summary": "Set Sensor Location",
+      "description": "User configurable string that is unused by sensor.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 2,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "sensorLocation",
+          "description": "Sensor Location",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 0,
+            "maximumlength": 32,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "char",
+            "x-sequencenumber": 1,
+            "x-default": "NA",
+            "x-example": "myRoom",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetSensorLocationResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetBLEAdvertisingInterval",
+      "summary": "Set BLE Advertising Interval",
+      "description": "Set BLE Adversiting Interval in milliseconds.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 3,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "advertisingInterval",
+          "description": "Advertising Interval in milliseconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 20.0,
+            "maximum": 10000.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "1000",
+            "x-example": "1000",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetBLEAdvertisingIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetBLEAdvertisingDuration",
+      "summary": "Set BLE Advertising Duration",
+      "description": "Set BLE Adversiting Duration in milliseconds.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 4,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "advertisingDuration",
+          "description": "Advertising Interval in milliseconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 65535.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "15000",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetBLEAdvertisingDurationResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetBLEPasskey",
+      "summary": "Set BLE Passkey",
+      "description": "Set BLE Passkey.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 5,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "passkey",
+          "description": "Six-Digit Numberic Passkey",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 6,
+            "maximumlength": 6,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "char",
+            "x-sequencenumber": 1,
+            "x-default": "123456",
+            "x-example": "123456",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetBLEPasskeyResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetSettingsLock",
+      "summary": "Set Settings Lock",
+      "description": "Lock out future changes to device settings.  Reserved for future use.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 6,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "lock",
+          "description": "1 = locked",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetSettingsLockResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetBatterySenseInterval",
+      "summary": "Set Battery Sense Interval",
+      "description": "Set Battery Sense interval in seconds.  0 = disabled.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 7,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "batterySenseInterval",
+          "description": "Battery Sense interval in seconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 86400.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "60",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetBatterySenseIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperatureSenseInterval",
+      "summary": "Set Temperature Sense Interval",
+      "description": "Set Temperature Sense interval in seconds.    0 = disabled.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 8,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "temperatureSenseInterval",
+          "description": "Temperature Sense interval in seconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 86400.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "60",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperatureSenseIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperatureAggregationValue",
+      "summary": "Set Temperature Aggregation Value",
+      "description": "Set Temperature Aggregation value (number of samples).",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 9,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "temperatureAggregationCount",
+          "description": "Temperature Aggregation value",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 1.0,
+            "maximum": 32.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "1",
+            "x-example": "5",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperatureAggregationValueResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetDigitalOutput1",
+      "summary": "Set Digital Output 1",
+      "description": "Set Digital Output Value in millivolts",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 10,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "digitalOutput1Mv",
+          "description": "Value in millivolts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 30000.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "50",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetDigitalOutput1Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetDigitalOutput2",
+      "summary": "Set Digital Output 2",
+      "description": "Set Digital Output Value in millivolts",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 11,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "digitalOutput2Mv",
+          "description": "Value in millivolts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 30000.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "50",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetDigitalOutput2Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetDigitalInput1",
+      "summary": "Set Digital Input 1",
+      "description": "Set Digital Input Value.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 12,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "digitalInput1",
+          "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetDigitalInput1Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetDigitalInput2",
+      "summary": "Set Digital Input 2",
+      "description": "Set Digital Input Value.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 13,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "digitalInput2",
+          "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetDigitalInput2Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetAnalogInputType",
+      "summary": "Set Analog Input Type",
+      "description": "Set Analog Input Type",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 14,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "analogInput1Type",
+          "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "analogInput2Type",
+          "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 2,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "analogInput3Type",
+          "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 3,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "analogInput4Type",
+          "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 4,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetAnalogInputTypeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperature1AlarmThreshold",
+      "summary": "SetTemperature 1 AlarmThresholds",
+      "description": "Set Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 15,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highTemp1Thresh1",
+          "description": "High Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 1,
+            "x-default": "127",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highTemp1Thresh2",
+          "description": "High Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 2,
+            "x-default": "127",
+            "x-example": "120",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowTemp1Thresh1",
+          "description": "Low Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 3,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowTemp1Thresh2",
+          "description": "Low Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 4,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "temp1DeltaThresh",
+          "description": "Delta Temperature Alarm Threshold",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "255",
+            "x-example": "255",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperature1AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperature2AlarmThreshold",
+      "summary": "SetTemperatureAlarmThresholds",
+      "description": "Set Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 16,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highTemp2Thresh1",
+          "description": "High Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 1,
+            "x-default": "127",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highTemp2Thresh2",
+          "description": "High Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 2,
+            "x-default": "127",
+            "x-example": "120",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowTemp2Thresh1",
+          "description": "Low Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 3,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowTemp2Thresh2",
+          "description": "Low Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 4,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "temp2DeltaThresh",
+          "description": "Delta Temperature Alarm Threshold",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "255",
+            "x-example": "255",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperature2AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperature3AlarmThreshold",
+      "summary": "SetTemperature 3 AlarmThresholds",
+      "description": "Set Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 17,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highTemp3Thresh1",
+          "description": "High Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 1,
+            "x-default": "127",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highTemp3Thresh2",
+          "description": "High Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 2,
+            "x-default": "127",
+            "x-example": "120",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowTemp3Thresh1",
+          "description": "Low Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 3,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowTemp3Thresh2",
+          "description": "Low Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 4,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "temp3DeltaThresh",
+          "description": "Delta Temperature Alarm Threshold",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "255",
+            "x-example": "255",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperature3AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperature4AlarmThreshold",
+      "summary": "SetTemperature 4 AlarmThresholds",
+      "description": "Set Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 18,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highTemp4Thresh1",
+          "description": "High Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 1,
+            "x-default": "127",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highTemp4Thresh2",
+          "description": "High Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 2,
+            "x-default": "127",
+            "x-example": "120",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowTemp4Thresh1",
+          "description": "Low Temperature Alarm Threshold 1 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 3,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowTemp4Thresh2",
+          "description": "Low Temperature Alarm Threshold 2 in degrees C",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -128.0,
+            "maximum": 127.0,
+            "x-ctype": "int16_t",
+            "x-sequencenumber": 4,
+            "x-default": "-127",
+            "x-example": "-40",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "temp4DeltaThresh",
+          "description": "Delta Temperature Alarm Threshold",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "255",
+            "x-example": "255",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperature4AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetAnalog1AlarmThresholds",
+      "summary": "Set Analog1 Alarm Thresholds",
+      "description": "Set Analog1 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 19,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highAnalog1Thresh1",
+          "description": "High Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highAnalog1Thresh2",
+          "description": "High Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 2,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowAnalog1Thresh1",
+          "description": "Low Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 3,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowAnalog1Thresh2",
+          "description": "Low Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 4,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "analog1DeltaThresh",
+          "description": "Delta Analog Alarm Threshold Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetAnalog1AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetAnalog2AlarmThresholds",
+      "summary": "Set Analog2 Alarm Thresholds",
+      "description": "Set Analog2 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 20,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highAnalog2Thresh1",
+          "description": "High Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highAnalog2Thresh2",
+          "description": "High Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 2,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowAnalog2Thresh1",
+          "description": "Low Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 3,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowAnalog2Thresh2",
+          "description": "Low Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 4,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "analog2DeltaThresh",
+          "description": "Delta Analog Alarm Threshold Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetAnalog2AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetAnalog3AlarmThresholds",
+      "summary": "Set Analog3 Alarm Thresholds",
+      "description": "Set Analog3 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 21,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highAnalog3Thresh1",
+          "description": "High Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highAnalog3Thresh2",
+          "description": "High Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 2,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowAnalog3Thresh1",
+          "description": "Low Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 3,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowAnalog3Thresh2",
+          "description": "Low Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 4,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "analog3DeltaThresh",
+          "description": "Delta Analog Alarm Threshold Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetAnalog3AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetAnalog4AlarmThresholds",
+      "summary": "Set Analog4 Alarm Thresholds",
+      "description": "Set Analog4 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 22,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "highAnalog4Thresh1",
+          "description": "High Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "highAnalog4Thresh2",
+          "description": "High Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 2,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "lowAnalog4Thresh1",
+          "description": "Low Analog Alarm Threshold 1 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 3,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "lowAnalog4Thresh2",
+          "description": "Low Analog Alarm Threshold 2 Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 4,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "analog4DeltaThresh",
+          "description": "Delta Analog Alarm Threshold Counts",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 4096.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 5,
+            "x-default": "4096",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetAnalog4AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetActiveMode",
+      "summary": "Set Active Mode",
+      "description": "Active Mode",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 23,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "activeMode",
+          "description": "0 = inactive\r\n1 = active (RTC enabled, sample enabled)",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetActiveModeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetUseCodedPhy",
+      "summary": "Set Use Coded Phy",
+      "description": "When 1 the coded phy is used as the secondary phy to send connectable but nonscannable extended advertisements.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 24,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "useCodedPhy",
+          "description": "Coded Phy Value",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetUseCodedPhyResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTxPower",
+      "summary": "Set Tx Power",
+      "description": "-40dBm, -20dBm, -16dBm, -12dBm, -8dBm, -4dBm, 0dBm, +2dBm, +3dBm, +4dBm, +5dBm, +6dBm, +7dBm and +8dBm",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 25,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "txPower",
+          "description": "Tx Power (dBm)",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": -40.0,
+            "maximum": 8.0,
+            "x-ctype": "int8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "8",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTxPowerResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetNetworkId",
+      "summary": "Set Network Id",
+      "description": "Used to group sensors. For example: Say you have 4 sensors in the warehouse and 2 in the office and you just want look at the sensors in the office you would filter on that ID",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 26,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "networkId",
+          "description": "Network Id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 65535.0,
+            "x-ctype": "uint16_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "100",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetNetworkIdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetConfigVersion",
+      "summary": "Set Config Version",
+      "description": "The version can be used to help synchronize changes made by a phone application and a gateway.  This value is unused by the sensor.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 27,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "configVersion",
+          "description": "Config Version",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "10",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetConfigVersionResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetHardwareVersion",
+      "summary": "Set Hardware Version",
+      "description": "Only the minor version can be set.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 28,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "hardwareMinorVersion",
+          "description": "Minor Revision",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 9.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "3",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetHardwareVersionResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetLedTest",
+      "summary": "Turns on LED test squence",
+      "description": "This is for hardware testing only",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 29,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "ledTestActive",
+          "description": "On off time of each LED",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 7,
+            "minimum": 10.0,
+            "maximum": 1000.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "500",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetLedTest",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAllTemperature",
+      "summary": "Get Temperature",
+      "description": "Get Temperature Reading in C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 30,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureAll",
+              "description": "Temperature in hundreds of a degree C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128000.0,
+              "maximum": 127000.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "250"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature1",
+      "summary": "Get Temperature",
+      "description": "Get Temperature Reading in C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 31,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult1",
+              "description": "Temperature in hundreds of a degree C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128000.0,
+              "maximum": 127000.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "250"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature2",
+      "summary": "Get Temperature",
+      "description": "Get Temperature Reading in C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 32,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult2",
+              "description": "Temperature in hundreds of a degree C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128000.0,
+              "maximum": 127000.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "250"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature3",
+      "summary": "Get Temperature",
+      "description": "Get Temperature Reading in C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 33,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult3",
+              "description": "Temperature in hundreds of a degree C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128000.0,
+              "maximum": 127000.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "250"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature4",
+      "summary": "Get Temperature",
+      "description": "Get Temperature Reading in C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 34,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureResult4",
+              "description": "Temperature in hundreds of a degree C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128000.0,
+              "maximum": 127000.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "250"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetCurrent",
+      "summary": "Get Current",
+      "description": "Get Current Reading in milliamps",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 35,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetCurrentResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "currentReadingMa",
+              "description": "Current in milliamps",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 20.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBatteryVoltage",
+      "summary": "Get Battery Voltage",
+      "description": "Get Battery Voltage in millivolts",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 36,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBatteryVoltageResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "batteryVoltageMv",
+              "description": "Battery Voltage in millivolts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 3800.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "3000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetDigitalInputAlarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 37,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInput1Alarm",
+              "description": "Digital Input 1 Alarm.\r\n0 = Current State\r\n1 = State Changed",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "digitalInput2Alarm",
+              "description": "Digital Input 2 Alarm.\r\n0 = Current State\r\n1 = State Changed",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": -2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature1Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 38,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature1Alarm",
+              "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature1Alarm",
+              "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature1Alarm",
+              "description": "Delta Temperature Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature2Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 39,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature2Alarm",
+              "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature2Alarm",
+              "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature2Alarm",
+              "description": "Delta Temperature Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature3Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 40,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature3Alarm",
+              "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature3Alarm",
+              "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature3Alarm",
+              "description": "Delta Temperature Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature4Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 41,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemperature4Alarm",
+              "description": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowTemperature4Alarm",
+              "description": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaTemperature4Alarm",
+              "description": "Delta Temperature Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog1Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 42,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalogAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog1Alarm",
+              "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog1Alarm",
+              "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog1Alarm",
+              "description": "Delta Analog Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog2Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 43,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalogAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog2Alarm",
+              "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog2Alarm",
+              "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog2Alarm",
+              "description": "Delta Analog Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog3Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 44,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalogAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog3Alarm",
+              "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog3Alarm",
+              "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog3Alarm",
+              "description": "Delta Analog Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog4Alarms",
+      "summary": "Get Alarms",
+      "description": "Get Alarms",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 45,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalogAlarmsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog4Alarm",
+              "description": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "lowAnalog4Alarm",
+              "description": "Low Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "deltaAnalog4Alarm",
+              "description": "Delta Analog Alarm",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetHardwareVersion",
+      "summary": "Get Hardware Version",
+      "description": "Get Major Hardware Version.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 46,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetHardwareVersionResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "hwVersion",
+              "description": "Hardware Version",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 1,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetFirmwareVersion",
+      "summary": "Get Firmware Version",
+      "description": "Get Firmware Version.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 47,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetFirmwareVersionResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "firmwareVersion",
+              "description": "Firmware Version.\r\nFormat = Major.Minor",
+              "type": "string",
+              "minimumlength": 3,
+              "maximumlength": 11,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetResetReason",
+      "summary": "Get Reset Reason",
+      "description": "Get Reset Reason.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 48,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetResetReasonResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "resetReason",
+              "description": "For Development",
+              "type": "string",
+              "minimumlength": 0,
+              "maximumlength": 8,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBluetoothMAC",
+      "summary": "Get Bluetooth MAC",
+      "description": "Get Bluetooth MAC",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 49,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBluetoothMACResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "bluetoothAddress",
+              "description": "Bluetooth MAC",
+              "type": "string",
+              "minimumlength": 12,
+              "maximumlength": 12,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "010203040506"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBluetoothMTU",
+      "summary": "Get Bluetooth MTU",
+      "description": "Get Bluetooth Maximum Transmission Unit (MTU)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 50,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBluetoothMTUResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "mtu",
+              "description": "MTU bytes",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 20.0,
+              "maximum": 244.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "20",
+              "x-example": "20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetFlags",
+      "summary": "Get Flags",
+      "description": "Get Flags (same as found in advertisement).",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 51,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetFlagsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "flags",
+              "description": "Flags",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetResetCount",
+      "summary": "Get Reset Count",
+      "description": "Get Reset Count.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 52,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetResetCountResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "resetCount",
+              "description": "Count",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 65535.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetSensorName",
+      "summary": "Get Sensor Name",
+      "description": "Get Sensor Name Request.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 53,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetSensorNameResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "sensorName_duplicate",
+              "description": "Sensor Name",
+              "type": "string",
+              "minimumlength": 1,
+              "maximumlength": 23,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "BT610",
+              "x-example": "BT610"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetSensorLocation",
+      "summary": "Get Sensor Location",
+      "description": "User configurable string that is unused by sensor.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 54,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetSensorLocationResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "sensorLocation_duplicate",
+              "description": "Sensor Location",
+              "type": "string",
+              "minimumlength": 0,
+              "maximumlength": 32,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "myRoom"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBLEAdvertisingInterval",
+      "summary": "Get BLE Advertising Interval",
+      "description": "Get BLE Adversiting Interval in milliseconds.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 55,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBLEAdvertisingIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "advertisingInterval_duplicate",
+              "description": "Advertising Interval in milliseconds",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 20.0,
+              "maximum": 10000.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "1000",
+              "x-example": "1000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBLEAdvertisingDuration",
+      "summary": "Get BLE Advertising Duration",
+      "description": "Get BLE Adversiting Duration in milliseconds.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 56,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBLEAdvertisingDurationResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "advertisingDuration_duplicate",
+              "description": "Advertising Interval in milliseconds",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 65535.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "15000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetSettingsLock",
+      "summary": "Get Settings Lock",
+      "description": "Lock out future changes to device settings.  Reserved for future use.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 57,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetSettingsLockResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "lock_duplicate",
+              "description": "1 = locked",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetBatterySenseInterval",
+      "summary": "Get Battery Sense Interval",
+      "description": "Get Battery Sense interval in seconds.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 58,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetBatterySenseIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "batterySenseInterval_duplicate",
+              "description": "Battery Sense interval in seconds",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 86400.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "60"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperatureSenseInterval",
+      "summary": "Get Temperature Sense Interval",
+      "description": "Set Temperature Sense interval in seconds.    0 = disabled.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 59,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureSenseIntervalResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureSenseInterval_duplicate",
+              "description": "Temperature Sense interval in seconds",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 86400.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "60"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperatureAggregationValue",
+      "summary": "Get Temperature Aggregation Value",
+      "description": "Get Temperature Aggregation value (number of samples).",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 60,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAggregationValueResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "temperatureAggregationCount_duplicate",
+              "description": "Temperature Aggregation value",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 1.0,
+              "maximum": 32.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "1",
+              "x-example": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetDigitalOutput1",
+      "summary": "Get Digital Output 1",
+      "description": "Get Digital Output Value in millivolts",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 61,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetDigitalOutput1Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalOut1Mv_duplicate",
+              "description": "Value in millivolts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 30000.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetDigitalOutput2",
+      "summary": "Get Digital Output 2",
+      "description": "Get Digital Output Value in millivolts",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 62,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetDigitalOutput2Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalOut2Mv_duplicate",
+              "description": "Value in millivolts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 30000.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetDigitalInput1",
+      "summary": "Get Digital Input 1",
+      "description": "Get Digital Input Value.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 63,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetDigitalInput1Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInput1Mv",
+              "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetDigitalInput2",
+      "summary": "Get Digital Input 2",
+      "description": "Get Digital Input Value.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 64,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetDigitalInput2Result",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "digitalInpu21Mv",
+              "description": "0 = Switch to Ground\r\n1 = Switch to Battery",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalogInput1Type",
+      "summary": "Get Analog Input Type",
+      "description": "Get Analog Input Type",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 65,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalogInput1TypeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "analogInput1Type_duplicate",
+              "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "analogInput2Type_duplicate",
+              "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 2,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "analogInput3Type_duplicate",
+              "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 3,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "analogInput4Type_duplicate",
+              "description": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 4,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature1AlarmThreshold",
+      "summary": "Get Temperature Alarm Thresholds",
+      "description": "Get Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 66,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperatureAlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp1Thresh1_duplicate",
+              "description": "High Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 1,
+              "x-default": "127",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp1Thresh2_duplicate",
+              "description": "High Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 2,
+              "x-default": "127",
+              "x-example": "120"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp1Thresh1_duplicate",
+              "description": "Low Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 3,
+              "x-default": "-127",
+              "x-example": "-30"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp1Thresh2_duplicate",
+              "description": "Low Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 4,
+              "x-default": "-127",
+              "x-example": "-40"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp1DeltaThresh_duplicate",
+              "description": "Delta Temperature Alarm Threshold",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "255",
+              "x-example": "255"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature2AlarmThreshold",
+      "summary": "Get Temperature Alarm Thresholds",
+      "description": "Get Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 67,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperature2AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp2Thresh1_duplicate",
+              "description": "High Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 1,
+              "x-default": "127",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp2Thresh2_duplicate",
+              "description": "High Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 2,
+              "x-default": "127",
+              "x-example": "120"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp2Thresh1_duplicate",
+              "description": "Low Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 3,
+              "x-default": "-127",
+              "x-example": "-30"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp2Thresh2_duplicate",
+              "description": "Low Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 4,
+              "x-default": "-127",
+              "x-example": "-40"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp2DeltaThresh_duplicate",
+              "description": "Delta Temperature Alarm Threshold",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "255",
+              "x-example": "255"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature3AlarmThreshold",
+      "summary": "Get Temperature Alarm Thresholds",
+      "description": "Get Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 68,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperature3AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp3Thresh1_duplicate",
+              "description": "High Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 1,
+              "x-default": "127",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp3Thresh2_duplicate",
+              "description": "High Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 2,
+              "x-default": "127",
+              "x-example": "120"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp3Thresh1_duplicate",
+              "description": "Low Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 3,
+              "x-default": "-127",
+              "x-example": "-30"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp3Thresh2c",
+              "description": "Low Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 4,
+              "x-default": "-127",
+              "x-example": "-40"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp3DeltaThresh_duplicate",
+              "description": "Delta Temperature Alarm Threshold",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "255",
+              "x-example": "255"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTemperature4AlarmThreshold",
+      "summary": "Get Temperature Alarm Thresholds",
+      "description": "Get Alarm Threshold in degrees C",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 69,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTemperature4AlarmThresholdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highTemp4Thresh1_duplicate",
+              "description": "High Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 1,
+              "x-default": "127",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highTemp4Thresh2_duplicate",
+              "description": "High Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 2,
+              "x-default": "127",
+              "x-example": "120"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowTemp4Thresh1_duplicate",
+              "description": "Low Temperature Alarm Threshold 1 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 3,
+              "x-default": "-127",
+              "x-example": "-30"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowTemp4Thresh2_duplicate",
+              "description": "Low Temperature Alarm Threshold 2 in degrees C",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -128.0,
+              "maximum": 127.0,
+              "x-ctype": "int16_t",
+              "x-sequencenumber": 4,
+              "x-default": "-127",
+              "x-example": "-40"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "temp4DeltaThresh_duplicate",
+              "description": "Delta Temperature Alarm Threshold",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "255",
+              "x-example": "255"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog1AlarmThresholds",
+      "summary": "Get Analog1 Alarm Thresholds",
+      "description": "Get Analog1 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 70,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalog1AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog1Thresh1_duplicate",
+              "description": "High Analog Alarm Threshold 1 Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog1Thresh2_duplicate",
+              "description": "High Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 2,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog1Thresh1_duplicate",
+              "description": "Low Analog Alarm Threshold 1  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 3,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog1Thresh2_duplicate",
+              "description": "Low Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 4,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog1DeltaThresh_duplicate",
+              "description": "Delta Analog Alarm Threshold  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "4096",
+              "x-example": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog2AlarmThresholds",
+      "summary": "Get Analog2 Alarm Thresholds",
+      "description": "Get Analog2 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 71,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalog2AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog2Thresh1_duplicate",
+              "description": "High Analog Alarm Threshold 1 Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog2Thresh2_duplicate",
+              "description": "High Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 2,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog2Thresh1_duplicate",
+              "description": "Low Analog Alarm Threshold 1  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 3,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog2Thresh2_duplicate",
+              "description": "Low Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 4,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog2DeltaThresh_duplicate",
+              "description": "Delta Analog Alarm Threshold  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "4096",
+              "x-example": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog3AlarmThresholds",
+      "summary": "Get Analog3 Alarm Thresholds",
+      "description": "Get Analog3 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 72,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalog3AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog3Thresh1_duplicate",
+              "description": "High Analog Alarm Threshold 1 Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog3Thresh2_duplicate",
+              "description": "High Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 2,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog3Thresh1_duplicate",
+              "description": "Low Analog Alarm Threshold 1  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 3,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog3Thresh2_duplicate",
+              "description": "Low Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 4,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog3DeltaThresh_duplicate",
+              "description": "Delta Analog Alarm Threshold  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "4096",
+              "x-example": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetAnalog4AlarmThresholds",
+      "summary": "Get Analog4 Alarm Thresholds",
+      "description": "Get Analog4 Alarm Thresholds (counts)",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 73,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetAnalog4AlarmThresholdsResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "highAnalog4Thresh1_duplicate",
+              "description": "High Analog Alarm Threshold 1 Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "highAnalog4Thresh2_duplicate",
+              "description": "High Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 2,
+              "x-default": "4096",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "lowAnalog4Thresh1_duplicate",
+              "description": "Low Analog Alarm Threshold 1  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 3,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r4",
+              "summary": "lowAnalog4Thresh2_duplicate",
+              "description": "Low Analog Alarm Threshold 2  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 4,
+              "x-default": "0",
+              "x-example": "100"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r5",
+              "summary": "analog4DeltaThresh_duplicate",
+              "description": "Delta Analog Alarm Threshold  Counts",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4096.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 5,
+              "x-default": "4096",
+              "x-example": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetActiveMode",
+      "summary": "Get Active Mode",
+      "description": "Active Mode",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 74,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetActiveModeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "activeMode_duplicate",
+              "description": "0 = inactive\r\n1 = active (RTC enabled, sample enabled)",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetUseCodedPhy",
+      "summary": "Get Use Coded Phy",
+      "description": "When 1 the coded phy is used as the secondary phy to send connectable but nonscannable extended advertisements.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 75,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetUseCodedPhyResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "useCodedPhy_duplicate",
+              "description": "Coded Phy Value",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetTxPower",
+      "summary": "Get Tx Power",
+      "description": "-40dBm, -20dBm, -16dBm, -12dBm, -8dBm, -4dBm, 0dBm, +2dBm, +3dBm, +4dBm, +5dBm, +6dBm, +7dBm and +8dBm",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 76,
+      "tags": [
+        {
+          "name": "BLE"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetTxPowerResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "txPower_duplicate",
+              "description": "Tx Power (dBm)",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -40.0,
+              "maximum": 8.0,
+              "x-ctype": "int8_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetNetworkId",
+      "summary": "Get Network Id",
+      "description": "Used to group sensors. For example: Say you have 4 sensors in the warehouse and 2 in the office and you just want look at the sensors in the office you would filter on that ID",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 77,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetNetworkIdResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "networkId_duplicate",
+              "description": "Network Id",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 65535.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": "0",
+              "x-example": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetConfigVersion",
+      "summary": "Get Config Version",
+      "description": "The version can be used to help synchronize changes made by a phone application and a gateway.  This value is unused by the sensor.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 78,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetConfigVersionResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "configVersion_duplicate",
+              "description": "Config Version",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetMagnetState",
+      "summary": "Get Magnet State",
+      "description": "Read the status of the magnet sensor",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 79,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetMagnetStateResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "magnetState",
+              "description": "Magnet status",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

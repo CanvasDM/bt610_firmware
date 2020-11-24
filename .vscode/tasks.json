@@ -1,0 +1,116 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "windows": {
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      }
+    },
+    "tasks": [
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "${config:clear_static_partitions_unix} && west build -b bt6 -d ${workspaceRoot}/build/peripheral_IO ${workspaceRoot}/peripheral_IO",
+        "windows": {
+          "command": "${config:clear_static_partitions_windows} && west build -b bt6 -d ${workspaceRoot}\\build\\peripheral_IO ${workspaceRoot}\\peripheral_IO"
+        },
+        "problemMatcher": {
+          "base": "$gcc",
+          "fileLocation": "absolute"
+        }
+      },
+      {
+        "label": "re-build",
+        "type": "shell",
+        "command": "${config:clear_static_partitions_unix} && west build -p -b bt6 -d ${workspaceRoot}/build/${input:app} ${workspaceRoot}/${input:app}",
+        "windows": {
+          "command": "${config:clear_static_partitions_windows} && west build -p -b bt6 -d ${workspaceRoot}\\build\\${input:app} ${workspaceRoot}\\${input:app}"
+        },
+        "problemMatcher": {
+          "base": "$gcc",
+          "fileLocation": "absolute"
+        }
+      },
+      {
+        "label": "flash app",
+        "type": "shell",
+        "command": "west flash -d ${workspaceRoot}/build/${input:app}",
+        "windows": {
+          "command": "west flash -d ${workspaceRoot}\\build\\${input:app}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "clean app",
+        "type": "shell",
+        "command": "west build -t clean -d ${workspaceRoot}/build/${input:app}",
+        "windows": {
+          "command": "west build -t clean -d ${workspaceRoot}\\build\\${input:app}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "pristine app",
+        "type": "shell",
+        "command": "west build -t pristine -d ${workspaceRoot}/build/${input:app}",
+        "windows": {
+          "command": "west build -t pristine -d ${workspaceRoot}\\build\\${input:app}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "menuconfig",
+        "type": "shell",
+        "command": "west build -t menuconfig -d ${workspaceRoot}/build/${input:app} ${workspaceRoot}/${input:app}",
+        "windows": {
+          "command": "west build -t menuconfig -d ${workspaceRoot}\\build\\${input:app} ${workspaceRoot}\\${input:app}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "app ram_report",
+        "type": "shell",
+        "command": "west build -d ${workspaceRoot}/build/${input:app} ${workspaceRoot}/${input:app} --target ram_report > ${workspaceRoot}/build/${input:app}/ram_report",
+        "windows": {
+          "command": "west build -d ${workspaceRoot}\\build\\${input:app} ${workspaceRoot}\\${input:app} --target ram_report > ${workspaceRoot}\\build\\${input:app}\\ram_report"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "app rom_report",
+        "type": "shell",
+        "command": "west build -d ${workspaceRoot}/build/${input:app} ${workspaceRoot}/${input:app} --target rom_report > ${workspaceRoot}/build/${input:app}/rom_report",
+        "windows": {
+          "command": "west build -d ${workspaceRoot}\\build\\${input:app} ${workspaceRoot}\\${input:app} --target rom_report > ${workspaceRoot}\\build\\${input:app}\\rom_report"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "build with mcuboot",
+        "type": "shell",
+        "command": "${config:setup_static_partitions_unix} && west build -b bt6 -d ${workspaceRoot}/build/${input:app} ${workspaceRoot}/${input:app} -- -DOVERLAY_CONFIG=\"${config:app_mcuboot_config_unix}\" -Dmcuboot_CONF_FILE=\"${config:mcuboot_config_unix}\" '-DCONFIG_MCUBOOT_IMAGE_VERSION=\"${input:app_ver}\"'",
+        "windows": {
+          "command": "${config:setup_static_partitions_windows} && west build -b bt6 -d ${workspaceRoot}\\build\\${input:app} ${workspaceRoot}\\${input:app} -- -DOVERLAY_CONFIG=\"${config:app_mcuboot_config_windows}\" -Dmcuboot_CONF_FILE=\"${config:mcuboot_config_windows}\""
+        },
+        "problemMatcher": {
+          "base": "$gcc",
+          "fileLocation": "absolute"
+        }
+      },
+    ],
+    "inputs": [
+      {
+        "id": "app",
+        "description": "Select an app to build",
+        "default": "peripheral_IO",
+        "type": "pickString",
+        "options": [
+            "peripheral_IO",
+        ]
+    }
+    ]
+}

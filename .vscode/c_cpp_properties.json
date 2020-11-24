@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "zephyr",
+            "browse": {
+              "path": ["${workspaceFolder}"],
+              "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+              "${workspaceFolder}/../zephyr/**",
+              "${workspaceFolder}/build/**",
+              "${workspaceFolder}/common/**"
+            ],
+            "cStandard": "c99",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "gcc-arm"
+          }
+    ],
+    "version": 4
+}
