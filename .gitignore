@@ -4,7 +4,7 @@ build/
 .reviewboardrc
 .west/
 .vscode/ipch/
-modules
 net-tools
-
 tools/
+pm_static.yml
+ozone.jdebug.user
