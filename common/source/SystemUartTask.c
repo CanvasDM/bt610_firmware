@@ -32,7 +32,6 @@ LOG_MODULE_REGISTER(SystemUart);
 
 #include "FrameworkIncludes.h"
 #include "BspSupport.h"
-#include "ProtocolTask.h"
 #include "SystemUartTask.h"
 
 /******************************************************************************/
