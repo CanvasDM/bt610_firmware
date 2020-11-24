@@ -264,6 +264,12 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
     [SENTRIUS_MGMT_ID_SETLEDTEST] = {
          .mh_write = Sentrius_mgmt_SetLedTest
     },
+    [SENTRIUS_MGMT_ID_SETTHERMISTORCALIBRATION] = {
+         .mh_write = Sentrius_mgmt_SetThermistorCalibration
+    },
+    [SENTRIUS_MGMT_ID_SETTEMPERATURECOEF] = {
+         .mh_write = Sentrius_mgmt_SetTemperatureCoef
+    },
 	// pyend
 };
 

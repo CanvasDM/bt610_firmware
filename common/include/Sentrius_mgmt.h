@@ -108,6 +108,8 @@ mgmt_handler_fn Sentrius_mgmt_GetTxPower;
 mgmt_handler_fn Sentrius_mgmt_GetNetworkId;
 mgmt_handler_fn Sentrius_mgmt_GetConfigVersion;
 mgmt_handler_fn Sentrius_mgmt_GetMagnetState;
+mgmt_handler_fn Sentrius_mgmt_SetThermistorCalibration;
+mgmt_handler_fn Sentrius_mgmt_SetTemperatureCoef;
 // pyend
 /**
  * Command IDs for file system management group.
@@ -192,6 +194,8 @@ mgmt_handler_fn Sentrius_mgmt_GetMagnetState;
 #define SENTRIUS_MGMT_ID_GETNETWORKID                          77
 #define SENTRIUS_MGMT_ID_GETCONFIGVERSION                      78
 #define SENTRIUS_MGMT_ID_GETMAGNETSTATE                        79
+#define SENTRIUS_MGMT_ID_SETTHERMISTORCALIBRATION              80
+#define SENTRIUS_MGMT_ID_SETTEMPERATURECOEF                    81
 // pyend
 
 /**

@@ -35,6 +35,9 @@ class attributes:
         self.xlsx_tab = ""
         self.functionCategory =[]
         self.functionNames = []
+        self.ParamType = []
+        self.ParamName = []
+        self.ParamSummary = []
         self.paramSizeList = []
         self.functionId = []      
         self.AttributeMax = []
@@ -86,12 +89,15 @@ class attributes:
                     self.AttributeTotal = self.AttributeTotal + self.paramSizeList[i]
                     for j in range(self.paramSizeList[i]):
                         self.functionCategory.append("rw")
-                        self.AttributeName.append(self.paramList[j]['name'])
-                        self.AttributeSummary.append(self.paramList[j]['summary'])
+                        #self.AttributeName.append(self.paramList[j]['name'])
+                        #self.AttributeSummary.append(self.paramList[j]['summary'])
+                        self.ParamName.append(self.paramList[j]['name'])
+                        self.ParamSummary.append(self.paramList[j]['summary'])
                         self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
                         self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
-                        self.AttributeType.append(self.paramList[j]['schema']['x-ctype'])                        
+                        #self.AttributeType.append(self.paramList[j]['schema']['x-ctype'])     
+                        self.ParamType.append(self.paramList[j]['schema']['x-ctype'])                       
                         self.AttributeStringMax.append(self.paramList[j]['schema']['maximumlength'])
                         self.AttributeBackup.append(self.paramList[j]['schema']['x-backup'])
                         self.AttributeLockable.append(self.paramList[j]['schema']['x-lockable'])
@@ -117,30 +123,6 @@ class attributes:
                             self.AttributeBroadcast.append(self.resultList[k]['x-broadcast'])
             pass    
 
-    def _GetAttributeMacro(self, itype: str, category: str, name: str) -> str:
-        """Get the c-macro for the RW or RO attribute"""
-        # the order is important here because all protocol values are read-only
-        if category == "protocol":
-            if itype == "char":
-                return "RP_ATTRS(" + name + ")"
-            else: 
-                return "RP_ATTRX(" + name + ")"
-        elif itype == "char":
-            if category == "ro":
-                return "RO_ATTRS(" + name + ")"
-            else: # rw
-                return "RW_ATTRS(" + name + ")"
-        elif category == "ro":
-            return "RO_ATTRX(" + name + ")"
-        else:
-            return "RW_ATTRX(" + name + ")"
-
-    def _GetValidatorString(self, i_type: str) -> str:
-        if i_type == "char":
-            return "AttributeValidator_" + "GenericString"
-        else:
-            return "AttributeValidator_" + (i_type)
-
     def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
         """Create the min/max portion of the attribute table entry"""
         if i_type == "char":
@@ -158,40 +140,6 @@ class attributes:
             else:
                 s_max = str(imax)
             return s_min + ", " + s_max
-
-    def _CreateAttrTable(self) -> str:
-        """
-        Create the attribute (property) table from the dictionary of lists 
-        created from the Excel spreadsheet and gperf
-        """
-        attributeTable = []
-        for i in range(0, self.AttributeTotal):
-            category = self.functionCategory[i]
-            name = self.AttributeName[i]
-            i_type = self.AttributeType[i]
-            i_min = self.AttributeMin[i]
-            i_max = self.AttributeMax[i]
-            backup = self.AttributeBackup[i]
-            lockable = self.AttributeLockable[i]
-            broadcast = self.AttributeBroadcast[i]
-            #validator = self.props["Validator"][i].strip()
-            i_hash = i
-            result = f"  [{i_hash:<2}] = " \
-                    + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {i_type}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
-                    + " }," \
-                    + "\n"
-            attributeTable.append(result)
-
-        attributeTable.append("\n")
-        
-        #for unused in self.unusedHashes:
-        #    result = f"  [{unused:<2}] = " \
-        #            + "{ATTR_UNUSED},\n"
-        #    attributeTable.append(result)
-
-        string = ''.join(attributeTable)
-        return string[:string.rfind(',')]  + '\n'
 
     def _GetStringSize(self, itype: str, imax: str) -> str:
         if itype == "char":
@@ -249,17 +197,7 @@ class attributes:
                 elif copying:
                     lst.append(line)
 
-        return lst
-    def _CreateStringDefinitions(self) -> str:
-        """Create some definitinons for header file"""
-        defs = []
-        for i in range(0, self.AttributeTotal):
-            name = self.AttributeSummary[i]
-            i_type = self.AttributeType[i]
-            i_max = self.AttributeStringMax[i]
-            if i_type == "char":
-                defs.append( f"static char {name}{self._GetStringSize(i_type, i_max)};" + "\n")
-        return ''.join(defs)        
+        return lst   
 
     def _CreateHandlerFunction(self) -> str:
         """Creates the functions and default values for the attributes"""
@@ -274,22 +212,26 @@ class attributes:
 
             function = "{:>28}".format("const uint16_t msgID = ")
             struct.append(function)
-            function = f"{i};\n"
+            function = f"{i+1};\n"
             struct.append(function)
             function = "{:>23}".format("int readCbor = 0;\n")
             struct.append(function)
 
             for j in range(0, self.paramSizeList[i]):
-                if "uint" in self.AttributeType[defineParameter]:
+                if "uint" in self.ParamType[defineParameter]:
                     function = f"     long long unsigned int "
                     struct.append(function)
-                    function = f"{self.AttributeSummary[defineParameter]};\n"
-                elif "int" in self.AttributeType[defineParameter]:
+                    function = f"{self.ParamSummary[defineParameter]};\n"
+                elif "int" in self.ParamType[defineParameter]:
                     function = f"     long long int "
                     struct.append(function)
-                    function = f"{self.AttributeSummary[defineParameter]};\n"
-                elif "char" in self.AttributeType[defineParameter]:
-                    function = f"     char {self.AttributeSummary[defineParameter]}{self._GetStringSize(self.AttributeType[defineParameter], self.AttributeStringMax[defineParameter])};\n"
+                    function = f"{self.ParamSummary[defineParameter]};\n"
+                elif "float" in self.ParamType[defineParameter]:
+                    function = f"     float "
+                    struct.append(function)
+                    function = f"{self.ParamSummary[defineParameter]};\n"    
+                elif "char" in self.ParamType[defineParameter]:
+                    function = f"     char {self.ParamSummary[defineParameter]}{self._GetStringSize(self.AttributeType[defineParameter], self.AttributeStringMax[defineParameter])};\n"
                    # struct.append(function)
                 
                 struct.append(function)
@@ -302,33 +244,38 @@ class attributes:
             for k in range(0, self.paramSizeList[i]):
                 function = "{:>12}".format("{\n")
                 struct.append(function)
-                function = "{:>34}".format(".attribute = " + '"' + f"{self.AttributeName[parameterNumber]}" + '"' +",\n")
+                function = "{:>34}".format(".attribute = " + '"' + f"{self.ParamName[parameterNumber]}" + '"' +",\n")
                 struct.append(function)
                 function = "{:>23}".format(".type = ")
                 struct.append(function)
-                function = f"{self._GetCborType(self.AttributeType[parameterNumber])},\n"
+                function = f"{self._GetCborType(self.ParamType[parameterNumber])},\n"
                 struct.append(function)
                 function = "{:>21}".format(".addr.")
                 struct.append(function)
-                if self.AttributeType[parameterNumber] == "char":
+                if "char" in self.ParamType[parameterNumber]:
                     function = "string = "
                     struct.append(function)
-                    function = f"{self.AttributeSummary[parameterNumber]},\n"
+                    function = f"{self.ParamSummary[parameterNumber]},\n"
                     struct.append(function)
                     function = "{:>29}".format(".len = sizeof(")
                     struct.append(function)
-                    function = f"{self.AttributeSummary[parameterNumber]}),\n"
+                    function = f"{self.ParamSummary[parameterNumber]}),\n"
                     struct.append(function)
-                elif (self.AttributeType[parameterNumber] == "uint8_t") or (self.AttributeType[parameterNumber] == "uint16_t") or (self.AttributeType[parameterNumber] == "uint32_t"):
+                elif "uint" in self.ParamType[parameterNumber]:
                     function = "uinteger = "
                     struct.append(function)
-                    function = f"&{self.AttributeSummary[parameterNumber]},\n"
+                    function = f"&{self.ParamSummary[parameterNumber]},\n"
                     struct.append(function)
-                else:
+                elif "int" in self.ParamType[parameterNumber]:
                     function = "integer = "
                     struct.append(function)
-                    function = f"&{self.AttributeSummary[parameterNumber]},\n"
+                    function = f"&{self.ParamSummary[parameterNumber]},\n"
                     struct.append(function)
+                elif "float" in self.ParamType[parameterNumber]:
+                    function = "fval = "
+                    struct.append(function)
+                    function = f"&{self.ParamSummary[parameterNumber]},\n"
+                    struct.append(function)    
 
                 function = "{:>13}".format("},\n")
                 struct.append(function)
@@ -365,7 +312,7 @@ class attributes:
         cborUint = "cbor_encode_uint(&ctxt->encoder, "
         cborInt = "cbor_encode_int(&ctxt->encoder, "
         cborString = "cbor_encode_byte_string(&ctxt->encoder, "
-        cborFloat = "cbor_encode_floating_point(&ctxt->encoder, "
+        cborFloat = "cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &"
         responseName = f"{self.functionNames[mId]}Result"
 
         response.append("{:>24}".format("CborError err = 0;\n"))
@@ -384,16 +331,16 @@ class attributes:
             response.append(cborStringsz)
             response.append('"'+f"r{i+1}" + '");\n')
             response.append(errorStart)  
-            if self.AttributeType[self.cborParameterNumber] == "char":
+            if self.ParamType[self.cborParameterNumber] == "char":
                 #response.append(cborString)
                 response.append(cborStringsz)                
-            elif self.AttributeType[self.cborParameterNumber] == "float":
+            elif self.ParamType[self.cborParameterNumber] == "float":
                 response.append(cborFloat)
-            elif (self.AttributeType[self.cborParameterNumber] == "uint8_t") or (self.AttributeType[self.cborParameterNumber] == "uint16_t") or (self.AttributeType[self.cborParameterNumber] == "uint32_t"):            
+            elif (self.ParamType[self.cborParameterNumber] == "uint8_t") or (self.ParamType[self.cborParameterNumber] == "uint16_t") or (self.ParamType[self.cborParameterNumber] == "uint32_t"):            
                 response.append(cborUint)
             else:
                 response.append(cborInt)
-            response.append(f"{self.AttributeSummary[self.cborParameterNumber]});\n")
+            response.append(f"{self.ParamSummary[self.cborParameterNumber]});\n")
             self.cborParameterNumber = self.cborParameterNumber + 1
         response.append(errorStart)
         response.append(cborStringsz)
