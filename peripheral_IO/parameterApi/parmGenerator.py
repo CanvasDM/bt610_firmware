@@ -18,8 +18,8 @@ class attributes:
         self.resultList = 0
         self.resultSizeList = 0
         self.AttributeTotal = 0
-        self.headerFilePath = "../include/"
-        self.sourceFilePath = "../src/"
+        self.headerFilePath = "../../common/include/"
+        self.sourceFilePath = "../../common/source/"
         self.fileName = "AttributeFunctions"
         self.minName = 'minimum'
         self.maxName = 'maximum'
@@ -37,6 +37,7 @@ class attributes:
         self.AttributeMax = []
         self.AttributeMin = []
         self.AttributeName = []
+        self.AttributeSummary = []
         self.AttributeType = []
         self.AttributeBackup = []
         self.AttributeLockable = []
@@ -74,7 +75,8 @@ class attributes:
                     self.AttributeTotal = self.AttributeTotal + self.paramSizeList
                     for j in range(self.paramSizeList):
                         self.functionCategory.append("rw")
-                        self.AttributeName.append(self.paramList[j]['summary'])
+                        self.AttributeName.append(self.paramList[j]['name'])
+                        self.AttributeSummary.append(self.paramList[j]['summary'])
                         self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
                         self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
@@ -87,12 +89,14 @@ class attributes:
                     #Read only because it is a get function 
                     self.AttributeTotal = self.AttributeTotal + self.resultSizeList
                     for k in range(self.resultSizeList):
-                        self.functionCategory.append("ro")
+                        
                         if "_duplicate" in self.resultList[k]['summary']:
                             # don't add already placed in code as Read/Write
                             self.AttributeTotal = self.AttributeTotal - 1
                         else:    
-                            self.AttributeName.append(self.resultList[k]['summary'])       
+                            self.functionCategory.append("ro")
+                            self.AttributeName.append(self.resultList[k]['name'])  
+                            self.AttributeSummary.append(self.resultList[k]['summary'])        
                             self.AttributeType.append(self.resultList[k]['x-ctype']) 
                             self.AttributeStringMax.append(self.resultList[k]['maximumlength'])
                             self.AttributeDefault.append(self.resultList[k]['x-default'])
@@ -103,6 +107,15 @@ class attributes:
                             self.AttributeBroadcast.append(self.resultList[k]['x-broadcast'])
             pass    
 
+    def _GetType(self, itype: str) -> str:
+        if itype == "char":
+            return "s"
+        elif "int" in itype:
+            return "i"
+        elif itype == "float":
+            return "f"
+        else:
+            return "u"
     def _GetAttributeMacro(self, itype: str, category: str, name: str) -> str:
         """Get the c-macro for the RW or RO attribute"""
         # the order is important here because all protocol values are read-only
@@ -133,16 +146,20 @@ class attributes:
             # string validation is different and doesn't use min/max
             return "0, 0"
         elif i_type == "float":
-            return "(uint32_t)" + str(imin) + ", " + "(uint32_t)" + str(imax)
+            return "(float)" + str(imin) + ", " + "(float)" + str(imax)
         else:
             if int(imin) < 0:
-                s_min = "(uint8_t)" + str(imin)
+                s_min = f"({i_type})" + str(imin)
+                s_min = s_min[:-2]
             else:
                 s_min = str(imin)
+                s_min = s_min[:-2]
             if int(imax) < 0:
-                s_max = "(uint32_t)" + str(imax)
+                s_max = f"({i_type})" + str(imax)
+                s_max = s_max[:-2]             
             else:
                 s_max = str(imax)
+                s_max = s_max[:-2] 
             return s_min + ", " + s_max
 
     def _CreateAttrTable(self) -> str:
@@ -153,7 +170,7 @@ class attributes:
         attributeTable = []
         for i in range(0, self.AttributeTotal):
             category = self.functionCategory[i]
-            name = self.AttributeName[i]
+            name = self.AttributeSummary[i]
             i_type = self.AttributeType[i]
             i_min = self.AttributeMin[i]
             i_max = self.AttributeMax[i]
@@ -164,7 +181,7 @@ class attributes:
             i_hash = i
             result = f"  [{i_hash:<2}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {i_type}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {self._GetType(i_type)}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
@@ -231,7 +248,7 @@ class attributes:
         struct = []
         for i in range(0, self.AttributeTotal):
             if category == self.functionCategory[i]:
-                name = self.AttributeName[i]
+                name = self.AttributeSummary[i]
                 i_type = self.AttributeType[i]
                 i_max = self.AttributeStringMax[i]
                 default = self.AttributeDefault[i]
@@ -276,10 +293,10 @@ class attributes:
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
         indices = []
-        for i in range(0, self.toatalFunctions):
-            name = self.functionNames[i]
-            id = self.functionId[i]
-            result = f"#define ATTR_INDEX_{name:<37} {id}" + "\n"
+        for i in range(0, self.AttributeTotal):
+            name = self.AttributeSummary[i].upper()
+            #id = self.functionId[i]
+            result = f"#define ATTR_INDEX_{name:<37} {i}" + "\n"
             indices.append(result)
         return ''.join(indices)
 

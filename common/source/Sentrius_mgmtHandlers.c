@@ -39,7 +39,7 @@ int Sentrius_mgmt_SetSensorName(struct mgmt_ctxt *ctxt)
 {
      const uint16_t msgID = 1;
      int readCbor = 0;
-     char sensorName;
+     char sensorName[23+1];
      const struct cbor_attr_t params_attr[] = {
           {
                .attribute = "p1",
@@ -66,7 +66,7 @@ int Sentrius_mgmt_SetSensorLocation(struct mgmt_ctxt *ctxt)
 {
      const uint16_t msgID = 2;
      int readCbor = 0;
-     char sensorLocation;
+     char sensorLocation[32+1];
      const struct cbor_attr_t params_attr[] = {
           {
                .attribute = "p1",
@@ -145,7 +145,7 @@ int Sentrius_mgmt_SetBLEPasskey(struct mgmt_ctxt *ctxt)
 {
      const uint16_t msgID = 5;
      int readCbor = 0;
-     char passkey;
+     char passkey[6+1];
      const struct cbor_attr_t params_attr[] = {
           {
                .attribute = "p1",
@@ -1020,9 +1020,35 @@ int Sentrius_mgmt_SetConfigVersion(struct mgmt_ctxt *ctxt)
      err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
      return 0;
 }
-int Sentrius_mgmt_SetHardwareVersion(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_SetConfigType(struct mgmt_ctxt *ctxt)
 {
      const uint16_t msgID = 28;
+     int readCbor = 0;
+     long long unsigned int configType;
+     const struct cbor_attr_t params_attr[] = {
+          {
+               .attribute = "p1",
+               .type = CborAttrUnsignedIntegerType,
+               .addr.uinteger = &configType,
+          },
+     };
+     readCbor = cbor_read_object(&ctxt->it, params_attr);
+     if (readCbor != 0) {
+          return MGMT_ERR_EINVAL;
+     }
+     CborError err = 0;
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
+     err |= cbor_encode_uint(&ctxt->encoder, msgID);
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "SetConfigTypeResult");
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
+     err |= cbor_encode_uint(&ctxt->encoder, configType);
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
+     return 0;
+}
+int Sentrius_mgmt_SetHardwareVersion(struct mgmt_ctxt *ctxt)
+{
+     const uint16_t msgID = 29;
      int readCbor = 0;
      long long unsigned int hardwareMinorVersion;
      const struct cbor_attr_t params_attr[] = {
@@ -1048,7 +1074,7 @@ int Sentrius_mgmt_SetHardwareVersion(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_SetLedTest(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 29;
+     const uint16_t msgID = 30;
      int readCbor = 0;
      long long unsigned int ledTestActive;
      const struct cbor_attr_t params_attr[] = {
@@ -1074,7 +1100,7 @@ int Sentrius_mgmt_SetLedTest(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAllTemperature(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 30;
+     const uint16_t msgID = 31;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1092,7 +1118,7 @@ int Sentrius_mgmt_GetAllTemperature(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature1(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 31;
+     const uint16_t msgID = 32;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1110,7 +1136,7 @@ int Sentrius_mgmt_GetTemperature1(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature2(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 32;
+     const uint16_t msgID = 33;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1128,7 +1154,7 @@ int Sentrius_mgmt_GetTemperature2(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature3(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 33;
+     const uint16_t msgID = 34;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1146,7 +1172,7 @@ int Sentrius_mgmt_GetTemperature3(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature4(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 34;
+     const uint16_t msgID = 35;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1164,7 +1190,7 @@ int Sentrius_mgmt_GetTemperature4(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetCurrent(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 35;
+     const uint16_t msgID = 36;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1182,7 +1208,7 @@ int Sentrius_mgmt_GetCurrent(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBatteryVoltage(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 36;
+     const uint16_t msgID = 37;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1200,7 +1226,7 @@ int Sentrius_mgmt_GetBatteryVoltage(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetDigitalInputAlarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 37;
+     const uint16_t msgID = 38;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1218,7 +1244,7 @@ int Sentrius_mgmt_GetDigitalInputAlarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature1Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 38;
+     const uint16_t msgID = 39;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1236,7 +1262,7 @@ int Sentrius_mgmt_GetTemperature1Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature2Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 39;
+     const uint16_t msgID = 40;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1254,7 +1280,7 @@ int Sentrius_mgmt_GetTemperature2Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature3Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 40;
+     const uint16_t msgID = 41;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1272,7 +1298,7 @@ int Sentrius_mgmt_GetTemperature3Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature4Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 41;
+     const uint16_t msgID = 42;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1290,7 +1316,7 @@ int Sentrius_mgmt_GetTemperature4Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog1Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 42;
+     const uint16_t msgID = 43;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1308,7 +1334,7 @@ int Sentrius_mgmt_GetAnalog1Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog2Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 43;
+     const uint16_t msgID = 44;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1326,7 +1352,7 @@ int Sentrius_mgmt_GetAnalog2Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog3Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 44;
+     const uint16_t msgID = 45;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1344,7 +1370,7 @@ int Sentrius_mgmt_GetAnalog3Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog4Alarms(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 45;
+     const uint16_t msgID = 46;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1362,7 +1388,7 @@ int Sentrius_mgmt_GetAnalog4Alarms(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetHardwareVersion(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 46;
+     const uint16_t msgID = 47;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1380,7 +1406,7 @@ int Sentrius_mgmt_GetHardwareVersion(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetFirmwareVersion(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 47;
+     const uint16_t msgID = 48;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1398,7 +1424,7 @@ int Sentrius_mgmt_GetFirmwareVersion(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetResetReason(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 48;
+     const uint16_t msgID = 49;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1416,7 +1442,7 @@ int Sentrius_mgmt_GetResetReason(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBluetoothMAC(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 49;
+     const uint16_t msgID = 50;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1434,7 +1460,7 @@ int Sentrius_mgmt_GetBluetoothMAC(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBluetoothMTU(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 50;
+     const uint16_t msgID = 51;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1452,7 +1478,7 @@ int Sentrius_mgmt_GetBluetoothMTU(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetFlags(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 51;
+     const uint16_t msgID = 52;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1470,7 +1496,7 @@ int Sentrius_mgmt_GetFlags(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetResetCount(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 52;
+     const uint16_t msgID = 53;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1488,7 +1514,7 @@ int Sentrius_mgmt_GetResetCount(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetSensorName(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 53;
+     const uint16_t msgID = 54;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1506,7 +1532,7 @@ int Sentrius_mgmt_GetSensorName(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetSensorLocation(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 54;
+     const uint16_t msgID = 55;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1524,7 +1550,7 @@ int Sentrius_mgmt_GetSensorLocation(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBLEAdvertisingInterval(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 55;
+     const uint16_t msgID = 56;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1542,7 +1568,7 @@ int Sentrius_mgmt_GetBLEAdvertisingInterval(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBLEAdvertisingDuration(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 56;
+     const uint16_t msgID = 57;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1560,7 +1586,7 @@ int Sentrius_mgmt_GetBLEAdvertisingDuration(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetSettingsLock(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 57;
+     const uint16_t msgID = 58;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1578,7 +1604,7 @@ int Sentrius_mgmt_GetSettingsLock(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetBatterySenseInterval(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 58;
+     const uint16_t msgID = 59;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1596,7 +1622,7 @@ int Sentrius_mgmt_GetBatterySenseInterval(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperatureSenseInterval(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 59;
+     const uint16_t msgID = 60;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1614,7 +1640,7 @@ int Sentrius_mgmt_GetTemperatureSenseInterval(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperatureAggregationValue(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 60;
+     const uint16_t msgID = 61;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1632,7 +1658,7 @@ int Sentrius_mgmt_GetTemperatureAggregationValue(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetDigitalOutput1(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 61;
+     const uint16_t msgID = 62;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1650,7 +1676,7 @@ int Sentrius_mgmt_GetDigitalOutput1(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetDigitalOutput2(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 62;
+     const uint16_t msgID = 63;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1668,7 +1694,7 @@ int Sentrius_mgmt_GetDigitalOutput2(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetDigitalInput1(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 63;
+     const uint16_t msgID = 64;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1686,7 +1712,7 @@ int Sentrius_mgmt_GetDigitalInput1(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetDigitalInput2(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 64;
+     const uint16_t msgID = 65;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1704,7 +1730,7 @@ int Sentrius_mgmt_GetDigitalInput2(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalogInput1Type(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 65;
+     const uint16_t msgID = 66;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1722,7 +1748,7 @@ int Sentrius_mgmt_GetAnalogInput1Type(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature1AlarmThreshold(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 66;
+     const uint16_t msgID = 67;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1740,7 +1766,7 @@ int Sentrius_mgmt_GetTemperature1AlarmThreshold(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature2AlarmThreshold(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 67;
+     const uint16_t msgID = 68;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1758,7 +1784,7 @@ int Sentrius_mgmt_GetTemperature2AlarmThreshold(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature3AlarmThreshold(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 68;
+     const uint16_t msgID = 69;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1776,7 +1802,7 @@ int Sentrius_mgmt_GetTemperature3AlarmThreshold(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTemperature4AlarmThreshold(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 69;
+     const uint16_t msgID = 70;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1794,7 +1820,7 @@ int Sentrius_mgmt_GetTemperature4AlarmThreshold(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog1AlarmThresholds(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 70;
+     const uint16_t msgID = 71;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1812,7 +1838,7 @@ int Sentrius_mgmt_GetAnalog1AlarmThresholds(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog2AlarmThresholds(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 71;
+     const uint16_t msgID = 72;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1830,7 +1856,7 @@ int Sentrius_mgmt_GetAnalog2AlarmThresholds(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog3AlarmThresholds(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 72;
+     const uint16_t msgID = 73;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1848,7 +1874,7 @@ int Sentrius_mgmt_GetAnalog3AlarmThresholds(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetAnalog4AlarmThresholds(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 73;
+     const uint16_t msgID = 74;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1866,7 +1892,7 @@ int Sentrius_mgmt_GetAnalog4AlarmThresholds(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetActiveMode(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 74;
+     const uint16_t msgID = 75;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1884,7 +1910,7 @@ int Sentrius_mgmt_GetActiveMode(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetUseCodedPhy(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 75;
+     const uint16_t msgID = 76;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1902,7 +1928,7 @@ int Sentrius_mgmt_GetUseCodedPhy(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetTxPower(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 76;
+     const uint16_t msgID = 77;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1920,7 +1946,7 @@ int Sentrius_mgmt_GetTxPower(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetNetworkId(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 77;
+     const uint16_t msgID = 78;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1938,7 +1964,7 @@ int Sentrius_mgmt_GetNetworkId(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_GetConfigVersion(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 78;
+     const uint16_t msgID = 79;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1954,9 +1980,27 @@ int Sentrius_mgmt_GetConfigVersion(struct mgmt_ctxt *ctxt)
      err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
      return 0;
 }
+int Sentrius_mgmt_GetConfigType(struct mgmt_ctxt *ctxt)
+{
+     const uint16_t msgID = 80;
+     int readCbor = 0;
+     const struct cbor_attr_t params_attr[] = {
+     };
+     readCbor = cbor_read_object(&ctxt->it, params_attr);
+     if (readCbor != 0) {
+          return MGMT_ERR_EINVAL;
+     }
+     CborError err = 0;
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
+     err |= cbor_encode_uint(&ctxt->encoder, msgID);
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "GetConfigTypeResult");
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+     err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
+     return 0;
+}
 int Sentrius_mgmt_GetMagnetState(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 79;
+     const uint16_t msgID = 81;
      int readCbor = 0;
      const struct cbor_attr_t params_attr[] = {
      };
@@ -1974,7 +2018,7 @@ int Sentrius_mgmt_GetMagnetState(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_SetThermistorCalibration(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 80;
+     const uint16_t msgID = 82;
      int readCbor = 0;
      float coefficient1;
      float coefficient2;
@@ -2008,12 +2052,12 @@ int Sentrius_mgmt_SetThermistorCalibration(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_SetTemperatureCoef(struct mgmt_ctxt *ctxt)
 {
-     const uint16_t msgID = 81;
+     const uint16_t msgID = 83;
      int readCbor = 0;
      float coefficientA;
      float coefficientB;
      float coefficientC;
-     long long unsigned int ThermistorIndex;
+     long long unsigned int thermistorIndex;
      const struct cbor_attr_t params_attr[] = {
           {
                .attribute = "p2",
@@ -2033,7 +2077,7 @@ int Sentrius_mgmt_SetTemperatureCoef(struct mgmt_ctxt *ctxt)
           {
                .attribute = "p1",
                .type = CborAttrUnsignedIntegerType,
-               .addr.uinteger = &ThermistorIndex,
+               .addr.uinteger = &thermistorIndex,
           },
      };
      readCbor = cbor_read_object(&ctxt->it, params_attr);
@@ -2051,7 +2095,7 @@ int Sentrius_mgmt_SetTemperatureCoef(struct mgmt_ctxt *ctxt)
      err |= cbor_encode_text_stringz(&ctxt->encoder, "r3");
      err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &coefficientC);
      err |= cbor_encode_text_stringz(&ctxt->encoder, "r4");
-     err |= cbor_encode_uint(&ctxt->encoder, ThermistorIndex);
+     err |= cbor_encode_uint(&ctxt->encoder, thermistorIndex);
      err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
      err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
      return 0;

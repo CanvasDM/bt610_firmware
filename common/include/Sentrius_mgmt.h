@@ -56,6 +56,7 @@ mgmt_handler_fn Sentrius_mgmt_SetUseCodedPhy;
 mgmt_handler_fn Sentrius_mgmt_SetTxPower;
 mgmt_handler_fn Sentrius_mgmt_SetNetworkId;
 mgmt_handler_fn Sentrius_mgmt_SetConfigVersion;
+mgmt_handler_fn Sentrius_mgmt_SetConfigType;
 mgmt_handler_fn Sentrius_mgmt_SetHardwareVersion;
 mgmt_handler_fn Sentrius_mgmt_SetLedTest;
 mgmt_handler_fn Sentrius_mgmt_GetAllTemperature;
@@ -107,6 +108,7 @@ mgmt_handler_fn Sentrius_mgmt_GetUseCodedPhy;
 mgmt_handler_fn Sentrius_mgmt_GetTxPower;
 mgmt_handler_fn Sentrius_mgmt_GetNetworkId;
 mgmt_handler_fn Sentrius_mgmt_GetConfigVersion;
+mgmt_handler_fn Sentrius_mgmt_GetConfigType;
 mgmt_handler_fn Sentrius_mgmt_GetMagnetState;
 mgmt_handler_fn Sentrius_mgmt_SetThermistorCalibration;
 mgmt_handler_fn Sentrius_mgmt_SetTemperatureCoef;
@@ -142,60 +144,62 @@ mgmt_handler_fn Sentrius_mgmt_SetTemperatureCoef;
 #define SENTRIUS_MGMT_ID_SETTXPOWER                            25
 #define SENTRIUS_MGMT_ID_SETNETWORKID                          26
 #define SENTRIUS_MGMT_ID_SETCONFIGVERSION                      27
-#define SENTRIUS_MGMT_ID_SETHARDWAREVERSION                    28
-#define SENTRIUS_MGMT_ID_SETLEDTEST                            29
-#define SENTRIUS_MGMT_ID_GETALLTEMPERATURE                     30
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE1                       31
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE2                       32
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE3                       33
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE4                       34
-#define SENTRIUS_MGMT_ID_GETCURRENT                            35
-#define SENTRIUS_MGMT_ID_GETBATTERYVOLTAGE                     36
-#define SENTRIUS_MGMT_ID_GETDIGITALINPUTALARMS                 37
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE1ALARMS                 38
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE2ALARMS                 39
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE3ALARMS                 40
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE4ALARMS                 41
-#define SENTRIUS_MGMT_ID_GETANALOG1ALARMS                      42
-#define SENTRIUS_MGMT_ID_GETANALOG2ALARMS                      43
-#define SENTRIUS_MGMT_ID_GETANALOG3ALARMS                      44
-#define SENTRIUS_MGMT_ID_GETANALOG4ALARMS                      45
-#define SENTRIUS_MGMT_ID_GETHARDWAREVERSION                    46
-#define SENTRIUS_MGMT_ID_GETFIRMWAREVERSION                    47
-#define SENTRIUS_MGMT_ID_GETRESETREASON                        48
-#define SENTRIUS_MGMT_ID_GETBLUETOOTHMAC                       49
-#define SENTRIUS_MGMT_ID_GETBLUETOOTHMTU                       50
-#define SENTRIUS_MGMT_ID_GETFLAGS                              51
-#define SENTRIUS_MGMT_ID_GETRESETCOUNT                         52
-#define SENTRIUS_MGMT_ID_GETSENSORNAME                         53
-#define SENTRIUS_MGMT_ID_GETSENSORLOCATION                     54
-#define SENTRIUS_MGMT_ID_GETBLEADVERTISINGINTERVAL             55
-#define SENTRIUS_MGMT_ID_GETBLEADVERTISINGDURATION             56
-#define SENTRIUS_MGMT_ID_GETSETTINGSLOCK                       57
-#define SENTRIUS_MGMT_ID_GETBATTERYSENSEINTERVAL               58
-#define SENTRIUS_MGMT_ID_GETTEMPERATURESENSEINTERVAL           59
-#define SENTRIUS_MGMT_ID_GETTEMPERATUREAGGREGATIONVALUE        60
-#define SENTRIUS_MGMT_ID_GETDIGITALOUTPUT1                     61
-#define SENTRIUS_MGMT_ID_GETDIGITALOUTPUT2                     62
-#define SENTRIUS_MGMT_ID_GETDIGITALINPUT1                      63
-#define SENTRIUS_MGMT_ID_GETDIGITALINPUT2                      64
-#define SENTRIUS_MGMT_ID_GETANALOGINPUT1TYPE                   65
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE1ALARMTHRESHOLD         66
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE2ALARMTHRESHOLD         67
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE3ALARMTHRESHOLD         68
-#define SENTRIUS_MGMT_ID_GETTEMPERATURE4ALARMTHRESHOLD         69
-#define SENTRIUS_MGMT_ID_GETANALOG1ALARMTHRESHOLDS             70
-#define SENTRIUS_MGMT_ID_GETANALOG2ALARMTHRESHOLDS             71
-#define SENTRIUS_MGMT_ID_GETANALOG3ALARMTHRESHOLDS             72
-#define SENTRIUS_MGMT_ID_GETANALOG4ALARMTHRESHOLDS             73
-#define SENTRIUS_MGMT_ID_GETACTIVEMODE                         74
-#define SENTRIUS_MGMT_ID_GETUSECODEDPHY                        75
-#define SENTRIUS_MGMT_ID_GETTXPOWER                            76
-#define SENTRIUS_MGMT_ID_GETNETWORKID                          77
-#define SENTRIUS_MGMT_ID_GETCONFIGVERSION                      78
-#define SENTRIUS_MGMT_ID_GETMAGNETSTATE                        79
-#define SENTRIUS_MGMT_ID_SETTHERMISTORCALIBRATION              80
-#define SENTRIUS_MGMT_ID_SETTEMPERATURECOEF                    81
+#define SENTRIUS_MGMT_ID_SETCONFIGTYPE                         28
+#define SENTRIUS_MGMT_ID_SETHARDWAREVERSION                    29
+#define SENTRIUS_MGMT_ID_SETLEDTEST                            30
+#define SENTRIUS_MGMT_ID_GETALLTEMPERATURE                     31
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE1                       32
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE2                       33
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE3                       34
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE4                       35
+#define SENTRIUS_MGMT_ID_GETCURRENT                            36
+#define SENTRIUS_MGMT_ID_GETBATTERYVOLTAGE                     37
+#define SENTRIUS_MGMT_ID_GETDIGITALINPUTALARMS                 38
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE1ALARMS                 39
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE2ALARMS                 40
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE3ALARMS                 41
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE4ALARMS                 42
+#define SENTRIUS_MGMT_ID_GETANALOG1ALARMS                      43
+#define SENTRIUS_MGMT_ID_GETANALOG2ALARMS                      44
+#define SENTRIUS_MGMT_ID_GETANALOG3ALARMS                      45
+#define SENTRIUS_MGMT_ID_GETANALOG4ALARMS                      46
+#define SENTRIUS_MGMT_ID_GETHARDWAREVERSION                    47
+#define SENTRIUS_MGMT_ID_GETFIRMWAREVERSION                    48
+#define SENTRIUS_MGMT_ID_GETRESETREASON                        49
+#define SENTRIUS_MGMT_ID_GETBLUETOOTHMAC                       50
+#define SENTRIUS_MGMT_ID_GETBLUETOOTHMTU                       51
+#define SENTRIUS_MGMT_ID_GETFLAGS                              52
+#define SENTRIUS_MGMT_ID_GETRESETCOUNT                         53
+#define SENTRIUS_MGMT_ID_GETSENSORNAME                         54
+#define SENTRIUS_MGMT_ID_GETSENSORLOCATION                     55
+#define SENTRIUS_MGMT_ID_GETBLEADVERTISINGINTERVAL             56
+#define SENTRIUS_MGMT_ID_GETBLEADVERTISINGDURATION             57
+#define SENTRIUS_MGMT_ID_GETSETTINGSLOCK                       58
+#define SENTRIUS_MGMT_ID_GETBATTERYSENSEINTERVAL               59
+#define SENTRIUS_MGMT_ID_GETTEMPERATURESENSEINTERVAL           60
+#define SENTRIUS_MGMT_ID_GETTEMPERATUREAGGREGATIONVALUE        61
+#define SENTRIUS_MGMT_ID_GETDIGITALOUTPUT1                     62
+#define SENTRIUS_MGMT_ID_GETDIGITALOUTPUT2                     63
+#define SENTRIUS_MGMT_ID_GETDIGITALINPUT1                      64
+#define SENTRIUS_MGMT_ID_GETDIGITALINPUT2                      65
+#define SENTRIUS_MGMT_ID_GETANALOGINPUT1TYPE                   66
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE1ALARMTHRESHOLD         67
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE2ALARMTHRESHOLD         68
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE3ALARMTHRESHOLD         69
+#define SENTRIUS_MGMT_ID_GETTEMPERATURE4ALARMTHRESHOLD         70
+#define SENTRIUS_MGMT_ID_GETANALOG1ALARMTHRESHOLDS             71
+#define SENTRIUS_MGMT_ID_GETANALOG2ALARMTHRESHOLDS             72
+#define SENTRIUS_MGMT_ID_GETANALOG3ALARMTHRESHOLDS             73
+#define SENTRIUS_MGMT_ID_GETANALOG4ALARMTHRESHOLDS             74
+#define SENTRIUS_MGMT_ID_GETACTIVEMODE                         75
+#define SENTRIUS_MGMT_ID_GETUSECODEDPHY                        76
+#define SENTRIUS_MGMT_ID_GETTXPOWER                            77
+#define SENTRIUS_MGMT_ID_GETNETWORKID                          78
+#define SENTRIUS_MGMT_ID_GETCONFIGVERSION                      79
+#define SENTRIUS_MGMT_ID_GETCONFIGTYPE                         80
+#define SENTRIUS_MGMT_ID_GETMAGNETSTATE                        81
+#define SENTRIUS_MGMT_ID_SETTHERMISTORCALIBRATION              82
+#define SENTRIUS_MGMT_ID_SETTEMPERATURECOEF                    83
 // pyend
 
 /**

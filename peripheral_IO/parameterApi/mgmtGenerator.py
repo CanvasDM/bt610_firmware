@@ -18,6 +18,7 @@ class attributes:
         self.resultSizeList = 0
         self.AttributeTotal = 0
         self.cborParameterNumber = 0
+        self.defineParameter = 0
         self.headerFilePath = "../../common/include/"
         self.sourceFilePath = "../../common/source/"
         self.fileName = "Sentrius_mgmt"
@@ -199,11 +200,34 @@ class attributes:
 
         return lst   
 
+    def _PopulateSetFunctions(self, mId: str) -> str:
+        struct = []
+        for j in range(0, self.paramSizeList[mId]):
+            if "uint" in self.ParamType[self.defineParameter]:
+                function = f"     long long unsigned int "
+                struct.append(function)
+                function = f"{self.ParamSummary[self.defineParameter]};\n"
+            elif "int" in self.ParamType[self.defineParameter]:
+                function = f"     long long int "
+                struct.append(function)
+                function = f"{self.ParamSummary[self.defineParameter]};\n"
+            elif "float" in self.ParamType[self.defineParameter]:
+                function = f"     float "
+                struct.append(function)
+                function = f"{self.ParamSummary[self.defineParameter]};\n"    
+            elif "char" in self.ParamType[self.defineParameter]:
+                function = f"     char {self.ParamSummary[self.defineParameter]}{self._GetStringSize(self.ParamType[self.defineParameter], self.AttributeStringMax[self.defineParameter])};\n"
+                # struct.append(function)
+            
+            struct.append(function)
+            self.defineParameter = self.defineParameter + 1 
+        string = ''.join(struct)
+        return string    
+
     def _CreateHandlerFunction(self) -> str:
         """Creates the functions and default values for the attributes"""
         struct = []
-        parameterNumber = 0
-        defineParameter = 0
+        parameterNumber = 0        
         for i in range(0, self.toatalFunctions):
             function = f"int {self.handlerFunctionName[i]}(struct mgmt_ctxt *ctxt)\n"
             struct.append(function)
@@ -216,26 +240,9 @@ class attributes:
             struct.append(function)
             function = "{:>23}".format("int readCbor = 0;\n")
             struct.append(function)
-
-            for j in range(0, self.paramSizeList[i]):
-                if "uint" in self.ParamType[defineParameter]:
-                    function = f"     long long unsigned int "
-                    struct.append(function)
-                    function = f"{self.ParamSummary[defineParameter]};\n"
-                elif "int" in self.ParamType[defineParameter]:
-                    function = f"     long long int "
-                    struct.append(function)
-                    function = f"{self.ParamSummary[defineParameter]};\n"
-                elif "float" in self.ParamType[defineParameter]:
-                    function = f"     float "
-                    struct.append(function)
-                    function = f"{self.ParamSummary[defineParameter]};\n"    
-                elif "char" in self.ParamType[defineParameter]:
-                    function = f"     char {self.ParamSummary[defineParameter]}{self._GetStringSize(self.AttributeType[defineParameter], self.AttributeStringMax[defineParameter])};\n"
-                   # struct.append(function)
-                
-                struct.append(function)
-                defineParameter = defineParameter + 1 
+            
+            struct.append(self._PopulateSetFunctions(i))
+            
 
             function = "{:>48}".format("const struct cbor_attr_t params_attr[] = {\n")
             #48 is to give it tab pad

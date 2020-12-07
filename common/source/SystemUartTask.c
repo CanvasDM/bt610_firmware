@@ -156,7 +156,6 @@ static void SystemUartTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #endif
 
 	BSP_ConfigureUART();
-	ProtocolTask_Initialize();
 	SetupUartRead();
 
 	while (true) {
