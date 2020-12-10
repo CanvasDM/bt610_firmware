@@ -26,9 +26,8 @@ extern "C" {
 /******************************************************************************/
 
 // pystart - attribute function definitions
-#define ATTRIBUTE_FUNCTION_TABLE_SIZE 115
+#define ATTRIBUTE_FUNCTION_TABLE_SIZE 113
 
-#define ATTRIBUTE_TOTAL_KEYWORDS 83
 // pyend
 
 /******************************************************************************/
@@ -103,56 +102,54 @@ extern "C" {
 #define ATTR_INDEX_CONFIGTYPE                            62
 #define ATTR_INDEX_HARDWAREMINORVERSION                  63
 #define ATTR_INDEX_LEDTESTACTIVE                         64
-#define ATTR_INDEX_TEMPERATUREALL                        65
-#define ATTR_INDEX_TEMPERATURERESULT1                    66
-#define ATTR_INDEX_TEMPERATURERESULT2                    67
-#define ATTR_INDEX_TEMPERATURERESULT3                    68
-#define ATTR_INDEX_TEMPERATURERESULT4                    69
-#define ATTR_INDEX_CURRENTREADINGMA                      70
-#define ATTR_INDEX_BATTERYVOLTAGEMV                      71
-#define ATTR_INDEX_DIGITALINPUT1ALARM                    72
-#define ATTR_INDEX_DIGITALINPUT2ALARM                    73
-#define ATTR_INDEX_HIGHTEMPERATURE1ALARM                 74
-#define ATTR_INDEX_LOWTEMPERATURE1ALARM                  75
-#define ATTR_INDEX_DELTATEMPERATURE1ALARM                76
-#define ATTR_INDEX_HIGHTEMPERATURE2ALARM                 77
-#define ATTR_INDEX_LOWTEMPERATURE2ALARM                  78
-#define ATTR_INDEX_DELTATEMPERATURE2ALARM                79
-#define ATTR_INDEX_HIGHTEMPERATURE3ALARM                 80
-#define ATTR_INDEX_LOWTEMPERATURE3ALARM                  81
-#define ATTR_INDEX_DELTATEMPERATURE3ALARM                82
-#define ATTR_INDEX_HIGHTEMPERATURE4ALARM                 83
-#define ATTR_INDEX_LOWTEMPERATURE4ALARM                  84
-#define ATTR_INDEX_DELTATEMPERATURE4ALARM                85
-#define ATTR_INDEX_HIGHANALOG1ALARM                      86
-#define ATTR_INDEX_LOWANALOG1ALARM                       87
-#define ATTR_INDEX_DELTAANALOG1ALARM                     88
-#define ATTR_INDEX_HIGHANALOG2ALARM                      89
-#define ATTR_INDEX_LOWANALOG2ALARM                       90
-#define ATTR_INDEX_DELTAANALOG2ALARM                     91
-#define ATTR_INDEX_HIGHANALOG3ALARM                      92
-#define ATTR_INDEX_LOWANALOG3ALARM                       93
-#define ATTR_INDEX_DELTAANALOG3ALARM                     94
-#define ATTR_INDEX_HIGHANALOG4ALARM                      95
-#define ATTR_INDEX_LOWANALOG4ALARM                       96
-#define ATTR_INDEX_DELTAANALOG4ALARM                     97
-#define ATTR_INDEX_HWVERSION                             98
-#define ATTR_INDEX_FIRMWAREVERSION                       99
-#define ATTR_INDEX_RESETREASON                           100
-#define ATTR_INDEX_BLUETOOTHADDRESS                      101
-#define ATTR_INDEX_MTU                                   102
-#define ATTR_INDEX_FLAGS                                 103
-#define ATTR_INDEX_RESETCOUNT                            104
-#define ATTR_INDEX_DIGITALINPUT1MV                       105
-#define ATTR_INDEX_DIGITALINPU21MV                       106
-#define ATTR_INDEX_LOWTEMP3THRESH2C                      107
-#define ATTR_INDEX_MAGNETSTATE                           108
-#define ATTR_INDEX_COEFFICIENT1                          109
-#define ATTR_INDEX_COEFFICIENT2                          110
-#define ATTR_INDEX_COEFFICIENTA                          111
-#define ATTR_INDEX_COEFFICIENTB                          112
-#define ATTR_INDEX_COEFFICIENTC                          113
-#define ATTR_INDEX_THERMISTORINDEX                       114
+#define ATTR_INDEX_COEFFICIENT1                          65
+#define ATTR_INDEX_COEFFICIENT2                          66
+#define ATTR_INDEX_COEFFICIENTA                          67
+#define ATTR_INDEX_COEFFICIENTB                          68
+#define ATTR_INDEX_COEFFICIENTC                          69
+#define ATTR_INDEX_THERMISTORINDEX                       70
+#define ATTR_INDEX_TEMPERATURERESULT1                    71
+#define ATTR_INDEX_TEMPERATURERESULT2                    72
+#define ATTR_INDEX_TEMPERATURERESULT3                    73
+#define ATTR_INDEX_TEMPERATURERESULT4                    74
+#define ATTR_INDEX_BATTERYVOLTAGEMV                      75
+#define ATTR_INDEX_DIGITALINPUT1ALARM                    76
+#define ATTR_INDEX_DIGITALINPUT2ALARM                    77
+#define ATTR_INDEX_CURRENTREADINGMA                      78
+#define ATTR_INDEX_HIGHTEMPERATURE1ALARM                 79
+#define ATTR_INDEX_LOWTEMPERATURE1ALARM                  80
+#define ATTR_INDEX_DELTATEMPERATURE1ALARM                81
+#define ATTR_INDEX_HIGHTEMPERATURE2ALARM                 82
+#define ATTR_INDEX_LOWTEMPERATURE2ALARM                  83
+#define ATTR_INDEX_DELTATEMPERATURE2ALARM                84
+#define ATTR_INDEX_HIGHTEMPERATURE3ALARM                 85
+#define ATTR_INDEX_LOWTEMPERATURE3ALARM                  86
+#define ATTR_INDEX_DELTATEMPERATURE3ALARM                87
+#define ATTR_INDEX_HIGHTEMPERATURE4ALARM                 88
+#define ATTR_INDEX_LOWTEMPERATURE4ALARM                  89
+#define ATTR_INDEX_DELTATEMPERATURE4ALARM                90
+#define ATTR_INDEX_HIGHANALOG1ALARM                      91
+#define ATTR_INDEX_LOWANALOG1ALARM                       92
+#define ATTR_INDEX_DELTAANALOG1ALARM                     93
+#define ATTR_INDEX_HIGHANALOG2ALARM                      94
+#define ATTR_INDEX_LOWANALOG2ALARM                       95
+#define ATTR_INDEX_DELTAANALOG2ALARM                     96
+#define ATTR_INDEX_HIGHANALOG3ALARM                      97
+#define ATTR_INDEX_LOWANALOG3ALARM                       98
+#define ATTR_INDEX_DELTAANALOG3ALARM                     99
+#define ATTR_INDEX_HIGHANALOG4ALARM                      100
+#define ATTR_INDEX_LOWANALOG4ALARM                       101
+#define ATTR_INDEX_DELTAANALOG4ALARM                     102
+#define ATTR_INDEX_HWVERSION                             103
+#define ATTR_INDEX_FIRMWAREVERSION                       104
+#define ATTR_INDEX_RESETREASON                           105
+#define ATTR_INDEX_BLUETOOTHADDRESS                      106
+#define ATTR_INDEX_MTU                                   107
+#define ATTR_INDEX_FLAGS                                 108
+#define ATTR_INDEX_RESETCOUNT                            109
+#define ATTR_INDEX_DIGITALINPUT1MV                       110
+#define ATTR_INDEX_DIGITALINPUT2MV                       111
+#define ATTR_INDEX_MAGNETSTATE                           112
 // pyend
 
 /******************************************************************************/

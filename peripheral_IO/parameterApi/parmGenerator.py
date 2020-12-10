@@ -7,33 +7,25 @@ import getpass
 
 
 class attributes:
-    def __init__(self, fname: str = "BT6Api.json"):
+    def __init__(self, fname: str = "BT6ApiParams.json"):
 
         # The following items are loaded from the configuration file
-        self.methodList = 0
-        self.toatalFunctions = 0
-        self.paramList = 0
-        self.paramSizeList = 0
-        self.paramListTotal = 0
-        self.resultList = 0
-        self.resultSizeList = 0
-        self.AttributeTotal = 0
+        self.componetList = 0
+        self.toatalParameters = 0
+
         self.headerFilePath = "../../common/include/"
         self.sourceFilePath = "../../common/source/"
         self.fileName = "AttributeFunctions"
-        self.minName = 'minimum'
-        self.maxName = 'maximum'
 
         self.inputHeaderFileName = ""
         self.outputHeaderFileName = ""
         self.inputSourceFileName = ""
         self.outputSourceFileName = ""
         self.jsonFileName = "" 
-        self.xlsx_in = ""
-        self.xlsx_tab = ""
+
         self.functionCategory =[]
-        self.functionNames = []
-        self.functionId = []      
+        self.ParamNames = []
+        self.ParamId = []      
         self.AttributeMax = []
         self.AttributeMin = []
         self.AttributeName = []
@@ -44,14 +36,17 @@ class attributes:
         self.AttributeBroadcast = []
         self.AttributeStringMax = []
         self.AttributeDefault = []
+        self.AttributeReadOnly = []
+        self.AttributeWriteOnly = []
+        self.AttributeReadWrite = []
         self.resultName = []
         self._LoadConfig(fname)
 
     def _LoadConfig(self, fname: str) -> None:
         with open(fname, 'r') as f:
             data = json.load(f)
-            self.methodList = data['methods']
-            self.toatalFunctions = len(self.methodList)
+            self.componetList = data['components']['contentDescriptors']['deviceParams']['x-deviceparameters']
+            self.toatalParameters = len(self.componetList)
             file_name = self.headerFilePath +self.fileName
             self.inputHeaderFileName = file_name
             self.outputHeaderFileName = file_name + ""
@@ -60,51 +55,21 @@ class attributes:
             self.outputSourceFileName = file_name + ""
 
 
-            for i in range(self.toatalFunctions):
-                self.functionNames.append(self.methodList[i]['name'])
-                self.functionId.append(self.methodList[i]['x-id'])
-
-                #Parameter Data
-                self.paramList = self.methodList[i]['params']
-                self.paramSizeList = len(self.paramList)
-                #Result Data
-                self.resultList = self.methodList[i]['result']['schema']['items']
-                self.resultSizeList = len(self.resultList)
-                if self.paramSizeList > 0:
-                    #Read Write because it is a set functions                    
-                    self.AttributeTotal = self.AttributeTotal + self.paramSizeList
-                    for j in range(self.paramSizeList):
-                        self.functionCategory.append("rw")
-                        self.AttributeName.append(self.paramList[j]['name'])
-                        self.AttributeSummary.append(self.paramList[j]['summary'])
-                        self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
-                        self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
-                        self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
-                        self.AttributeType.append(self.paramList[j]['schema']['x-ctype'])                        
-                        self.AttributeStringMax.append(self.paramList[j]['schema']['maximumlength'])
-                        self.AttributeBackup.append(self.paramList[j]['schema']['x-backup'])
-                        self.AttributeLockable.append(self.paramList[j]['schema']['x-lockable'])
-                        self.AttributeBroadcast.append(self.paramList[j]['schema']['x-broadcast'])
-                else:
-                    #Read only because it is a get function 
-                    self.AttributeTotal = self.AttributeTotal + self.resultSizeList
-                    for k in range(self.resultSizeList):
-                        
-                        if "_duplicate" in self.resultList[k]['summary']:
-                            # don't add already placed in code as Read/Write
-                            self.AttributeTotal = self.AttributeTotal - 1
-                        else:    
-                            self.functionCategory.append("ro")
-                            self.AttributeName.append(self.resultList[k]['name'])  
-                            self.AttributeSummary.append(self.resultList[k]['summary'])        
-                            self.AttributeType.append(self.resultList[k]['x-ctype']) 
-                            self.AttributeStringMax.append(self.resultList[k]['maximumlength'])
-                            self.AttributeDefault.append(self.resultList[k]['x-default'])
-                            self.AttributeMax.append(self.resultList[k]['maximum'])
-                            self.AttributeMin.append(self.resultList[k]['minimum'])
-                            self.AttributeBackup.append(self.resultList[k]['x-backup'])
-                            self.AttributeLockable.append(self.resultList[k]['x-lockable'])
-                            self.AttributeBroadcast.append(self.resultList[k]['x-broadcast'])
+            for i in range(self.toatalParameters):
+                self.ParamNames.append(self.componetList[i]['name'])
+                self.ParamId.append(self.componetList[i]['x-id'])
+                #schema sub
+                self.AttributeStringMax.append(self.componetList[i]['schema']['maximumlength'])
+                self.AttributeMax.append(self.componetList[i]['schema']['maximum'])
+                self.AttributeMin.append(self.componetList[i]['schema']['minimum'])
+                self.AttributeDefault.append(self.componetList[i]['schema']['x-default'])
+                self.AttributeType.append(self.componetList[i]['schema']['x-ctype'])  
+                self.AttributeBackup.append(self.componetList[i]['schema']['x-backup'])
+                self.AttributeLockable.append(self.componetList[i]['schema']['x-lockable'])
+                self.AttributeBroadcast.append(self.componetList[i]['schema']['x-broadcast'])
+                self.AttributeReadOnly.append(self.componetList[i]['schema']['x-readonly'])
+                self.AttributeWriteOnly.append(self.componetList[i]['schema']['x-writeonly'])
+                self.AttributeReadWrite.append(self.componetList[i]['schema']['x-readwrite'])             
             pass    
 
     def _GetType(self, itype: str) -> str:
@@ -116,22 +81,17 @@ class attributes:
             return "f"
         else:
             return "u"
-    def _GetAttributeMacro(self, itype: str, category: str, name: str) -> str:
+    def _GetAttributeMacro(self, itype: str, readWrite: bool, readOnly: bool, name: str) -> str:
         """Get the c-macro for the RW or RO attribute"""
         # the order is important here because all protocol values are read-only
-        if category == "protocol":
-            if itype == "char":
-                return "RP_ATTRS(" + name + ")"
-            else: 
-                return "RP_ATTRX(" + name + ")"
-        elif itype == "char":
-            if category == "ro":
+        if itype == "char":
+            if readOnly == True:
                 return "RO_ATTRS(" + name + ")"
-            else: # rw
+            elif readWrite == True:
                 return "RW_ATTRS(" + name + ")"
-        elif category == "ro":
+        elif readOnly == True:
             return "RO_ATTRX(" + name + ")"
-        else:
+        elif readWrite == True:
             return "RW_ATTRX(" + name + ")"
 
     def _GetValidatorString(self, i_type: str) -> str:
@@ -168,9 +128,10 @@ class attributes:
         created from the Excel spreadsheet and gperf
         """
         attributeTable = []
-        for i in range(0, self.AttributeTotal):
-            category = self.functionCategory[i]
-            name = self.AttributeSummary[i]
+        for i in range(0, self.toatalParameters):
+            readWrite = self.AttributeReadWrite[i]
+            readOnly = self.AttributeReadOnly[i]
+            name = self.ParamNames[i]
             i_type = self.AttributeType[i]
             i_min = self.AttributeMin[i]
             i_max = self.AttributeMax[i]
@@ -181,7 +142,7 @@ class attributes:
             i_hash = i
             result = f"  [{i_hash:<2}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, category, name):<48}, {self._GetType(i_type)}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<48}, {self._GetType(i_type)}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
@@ -246,9 +207,9 @@ class attributes:
     def _CreateStruct(self, category: str, default_values: bool, remove_last_comma: bool) -> str:
         """Creates the structures and default values for RW and RO attributes"""
         struct = []
-        for i in range(0, self.AttributeTotal):
-            if category == self.functionCategory[i]:
-                name = self.AttributeSummary[i]
+        for i in range(0, self.toatalParameters):
+            if ((category == 'rw') & (self.AttributeReadWrite[i] == True)) or ((category == 'ro') & (self.AttributeReadOnly[i] == True)):
+                name = self.ParamNames[i]
                 i_type = self.AttributeType[i]
                 i_max = self.AttributeStringMax[i]
                 default = self.AttributeDefault[i]
@@ -293,8 +254,8 @@ class attributes:
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
         indices = []
-        for i in range(0, self.AttributeTotal):
-            name = self.AttributeSummary[i].upper()
+        for i in range(0, self.toatalParameters):
+            name = self.ParamNames[i].upper()
             #id = self.functionId[i]
             result = f"#define ATTR_INDEX_{name:<37} {i}" + "\n"
             indices.append(result)
@@ -303,8 +264,8 @@ class attributes:
     def _CreateAttrDefinitions(self) -> str:
         """Create some definitinons for header file"""
         defs = []
-        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.AttributeTotal}\n\n")
-        defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.toatalFunctions}\n")
+        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.toatalParameters}\n\n")
+        #defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.toatalFunctions}\n")
         return ''.join(defs)
 
     def _CreateAttributeHeaderFile(self, lst: list) -> None:

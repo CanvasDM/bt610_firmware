@@ -32,7 +32,8 @@
 // pyend
 
 #ifndef ATTRIBUTE_TABLE_SIZE
-#define ATTRIBUTE_TABLE_SIZE  ATTRIBUTE_FUNCTION_TABLE_SIZE//(MAX_HASH_VALUE + 1)
+#define ATTRIBUTE_TABLE_SIZE                                                   \
+	ATTRIBUTE_FUNCTION_TABLE_SIZE //(MAX_HASH_VALUE + 1)
 #endif
 
 #if ATTRIBUTE_TABLE_SIZE != (MAX_HASH_VALUE + 1)
@@ -207,15 +208,14 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 
 typedef struct RoAttributesTag {
 	// pystart - ro attributes
-  int32_t temperatureAll;
   int32_t temperatureResult1;
   int32_t temperatureResult2;
   int32_t temperatureResult3;
   int32_t temperatureResult4;
-  uint8_t currentReadingMa;
   uint16_t batteryVoltageMv;
   uint8_t digitalInput1Alarm;
   uint8_t digitalInput2Alarm;
+  uint8_t currentReadingMa;
   uint8_t highTemperature1Alarm;
   uint8_t lowTemperature1Alarm;
   uint8_t deltaTemperature1Alarm;
@@ -240,7 +240,7 @@ typedef struct RoAttributesTag {
   uint8_t highAnalog4Alarm;
   uint8_t lowAnalog4Alarm;
   uint8_t deltaAnalog4Alarm;
-  char hwVersion[1+1];
+  char hwVersion[0+1];
   char firmwareVersion[11+1];
   char resetReason[8+1];
   char bluetoothAddress[12+1];
@@ -248,24 +248,21 @@ typedef struct RoAttributesTag {
   uint32_t flags;
   uint16_t resetCount;
   uint8_t digitalInput1Mv;
-  uint8_t digitalInpu21Mv;
-  int16_t lowTemp3Thresh2c;
+  uint8_t digitalInput2Mv;
   uint8_t magnetState;
 	// pyend
 } RoAttribute_t;
 
-
 static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	// pystart - ro defaults
-  .temperatureAll = 0,
   .temperatureResult1 = 0,
   .temperatureResult2 = 0,
   .temperatureResult3 = 0,
   .temperatureResult4 = 0,
-  .currentReadingMa = 0,
   .batteryVoltageMv = 0,
   .digitalInput1Alarm = 0,
   .digitalInput2Alarm = 0,
+  .currentReadingMa = 0,
   .highTemperature1Alarm = 0,
   .lowTemperature1Alarm = 0,
   .deltaTemperature1Alarm = 0,
@@ -290,20 +287,18 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
   .highAnalog4Alarm = 0,
   .lowAnalog4Alarm = 0,
   .deltaAnalog4Alarm = 0,
-  .hwVersion = "",
-  .firmwareVersion = "",
-  .resetReason = "",
-  .bluetoothAddress = "",
+  .hwVersion = "0",
+  .firmwareVersion = "0",
+  .resetReason = "0",
+  .bluetoothAddress = "0",
   .mtu = 20,
   .flags = 0,
   .resetCount = 0,
   .digitalInput1Mv = 0,
-  .digitalInpu21Mv = 0,
-  .lowTemp3Thresh2c = -127,
+  .digitalInput2Mv = 0,
   .magnetState = 0
 	// pyend
 };
-
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -409,56 +404,54 @@ EXTERN_C AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] = {
   [62] = { RW_ATTRX(configType)                            , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 },
   [63] = { RW_ATTRX(hardwareMinorVersion)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 9 },
   [64] = { RW_ATTRX(ledTestActive)                         , i, False, False, False, AttributeValidator_uint8_t       , 10, 1000 },
-  [65] = { RO_ATTRX(temperatureAll)                        , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [66] = { RO_ATTRX(temperatureResult1)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [67] = { RO_ATTRX(temperatureResult2)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [68] = { RO_ATTRX(temperatureResult3)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [69] = { RO_ATTRX(temperatureResult4)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [70] = { RO_ATTRX(currentReadingMa)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 20 },
-  [71] = { RO_ATTRX(batteryVoltageMv)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 3800 },
-  [72] = { RO_ATTRX(digitalInput1Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
-  [73] = { RO_ATTRX(digitalInput2Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
-  [74] = { RO_ATTRX(highTemperature1Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [75] = { RO_ATTRX(lowTemperature1Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [76] = { RO_ATTRX(deltaTemperature1Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [77] = { RO_ATTRX(highTemperature2Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [78] = { RO_ATTRX(lowTemperature2Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [79] = { RO_ATTRX(deltaTemperature2Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [80] = { RO_ATTRX(highTemperature3Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [81] = { RO_ATTRX(lowTemperature3Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [82] = { RO_ATTRX(deltaTemperature3Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [83] = { RO_ATTRX(highTemperature4Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [84] = { RO_ATTRX(lowTemperature4Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [85] = { RO_ATTRX(deltaTemperature4Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [86] = { RO_ATTRX(highAnalog1Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [87] = { RO_ATTRX(lowAnalog1Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [88] = { RO_ATTRX(deltaAnalog1Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [89] = { RO_ATTRX(highAnalog2Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [90] = { RO_ATTRX(lowAnalog2Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [91] = { RO_ATTRX(deltaAnalog2Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [92] = { RO_ATTRX(highAnalog3Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [93] = { RO_ATTRX(lowAnalog3Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [94] = { RO_ATTRX(deltaAnalog3Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [95] = { RO_ATTRX(highAnalog4Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [96] = { RO_ATTRX(lowAnalog4Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [97] = { RO_ATTRX(deltaAnalog4Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [98] = { RO_ATTRS(hwVersion)                             , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [99] = { RO_ATTRS(firmwareVersion)                       , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [100] = { RO_ATTRS(resetReason)                           , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [101] = { RO_ATTRS(bluetoothAddress)                      , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [102] = { RO_ATTRX(mtu)                                   , i, False, False, False, AttributeValidator_uint8_t       , 20, 244 },
-  [103] = { RO_ATTRX(flags)                                 , i, False, False, False, AttributeValidator_uint32_t      , 0, 0 },
-  [104] = { RO_ATTRX(resetCount)                            , i, False, False, False, AttributeValidator_uint16_t      , 0, 65535 },
-  [105] = { RO_ATTRX(digitalInput1Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [106] = { RO_ATTRX(digitalInpu21Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [107] = { RO_ATTRX(lowTemp3Thresh2c)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [108] = { RO_ATTRX(magnetState)                           , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 },
-  [109] = { RW_ATTRX(coefficient1)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [110] = { RW_ATTRX(coefficient2)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
-  [111] = { RW_ATTRX(coefficientA)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [112] = { RW_ATTRX(coefficientB)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [113] = { RW_ATTRX(coefficientC)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
-  [114] = { RW_ATTRX(thermistorIndex)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 3 }
+  [65] = { RW_ATTRX(coefficient1)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [66] = { RW_ATTRX(coefficient2)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
+  [67] = { RW_ATTRX(coefficientA)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [68] = { RW_ATTRX(coefficientB)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [69] = { RW_ATTRX(coefficientC)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
+  [70] = { RW_ATTRX(thermistorIndex)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 3 },
+  [71] = { RO_ATTRX(temperatureResult1)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [72] = { RO_ATTRX(temperatureResult2)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [73] = { RO_ATTRX(temperatureResult3)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [74] = { RO_ATTRX(temperatureResult4)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [75] = { RO_ATTRX(batteryVoltageMv)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 3800 },
+  [76] = { RO_ATTRX(digitalInput1Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
+  [77] = { RO_ATTRX(digitalInput2Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
+  [78] = { RO_ATTRX(currentReadingMa)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 20 },
+  [79] = { RO_ATTRX(highTemperature1Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [80] = { RO_ATTRX(lowTemperature1Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [81] = { RO_ATTRX(deltaTemperature1Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [82] = { RO_ATTRX(highTemperature2Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [83] = { RO_ATTRX(lowTemperature2Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [84] = { RO_ATTRX(deltaTemperature2Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [85] = { RO_ATTRX(highTemperature3Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [86] = { RO_ATTRX(lowTemperature3Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [87] = { RO_ATTRX(deltaTemperature3Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [88] = { RO_ATTRX(highTemperature4Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [89] = { RO_ATTRX(lowTemperature4Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [90] = { RO_ATTRX(deltaTemperature4Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [91] = { RO_ATTRX(highAnalog1Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [92] = { RO_ATTRX(lowAnalog1Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [93] = { RO_ATTRX(deltaAnalog1Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [94] = { RO_ATTRX(highAnalog2Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [95] = { RO_ATTRX(lowAnalog2Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [96] = { RO_ATTRX(deltaAnalog2Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [97] = { RO_ATTRX(highAnalog3Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [98] = { RO_ATTRX(lowAnalog3Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [99] = { RO_ATTRX(deltaAnalog3Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [100] = { RO_ATTRX(highAnalog4Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [101] = { RO_ATTRX(lowAnalog4Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
+  [102] = { RO_ATTRX(deltaAnalog4Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [103] = { RO_ATTRS(hwVersion)                             , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
+  [104] = { RO_ATTRS(firmwareVersion)                       , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
+  [105] = { RO_ATTRS(resetReason)                           , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
+  [106] = { RO_ATTRS(bluetoothAddress)                      , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
+  [107] = { RO_ATTRX(mtu)                                   , i, False, False, False, AttributeValidator_uint8_t       , 20, 244 },
+  [108] = { RO_ATTRX(flags)                                 , i, False, False, False, AttributeValidator_uint32_t      , 0, 65535 },
+  [109] = { RO_ATTRX(resetCount)                            , i, False, False, False, AttributeValidator_uint16_t      , 0, 65535 },
+  [110] = { RO_ATTRX(digitalInput1Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [111] = { RO_ATTRX(digitalInput2Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
+  [112] = { RO_ATTRX(magnetState)                           , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 }
 	// pyend
 };
 

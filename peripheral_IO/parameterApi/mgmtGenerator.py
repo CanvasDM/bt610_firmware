@@ -7,7 +7,7 @@ import getpass
 
 
 class attributes:
-    def __init__(self, fname: str = "BT6Api.json"):
+    def __init__(self, fname: str = "BT6ApiParams.json"):
 
         # The following items are loaded from the configuration file
         self.methodList = 0
@@ -178,7 +178,7 @@ class attributes:
         #self._CheckLists()
         self._CreateAttributeHeaderFile(self._CreateInsertionList(self.inputHeaderFileName + ".h"))
         self._CreateAttributeSourceFile(self._CreateInsertionList(self.inputSourceFileName + ".c"))
-        self._CreateMgmtHandlerFile(self._CreateInsertionList(self.inputSourceHandlerfileName + ".c"))
+        #self._CreateMgmtHandlerFile(self._CreateInsertionList(self.inputSourceHandlerfileName + ".c"))
         
 
     def _CreateInsertionList(self, name: str) -> list:
@@ -360,22 +360,29 @@ class attributes:
         string = ''.join(response)
         return string
 
-    def _CreateHandler(self, category: str) -> str:
+    def _CreateHandler(self) -> str:
         """Creates the structures and default values for Set and Get attributes"""
         struct = []
         for i in range(0, self.toatalFunctions):
-            if category in self.indices[i]:
-                name = self.functionNames[i]
-                result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " +"{" + "\n"
+            name = self.functionNames[i]
+            result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " +"{" + "\n"
+            struct.append(result)
+            if "_SET" in result:
+                result = f"         .mh_write = {self.handlerFunctionName[i]}," + "\n"
                 struct.append(result)
-                if category == "_SET":
-                    result = f"         .mh_write = {self.handlerFunctionName[i]}" + "\n"
-                    struct.append(result)
-                else:    
-                    result = f"         .mh_read = {self.handlerFunctionName[i]}" + "\n"
-                    struct.append(result)
-                result = "    }," + "\n"
+                result = "         .mh_read = NULL,\n"
                 struct.append(result)
+            elif "_GET" in result:   
+                result = f"         .mh_read = {self.handlerFunctionName[i]}," + "\n"
+                struct.append(result)
+                result = f"         .mh_write = NULL,\n"
+                struct.append(result)
+            elif "_ECHO" in result:
+                result = f"         {self.handlerFunctionName[i]}, {self.handlerFunctionName[i]}\n"
+                struct.append(result)
+            
+            result = "    }," + "\n"
+            struct.append(result)
 
         string = ''.join(struct)
         return string
@@ -388,8 +395,7 @@ class attributes:
             for index, line in enumerate(lst):
                 if "pystart - " in line:
                     if "mgmt handlers" in line:
-                        lst.insert(index + 1, self._CreateHandler("_SET"))
-                        lst.insert(index + 1, self._CreateHandler("_GET"))  
+                        lst.insert(index + 1, self._CreateHandler())
             fout.writelines(lst)   
 
     def _CreateMgmtHandlerFile(self, lst: list) -> None:
