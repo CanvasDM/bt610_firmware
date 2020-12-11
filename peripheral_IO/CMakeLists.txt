@@ -25,7 +25,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/LedPwm.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
-    ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmtHandlers.c
     ${CMAKE_SOURCE_DIR}/../common/source/SystemUartTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserCommTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
