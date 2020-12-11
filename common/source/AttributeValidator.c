@@ -14,9 +14,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "FrameworkIncludes.h"
 //#include "Attribute.h"
 #include "AttributePrivate.h"
 #include "AttributeValidator.h"
+#include "AttributeFunctions.h"
 
 //=================================================================================================
 // Local Constant, Macro and Type Definitions
@@ -166,7 +168,7 @@ bool AttributeValidator_uint8_t(uint32_t Index, void *pValue, size_t Length,
 	uint8_t value = *((uint8_t *)pValue);
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
-		if (DoWrite && value != *((uint88_t *)pEntry->pData)) {
+		if (DoWrite && value != *((uint8_t *)pEntry->pData)) {
 			pEntry->modified = true;
 			*((uint8_t *)pEntry->pData) = value;
 		}

@@ -134,15 +134,15 @@ class attributes:
             name = self.ParamNames[i]
             i_type = self.AttributeType[i]
             i_min = self.AttributeMin[i]
-            i_max = self.AttributeMax[i]
-            backup = self.AttributeBackup[i]
-            lockable = self.AttributeLockable[i]
-            broadcast = self.AttributeBroadcast[i]
+            i_max = self.AttributeMax[i] 
+            backup = str(self.AttributeBackup[i])
+            lockable = str(self.AttributeLockable[i])
+            broadcast = str(self.AttributeBroadcast[i])
             #validator = self.props["Validator"][i].strip()
             i_hash = i
             result = f"  [{i_hash:<2}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<48}, {self._GetType(i_type)}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<48}, {self._GetType(i_type)}, {backup.lower()}, {lockable.lower()}, {broadcast.lower()}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
@@ -264,7 +264,7 @@ class attributes:
     def _CreateAttrDefinitions(self) -> str:
         """Create some definitinons for header file"""
         defs = []
-        defs.append(f"#define ATTRIBUTE_FUNCTION_TABLE_SIZE {self.toatalParameters}\n\n")
+        defs.append(f"#define ATTRIBUTE_TABLE_SIZE {self.toatalParameters}\n\n")
         #defs.append(f"#define ATTRIBUTE_TOTAL_KEYWORDS {self.toatalFunctions}\n")
         return ''.join(defs)
 

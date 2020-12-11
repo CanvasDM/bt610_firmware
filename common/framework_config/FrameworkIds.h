@@ -33,6 +33,7 @@ enum FwkIdEnum {
 	FWK_ID_SYSTEM_UART_TASK,
 	FWK_ID_PROTOCOL_TASK,
 	FWK_ID_BLE_TASK,
+	FWK_ID_ATTRIBUTE_TASK,
 	/* Reserved for framework (DO NOT DELETE, and it must be LAST) */
 	__FRAMEWORK_MAX_MSG_RECEIVERS
 };

@@ -24,9 +24,11 @@
 #include "Sentrius_mgmt.h"
 #include "Sentrius_mgmt_impl.h"
 #include "Sentrius_mgmt_config.h"
+#include "AttributeTask.h"
 
 static mgmt_handler_fn fs_mgmt_file_download;
 static mgmt_handler_fn fs_mgmt_file_upload;
+static void ParameterValueType(long long unsigned int paramID, struct cbor_attr_t *attrs);
 
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	// pystart - mgmt handlers
@@ -105,10 +107,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = 255;
 	int readCbor = 0;
-	char paramString[128] = {0};
-     long long unsigned int paramUint = 0;
-     long long int paramInt = 0;
-     float paramFloat = 0;
+	struct CborValue dataCopy = ctxt->it;
      struct cbor_attr_t params_value;
      
 	struct cbor_attr_t params_attr[] = {
@@ -117,12 +116,6 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 			.type = CborAttrUnsignedIntegerType,
 			.addr.uinteger = &paramID,
 		},
-          {
-			.attribute = "p2",
-			.type = CborAttrTextStringType,
-			.addr.string = paramString,
-			.len = sizeof(paramString),
-		},
 		{ .attribute = NULL }
 	};
 	readCbor = cbor_read_object(&ctxt->it, params_attr);
@@ -130,7 +123,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 		return MGMT_ERR_EINVAL;
 	}
      //figure type from p1 look up id number match to type
-     //params_value = ParameterValueType(paramID);     
+     ParameterValueType(paramID, &params_value);     
      
 	const struct cbor_attr_t params_attr2[] = {
 		{
@@ -138,10 +131,10 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 			.type = CborAttrUnsignedIntegerType,
 			.addr.uinteger = &paramID,
 		},
-          //params_value,
+          params_value,
           { .attribute = NULL }
 	};
-     readCbor = cbor_read_object(&ctxt->it, params_attr2);
+     readCbor = cbor_read_object(&dataCopy, params_attr2);
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
@@ -151,7 +144,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "SetSensorNameResult");
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
-	err |= cbor_encode_text_stringz(&ctxt->encoder, paramString);
+	//err |= cbor_encode_text_stringz(&ctxt->encoder, paramString);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
      if (err != 0) 
@@ -159,6 +152,39 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
         return MGMT_ERR_ENOMEM;
      }
 	return 0;
+}
+static void ParameterValueType(long long unsigned int paramID, struct cbor_attr_t *attrs)
+{   
+     attrs->attribute = "p2";
+     if(AttributeTask_IsUnsigned(paramID))
+     {
+          long long unsigned int paramUint = 255;
+		attrs->type = CborAttrIntegerType;
+		attrs->addr.uinteger = &paramUint;
+     }
+     else if(AttributeTask_IsSigned(paramID))
+     {
+          long long int paramIint = 255;
+		attrs->type = CborAttrUnsignedIntegerType;
+		attrs->addr.uinteger = &paramIint;
+     }
+     else if(AttributeTask_IsString(paramID))
+     {
+          char paramString[ATTRIBUTE_STRING_MAX_LENGTH] = {0};
+          attrs->type = CborAttrTextStringType;
+          attrs->addr.string = paramString;
+          attrs->len = sizeof(paramString);
+     }
+     else if(AttributeTask_IsFloat(paramID))
+     {
+          float paramFloat = 0;
+		attrs->type = CborAttrFloatType;
+		attrs->addr.uinteger = &paramFloat;
+     }
+     else
+     {
+          attrs->attribute = NULL;
+     }
 }
 
 #define SENTRIUS_MGMT_HANDLER_CNT                                              \

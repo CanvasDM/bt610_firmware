@@ -17,6 +17,8 @@ include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
     ${CMAKE_SOURCE_DIR}/../common/source/AttributeFunctions.c
+    ${CMAKE_SOURCE_DIR}/../common/source/AttributeTask.c
+    ${CMAKE_SOURCE_DIR}/../common/source/AttributeValidator.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c

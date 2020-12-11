@@ -29,6 +29,7 @@ LOG_MODULE_REGISTER(ControlTask);
 #include "Version.h"
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
+#include "AttributeTask.h"
 
 #include "ControlTask.h"
 
@@ -152,6 +153,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	HardwareTestInit();
 	BleTask_Initialize();
+	AttributeTask_Initialize();
 	Sentrius_mgmt_register_group();
 	// FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
 	//Test only

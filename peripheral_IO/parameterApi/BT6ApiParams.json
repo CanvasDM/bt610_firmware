@@ -2613,7 +2613,7 @@
           },
           {
             "name": "firmwareVersion",
-            "summary": "Firmware Version.\r\nFormat = Major.Minor",
+            "summary": "Firmware Version.\r\nFormat = Major.Minor.Build",
             "required": true,
             "x-id": 95,
             "x-groupid": 0,
@@ -2799,7 +2799,7 @@
             "name": "magnetState",
             "summary": "Magnet status",
             "required": true,
-            "x-id": 102,
+            "x-id": 103,
             "x-groupid": 0,
             "schema": {
               "type": "integer",
@@ -2808,6 +2808,29 @@
               "minimum": 0.0,
               "maximum": 255.0,
               "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "1",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "bootloaderVersion",
+            "summary": "bootloader Version.\r\nFormat = Major.Minor",
+            "required": true,
+            "x-id": 104,
+            "x-groupid": 0,
+            "schema": {
+              "type": "string",
+              "minimumlength": 3,
+              "maximumlength": 11,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "char",
               "x-default": "0",
               "x-example": "1",
               "x-backup": false,

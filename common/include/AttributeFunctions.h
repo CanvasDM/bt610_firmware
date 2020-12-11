@@ -26,7 +26,7 @@ extern "C" {
 /******************************************************************************/
 
 // pystart - attribute function definitions
-#define ATTRIBUTE_FUNCTION_TABLE_SIZE 113
+#define ATTRIBUTE_TABLE_SIZE 114
 
 // pyend
 
@@ -150,6 +150,7 @@ extern "C" {
 #define ATTR_INDEX_DIGITALINPUT1MV                       110
 #define ATTR_INDEX_DIGITALINPUT2MV                       111
 #define ATTR_INDEX_MAGNETSTATE                           112
+#define ATTR_INDEX_BOOTLOADERVERSION                     113
 // pyend
 
 /******************************************************************************/

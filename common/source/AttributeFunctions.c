@@ -23,6 +23,7 @@
 #include "BspSupport.h"
 #include "AttributePrivate.h"
 #include "AttributeFunctions.h"
+#include "AttributeValidator.h"
 
 /******************************************************************************/
 // Local Constant, Macro and Type Definitions
@@ -250,6 +251,7 @@ typedef struct RoAttributesTag {
   uint8_t digitalInput1Mv;
   uint8_t digitalInput2Mv;
   uint8_t magnetState;
+  char bootloaderVersion[11+1];
 	// pyend
 } RoAttribute_t;
 
@@ -296,18 +298,16 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
   .resetCount = 0,
   .digitalInput1Mv = 0,
   .digitalInput2Mv = 0,
-  .magnetState = 0
+  .magnetState = 0,
+  .bootloaderVersion = "0"
 	// pyend
 };
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
-
-#if 0
 static RwAttribute_t rw;
 static RoAttribute_t ro;
-#endif
 
 /******************************************************************************/
 // Local Function Prototypes
@@ -320,16 +320,16 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
-#ifdef STILL_WORKING_ON
+
 // Expander for string and other values
 //
 //...............name...value...default....size..category
-#define RW_ATTRS(n) STR(n), rw.n, DRW.n, sizeof(rw.n), READ_WRITE
-#define RW_ATTRX(n) STR(n), &rw.n, &DRW.n, sizeof(rw.n), READ_WRITE
-#define RO_ATTRS(n) STR(n), ro.n, DRO.n, sizeof(ro.n), READ_ONLY
-#define RO_ATTRX(n) STR(n), &ro.n, &DRO.n, sizeof(ro.n), READ_ONLY
-#define RP_ATTRS(n) STR(n), ro.n, DRO.n, sizeof(ro.n), PROTOCOL
-#define RP_ATTRX(n) STR(n), &ro.n, &DRO.n, sizeof(ro.n), PROTOCOL
+#define RW_ATTRS(n) STRINGIFY(n), rw.n, DRW.n, sizeof(rw.n), READ_WRITE
+#define RW_ATTRX(n) STRINGIFY(n), &rw.n, &DRW.n, sizeof(rw.n), READ_WRITE
+#define RO_ATTRS(n) STRINGIFY(n), ro.n, DRO.n, sizeof(ro.n), READ_ONLY
+#define RO_ATTRX(n) STRINGIFY(n), &ro.n, &DRO.n, sizeof(ro.n), READ_ONLY
+#define RP_ATTRS(n) STRINGIFY(n), ro.n, DRO.n, sizeof(ro.n), PROTOCOL
+#define RP_ATTRX(n) STRINGIFY(n), &ro.n, &DRO.n, sizeof(ro.n), PROTOCOL
 
 #define ATTR_UNUSED                                                            \
 	"\0", NULL, NULL, 0, RESEVED_CATEGORY, u, 0, 0, 0, NULL, 0, 0
@@ -338,121 +338,124 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 
 //index.....name.......................................type.backup.lockable.broadcast.validator.................min...max.
 EXTERN_C AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE] = {
-	// pystart - attribute table
-  [0 ] = { RW_ATTRS(sensorName)                            , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [1 ] = { RW_ATTRS(sensorLocation)                        , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [2 ] = { RW_ATTRX(advertisingInterval)                   , i, False, False, False, AttributeValidator_uint16_t      , 20, 10000 },
-  [3 ] = { RW_ATTRX(advertisingDuration)                   , i, False, False, False, AttributeValidator_uint16_t      , 0, 65535 },
-  [4 ] = { RW_ATTRS(passkey)                               , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [5 ] = { RW_ATTRX(lock)                                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [6 ] = { RW_ATTRX(batterySenseInterval)                  , i, False, False, False, AttributeValidator_uint16_t      , 0, 86400 },
-  [7 ] = { RW_ATTRX(temperatureSenseInterval)              , i, False, False, False, AttributeValidator_uint16_t      , 0, 86400 },
-  [8 ] = { RW_ATTRX(temperatureAggregationCount)           , i, False, False, False, AttributeValidator_uint8_t       , 1, 32 },
-  [9 ] = { RW_ATTRX(digitalOutput1Mv)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 30000 },
-  [10] = { RW_ATTRX(digitalOutput2Mv)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 30000 },
-  [11] = { RW_ATTRX(digitalInput1)                         , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [12] = { RW_ATTRX(digitalInput2)                         , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [13] = { RW_ATTRX(analogInput1Type)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [14] = { RW_ATTRX(analogInput2Type)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [15] = { RW_ATTRX(analogInput3Type)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [16] = { RW_ATTRX(analogInput4Type)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [17] = { RW_ATTRX(highTemp1Thresh1)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [18] = { RW_ATTRX(highTemp1Thresh2)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [19] = { RW_ATTRX(lowTemp1Thresh1)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [20] = { RW_ATTRX(lowTemp1Thresh2)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [21] = { RW_ATTRX(temp1DeltaThresh)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 255 },
-  [22] = { RW_ATTRX(highTemp2Thresh1)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [23] = { RW_ATTRX(highTemp2Thresh2)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [24] = { RW_ATTRX(lowTemp2Thresh1)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [25] = { RW_ATTRX(lowTemp2Thresh2)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [26] = { RW_ATTRX(temp2DeltaThresh)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 255 },
-  [27] = { RW_ATTRX(highTemp3Thresh1)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [28] = { RW_ATTRX(highTemp3Thresh2)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [29] = { RW_ATTRX(lowTemp3Thresh1)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [30] = { RW_ATTRX(lowTemp3Thresh2)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [31] = { RW_ATTRX(temp3DeltaThresh)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 255 },
-  [32] = { RW_ATTRX(highTemp4Thresh1)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [33] = { RW_ATTRX(highTemp4Thresh2)                      , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [34] = { RW_ATTRX(lowTemp4Thresh1)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [35] = { RW_ATTRX(lowTemp4Thresh2)                       , i, False, False, False, AttributeValidator_int16_t       , (int16_t)-128, 127 },
-  [36] = { RW_ATTRX(temp4DeltaThresh)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 255 },
-  [37] = { RW_ATTRX(highAnalog1Thresh1)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [38] = { RW_ATTRX(highAnalog1Thresh2)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [39] = { RW_ATTRX(lowAnalog1Thresh1)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [40] = { RW_ATTRX(lowAnalog1Thresh2)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [41] = { RW_ATTRX(analog1DeltaThresh)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [42] = { RW_ATTRX(highAnalog2Thresh1)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [43] = { RW_ATTRX(highAnalog2Thresh2)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [44] = { RW_ATTRX(lowAnalog2Thresh1)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [45] = { RW_ATTRX(lowAnalog2Thresh2)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [46] = { RW_ATTRX(analog2DeltaThresh)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [47] = { RW_ATTRX(highAnalog3Thresh1)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [48] = { RW_ATTRX(highAnalog3Thresh2)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [49] = { RW_ATTRX(lowAnalog3Thresh1)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [50] = { RW_ATTRX(lowAnalog3Thresh2)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [51] = { RW_ATTRX(analog3DeltaThresh)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [52] = { RW_ATTRX(highAnalog4Thresh1)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [53] = { RW_ATTRX(highAnalog4Thresh2)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [54] = { RW_ATTRX(lowAnalog4Thresh1)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [55] = { RW_ATTRX(lowAnalog4Thresh2)                     , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [56] = { RW_ATTRX(analog4DeltaThresh)                    , i, False, False, False, AttributeValidator_uint16_t      , 0, 4096 },
-  [57] = { RW_ATTRX(activeMode)                            , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [58] = { RW_ATTRX(useCodedPhy)                           , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [59] = { RW_ATTRX(txPower)                               , i, False, False, False, AttributeValidator_int8_t        , (int8_t)-40, 8 },
-  [60] = { RW_ATTRX(networkId)                             , i, False, False, False, AttributeValidator_uint16_t      , 0, 65535 },
-  [61] = { RW_ATTRX(configVersion)                         , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 },
-  [62] = { RW_ATTRX(configType)                            , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 },
-  [63] = { RW_ATTRX(hardwareMinorVersion)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 9 },
-  [64] = { RW_ATTRX(ledTestActive)                         , i, False, False, False, AttributeValidator_uint8_t       , 10, 1000 },
-  [65] = { RW_ATTRX(coefficient1)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [66] = { RW_ATTRX(coefficient2)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
-  [67] = { RW_ATTRX(coefficientA)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [68] = { RW_ATTRX(coefficientB)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)1000.0 },
-  [69] = { RW_ATTRX(coefficientC)                          , f, False, False, False, AttributeValidator_float         , (float)0.0, (float)10000.0 },
-  [70] = { RW_ATTRX(thermistorIndex)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 3 },
-  [71] = { RO_ATTRX(temperatureResult1)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [72] = { RO_ATTRX(temperatureResult2)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [73] = { RO_ATTRX(temperatureResult3)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [74] = { RO_ATTRX(temperatureResult4)                    , i, False, False, False, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
-  [75] = { RO_ATTRX(batteryVoltageMv)                      , i, False, False, False, AttributeValidator_uint16_t      , 0, 3800 },
-  [76] = { RO_ATTRX(digitalInput1Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
-  [77] = { RO_ATTRX(digitalInput2Alarm)                    , i, False, False, False, AttributeValidator_uint8_t       , 0, 0 },
-  [78] = { RO_ATTRX(currentReadingMa)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 20 },
-  [79] = { RO_ATTRX(highTemperature1Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [80] = { RO_ATTRX(lowTemperature1Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [81] = { RO_ATTRX(deltaTemperature1Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [82] = { RO_ATTRX(highTemperature2Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [83] = { RO_ATTRX(lowTemperature2Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [84] = { RO_ATTRX(deltaTemperature2Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [85] = { RO_ATTRX(highTemperature3Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [86] = { RO_ATTRX(lowTemperature3Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [87] = { RO_ATTRX(deltaTemperature3Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [88] = { RO_ATTRX(highTemperature4Alarm)                 , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [89] = { RO_ATTRX(lowTemperature4Alarm)                  , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [90] = { RO_ATTRX(deltaTemperature4Alarm)                , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [91] = { RO_ATTRX(highAnalog1Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [92] = { RO_ATTRX(lowAnalog1Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [93] = { RO_ATTRX(deltaAnalog1Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [94] = { RO_ATTRX(highAnalog2Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [95] = { RO_ATTRX(lowAnalog2Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [96] = { RO_ATTRX(deltaAnalog2Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [97] = { RO_ATTRX(highAnalog3Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [98] = { RO_ATTRX(lowAnalog3Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [99] = { RO_ATTRX(deltaAnalog3Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [100] = { RO_ATTRX(highAnalog4Alarm)                      , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [101] = { RO_ATTRX(lowAnalog4Alarm)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 2 },
-  [102] = { RO_ATTRX(deltaAnalog4Alarm)                     , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [103] = { RO_ATTRS(hwVersion)                             , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [104] = { RO_ATTRS(firmwareVersion)                       , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [105] = { RO_ATTRS(resetReason)                           , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [106] = { RO_ATTRS(bluetoothAddress)                      , s, False, False, False, AttributeValidator_GenericString , 0, 0 },
-  [107] = { RO_ATTRX(mtu)                                   , i, False, False, False, AttributeValidator_uint8_t       , 20, 244 },
-  [108] = { RO_ATTRX(flags)                                 , i, False, False, False, AttributeValidator_uint32_t      , 0, 65535 },
-  [109] = { RO_ATTRX(resetCount)                            , i, False, False, False, AttributeValidator_uint16_t      , 0, 65535 },
-  [110] = { RO_ATTRX(digitalInput1Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [111] = { RO_ATTRX(digitalInput2Mv)                       , i, False, False, False, AttributeValidator_uint8_t       , 0, 1 },
-  [112] = { RO_ATTRX(magnetState)                           , i, False, False, False, AttributeValidator_uint8_t       , 0, 255 }
+	/* clang-format off */
+  // pystart - attribute table
+  [0 ] = { RW_ATTRS(sensorName)                            , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [1 ] = { RW_ATTRS(sensorLocation)                        , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [2 ] = { RW_ATTRX(advertisingInterval)                   , i, false, false, false, AttributeValidator_uint16_t      , 20, 10000 },
+  [3 ] = { RW_ATTRX(advertisingDuration)                   , i, false, false, false, AttributeValidator_uint16_t      , 0, 65535 },
+  [4 ] = { RW_ATTRS(passkey)                               , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [5 ] = { RW_ATTRX(lock)                                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [6 ] = { RW_ATTRX(batterySenseInterval)                  , i, false, false, false, AttributeValidator_uint16_t      , 0, 86400 },
+  [7 ] = { RW_ATTRX(temperatureSenseInterval)              , i, false, false, false, AttributeValidator_uint16_t      , 0, 86400 },
+  [8 ] = { RW_ATTRX(temperatureAggregationCount)           , i, false, false, false, AttributeValidator_uint8_t       , 1, 32 },
+  [9 ] = { RW_ATTRX(digitalOutput1Mv)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 30000 },
+  [10] = { RW_ATTRX(digitalOutput2Mv)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 30000 },
+  [11] = { RW_ATTRX(digitalInput1)                         , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [12] = { RW_ATTRX(digitalInput2)                         , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [13] = { RW_ATTRX(analogInput1Type)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [14] = { RW_ATTRX(analogInput2Type)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [15] = { RW_ATTRX(analogInput3Type)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [16] = { RW_ATTRX(analogInput4Type)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [17] = { RW_ATTRX(highTemp1Thresh1)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [18] = { RW_ATTRX(highTemp1Thresh2)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [19] = { RW_ATTRX(lowTemp1Thresh1)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [20] = { RW_ATTRX(lowTemp1Thresh2)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [21] = { RW_ATTRX(temp1DeltaThresh)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 255 },
+  [22] = { RW_ATTRX(highTemp2Thresh1)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [23] = { RW_ATTRX(highTemp2Thresh2)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [24] = { RW_ATTRX(lowTemp2Thresh1)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [25] = { RW_ATTRX(lowTemp2Thresh2)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [26] = { RW_ATTRX(temp2DeltaThresh)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 255 },
+  [27] = { RW_ATTRX(highTemp3Thresh1)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [28] = { RW_ATTRX(highTemp3Thresh2)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [29] = { RW_ATTRX(lowTemp3Thresh1)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [30] = { RW_ATTRX(lowTemp3Thresh2)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [31] = { RW_ATTRX(temp3DeltaThresh)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 255 },
+  [32] = { RW_ATTRX(highTemp4Thresh1)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [33] = { RW_ATTRX(highTemp4Thresh2)                      , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [34] = { RW_ATTRX(lowTemp4Thresh1)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [35] = { RW_ATTRX(lowTemp4Thresh2)                       , i, false, false, false, AttributeValidator_int16_t       , (int16_t)-128, 127 },
+  [36] = { RW_ATTRX(temp4DeltaThresh)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 255 },
+  [37] = { RW_ATTRX(highAnalog1Thresh1)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [38] = { RW_ATTRX(highAnalog1Thresh2)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [39] = { RW_ATTRX(lowAnalog1Thresh1)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [40] = { RW_ATTRX(lowAnalog1Thresh2)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [41] = { RW_ATTRX(analog1DeltaThresh)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [42] = { RW_ATTRX(highAnalog2Thresh1)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [43] = { RW_ATTRX(highAnalog2Thresh2)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [44] = { RW_ATTRX(lowAnalog2Thresh1)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [45] = { RW_ATTRX(lowAnalog2Thresh2)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [46] = { RW_ATTRX(analog2DeltaThresh)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [47] = { RW_ATTRX(highAnalog3Thresh1)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [48] = { RW_ATTRX(highAnalog3Thresh2)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [49] = { RW_ATTRX(lowAnalog3Thresh1)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [50] = { RW_ATTRX(lowAnalog3Thresh2)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [51] = { RW_ATTRX(analog3DeltaThresh)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [52] = { RW_ATTRX(highAnalog4Thresh1)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [53] = { RW_ATTRX(highAnalog4Thresh2)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [54] = { RW_ATTRX(lowAnalog4Thresh1)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [55] = { RW_ATTRX(lowAnalog4Thresh2)                     , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [56] = { RW_ATTRX(analog4DeltaThresh)                    , i, false, false, false, AttributeValidator_uint16_t      , 0, 4096 },
+  [57] = { RW_ATTRX(activeMode)                            , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [58] = { RW_ATTRX(useCodedPhy)                           , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [59] = { RW_ATTRX(txPower)                               , i, false, false, false, AttributeValidator_int8_t        , (int8_t)-40, 8 },
+  [60] = { RW_ATTRX(networkId)                             , i, false, false, false, AttributeValidator_uint16_t      , 0, 65535 },
+  [61] = { RW_ATTRX(configVersion)                         , i, false, false, false, AttributeValidator_uint8_t       , 0, 255 },
+  [62] = { RW_ATTRX(configType)                            , i, false, false, false, AttributeValidator_uint8_t       , 0, 255 },
+  [63] = { RW_ATTRX(hardwareMinorVersion)                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 9 },
+  [64] = { RW_ATTRX(ledTestActive)                         , i, false, false, false, AttributeValidator_uint8_t       , 10, 1000 },
+  [65] = { RW_ATTRX(coefficient1)                          , f, false, false, false, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [66] = { RW_ATTRX(coefficient2)                          , f, false, false, false, AttributeValidator_float         , (float)0.0, (float)10000.0 },
+  [67] = { RW_ATTRX(coefficientA)                          , f, false, false, false, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [68] = { RW_ATTRX(coefficientB)                          , f, false, false, false, AttributeValidator_float         , (float)0.0, (float)1000.0 },
+  [69] = { RW_ATTRX(coefficientC)                          , f, false, false, false, AttributeValidator_float         , (float)0.0, (float)10000.0 },
+  [70] = { RW_ATTRX(thermistorIndex)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 3 },
+  [71] = { RO_ATTRX(temperatureResult1)                    , i, false, false, false, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [72] = { RO_ATTRX(temperatureResult2)                    , i, false, false, false, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [73] = { RO_ATTRX(temperatureResult3)                    , i, false, false, false, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [74] = { RO_ATTRX(temperatureResult4)                    , i, false, false, false, AttributeValidator_int32_t       , (int32_t)-128000, 127000 },
+  [75] = { RO_ATTRX(batteryVoltageMv)                      , i, false, false, false, AttributeValidator_uint16_t      , 0, 3800 },
+  [76] = { RO_ATTRX(digitalInput1Alarm)                    , i, false, false, false, AttributeValidator_uint8_t       , 0, 0 },
+  [77] = { RO_ATTRX(digitalInput2Alarm)                    , i, false, false, false, AttributeValidator_uint8_t       , 0, 0 },
+  [78] = { RO_ATTRX(currentReadingMa)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 20 },
+  [79] = { RO_ATTRX(highTemperature1Alarm)                 , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [80] = { RO_ATTRX(lowTemperature1Alarm)                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [81] = { RO_ATTRX(deltaTemperature1Alarm)                , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [82] = { RO_ATTRX(highTemperature2Alarm)                 , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [83] = { RO_ATTRX(lowTemperature2Alarm)                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [84] = { RO_ATTRX(deltaTemperature2Alarm)                , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [85] = { RO_ATTRX(highTemperature3Alarm)                 , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [86] = { RO_ATTRX(lowTemperature3Alarm)                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [87] = { RO_ATTRX(deltaTemperature3Alarm)                , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [88] = { RO_ATTRX(highTemperature4Alarm)                 , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [89] = { RO_ATTRX(lowTemperature4Alarm)                  , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [90] = { RO_ATTRX(deltaTemperature4Alarm)                , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [91] = { RO_ATTRX(highAnalog1Alarm)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [92] = { RO_ATTRX(lowAnalog1Alarm)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [93] = { RO_ATTRX(deltaAnalog1Alarm)                     , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [94] = { RO_ATTRX(highAnalog2Alarm)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [95] = { RO_ATTRX(lowAnalog2Alarm)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [96] = { RO_ATTRX(deltaAnalog2Alarm)                     , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [97] = { RO_ATTRX(highAnalog3Alarm)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [98] = { RO_ATTRX(lowAnalog3Alarm)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [99] = { RO_ATTRX(deltaAnalog3Alarm)                     , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [100] = { RO_ATTRX(highAnalog4Alarm)                      , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [101] = { RO_ATTRX(lowAnalog4Alarm)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 2 },
+  [102] = { RO_ATTRX(deltaAnalog4Alarm)                     , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [103] = { RO_ATTRS(hwVersion)                             , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [104] = { RO_ATTRS(firmwareVersion)                       , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [105] = { RO_ATTRS(resetReason)                           , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [106] = { RO_ATTRS(bluetoothAddress)                      , s, false, false, false, AttributeValidator_GenericString , 0, 0 },
+  [107] = { RO_ATTRX(mtu)                                   , i, false, false, false, AttributeValidator_uint8_t       , 20, 244 },
+  [108] = { RO_ATTRX(flags)                                 , i, false, false, false, AttributeValidator_uint32_t      , 0, 65535 },
+  [109] = { RO_ATTRX(resetCount)                            , i, false, false, false, AttributeValidator_uint16_t      , 0, 65535 },
+  [110] = { RO_ATTRX(digitalInput1Mv)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [111] = { RO_ATTRX(digitalInput2Mv)                       , i, false, false, false, AttributeValidator_uint8_t       , 0, 1 },
+  [112] = { RO_ATTRX(magnetState)                           , i, false, false, false, AttributeValidator_uint8_t       , 0, 255 },
+  [113] = { RO_ATTRS(bootloaderVersion)                     , s, false, false, false, AttributeValidator_GenericString , 0, 0 }
 	// pyend
+  /* clang-format on */
 };
 
 /******************************************************************************/
@@ -507,7 +510,7 @@ void Attribute_SetNonBackupValuesToDefault(void)
 /******************************************************************************/
 // Attribute Hash Table (allows near constant time lookup of names)
 /******************************************************************************/
-
+#ifdef STILL_WORKING_ON
 uint32_t Attribute_GetMaxHashValue(void)
 {
 	//return MAX_HASH_VALUE;
