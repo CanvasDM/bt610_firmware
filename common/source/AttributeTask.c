@@ -99,6 +99,12 @@ static void WriteAttributes(void);
 static void GenerateAttributeChangedMessage(AttrTaskObj_t *pObj);
 static void StartDelayedWriteTimer(AttributeEntry_t *pEntry);
 
+static bool AttributeTask_SetFromString(uint32_t Index, 
+                                          char const * pValue, 
+                                          size_t ValueLength, 
+                                          uint32_t SourceId,
+                                          bool DoWrite);
+
 //=================================================================================================
 // Framework Message Dispatcher
 //=================================================================================================
@@ -262,8 +268,22 @@ bool AttributeTask_RestoreDefaultValue(uint32_t Index, uint32_t SourceId)
 bool AttributeTask_SetWithString(uint32_t Index, char const *pValue,
 				 size_t ValueLength)
 {
-	return AttributeTask_SetFromString(Index, pValue, ValueLength,
-					   FWK_ID_RESERVED, true);
+	if (Index >= ATTRIBUTE_TABLE_SIZE) {
+		return false;
+	}
+
+	k_mutex_lock(&attribute_mutex, K_FOREVER);
+
+	bool ok = false;
+	if (attrTable[Index].type == STRING_TYPE) {
+		ok = attrTable[Index].pValidator(Index, (void*)pValue, ValueLength, true);
+	}
+
+	StartDelayedWriteTimer(&attrTable[Index]);
+
+	k_mutex_unlock(&attribute_mutex);
+
+	return ok;
 }
 
 bool AttributeTask_SetUint32(uint32_t Index, uint32_t Value)
