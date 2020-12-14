@@ -8,7 +8,10 @@
             },
             "includePath": [
               "${workspaceFolder}/../zephyr/**",
-              "${workspaceFolder}/build/**",
+              "${workspaceFolder}/../modules/**",
+              "${workspaceFolder}/../nrf/**",
+              "${workspaceFolder}/../nrfxlib/**",
+              "${workspaceFolder}/../mbedtls/**",
               "${workspaceFolder}/common/**"
             ],
             "cStandard": "c99",

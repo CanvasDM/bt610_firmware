@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.2",
+    "version": "1.3",
     "x-serialbleuuid": null,
     "x-smpgroupid": 65
   },
@@ -2328,13 +2328,73 @@
       }
     },
     {
+      "name": "SetConfigType",
+      "summary": "Set Config Type",
+      "description": "The Type is used to identify the what the sensor is configured as",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 28,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "configType",
+          "description": "Config Type",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 255.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "10",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetConfigTypeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": 0,
+              "x-example": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "SetHardwareVersion",
       "summary": "Set Hardware Version",
       "description": "Only the minor version can be set.",
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 28,
+      "x-id": 29,
       "tags": [
         {
           "name": "App"
@@ -2394,7 +2454,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 29,
+      "x-id": 30,
       "tags": [
         {
           "name": "Sensor"
@@ -2454,7 +2514,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 30,
+      "x-id": 31,
       "tags": [
         {
           "name": "Sensor"
@@ -2493,7 +2553,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 31,
+      "x-id": 32,
       "tags": [
         {
           "name": "Sensor"
@@ -2532,7 +2592,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 32,
+      "x-id": 33,
       "tags": [
         {
           "name": "Sensor"
@@ -2571,7 +2631,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 33,
+      "x-id": 34,
       "tags": [
         {
           "name": "Sensor"
@@ -2610,7 +2670,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 34,
+      "x-id": 35,
       "tags": [
         {
           "name": "Sensor"
@@ -2649,7 +2709,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 35,
+      "x-id": 36,
       "tags": [
         {
           "name": "Sensor"
@@ -2688,7 +2748,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 36,
+      "x-id": 37,
       "tags": [
         {
           "name": "Sensor"
@@ -2727,7 +2787,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 37,
+      "x-id": 38,
       "tags": [
         {
           "name": "Sensor"
@@ -2749,7 +2809,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 1.0,
+              "maximum": 0.0,
               "x-ctype": "uint8_t",
               "x-sequencenumber": 1,
               "x-default": "NA",
@@ -2766,7 +2826,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": -2.0,
+              "maximum": 0.0,
               "x-ctype": "uint8_t",
               "x-sequencenumber": 2,
               "x-default": "NA",
@@ -2783,7 +2843,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 38,
+      "x-id": 39,
       "tags": [
         {
           "name": "Sensor"
@@ -2856,7 +2916,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 39,
+      "x-id": 40,
       "tags": [
         {
           "name": "Sensor"
@@ -2929,7 +2989,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 40,
+      "x-id": 41,
       "tags": [
         {
           "name": "Sensor"
@@ -3002,7 +3062,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 41,
+      "x-id": 42,
       "tags": [
         {
           "name": "Sensor"
@@ -3075,7 +3135,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 42,
+      "x-id": 43,
       "tags": [
         {
           "name": "Sensor"
@@ -3148,7 +3208,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 43,
+      "x-id": 44,
       "tags": [
         {
           "name": "Sensor"
@@ -3221,7 +3281,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 44,
+      "x-id": 45,
       "tags": [
         {
           "name": "Sensor"
@@ -3294,7 +3354,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 45,
+      "x-id": 46,
       "tags": [
         {
           "name": "Sensor"
@@ -3367,7 +3427,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 46,
+      "x-id": 47,
       "tags": [
         {
           "name": "App"
@@ -3406,7 +3466,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 47,
+      "x-id": 48,
       "tags": [
         {
           "name": "App"
@@ -3445,7 +3505,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 48,
+      "x-id": 49,
       "tags": [
         {
           "name": "App"
@@ -3484,7 +3544,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 49,
+      "x-id": 50,
       "tags": [
         {
           "name": "BLE"
@@ -3523,7 +3583,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 50,
+      "x-id": 51,
       "tags": [
         {
           "name": "BLE"
@@ -3562,7 +3622,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 51,
+      "x-id": 52,
       "tags": [
         {
           "name": "BLE"
@@ -3601,7 +3661,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 52,
+      "x-id": 53,
       "tags": [
         {
           "name": "BLE"
@@ -3640,7 +3700,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 53,
+      "x-id": 54,
       "tags": [
         {
           "name": "Sensor"
@@ -3679,7 +3739,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 54,
+      "x-id": 55,
       "tags": [
         {
           "name": "Sensor"
@@ -3718,7 +3778,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 55,
+      "x-id": 56,
       "tags": [
         {
           "name": "BLE"
@@ -3757,7 +3817,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 56,
+      "x-id": 57,
       "tags": [
         {
           "name": "BLE"
@@ -3796,7 +3856,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 57,
+      "x-id": 58,
       "tags": [
         {
           "name": "App"
@@ -3835,7 +3895,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 58,
+      "x-id": 59,
       "tags": [
         {
           "name": "App"
@@ -3874,7 +3934,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 59,
+      "x-id": 60,
       "tags": [
         {
           "name": "Sensor"
@@ -3913,7 +3973,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 60,
+      "x-id": 61,
       "tags": [
         {
           "name": "Sensor"
@@ -3952,7 +4012,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 61,
+      "x-id": 62,
       "tags": [
         {
           "name": "Sensor"
@@ -3991,7 +4051,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 62,
+      "x-id": 63,
       "tags": [
         {
           "name": "Sensor"
@@ -4030,7 +4090,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 63,
+      "x-id": 64,
       "tags": [
         {
           "name": "Sensor"
@@ -4069,7 +4129,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 64,
+      "x-id": 65,
       "tags": [
         {
           "name": "Sensor"
@@ -4108,7 +4168,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 65,
+      "x-id": 66,
       "tags": [
         {
           "name": "Sensor"
@@ -4198,7 +4258,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 66,
+      "x-id": 67,
       "tags": [
         {
           "name": "Sensor"
@@ -4305,7 +4365,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 67,
+      "x-id": 68,
       "tags": [
         {
           "name": "Sensor"
@@ -4412,7 +4472,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 68,
+      "x-id": 69,
       "tags": [
         {
           "name": "Sensor"
@@ -4519,7 +4579,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 69,
+      "x-id": 70,
       "tags": [
         {
           "name": "Sensor"
@@ -4626,7 +4686,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 70,
+      "x-id": 71,
       "tags": [
         {
           "name": "Sensor"
@@ -4733,7 +4793,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 71,
+      "x-id": 72,
       "tags": [
         {
           "name": "Sensor"
@@ -4840,7 +4900,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 72,
+      "x-id": 73,
       "tags": [
         {
           "name": "Sensor"
@@ -4947,7 +5007,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 73,
+      "x-id": 74,
       "tags": [
         {
           "name": "Sensor"
@@ -5054,7 +5114,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 74,
+      "x-id": 75,
       "tags": [
         {
           "name": "App"
@@ -5093,7 +5153,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 75,
+      "x-id": 76,
       "tags": [
         {
           "name": "BLE"
@@ -5132,7 +5192,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 76,
+      "x-id": 77,
       "tags": [
         {
           "name": "BLE"
@@ -5171,7 +5231,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 77,
+      "x-id": 78,
       "tags": [
         {
           "name": "App"
@@ -5210,7 +5270,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 78,
+      "x-id": 79,
       "tags": [
         {
           "name": "App"
@@ -5243,13 +5303,52 @@
       }
     },
     {
+      "name": "GetConfigType",
+      "summary": "Get Config Type",
+      "description": "The Type is used to identify the what the sensor is configured as",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 80,
+      "tags": [
+        {
+          "name": "App"
+        }
+      ],
+      "params": [],
+      "result": {
+        "name": "GetConfigTypeResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "configType_duplicate",
+              "description": "Config Type",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": 0,
+              "x-example": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "GetMagnetState",
       "summary": "Get Magnet State",
       "description": "Read the status of the magnet sensor",
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
-      "x-id": 79,
+      "x-id": 81,
       "tags": [
         {
           "name": "Sensor"
@@ -5276,6 +5375,240 @@
               "x-sequencenumber": 1,
               "x-default": "NA",
               "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetThermistorCalibration",
+      "summary": "Set Thermistor Calibration",
+      "description": "Calibrate the thermistor inputs by using known values on therm1 on therm2.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 82,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "coefficient1",
+          "description": "coefficient 1",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1000.0,
+            "x-ctype": "float",
+            "x-sequencenumber": 1,
+            "x-default": "220.7351",
+            "x-example": "220.7351",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "coefficient2",
+          "description": "coefficient 2",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 10000.0,
+            "x-ctype": "float",
+            "x-sequencenumber": 2,
+            "x-default": "3.98e3",
+            "x-example": "3.98e3",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetThermistorCalibrationResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "calibrationStatus",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r2",
+              "summary": "calibrationGainError",
+              "description": "Gain Error",
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-sequencenumber": 2,
+              "x-default": "0",
+              "x-example": "0.9974"
+            },
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r3",
+              "summary": "calibrationOffsetError",
+              "description": "Offset Error",
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-sequencenumber": 3,
+              "x-default": "0",
+              "x-example": "-11.3032"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetTemperatureCoef",
+      "summary": "Set Steinhart-Hart Temperature Equation Coefficients",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 83,
+      "tags": [
+        {
+          "name": "Sensor"
+        }
+      ],
+      "params": [
+        {
+          "name": "p2",
+          "summary": "coefficientA",
+          "description": "coefficient A",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1000.0,
+            "x-ctype": "float",
+            "x-sequencenumber": 2,
+            "x-default": "0.001132",
+            "x-example": "0.001132",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "coefficientB",
+          "description": "coefficient B",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1000.0,
+            "x-ctype": "float",
+            "x-sequencenumber": 3,
+            "x-default": "0.0002338",
+            "x-example": "0.0002338",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "coefficientC",
+          "description": "coefficient C",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 10000.0,
+            "x-ctype": "float",
+            "x-sequencenumber": 4,
+            "x-default": "8.780e-8",
+            "x-example": "8.780e-8",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        },
+        {
+          "name": "p1",
+          "summary": "thermistorIndex",
+          "description": "Thermistor Index",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 3.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": "0",
+            "x-example": "0",
+            "x-backup": false,
+            "x-lockable": false,
+            "x-broadcast": false
+          }
+        }
+      ],
+      "result": {
+        "name": "SetTemperatureCoefResult",
+        "schema": {
+          "items": [
+            {
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "name": "r1",
+              "summary": "Status",
+              "description": "0 = success",
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-sequencenumber": 1,
+              "x-default": "NA",
+              "x-example": "0"
             }
           ]
         }

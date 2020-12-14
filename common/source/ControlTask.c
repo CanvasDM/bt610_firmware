@@ -8,8 +8,7 @@
  */
 
 #include <logging/log.h>
-#define LOG_LEVEL LOG_LEVEL_DBG
-LOG_MODULE_REGISTER(ControlTask);
+LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #define THIS_FILE "ControlTask"
 
 /******************************************************************************/
@@ -17,19 +16,21 @@ LOG_MODULE_REGISTER(ControlTask);
 /******************************************************************************/
 #include <zephyr.h>
 #include <power/reboot.h>
+#include <pm_config.h>
+#include <hal/nrf_power.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"
 #include "BspSupport.h"
-#include "SystemUartTask.h"
-#include "ProtocolTask.h"
 #include "UserInterfaceTask.h"
 #include "UserCommTask.h"
 #include "AdcBt6.h"
-#include "LedPwm.h"
 #include "Version.h"
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
+#include "lcz_no_init_ram_var.h"
+#include "laird_bluetooth.h"
+#include "Attribute.h"
 
 #include "ControlTask.h"
 
@@ -54,12 +55,13 @@ LOG_MODULE_REGISTER(ControlTask);
 
 typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
+	uint32_t reset_reason;
 } ControlTaskObj_t;
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
-static ControlTaskObj_t controlTaskObject;
+static ControlTaskObj_t cto;
 
 #if !CONTROL_TASK_USES_MAIN_THREAD
 K_THREAD_STACK_DEFINE(controlTaskStack, CONTROL_TASK_STACK_DEPTH);
@@ -68,18 +70,19 @@ K_THREAD_STACK_DEFINE(controlTaskStack, CONTROL_TASK_STACK_DEPTH);
 K_MSGQ_DEFINE(controlTaskQueue, FWK_QUEUE_ENTRY_SIZE, CONTROL_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
+static no_init_ram_uint32_t *battery_age =
+	(no_init_ram_uint32_t *)PM_LCZ_NOINIT_SRAM_ADDRESS;
+
 /******************************************************************************/
-// Local Function Prototypes
+/* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void ControlTaskThread(void *, void *, void *);
-static void HardwareTestInit(void);
+
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						FwkMsg_t *pMsg);
-//static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						     FwkMsg_t *pMsg);
-static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					  FwkMsg_t *pMsg);
+
+static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -89,11 +92,10 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:                     return Framework_UnknownMsgHandler;
-	case FMC_INIT_ALL_TASKS:              return InitializeAllTasksMsgHandler;
-	case FMC_SOFTWARE_RESET:              return SoftwareResetMsgHandler;
-	case FMC_LED_TEST:                    return LedTestMsgHandler;
-	default:                              return NULL;
+	case FMC_INVALID:                   return Framework_UnknownMsgHandler;
+	case FMC_PERIODIC:                  return HeartbeatMsgHandler;
+	case FMC_SOFTWARE_RESET:            return SoftwareResetMsgHandler;
+	default:                            return NULL;
 	}
 	/* clang-format on */
 }
@@ -103,115 +105,98 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /******************************************************************************/
 void ControlTask_Initialize(void)
 {
-	memset(&controlTaskObject, 0, sizeof(ControlTaskObj_t));
+	cto.msgTask.rxer.id = FWK_ID_CONTROL_TASK;
+	cto.msgTask.rxer.rxBlockTicks = K_FOREVER;
+	cto.msgTask.rxer.pMsgDispatcher = ControlTaskMsgDispatcher;
+	cto.msgTask.timerDurationTicks =
+		K_SECONDS(CONFIG_BATTERY_AGE_TICK_RATE_SECONDS);
+	cto.msgTask.timerPeriodTicks = K_MSEC(0);
+	cto.msgTask.rxer.pQueue = &controlTaskQueue;
 
-	controlTaskObject.msgTask.rxer.id = FWK_ID_CONTROL_TASK;
-	controlTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
-	controlTaskObject.msgTask.rxer.pMsgDispatcher =
-		ControlTaskMsgDispatcher;
-	controlTaskObject.msgTask.timerDurationTicks = K_MSEC(1000);
-	controlTaskObject.msgTask.timerPeriodTicks =
-		K_MSEC(0); // 0 for one shot
-	controlTaskObject.msgTask.rxer.pQueue = &controlTaskQueue;
-
-	Framework_RegisterTask(&controlTaskObject.msgTask);
+	Framework_RegisterTask(&cto.msgTask);
 
 #if CONTROL_TASK_USES_MAIN_THREAD
-	controlTaskObject.msgTask.pTid = k_current_get();
-	k_thread_name_set(controlTaskObject.msgTask.pTid,
-			  THIS_FILE " is main thread");
+	cto.msgTask.pTid = k_current_get();
 #else
-	controlTaskObject.msgTask.pTid =
-		k_thread_create(&controlTaskObject.msgTask.threadData,
-				controlTaskStack,
+	cto.msgTask.pTid =
+		k_thread_create(&cto.msgTask.threadData, controlTaskStack,
 				K_THREAD_STACK_SIZEOF(controlTaskStack),
-				ControlTaskThread, &controlTaskObject, NULL,
-				NULL, CONTROL_TASK_PRIORITY, 0, K_NO_WAIT);
-
-	k_thread_name_set(controlTaskObject.msgTask.pTid, THIS_FILE);
-
+				ControlTaskThread, &cto, NULL, NULL,
+				CONTROL_TASK_PRIORITY, 0, K_NO_WAIT);
 #endif
+
+	k_thread_name_set(cto.msgTask.pTid, THIS_FILE);
 }
 
 void ControlTask_Thread(void)
 {
 #if CONTROL_TASK_USES_MAIN_THREAD
-	ControlTaskThread(&controlTaskObject, NULL, NULL);
+	ControlTaskThread(&cto, NULL, NULL);
 #endif
 }
 
 /******************************************************************************/
-// Local Function Definitions
+/* Local Function Definitions                                                 */
 /******************************************************************************/
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
 
+	/* Prevent 'lost' logs */
+	k_sleep(K_SECONDS(1));
+
 	LOG_WRN("Version %s", VERSION_STRING);
+
+	AttributesInit();
 
 	mcumgr_wrapper_register_subsystems();
 
-	HardwareTestInit();
+	UserInterfaceTask_Initialize();
 	BleTask_Initialize();
-	Sentrius_mgmt_register_group();
-	// FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_NV);
-	//Test only
-	FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_LED_TEST);
+	UserCommTask_Initialize();
+	AdcBt6_Init();
 
-	FRAMEWORK_MSG_SEND_TO_SELF(pObj->msgTask.rxer.id, FMC_INIT_ALL_TASKS);
+#ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
+	Sentrius_mgmt_register_group();
+#endif
+
+	pObj->reset_reason = nrf_power_resetreas_get(NRF_POWER);
+	nrf_power_resetreas_clear(NRF_POWER, pObj->reset_reason);
+	LOG_INF("Reset Reason %s", log_strdup(lbt_get_nrf52_reset_reason_string(
+					   pObj->reset_reason)));
+
+	//Test only
+	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.rxer.id,
+					      FMC_LED_TEST);
+
+	if (lcz_no_init_ram_var_is_valid(battery_age,
+					 sizeof(battery_age->data))) {
+		LOG_INF("Battery age: %u", battery_age->data);
+	} else {
+		LOG_WRN("Battery age not valid");
+		memset(battery_age, 0, sizeof(*battery_age));
+		lcz_no_init_ram_var_update_header(battery_age,
+						  sizeof(battery_age->data));
+	}
+
+	Framework_StartTimer(&pObj->msgTask);
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
 }
 
-static void HardwareTestInit(void)
-{
-	bool terminalPresent = BSP_TestPinUartChecker();
-	SystemUartTask_Initialize(terminalPresent);
-}
-
-static DispatchResult_t InitializeAllTasksMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						     FwkMsg_t *pMsg)
+static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg)
 {
 	UNUSED_PARAMETER(pMsg);
-
-#if 0
-  char const * p = Bsp_GetResetReasonString();
-  AttributeTask_SetWithString(ATTR_INDEX_resetReason, p, strlen(p));
-#endif
-
-	//  SensorTask_Initialize();
-	UserInterfaceTask_Initialize(); // sends messages to SensorTask
-	UserCommTask_Initialize();
-	AdcBt6_Init();
-
-#if 0
-  FRAMEWORK_MSG_CREATE_AND_SEND(FRAMEWORK_TASK_ID_CONTROL,
-                                FRAMEWORK_TASK_ID_SENSOR,
-                                FRAMEWORK_MSG_CODE_PING);
-#endif
-#if 0
-  Framework_StartTimer(pMsgTask);
-#endif
-
-	// @ref ENABLE_BLE
-	// If the softdevice is running, then breakpoints will cause a hardfault.
-	//ControlTaskObj_t *pObj = (ControlTaskObj_t*)pMsgRxer->pContainer;
-	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_CONTROL_TASK,
-					      FMC_CODE_BLE_START);
-
+	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
+	battery_age->data += CONFIG_BATTERY_AGE_TICK_RATE_SECONDS;
+	lcz_no_init_ram_var_update_header(battery_age,
+					  sizeof(battery_age->data));
+	Framework_StartTimer(&pObj->msgTask);
 	return DISPATCH_OK;
 }
-/*
-static DispatchResult_t PeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-  UNUSED_PARAMETER(pMsg);
-  int32_t nextTickMs = appStateRunFsm();
-  Framework_ChangeTimerPeriod(pMsgTask, nextTickMs, 0);
-  return DISPATCH_OK;
-}
-*/
 
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						FwkMsg_t *pMsg)
@@ -226,72 +211,12 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-/*
-static DispatchResult_t InitNvMsgHander(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	int rc = nvInit();
-  LOG_INF("NV init (%d)", rc);
-  pMsg->header.txId = pMsgTask->id;
-  pMsg->header.rxId = pMsgTask->id;
-	pMsg->header.msgCode =
-    (rc < 0) ? FRAMEWORK_MSG_CODE_SOFTWARE_RESET : FRAMEWORK_MSG_CODE_INIT_LTE;
-  FRAMEWORK_MSG_SEND(pMsg);
-  return DISPATCH_DO_NOT_FREE;
-}
-*/
-/*
-static DispatchResult_t InitBleMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-  appStateSetupBleCellularService();
-  int rc = oob_ble_initialize();
-  pMsg->header.txId = pMsgTask->id;
-  pMsg->header.rxId = pMsgTask->id;
-  pMsg->header.msgCode =
-    (rc < 0) ? FRAMEWORK_MSG_CODE_SOFTWARE_RESET : FRAMEWORK_MSG_CODE_INIT_AWS;
-  FRAMEWORK_MSG_SEND(pMsg);
-  return DISPATCH_DO_NOT_FREE;
-}
-*/
-static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					  FwkMsg_t *pMsg)
-{
-	UNUSED_PARAMETER(pMsgRxer);
-	//LedTestMsg_t *pLedMsg = (LedTestMsg_t *)pMsg;
-	uint32_t delayMs = 1000; //pLedMsg->durationMs;
-	delayMs = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, delayMs);
-	LedPwm_off(0);
-	LedPwm_off(1);
-	k_sleep(K_MSEC(delayMs));
-	LedPwm_on(0, 1500, 700);
-	k_sleep(K_MSEC(delayMs));
-	LedPwm_on(1, 1500, 700);
-	k_sleep(K_MSEC(delayMs));
-	LedPwm_off(0);
-	LedPwm_off(1);
-	k_sleep(K_MSEC(delayMs));
-
-	return DISPATCH_OK;
-}
-
-#if 0
-static DispatchResult_t AppReadyMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					   FwkMsg_t *pMsg)
-{
-	UNUSED_PARAMETER(pMsg);
-	//appStateSetReady();
-	//Framework_StartTimer(pMsgTask);
-	return DISPATCH_OK;
-}
-#endif
-
 EXTERNED void Framework_AssertionHandler(char *file, int line)
 {
-	static bool busy = 0; // prevent recursion (buffer alloc fail, ...)
+	static bool busy = 0; /* prevent recursion (buffer alloc fail, ...) */
 	if (!busy) {
 		busy = true;
 		LOG_ERR("\r\n!-----> Assertion <-----! %s:%d\r\n", file, line);
 		__NOP();
 	}
 }
-
-// end

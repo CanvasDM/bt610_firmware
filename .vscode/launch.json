@@ -6,30 +6,14 @@
     "configurations": [
         {
             "cwd": "${workspaceRoot}",
-            "executable": "build/${input:app}/zephyr/zephyr.elf",
+            "executable": "build/peripheral_IO/zephyr/zephyr.elf",
             "name": "Debug",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "jlink",
             "device": "nRF52840_xxAA",
-            "svdFile": "${workspaceRoot}/zephyr/ext/hal/nordic/nrfx/mdk/nrf52840.svd",
+            "svdFile": "${workspaceRoot}/../modules/hal/nordic/nrfx/mdk/rf52840.svd",
             "interface": "swd"
-        }
-    ],
-    "inputs": [
-        {
-            "id": "app",
-            "description": "Select an app to debug",
-            "default": "apps/oob_demo",
-            "type": "pickString",
-            "options": [
-                "apps/lte_console",
-                "apps/oob_demo",
-                "tests/udp_echo_client",
-                "tests/http_get",
-                "tests/tcp_echo_client",
-                "tests/aws_connect",
-            ]
         }
     ]
 }

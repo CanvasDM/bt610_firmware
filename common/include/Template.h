@@ -1,13 +1,13 @@
 /**
- * @file LedPwm.h
+ * @file Template.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __LED_PWM_H__
-#define __LED_PWM_H__
+#ifndef __TEMPLATE_H__
+#define __TEMPLATE_H__
 
 /* (Remove Empty Sections) */
 /******************************************************************************/
@@ -15,8 +15,7 @@
 /******************************************************************************/
 #include <zephyr/types.h>
 #include <stddef.h>
-#include <kernel.h>
-#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,12 +23,6 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-typedef struct LedPwm
-{
-    uint8_t redDutyValue;
-    uint8_t greenDutyValue;
-    uint8_t blueDutyValue;
-}rgbLedColor_t;
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -46,9 +39,6 @@ typedef struct LedPwm
  *
  * @retval
  */
-bool LedPwm_on(uint16_t ledNumber, uint32_t period, uint32_t pulseWidth);
-bool LedPwm_off(uint16_t ledNumber);
-void LedPwm_shutdown(void);
 
 #ifdef __cplusplus
 }

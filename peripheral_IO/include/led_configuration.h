@@ -1,32 +1,31 @@
 /**
- * @file UserInterfaceTask.h
- * @brief
+ * @file led_configuration.h
+ * @brief The BT6xx has a red + green LED.
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __USER_INTERFACE_TASK_H__
-#define __USER_INTERFACE_TASK_H__
+#ifndef __LED_CONFIGURATION_H__
+#define __LED_CONFIGURATION_H__
 
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
+#include "lcz_led.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /******************************************************************************/
-/* Global Function Prototypes                                                 */
+/* Board definitions                                                          */
 /******************************************************************************/
-/**
- * @brief
- */
-void UserInterfaceTask_Initialize(void);
+
+enum led_index { GREEN_LED, RED_LED };
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __USER_INTERFACE_TASK_H__ */
+#endif /* __LED_CONFIGURATION_H__ */

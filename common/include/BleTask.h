@@ -6,10 +6,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __TEMPLATE_H__
-#define __TEMPLATE_H__
+#ifndef __BLE_TASK_H__
+#define __BLE_TASK_H__
 
-/* (Remove Empty Sections) */
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
@@ -45,4 +44,4 @@ void BleTask_Initialize(void);
 }
 #endif
 
-#endif /* __TEMPLATE_H__ */
+#endif /* __BLE_TASK_H__ */
