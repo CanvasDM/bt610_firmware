@@ -265,16 +265,16 @@ bool AttributeTask_RestoreDefaultValue(uint32_t Index, uint32_t SourceId)
 //
 // Wrap the function used by the JSON task so that it can be used by any task.
 //
-bool AttributeTask_SetWithString(uint32_t Index, char const *pValue,
+int8_t AttributeTask_SetWithString(uint32_t Index, char const *pValue,
 				 size_t ValueLength)
 {
 	if (Index >= ATTRIBUTE_TABLE_SIZE) {
-		return false;
+		return -1;
 	}
 
 	k_mutex_lock(&attribute_mutex, K_FOREVER);
 
-	bool ok = false;
+	int8_t ok = -1;
 	if (attrTable[Index].type == STRING_TYPE) {
 		ok = attrTable[Index].pValidator(Index, (void*)pValue, ValueLength, true);
 	}
@@ -286,15 +286,15 @@ bool AttributeTask_SetWithString(uint32_t Index, char const *pValue,
 	return ok;
 }
 
-bool AttributeTask_SetUint32(uint32_t Index, uint32_t Value)
+int8_t AttributeTask_SetUint32(uint32_t Index, uint32_t Value)
 {
 	if (Index >= ATTRIBUTE_TABLE_SIZE) {
-		return false;
+		return -1;
 	}
 
 	k_mutex_lock(&attribute_mutex, K_FOREVER);
 
-	bool ok = false;
+	int8_t ok = -1;
 	if (attrTable[Index].type == UNSIGNED_TYPE) {
 		uint32_t local = Value;
 		ok = attrTable[Index].pValidator(Index, &local, LENGTH_NOT_USED,
@@ -308,7 +308,7 @@ bool AttributeTask_SetUint32(uint32_t Index, uint32_t Value)
 	return ok;
 }
 
-bool AttributeTask_SetSigned32(uint32_t Index, int32_t Value)
+int8_t AttributeTask_SetSigned32(uint32_t Index, int32_t Value)
 {
 	if (Index >= ATTRIBUTE_TABLE_SIZE) {
 		return false;
@@ -330,7 +330,7 @@ bool AttributeTask_SetSigned32(uint32_t Index, int32_t Value)
 	return ok;
 }
 
-bool AttributeTask_SetFloat(uint32_t Index, float Value)
+int8_t AttributeTask_SetFloat(uint32_t Index, float Value)
 {
 	if (Index >= ATTRIBUTE_TABLE_SIZE) {
 		return false;
@@ -438,15 +438,29 @@ size_t AttributeTask_GetValueAsString(char *pValue, bool *pIsNotString,
 	return strlen(pValue);
 }
 
-size_t AttributeTask_GetString(char *pValue, uint32_t Index,
+int8_t AttributeTask_GetString(char *pValue, uint32_t Index,
 			       size_t MaxStringLength)
 {
 	bool unusedIsNotString;
-	return AttributeTask_GetValueAsString(pValue, &unusedIsNotString, Index,
+  size_t stringSize;
+  int8_t stringResult = -1;
+	stringSize = AttributeTask_GetValueAsString(pValue, &unusedIsNotString, Index,
 					      MaxStringLength);
+  if(stringSize ==0)
+  {
+    /*string is empty return error*/
+    stringResult = -1;
+  }
+  else
+  {
+    stringResult = 0;
+  }
+
+  return(stringResult);
+  
 }
 
-bool AttributeTask_GetUint32(uint32_t *pValue, uint32_t Index)
+int8_t AttributeTask_GetUint32(uint32_t *pValue, uint32_t Index)
 {
 	*pValue = 0;
 	bool ok = false;
@@ -470,7 +484,7 @@ bool AttributeTask_GetUint32(uint32_t *pValue, uint32_t Index)
 	return ok;
 }
 
-bool AttributeTask_GetSigned32(int32_t *pValue, uint32_t Index)
+int8_t AttributeTask_GetSigned32(int32_t *pValue, uint32_t Index)
 {
 	*pValue = 0;
 	bool ok = false;
@@ -494,7 +508,7 @@ bool AttributeTask_GetSigned32(int32_t *pValue, uint32_t Index)
 	return ok;
 }
 
-bool AttributeTask_GetFloat(float *pValue, uint32_t Index)
+int8_t AttributeTask_GetFloat(float *pValue, uint32_t Index)
 {
 	*pValue = 0.0;
 	bool isFloat = false;

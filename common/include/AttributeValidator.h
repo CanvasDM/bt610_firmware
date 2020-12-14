@@ -38,17 +38,17 @@ extern "C" {
 // Global Function Prototypes
 //=================================================================================================
 
-bool AttributeValidator_Bypass(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_SpecialString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_GenericString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_TrimString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_uint32_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_uint16_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_uint8_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_int32_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_int16_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_int8_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
-bool AttributeValidator_float(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_Bypass(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_SpecialString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_GenericString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_TrimString(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_uint32_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_uint16_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_uint8_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_int32_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_int16_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_int8_t(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
+int8_t AttributeValidator_float(uint32_t Index, void * pValue, size_t Length, bool DoWrite);
 
 #ifdef __cplusplus
 }

@@ -42,7 +42,7 @@ extern AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE];
 // Global Function Definitions
 //=================================================================================================
 
-bool AttributeValidator_Bypass(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_Bypass(uint32_t Index, void *pValue, size_t Length,
 			       bool DoWrite)
 {
 	// Don't set the modified flag or change the value of the attribute.
@@ -51,10 +51,10 @@ bool AttributeValidator_Bypass(uint32_t Index, void *pValue, size_t Length,
 	UNUSED_PARAMETER(pValue);
 	UNUSED_PARAMETER(Length);
 	UNUSED_PARAMETER(DoWrite);
-	return true;
+	return 0;
 }
 
-bool AttributeValidator_SpecialString(uint32_t Index, void *pValue,
+int8_t AttributeValidator_SpecialString(uint32_t Index, void *pValue,
 				      size_t Length, bool DoWrite)
 {
 	// Don't set the modified flag and write the attribute if it fits.
@@ -64,12 +64,12 @@ bool AttributeValidator_SpecialString(uint32_t Index, void *pValue,
 	{
 		memset(pEntry->pData, 0, pEntry->size);
 		strncpy(pEntry->pData, pValue, Length);
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
-bool AttributeValidator_GenericString(uint32_t Index, void *pValue,
+int8_t AttributeValidator_GenericString(uint32_t Index, void *pValue,
 				      size_t Length, bool DoWrite)
 {
 	AttributeEntry_t *pEntry = &attrTable[Index];
@@ -84,12 +84,12 @@ bool AttributeValidator_GenericString(uint32_t Index, void *pValue,
 			memset(pEntry->pData, 0, pEntry->size);
 			strncpy(pEntry->pData, pValue, Length);
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
-bool AttributeValidator_TrimString(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_TrimString(uint32_t Index, void *pValue, size_t Length,
 				   bool DoWrite)
 {
 	AttributeEntry_t *pEntry = &attrTable[Index];
@@ -123,12 +123,12 @@ bool AttributeValidator_TrimString(uint32_t Index, void *pValue, size_t Length,
 			memset(pEntry->pData, 0, pEntry->size);
 			strncpy(pEntry->pData, ptr, modifiedLength);
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
-bool AttributeValidator_uint32_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_uint32_t(uint32_t Index, void *pValue, size_t Length,
 				 bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -140,11 +140,11 @@ bool AttributeValidator_uint32_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((uint32_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
-bool AttributeValidator_uint16_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_uint16_t(uint32_t Index, void *pValue, size_t Length,
 			    bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -156,11 +156,11 @@ bool AttributeValidator_uint16_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((uint16_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
-bool AttributeValidator_uint8_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_uint8_t(uint32_t Index, void *pValue, size_t Length,
 			   bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -172,12 +172,12 @@ bool AttributeValidator_uint8_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((uint8_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
-bool AttributeValidator_int32_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_int32_t(uint32_t Index, void *pValue, size_t Length,
 			      bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -190,11 +190,11 @@ bool AttributeValidator_int32_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((int32_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
-bool AttributeValidator_int16_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_int16_t(uint32_t Index, void *pValue, size_t Length,
 			      bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -207,11 +207,11 @@ bool AttributeValidator_int16_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((int16_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
-bool AttributeValidator_int8_t(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_int8_t(uint32_t Index, void *pValue, size_t Length,
 			      bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -224,12 +224,12 @@ bool AttributeValidator_int8_t(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((int8_t *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
-bool AttributeValidator_float(uint32_t Index, void *pValue, size_t Length,
+int8_t AttributeValidator_float(uint32_t Index, void *pValue, size_t Length,
 			      bool DoWrite)
 {
 	UNUSED_PARAMETER(Length);
@@ -242,9 +242,9 @@ bool AttributeValidator_float(uint32_t Index, void *pValue, size_t Length,
 			pEntry->modified = true;
 			*((float *)pEntry->pData) = value;
 		}
-		return true;
+		return 0;
 	}
-	return false;
+	return -1;
 }
 
 //=================================================================================================

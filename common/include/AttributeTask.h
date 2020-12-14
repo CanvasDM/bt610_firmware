@@ -106,9 +106,9 @@ bool AttributeTask_Match(uint32_t *pIndex, char const * pName, size_t NameLength
 //! @param  pValue - string representation of variable
 //! @param ValueLength - The length (without null char) of the string being passed in.
 //!
-//! @retval true if the value could be set with the value provided
+//! @retval rutrn -1 if there was error and 0 for success
 //!
-bool AttributeTask_SetWithString(uint32_t Index, char const * pValue, size_t ValueLength);
+int8_t AttributeTask_SetWithString(uint32_t Index, char const * pValue, size_t ValueLength);
 
 //-----------------------------------------------
 //! @brief  Used to restore an attribute to its default value
@@ -125,11 +125,10 @@ bool AttributeTask_RestoreDefaultValue(uint32_t Index, uint32_t SourceId);
 //! @param  Index - A valid index into attribute table.
 //! @param  Value - The value to set.
 //!
-//! @retval true if the value could be set with the value provided, 
-//!         false if it couldn't or the value isn't an integer.
+//! @retval rutrn -1 if there was error and 0 for success
 //!
-bool AttributeTask_SetUint32(uint32_t Index, uint32_t Value);
-bool AttributeTask_SetSigned32(uint32_t Index, int32_t Value);
+int8_t AttributeTask_SetUint32(uint32_t Index, uint32_t Value);
+int8_t AttributeTask_SetSigned32(uint32_t Index, int32_t Value);
 
 //-----------------------------------------------
 //! @brief  Used to set the value of a floating point attribute
@@ -137,10 +136,9 @@ bool AttributeTask_SetSigned32(uint32_t Index, int32_t Value);
 //! @param  Index - A valid index into attribute table.
 //! @param  Value - The value to set.
 //!
-//! @retval true if the value could be set with the value provided, 
-//!         false if it couldn't or the value isn't an float
+//! @retval rutrn -1 if there was error and 0 for success
 //!
-bool AttributeTask_SetFloat(uint32_t Index, float Value);
+int8_t AttributeTask_SetFloat(uint32_t Index, float Value);
 
 
 //-----------------------------------------------
@@ -180,7 +178,8 @@ size_t AttributeTask_GetValueAsString(char * pValue,
 //!
 //! @ref AttributeTask_GetValueAsString
 //!
-size_t AttributeTask_GetString(char * pValue, uint32_t Index, size_t MaxStringLength);
+//! @retval rutrn -1 if there was error and 0 for success
+int8_t AttributeTask_GetString(char * pValue, uint32_t Index, size_t MaxStringLength);
 
 //-----------------------------------------------
 //! @brief  Used to get the value of a variable as an unsigned/signed integer.
@@ -188,10 +187,10 @@ size_t AttributeTask_GetString(char * pValue, uint32_t Index, size_t MaxStringLe
 //! @param  pValue, 0 if attribute is a string.
 //! @param  Index - A valid index into attribute table
 //!
-//! @retval false if the value wasn't found or isn't the correct type, true otherwise.
+//! @retval rutrn -1 if there was error and 0 for success
 //!
-bool AttributeTask_GetUint32(uint32_t * pValue, uint32_t Index);
-bool AttributeTask_GetSigned32(int32_t * pValue, uint32_t Index);
+int8_t AttributeTask_GetUint32(uint32_t * pValue, uint32_t Index);
+int8_t AttributeTask_GetSigned32(int32_t * pValue, uint32_t Index);
 
 
 //-----------------------------------------------
@@ -200,9 +199,9 @@ bool AttributeTask_GetSigned32(int32_t * pValue, uint32_t Index);
 //! @param  pValue, 0 if attribute is a string.
 //! @param  Index - A valid index into attribute table
 //!
-//! @retval false if the value wasn't found or isn't a float, true otherwise.
+//! @retval rutrn -1 if there was error and 0 for success
 //!
-bool AttributeTask_GetFloat(float * pValue, uint32_t Index);
+int8_t AttributeTask_GetFloat(float * pValue, uint32_t Index);
 
 //-----------------------------------------------
 //! @param  pName - NUL terminated string/name of variable associated with index.

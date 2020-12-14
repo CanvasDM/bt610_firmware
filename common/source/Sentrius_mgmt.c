@@ -17,11 +17,6 @@
  * under the License.
  */
 
-#include <logging/log.h>
-#define LOG_LEVEL LOG_LEVEL_DBG
-LOG_MODULE_REGISTER(SentriusMgmt);
-#define THIS_FILE "SentriusMgmt"
-
 //=================================================================================================
 // Includes
 //=================================================================================================
@@ -47,7 +42,7 @@ LOG_MODULE_REGISTER(SentriusMgmt);
 static CborAttrType ParameterValueType(long long unsigned int paramID,
 				       struct cbor_attr_t *attrs);
 
-static bool SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs);
+static int8_t SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs);
 //=================================================================================================
 // Local Data Definitions
 //=================================================================================================
@@ -74,6 +69,11 @@ static struct mgmt_group sentrius_mgmt_group = {
 };
 
 
+static long long unsigned int paramUint = 0;
+static long long int paramIint = 0;
+static char paramString[ATTRIBUTE_STRING_MAX_LENGTH] = { 0 };
+static float paramFloat = 0;
+
 //=================================================================================================
 // Global Function Definitions
 //=================================================================================================
@@ -90,7 +90,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
      uint32_t uintData;
      float floatData;
      char bufferData[ATTRIBUTE_STRING_MAX_LENGTH];
-     bool getResult = false;
+     int8_t getResult = -1;
      struct cbor_attr_t params_value;
 	CborAttrType parameterDataType;
 	
@@ -107,7 +107,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-     //just need the type from p1 look up id don't need the params_value structure
+     /*just need the type from p1 look up id don't need the params_value structure*/
 	parameterDataType = ParameterValueType(paramID, &params_value);
 	/* Encode the response. */
 	CborError err = 0;
@@ -115,7 +115,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
      err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
 
-     //Get the value
+     /*Get the value*/
      switch(parameterDataType)
      {
           case CborAttrIntegerType:
@@ -137,17 +137,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
           default:
                break;
      }
-
-
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
-     if(getResult == true)
-     {
-	     err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
-     }
-     else
-     {
-          err |= cbor_encode_text_stringz(&ctxt->encoder, "bad");
-     }     
+     err |= cbor_encode_int(&ctxt->encoder, getResult);
      
 	if (err != 0) {
 		return MGMT_ERR_ENOMEM;
@@ -197,7 +187,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	struct CborValue dataCopy = ctxt->it;
 	struct cbor_attr_t params_value;
 	CborAttrType parameterDataType;
-     bool setResult = false;
+     int8_t setResult = -1;
 
 	struct cbor_attr_t params_attr[] = {
 		{
@@ -211,7 +201,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-	//type from p1 look up id number match to type
+	/*type from p1 look up id number match to type*/
 	parameterDataType = ParameterValueType(paramID, &params_value);
 
 	const struct cbor_attr_t params_attr2[] = {
@@ -233,15 +223,8 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
-     if(setResult == true)
-     {
-	     err |= cbor_encode_text_stringz(&ctxt->encoder, "ok");
-     }
-     else
-     {
-          err |= cbor_encode_text_stringz(&ctxt->encoder, "bad");
-     }     
-     
+     err |= cbor_encode_int(&ctxt->encoder, setResult);
+
 	if (err != 0) {
 		return MGMT_ERR_ENOMEM;
 	}
@@ -255,20 +238,16 @@ static CborAttrType ParameterValueType(long long unsigned int paramID,
 {
 	attrs->attribute = "p2";
 	if (AttributeTask_IsUnsigned(paramID)) {
-		long long unsigned int paramUint = 255;
 		attrs->type = CborAttrIntegerType;
 		attrs->addr.integer = &paramUint;
 	} else if (AttributeTask_IsSigned(paramID)) {
-		long long int paramIint = 255;
 		attrs->type = CborAttrUnsignedIntegerType;
 		attrs->addr.uinteger = &paramIint;
 	} else if (AttributeTask_IsString(paramID)) {
-		char paramString[ATTRIBUTE_STRING_MAX_LENGTH] = { 0 };
 		attrs->type = CborAttrTextStringType;
 		attrs->addr.string = paramString;
 		attrs->len = sizeof(paramString);
 	} else if (AttributeTask_IsFloat(paramID)) {
-		float paramFloat = 0;
 		attrs->type = CborAttrFloatType;
 		attrs->addr.fval = &paramFloat;
 	} else {
@@ -277,28 +256,28 @@ static CborAttrType ParameterValueType(long long unsigned int paramID,
 	}
 	return (attrs->type);
 }
-static bool SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs)
+static int8_t SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs)
 {
      float fValue;
      uint32_t uintValue;
      uint32_t intValue;
-     bool status = false;
+     int8_t status = -1;
 
      switch(dataType)
      {
           case CborAttrIntegerType:
-               memcpy(&intValue, attrs->addr.integer, sizeof(int32_t));
+               intValue = (int32_t) (*attrs->addr.integer);
                status = AttributeTask_SetSigned32(id, intValue);
                break;
           case CborAttrUnsignedIntegerType:
-               memcpy(&uintValue, attrs->addr.uinteger, sizeof(uint32_t));
+               uintValue = (uint32_t) (*attrs->addr.uinteger);
                status = AttributeTask_SetUint32(id, uintValue);
                break;
           case CborAttrTextStringType:
                AttributeTask_SetWithString(id, attrs->addr.string, sizeof(attrs->addr.string));
                break;
-          case CborAttrFloatType:               
-               memcpy(&fValue, attrs->addr.fval, sizeof(ATTRIBUTE_MAX_FLOAT_DIGITS));
+          case CborAttrFloatType:   
+               fValue = (float) (*attrs->addr.fval);            
                status = AttributeTask_SetFloat(id, fValue);
                break;               
           default:

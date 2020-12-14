@@ -68,7 +68,7 @@ typedef struct AttributeEntryTag
   const bool backup;  // not factory resetable
   const bool lockable;
   const bool broadcast;
-  bool (*pValidator)(uint32_t, void *, size_t, bool);
+  int8_t (*pValidator)(uint32_t, void *, size_t, bool);
   const uint32_t min;
   const uint32_t max;
   bool modified;
