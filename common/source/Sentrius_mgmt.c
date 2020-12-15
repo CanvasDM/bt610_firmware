@@ -26,9 +26,8 @@
 #include "cborattr/cborattr.h"
 #include "mgmt/mgmt.h"
 #include "Sentrius_mgmt.h"
-#include "Sentrius_mgmt_impl.h"
-#include "Sentrius_mgmt_config.h"
 #include "Attribute.h"
+
 //=================================================================================================
 // Local Constant, Macro and Type Definitions
 //=================================================================================================
@@ -139,6 +138,8 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	default:
 		break;
 	}
+
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
 	if (err != 0) {
@@ -268,17 +269,28 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 
 	switch (dataType) {
 	case CborAttrIntegerType:
-		status = Attribute_Set(id, attrs->addr.integer, 4);
+		if (*attrs->addr.integer >= INT32_MIN &&
+		    *attrs->addr.integer <= INT32_MAX) {
+			status = Attribute_Set(id, attrs->addr.integer,
+					       sizeof(int32_t));
+		}
 		break;
 	case CborAttrUnsignedIntegerType:
-		status = Attribute_Set(id, attrs->addr.uinteger, 4);
+		if (*attrs->addr.uinteger >= 0 &&
+		    *attrs->addr.uinteger <= UINT32_MAX) {
+			status = Attribute_Set(id, attrs->addr.uinteger,
+					       sizeof(uint32_t));
+		}
 		break;
+
 	case CborAttrTextStringType:
 		Attribute_Set(id, attrs->addr.string, ATTR_MAX_STR_SIZE);
 		break;
+
 	case CborAttrFloatType:
-		status = Attribute_Set(id, attrs->addr.fval, 4);
+		status = Attribute_Set(id, attrs->addr.fval, sizeof(float));
 		break;
+
 	default:
 		break;
 	}

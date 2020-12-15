@@ -24,6 +24,11 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTRIBUTES_LOG_LEVEL);
 #include "Attribute.h"
 
 /******************************************************************************/
+/* Global Constants, Macros and Type Definitions                              */
+/******************************************************************************/
+static const char EMPTY_STRING[] = "";
+
+/******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
 K_MUTEX_DEFINE(attribute_mutex);
@@ -203,8 +208,10 @@ bool Attribute_SetVersion(attr_idx_t Index, uint32_t Major, uint32_t Minor,
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 {
 	int r = -EPERM;
+
 	if (Index < ATTR_TABLE_SIZE) {
 		strncpy(pValue, attrTable[Index].pData, MaxStringLength);
+		r = 0;
 	}
 	return r;
 }
@@ -259,7 +266,7 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 
 const char *Attribute_GetName(attr_idx_t Index)
 {
-	const char *p = NULL;
+	const char *p = EMPTY_STRING;
 	if (Index < ATTR_TABLE_SIZE) {
 		p = (const char *)attrTable[Index].name;
 	}
