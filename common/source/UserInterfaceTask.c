@@ -66,6 +66,15 @@ LOG_MODULE_REGISTER(UserInterface);
 #error "Unsupported board: sw1 devicetree alias is not defined"
 #endif
 
+#define BUTTON2_NODE DT_ALIAS(sw2)
+#if DT_NODE_HAS_STATUS(BUTTON2_NODE, okay)
+#define BUTTON2_DEV DT_GPIO_LABEL(BUTTON2_NODE, gpios)
+#define BUTTON2_PIN DT_GPIO_PIN(BUTTON2_NODE, gpios)
+#define BUTTON2_FLAGS (GPIO_INPUT | FLAGS_OR_ZERO(BUTTON2_NODE))
+#else
+#error "Unsupported board: sw2 devicetree alias is not defined"
+#endif
+
 typedef struct UserIfTaskTag {
 	FwkMsgTask_t msgTask;
 } UserIfTaskObj_t;
@@ -78,7 +87,8 @@ typedef struct UserIfTaskTag {
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static UserIfTaskObj_t userIfTaskObject;
-static struct gpio_callback button_cb_data;
+static struct gpio_callback button1_cb_data;
+static struct gpio_callback button2_cb_data;
 
 K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 
@@ -96,8 +106,10 @@ enum { IN1 = 1,
 static void UserIfTaskThread(void *, void *, void *);
 static void InitializeButton(void);
 
-static void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
+static void Button1HandlerIsr(struct device *dev, struct gpio_callback *cb,
 			     uint32_t pins);
+static void Button2HandlerIsr(struct device *dev, struct gpio_callback *cb,
+			     uint32_t pins);				 
 
 //static DispatchResult_t UserIfTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 //static DispatchResult_t ButtonIsrMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -165,41 +177,78 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 }
 static void InitializeButton(void)
 {
-	struct device *buttonDevice;
+	struct device *button1Device;
+	struct device *button2Device;
 	uint16_t ret;
 
-	buttonDevice = device_get_binding(BUTTON1_DEV);
-	if (buttonDevice == NULL) {
+	button1Device = device_get_binding(BUTTON1_DEV);
+	if (button1Device == NULL) {
 		printk("Error: didn't find %s device\n", BUTTON1_DEV);
 		return;
 	}
+	button2Device = device_get_binding(BUTTON2_DEV);
+	if (button2Device == NULL) {
+		printk("Error: didn't find %s device\n", BUTTON2_DEV);
+		return;
+	}
 
-	ret = gpio_pin_configure(buttonDevice, BUTTON1_PIN, BUTTON1_FLAGS);
+	ret = gpio_pin_configure(button1Device, BUTTON1_PIN, BUTTON1_FLAGS);
 	if (ret != 0) {
 		printk("Error %d: failed to configure %s pin %d\n", ret,
 		       BUTTON1_DEV, BUTTON1_PIN);
 		return;
 	}
 
-	ret = gpio_pin_interrupt_configure(buttonDevice, BUTTON1_PIN,
+	ret = gpio_pin_configure(button2Device, BUTTON2_PIN, BUTTON2_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n", ret,
+		       BUTTON2_DEV, BUTTON2_PIN);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(button1Device, BUTTON1_PIN,
 					   GPIO_INT_EDGE_TO_ACTIVE);
 	if (ret != 0) {
 		printk("Error %d: failed to configure interrupt on %s pin %d\n",
 		       ret, BUTTON1_DEV, BUTTON1_PIN);
 		return;
 	}
+	ret = gpio_pin_interrupt_configure(button2Device, BUTTON2_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+		       ret, BUTTON2_DEV, BUTTON2_PIN);
+		return;
+	}
 
-	gpio_init_callback(&button_cb_data, ButtonHandlerIsr, BIT(BUTTON1_PIN));
-	gpio_add_callback(buttonDevice, &button_cb_data);
+	gpio_init_callback(&button1_cb_data, Button1HandlerIsr, BIT(BUTTON1_PIN));
+	gpio_init_callback(&button2_cb_data, Button2HandlerIsr, BIT(BUTTON2_PIN));
+	gpio_add_callback(button1Device, &button1_cb_data);
+	gpio_add_callback(button2Device, &button2_cb_data);
 }
 
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-void ButtonHandlerIsr(struct device *dev, struct gpio_callback *cb,
+void Button1HandlerIsr(struct device *dev, struct gpio_callback *cb,
 		      uint32_t pins)
 {
-	LOG_DBG("Button pressed\n");
+	LOG_DBG("Button 1 pressed\n");
 	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 					      FMC_CODE_BLE_TRANSMIT);
+}
+void Button2HandlerIsr(struct device *dev, struct gpio_callback *cb,
+		      uint32_t pins)
+{
+	static uint8_t ledNumber = 0;
+
+	LOG_DBG("Button 2 pressed\n");
+	LedPwm_on(ledNumber, 1500, 700);
+	ledNumber = ledNumber + 1;
+	if(ledNumber > 1)
+	{
+		ledNumber = 0;
+	}
+	LedPwm_off(ledNumber);	
+
 }
