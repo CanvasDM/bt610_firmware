@@ -1,51 +1,43 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/**
+ * @file Sentrius_mgmt.c
+ * @brief
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * Copyright (c) 2020 Laird Connectivity
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
-//=================================================================================================
-// Includes
-//=================================================================================================
+/******************************************************************************/
+/* Includes                                                                   */
+/******************************************************************************/
 #include <zephyr.h>
 #include <limits.h>
 #include <string.h>
 #include "cborattr/cborattr.h"
 #include "mgmt/mgmt.h"
 #include "Sentrius_mgmt.h"
-#include "Sentrius_mgmt_impl.h"
-#include "Sentrius_mgmt_config.h"
-#include "AttributeTask.h"
-//=================================================================================================
-// Local Constant, Macro and Type Definitions
-//=================================================================================================
+#include "Attribute.h"
+
+/******************************************************************************/
+/* Local Constant, Macro and Type Definitions                                 */
+/******************************************************************************/
 #define SENTRIUS_MGMT_HANDLER_CNT                                              \
 	(sizeof sentrius_mgmt_handlers / sizeof sentrius_mgmt_handlers[0])
 
-//=================================================================================================
-// Local Function Prototypes
-//=================================================================================================
+#define FLOAT_MAX 3.4028235E38
 
-static CborAttrType ParameterValueType(long long unsigned int paramID,
+/******************************************************************************/
+/* Local Constant, Macro and Type Definitions                                 */
+/******************************************************************************/
+static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs);
 
-static int8_t SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs);
-//=================================================================================================
-// Local Data Definitions
-//=================================================================================================
+static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
+			      struct cbor_attr_t *attrs);
+
+/******************************************************************************/
+/* Local Data Definitions                                                     */
+/******************************************************************************/
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	// pystart - mgmt handlers
     [SENTRIUS_MGMT_ID_GETPARAMETER] = {
@@ -68,37 +60,40 @@ static struct mgmt_group sentrius_mgmt_group = {
 	.mg_group_id = MGMT_GROUP_ID_SENTRIUS,
 };
 
+static long long unsigned int paramUint;
+static long long int paramIint;
+static char paramString[ATTR_MAX_STR_SIZE];
+static float paramFloat;
 
-static long long unsigned int paramUint = 0;
-static long long int paramIint = 0;
-static char paramString[ATTRIBUTE_STRING_MAX_LENGTH] = { 0 };
-static float paramFloat = 0;
-
-//=================================================================================================
-// Global Function Definitions
-//=================================================================================================
+/******************************************************************************/
+/* Global Function Definitions                                                */
+/******************************************************************************/
 void Sentrius_mgmt_register_group(void)
 {
 	mgmt_register_group(&sentrius_mgmt_group);
 }
 
+/******************************************************************************/
+/* Local Function Definitions                                                 */
+/******************************************************************************/
 int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 {
-     long long unsigned int paramID = 255;
-     int readCbor = 0;
-     int32_t intData;
-     uint32_t uintData;
-     float floatData;
-     char bufferData[ATTRIBUTE_STRING_MAX_LENGTH];
-     int8_t getResult = -1;
-     struct cbor_attr_t params_value;
+	long long unsigned int paramID = 255;
+	int readCbor = 0;
+	int32_t intData;
+	uint32_t uintData;
+	float floatData;
+	char bufferData[ATTR_MAX_STR_SIZE];
+	int getResult = -1;
+	struct cbor_attr_t params_value[2] = { 0 };
 	CborAttrType parameterDataType;
-	
+
 	struct cbor_attr_t params_attr[] = {
 		{
 			.attribute = "p1",
 			.type = CborAttrUnsignedIntegerType,
 			.addr.uinteger = &paramID,
+			.nodefault = 1,
 		},
 		{ .attribute = NULL }
 	};
@@ -107,38 +102,42 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-     /*just need the type from p1 look up id don't need the params_value structure*/
-	parameterDataType = ParameterValueType(paramID, &params_value);
+	/*just need the type from p1 look up id don't need the params_value structure*/
+	parameterDataType =
+		ParameterValueType((attr_idx_t)paramID, params_value);
 	/* Encode the response. */
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-     err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
 
-     /*Get the value*/
-     switch(parameterDataType)
-     {
-          case CborAttrIntegerType:
-               getResult = AttributeTask_GetSigned32(&intData, paramID);
-               err |= cbor_encode_int(&ctxt->encoder, intData);
-               break;
-          case CborAttrUnsignedIntegerType:
-               getResult = AttributeTask_GetUint32(&uintData, paramID);
-               err |= cbor_encode_uint(&ctxt->encoder, uintData);
-               break;
-          case CborAttrTextStringType:
-               getResult = AttributeTask_GetString(bufferData, paramID, ATTRIBUTE_STRING_MAX_LENGTH);
-               err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
-               break;
-          case CborAttrFloatType:
-               getResult = AttributeTask_GetFloat(&floatData, paramID);
-               err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &floatData);
-               break;               
-          default:
-               break;
-     }
-     err |= cbor_encode_int(&ctxt->encoder, getResult);
-     
+	/*Get the value*/
+	switch (parameterDataType) {
+	case CborAttrIntegerType:
+		getResult = Attribute_GetSigned32(&intData, paramID);
+		err |= cbor_encode_int(&ctxt->encoder, intData);
+		break;
+	case CborAttrUnsignedIntegerType:
+		getResult = Attribute_GetUint32(&uintData, paramID);
+		err |= cbor_encode_uint(&ctxt->encoder, uintData);
+		break;
+	case CborAttrTextStringType:
+		getResult = Attribute_GetString(bufferData, paramID,
+						ATTR_MAX_STR_LENGTH);
+		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
+		break;
+	case CborAttrFloatType:
+		getResult = Attribute_GetFloat(&floatData, paramID);
+		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
+						  &floatData);
+		break;
+	default:
+		break;
+	}
+
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_int(&ctxt->encoder, getResult);
+
 	if (err != 0) {
 		return MGMT_ERR_ENOMEM;
 	}
@@ -155,8 +154,8 @@ int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
             .attribute = "d",
             .type = CborAttrTextStringType,
             .addr.string = echo_buf,
-            .nodefault = 1,
             .len = sizeof echo_buf,
+            .nodefault = 1,
         },
         [1] = {
             .attribute = NULL
@@ -185,69 +184,66 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	long long unsigned int paramID = 255;
 	int readCbor = 0;
 	struct CborValue dataCopy = ctxt->it;
-	struct cbor_attr_t params_value;
+	struct cbor_attr_t params_value[2] = { 0 };
 	CborAttrType parameterDataType;
-     int8_t setResult = -1;
+	int setResult = -1;
 
 	struct cbor_attr_t params_attr[] = {
-		{
-			.attribute = "p1",
-			.type = CborAttrUnsignedIntegerType,
-			.addr.uinteger = &paramID,
-		},
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &paramID,
+		  .nodefault = 1 },
 		{ .attribute = NULL }
 	};
 	readCbor = cbor_read_object(&ctxt->it, params_attr);
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-	/*type from p1 look up id number match to type*/
-	parameterDataType = ParameterValueType(paramID, &params_value);
 
-	const struct cbor_attr_t params_attr2[] = {
-		{
-			.attribute = "p1",
-			.type = CborAttrUnsignedIntegerType,
-			.addr.uinteger = &paramID,
-		},
-		params_value,
-		{ .attribute = NULL }
-	};
-	readCbor = cbor_read_object(&dataCopy, params_attr2);
+	/*type from p1 look up id number match to type*/
+	parameterDataType =
+		ParameterValueType((attr_idx_t)paramID, params_value);
+
+	readCbor = cbor_read_object(&dataCopy, params_value);
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-	setResult = SaveParameterValue(paramID, parameterDataType, &params_value);
+	setResult = SaveParameterValue((attr_idx_t)paramID, parameterDataType,
+				       params_value);
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
-     err |= cbor_encode_int(&ctxt->encoder, setResult);
+	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	if (err != 0) {
 		return MGMT_ERR_ENOMEM;
 	}
 	return 0;
 }
-//=================================================================================================
-// Local Function Definitions
-//=================================================================================================
-static CborAttrType ParameterValueType(long long unsigned int paramID,
+
+static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs)
 {
+	paramUint = ULLONG_MAX;
+	paramIint = LLONG_MAX;
+	paramFloat = FLOAT_MAX;
+	memset(paramString, 0, ATTR_MAX_STR_SIZE);
+
 	attrs->attribute = "p2";
-	if (AttributeTask_IsUnsigned(paramID)) {
+	attrs->nodefault = true;
+	if (Attribute_IsUnsigned(paramID)) {
 		attrs->type = CborAttrIntegerType;
 		attrs->addr.integer = &paramUint;
-	} else if (AttributeTask_IsSigned(paramID)) {
+	} else if (Attribute_IsSigned(paramID)) {
 		attrs->type = CborAttrUnsignedIntegerType;
 		attrs->addr.uinteger = &paramIint;
-	} else if (AttributeTask_IsString(paramID)) {
+	} else if (Attribute_IsString(paramID)) {
 		attrs->type = CborAttrTextStringType;
 		attrs->addr.string = paramString;
 		attrs->len = sizeof(paramString);
-	} else if (AttributeTask_IsFloat(paramID)) {
+	} else if (Attribute_IsFloat(paramID)) {
 		attrs->type = CborAttrFloatType;
 		attrs->addr.fval = &paramFloat;
 	} else {
@@ -256,34 +252,39 @@ static CborAttrType ParameterValueType(long long unsigned int paramID,
 	}
 	return (attrs->type);
 }
-static int8_t SaveParameterValue(long long unsigned int id, CborAttrType dataType, struct cbor_attr_t *attrs)
+
+static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
+			      struct cbor_attr_t *attrs)
 {
-     float fValue;
-     uint32_t uintValue;
-     uint32_t intValue;
-     int8_t status = -1;
+	int status = -1;
 
-     switch(dataType)
-     {
-          case CborAttrIntegerType:
-               intValue = (int32_t) (*attrs->addr.integer);
-               status = AttributeTask_SetSigned32(id, intValue);
-               break;
-          case CborAttrUnsignedIntegerType:
-               uintValue = (uint32_t) (*attrs->addr.uinteger);
-               status = AttributeTask_SetUint32(id, uintValue);
-               break;
-          case CborAttrTextStringType:
-               AttributeTask_SetWithString(id, attrs->addr.string, sizeof(attrs->addr.string));
-               break;
-          case CborAttrFloatType:   
-               fValue = (float) (*attrs->addr.fval);            
-               status = AttributeTask_SetFloat(id, fValue);
-               break;               
-          default:
-               break;
-     }
-     return(status);
+	switch (dataType) {
+	case CborAttrIntegerType:
+		if (*attrs->addr.integer >= INT32_MIN &&
+		    *attrs->addr.integer <= INT32_MAX) {
+			status = Attribute_Set(id, attrs->addr.integer,
+					       sizeof(int32_t));
+		}
+		break;
+	case CborAttrUnsignedIntegerType:
+		if (*attrs->addr.uinteger >= 0 &&
+		    *attrs->addr.uinteger <= UINT32_MAX) {
+			status = Attribute_Set(id, attrs->addr.uinteger,
+					       sizeof(uint32_t));
+		}
+		break;
+
+	case CborAttrTextStringType:
+		status = Attribute_Set(id, attrs->addr.string,
+				       strlen(attrs->addr.string));
+		break;
+
+	case CborAttrFloatType:
+		status = Attribute_Set(id, attrs->addr.fval, sizeof(float));
+		break;
+
+	default:
+		break;
+	}
+	return (status);
 }
-
-

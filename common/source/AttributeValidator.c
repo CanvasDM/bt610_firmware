@@ -1,255 +1,181 @@
-//=================================================================================================
-//!
-#define THIS_FILE "AttributeValidator.c"
-//!
-//! Copyright (c) 2020 Laird Connectivity
-//! All Rights Reserved.
-//=================================================================================================
+/**
+ * @file AttributeValidator.c
+ * @brief
+ *
+ * Copyright (c) 2020 Laird Connectivity
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+#include <logging/log.h>
+LOG_MODULE_REGISTER(attrval, LOG_LEVEL_DBG);
 
-//=================================================================================================
-// Includes
-//=================================================================================================
+/******************************************************************************/
+/* Includes                                                                   */
+/******************************************************************************/
 #include <zephyr.h>
 #include <device.h>
 #include <string.h>
 #include <ctype.h>
 
-#include "FrameworkIncludes.h"
-//#include "Attribute.h"
-#include "AttributePrivate.h"
-#include "AttributeValidator.h"
-#include "AttributeFunctions.h"
+#include "AttributeTable.h"
 
-//=================================================================================================
-// Local Constant, Macro and Type Definitions
-//=================================================================================================
-
-//=================================================================================================
-// Global Data Definitions
-//=================================================================================================
-
-extern AttributeEntry_t attrTable[ATTRIBUTE_TABLE_SIZE];
-
-//=================================================================================================
-// Local Data Definitions
-//=================================================================================================
-
-//=================================================================================================
-// Local Function Prototypes
-//=================================================================================================
-
-//=================================================================================================
-// Global Function Definitions
-//=================================================================================================
-
-int8_t AttributeValidator_Bypass(uint32_t Index, void *pValue, size_t Length,
-			       bool DoWrite)
+/******************************************************************************/
+/* Global Function Definitions                                                */
+/******************************************************************************/
+int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
-	// Don't set the modified flag or change the value of the attribute.
-	// This is used for protocol values.
-	UNUSED_PARAMETER(Index);
-	UNUSED_PARAMETER(pValue);
-	UNUSED_PARAMETER(Length);
-	UNUSED_PARAMETER(DoWrite);
-	return 0;
-}
+	int r = -EPERM;
 
-int8_t AttributeValidator_SpecialString(uint32_t Index, void *pValue,
-				      size_t Length, bool DoWrite)
-{
-	// Don't set the modified flag and write the attribute if it fits.
-	UNUSED_PARAMETER(DoWrite);
-	AttributeEntry_t *pEntry = &attrTable[Index];
-	if (pEntry->size > Length) // -1 to account for NUL
-	{
-		memset(pEntry->pData, 0, pEntry->size);
-		strncpy(pEntry->pData, pValue, Length);
-		return 0;
-	}
-	return -1;
-}
-
-int8_t AttributeValidator_GenericString(uint32_t Index, void *pValue,
-				      size_t Length, bool DoWrite)
-{
-	AttributeEntry_t *pEntry = &attrTable[Index];
-
-	if (pEntry->size > Length) // -1 to account for NUL
-	{
-		// Don't use strncmp because pValue isn't NUL terminated when coming from JSON
+	/* -1 to account for NULL */
+	if (pEntry->size > Length) {
+		/* Don't use strncmp because pValue may not be NUL terminated */
 		size_t currentLength = strlen(pEntry->pData);
 		if (DoWrite && ((memcmp(pEntry->pData, pValue, Length) != 0) ||
 				Length == 0 || currentLength != Length)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			memset(pEntry->pData, 0, pEntry->size);
 			strncpy(pEntry->pData, pValue, Length);
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
+	return r;
 }
 
-int8_t AttributeValidator_TrimString(uint32_t Index, void *pValue, size_t Length,
-				   bool DoWrite)
+int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
-	AttributeEntry_t *pEntry = &attrTable[Index];
-
-	if (pEntry->size > Length) // -1 to account for NUL
-	{
-		// trim leading spaces
-		char *ptr = (char *)pValue;
-		size_t modifiedLength = Length;
-		while (((*ptr == ' ') || (*ptr == '\t')) &&
-		       (modifiedLength > 0)) {
-			ptr++;
-			modifiedLength--;
-		}
-
-		// trim trailing spaces
-		if (modifiedLength > 0) {
-			char *pEnd = (char *)pValue + Length - 1;
-			while (((*pEnd == ' ') || (*pEnd == '\t')) &&
-			       (modifiedLength > 0)) {
-				pEnd--;
-				modifiedLength--;
-			}
-		}
-
-		size_t currentLength = strlen(pEntry->pData);
-		if (DoWrite &&
-		    ((memcmp(pEntry->pData, ptr, modifiedLength) != 0) ||
-		     Length == 0 || currentLength != modifiedLength)) {
-			pEntry->modified = true;
-			memset(pEntry->pData, 0, pEntry->size);
-			strncpy(pEntry->pData, ptr, modifiedLength);
-		}
-		return 0;
-	}
-	return -1;
-}
-
-int8_t AttributeValidator_uint32_t(uint32_t Index, void *pValue, size_t Length,
-				 bool DoWrite)
-{
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	ARG_UNUSED(Length);
+	int r = -EPERM;
 	uint32_t value = *((uint32_t *)pValue);
+
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint32_t *)pEntry->pData)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			*((uint32_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
+	return r;
 }
-int8_t AttributeValidator_uint16_t(uint32_t Index, void *pValue, size_t Length,
-			    bool DoWrite)
+
+int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	ARG_UNUSED(Length);
+	int r = -EPERM;
 	uint16_t value = *((uint16_t *)pValue);
+
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint16_t *)pEntry->pData)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			*((uint16_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
+	return r;
 }
-int8_t AttributeValidator_uint8_t(uint32_t Index, void *pValue, size_t Length,
-			   bool DoWrite)
+
+int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	ARG_UNUSED(Length);
+	int r = -EPERM;
 	uint8_t value = *((uint8_t *)pValue);
+
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint8_t *)pEntry->pData)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			*((uint8_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
+	return r;
 }
 
-int8_t AttributeValidator_int32_t(uint32_t Index, void *pValue, size_t Length,
-			      bool DoWrite)
+int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	ARG_UNUSED(Length);
+	int r = -EPERM;
 	int32_t value = *((int32_t *)pValue);
 	int32_t min = (int32_t)pEntry->min;
 	int32_t max = (int32_t)pEntry->max;
+
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((int32_t *)pEntry->pData)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			*((int32_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
-}
-int8_t AttributeValidator_int16_t(uint32_t Index, void *pValue, size_t Length,
-			      bool DoWrite)
-{
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
-	int16_t value = *((int16_t *)pValue);
-	int16_t min = (int16_t)pEntry->min;
-	int16_t max = (int16_t)pEntry->max;
-	if (((value >= min) && (value <= max)) || (min == max)) {
-		if (DoWrite && value != *((int16_t *)pEntry->pData)) {
-			pEntry->modified = true;
-			*((int16_t *)pEntry->pData) = value;
-		}
-		return 0;
-	}
-	return -1;
-}
-int8_t AttributeValidator_int8_t(uint32_t Index, void *pValue, size_t Length,
-			      bool DoWrite)
-{
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
-	int8_t value = *((int8_t *)pValue);
-	int8_t min = (int8_t)pEntry->min;
-	int8_t max = (int8_t)pEntry->max;
-	if (((value >= min) && (value <= max)) || (min == max)) {
-		if (DoWrite && value != *((int8_t *)pEntry->pData)) {
-			pEntry->modified = true;
-			*((int8_t *)pEntry->pData) = value;
-		}
-		return 0;
-	}
-	return -1;
+	return r;
 }
 
-int8_t AttributeValidator_float(uint32_t Index, void *pValue, size_t Length,
-			      bool DoWrite)
+int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	int16_t value = *((int16_t *)pValue);
+	int32_t min = (int32_t)pEntry->min;
+	int32_t max = (int32_t)pEntry->max;
+
+	if (((value >= min) && (value <= max)) || (min == max)) {
+		if (DoWrite && value != *((int16_t *)pEntry->pData)) {
+			r = ATTR_MODIFIED;
+			*((int16_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
+		}
+	}
+	return r;
+}
+
+int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
+			    size_t Length, bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	int8_t value = *((int8_t *)pValue);
+	int32_t min = (int32_t)pEntry->min;
+	int32_t max = (int32_t)pEntry->max;
+
+	if (((value >= min) && (value <= max)) || (min == max)) {
+		if (DoWrite && value != *((int8_t *)pEntry->pData)) {
+			r = ATTR_MODIFIED;
+			*((int8_t *)pEntry->pData) = value;
+		} else {
+			r = 0;
+		}
+	}
+	return r;
+}
+
+int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
 	float value = *((float *)pValue);
 	float min = (float)pEntry->min;
 	float max = (float)pEntry->max;
+
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((float *)pEntry->pData)) {
-			pEntry->modified = true;
+			r = ATTR_MODIFIED;
 			*((float *)pEntry->pData) = value;
+		} else {
+			r = 0;
 		}
-		return 0;
 	}
-	return -1;
+	return r;
 }
-
-//=================================================================================================
-// Local Function Definitions
-//=================================================================================================
-// NA
-
-// end

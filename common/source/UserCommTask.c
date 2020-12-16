@@ -75,7 +75,7 @@ static struct spi_config spi_conf = {
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void UserCommTaskThread(void *, void *, void *);
-static uint8_t UserCommSpiSend(struct device *spi,
+static uint8_t UserCommSpiSend(const struct device *spi,
 			       const struct spi_config *spi_cfg,
 			       const uint8_t *data, size_t len);
 
@@ -98,10 +98,7 @@ static FwkMsgHandler_t UserCommTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /* Global Function Definitions                                                */
 /******************************************************************************/
 void UserCommTask_Initialize(void)
-
 {
-	memset(&userCommTaskObject, 0, sizeof(UserCommTaskObj_t));
-
 	userCommTaskObject.msgTask.rxer.id = FWK_ID_USER_COMM_TASK;
 	userCommTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	userCommTaskObject.msgTask.rxer.pMsgDispatcher =
@@ -134,7 +131,7 @@ void UserCommTask_Initialize(void)
 uint8_t UserCommTask_SendData(commType_t comm, const uint8_t *data, size_t len)
 {
 	uint8_t returnStatus = 0;
-	struct device *spiDevice;
+	const struct device *spiDevice;
 	switch (comm) {
 	case UART_COMM:
 		break;
@@ -181,7 +178,7 @@ void uartCallBack(struct device *x)
 	//	}
 	//	printk("%s", uart_buf);
 }
-static uint8_t UserCommSpiSend(struct device *spi,
+static uint8_t UserCommSpiSend(const struct device *spi,
 			       const struct spi_config *spi_cfg,
 			       const uint8_t *data, size_t len)
 {

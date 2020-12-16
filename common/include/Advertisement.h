@@ -1,20 +1,17 @@
 /**
- * @file SystemUartTask.h
+ * @file Advertisement.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __SYSTEM_UART_TASK_H__
-#define __SYSTEM_UART_TASK_H__
+#ifndef __ADVERTISEMENT_H__
+#define __ADVERTISEMENT_H__
 
-/* (Remove Empty Sections) */
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
-#include <zephyr/types.h>
-#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,17 +30,18 @@ extern "C" {
 /******************************************************************************/
 /**
  * @brief
- *  The setup of the thread parameters
+ *
  * @param
  * @param
  *
  * @retval
  */
-void SystemUartTask_Initialize(bool Enable);
-
+int Advertisement_Init(void);
+int Advertisement_Start(void);
+int Advertisement_Update(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SYSTEM_UART_TASK_H__ */
+#endif /* __ADVERTISEMENT_H__ */

@@ -32,9 +32,9 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("./build/peripheral_IO/zephyr/zephyr.elf");
+  File.Open ("./peripheral_IO/build/zephyr/zephyr.elf");
   Edit.Preference (PREF_SHOW_EXP_INDICATORS, 0);
-  
+  Edit.Preference (PREF_TERMINAL_CLEAR_ON_RESET, 1);
 }
 
 /*********************************************************************

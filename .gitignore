@@ -8,3 +8,5 @@ net-tools
 tools/
 pm_static.yml
 ozone.jdebug.user
+__pycache__/
+logs/increment_build_version.transcript.log
