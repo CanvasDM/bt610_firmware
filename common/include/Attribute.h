@@ -46,7 +46,7 @@ AttributeType_t Attribute_GetType(attr_idx_t Index);
  * @param pValue string representation of variable
  * @param ValueLength The length (without null char) of the string being passed in.
  *
- * @retval negative error code, 0 on success
+ * @retval negative error code, 0 on success, 1 if value was changed
  */
 int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength);
 
@@ -57,7 +57,7 @@ int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength);
  * @param pValue string representation of variable
  * @param ValueLength The length (without null char) of the string being passed in.
  *
- * @retval negative error code, 0 on success
+ * @retval negative error code, 0 on success, 1 if value was changed
  */
 int Attribute_SetString(attr_idx_t Index, char const *pValue,
 			size_t ValueLength);
@@ -68,7 +68,7 @@ int Attribute_SetString(attr_idx_t Index, char const *pValue,
  * @param Index A valid index into attribute table.
  * @param Value The value to set.
  *
- * @retval negative error code, 0 on success
+ * @retval negative error code, 0 on success, 1 if value was changed
  */
 int Attribute_SetUint32(attr_idx_t Index, uint32_t Value);
 int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
@@ -79,7 +79,7 @@ int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
  * @param Index A valid index into attribute table.
  * @param Value The value to set.
  *
- * @retval negative error code, 0 on success
+ * @retval negative error code, 0 on success, 1 if value was changed
  */
 int Attribute_SetFloat(attr_idx_t Index, float Value);
 

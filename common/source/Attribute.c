@@ -53,8 +53,11 @@ extern void AttributeTable_FactoryReset(void);
 int AttributesInit(void)
 {
 	int r = -EPERM;
+
 	k_mutex_lock(&attribute_mutex, K_FOREVER);
+
 	AttributeTable_Initialize();
+
 	/* The file may not exist yet */
 	if (fsu_single_entry_exists(CONFIG_LCZ_PARAMS_MOUNT_POINT,
 				    CONFIG_ATTRIBUTES_FILE_NAME,
@@ -62,8 +65,10 @@ int AttributesInit(void)
 		r = 0;
 		LOG_INF("Parameter file doesn't exist");
 	} else {
-		r = LoadAttributes(CONFIG_ATTRIBUTES_FILE_NAME);
+		r = LoadAttributes(CONFIG_LCZ_PARAMS_MOUNT_POINT
+				   "/" CONFIG_ATTRIBUTES_FILE_NAME);
 	}
+
 	k_mutex_unlock(&attribute_mutex);
 
 	LOG_DBG("Init status: %d", r);
@@ -84,13 +89,27 @@ int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength)
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Validate(Index, pValue, ValueLength, false);
 		if (r == 0) {
-			k_mutex_lock(&attribute_mutex, K_FOREVER);
-			(void)Validate(Index, pValue, ValueLength, true);
-			r = SaveAttributes();
-			k_mutex_unlock(&attribute_mutex);
+			r = Validate(Index, pValue, ValueLength, true);
+			if (r == ATTR_MODIFIED) {
+				r = SaveAttributes();
+			}
 		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
+
+int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
+{
+	int r = -EPERM;
+
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		r = Validate(Index, pValue, ValueLength, true);
+		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
@@ -105,7 +124,7 @@ int Attribute_SetString(attr_idx_t Index, char const *pValue,
 		if (attrTable[Index].type == STRING_TYPE) {
 			r = Validate(Index, (void *)pValue, ValueLength, true);
 		}
-		if (r == 0) {
+		if (r == ATTR_MODIFIED) {
 			r = SaveAttributes();
 		}
 		k_mutex_unlock(&attribute_mutex);
@@ -123,7 +142,7 @@ int Attribute_SetUint32(attr_idx_t Index, uint32_t Value)
 		if (attrTable[Index].type == UNSIGNED_TYPE) {
 			r = Validate(Index, &local, sizeof(local), true);
 		}
-		if (r == 0) {
+		if (r == ATTR_MODIFIED) {
 			r = SaveAttributes();
 		}
 		k_mutex_unlock(&attribute_mutex);
@@ -141,7 +160,7 @@ int Attribute_SetSigned32(attr_idx_t Index, int32_t Value)
 		if (attrTable[Index].type == SIGNED_TYPE) {
 			r = Validate(Index, &local, sizeof(local), true);
 		}
-		if (r == 0) {
+		if (r == ATTR_MODIFIED) {
 			r = SaveAttributes();
 		}
 		k_mutex_unlock(&attribute_mutex);
@@ -159,51 +178,13 @@ int Attribute_SetFloat(attr_idx_t Index, float Value)
 		if (attrTable[Index].type == FLOAT_TYPE) {
 			r = Validate(Index, &local, sizeof(local), true);
 		}
-		if (r == 0) {
+		if (r == ATTR_MODIFIED) {
 			r = SaveAttributes();
 		}
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
-
-#if 0
-bool Attribute_SetVersion(attr_idx_t Index, uint32_t Major, uint32_t Minor,
-			  uint32_t Build)
-{
-	if (Index >= ATTR_TABLE_SIZE) {
-		return false;
-	}
-
-	k_mutex_lock(&attribute_mutex, K_FOREVER);
-
-	bool ok = false;
-	switch (Index) {
-	case ATTR_INDEX_FIRMWAREVERSION:
-	case ATTR_INDEX_BOOTLOADERVERSION:
-		memset(attrTable[Index].pData, 0, ATTR_MAX_VERSION_LENGTH);
-		snprintf(attrTable[Index].pData, ATTR_MAX_VERSION_LENGTH - 1,
-			 "%u.%u.%u", Major, Minor, Build);
-		break;
-
-	case ATTR_INDEX_HWVERSION:
-		memset(attrTable[Index].pData, 0, ATTR_MAX_VERSION_LENGTH);
-		snprintf(attrTable[Index].pData, ATTR_MAX_VERSION_LENGTH - 1,
-			 "%u", Major);
-		break;
-
-	default:
-		__ASSERT(false, "Invalid version");
-		break;
-	}
-
-	// Don't start the timer or set the modified flag.  These values will be obtained after reset.
-
-	k_mutex_unlock(&attribute_mutex);
-
-	return ok;
-}
-#endif
 
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 {
@@ -291,7 +272,7 @@ static size_t GetParameterLength(attr_idx_t idx)
 	if (attrTable[idx].type == STRING_TYPE) {
 		return strlen(attrTable[idx].pData);
 	} else {
-		return 4;
+		return attrTable[idx].size;
 	}
 }
 
@@ -299,14 +280,15 @@ static int SaveAttributes(void)
 {
 	int r = -EPERM;
 	attr_idx_t i;
-	char *fstr;
+	char *fstr = NULL;
+
+	k_mutex_lock(&attribute_mutex, K_FOREVER);
 
 	/* Converting to file format is larger, but makes it easier to go between
 	 * different versions.
 	 */
-	k_mutex_lock(&attribute_mutex, K_FOREVER);
 	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
-		if (!attrTable[i].deprecated) {
+		if (attrTable[i].writeable && !attrTable[i].deprecated) {
 			r = lcz_params_generate_file(i, ConvertParameterType(i),
 						     attrTable[i].pData,
 						     GetParameterLength(i),
@@ -323,99 +305,66 @@ static int SaveAttributes(void)
 	if (r >= 0) {
 		r = (int)lcz_params_write(CONFIG_ATTRIBUTES_FILE_NAME, fstr,
 					  strlen(fstr));
+		LOG_DBG("Write %d (%d) bytes of parameters to file",
+			strlen(fstr), r);
 	}
+
+	k_free(fstr);
 	k_mutex_unlock(&attribute_mutex);
 
-	return (int)r;
+	return (r < 0) ? r : 0;
 }
 
 static int LoadAttributes(const char *fname)
 {
 	int r = -EPERM;
-	bool failure;
 	size_t fsize;
 	char *fstr = NULL;
 	attr_idx_t i = 0;
 	param_kvp_t *kvp = NULL;
+	size_t binlen;
+	uint8_t bin[ATTR_MAX_HEX_SIZE];
+	int load_status;
 
 	r = lcz_params_parse_from_file(fname, &fsize, &fstr, &kvp);
-	LOG_DBG("pairs: %d fsize: %d", r, fsize);
+	LOG_DBG("pairs: %d fsize: %d file: %s", r, fsize, log_strdup(fname));
 
 	if (r > 0) {
 		for (i = 0; i < r; i++) {
-			if (Attribute_Set(kvp->id, kvp->keystr, kvp->length) <
-			    0) {
-				failure = true;
-				LOG_ERR("Failed to set %s from %s",
-					log_strdup(Attribute_GetName(i)),
-					log_strdup(fname));
+			if (ConvertParameterType(i) == PARAM_STR) {
+				load_status =
+					Attribute_Load(kvp[i].id, kvp[i].keystr,
+						       kvp[i].length);
+			} else {
+				binlen = hex2bin(kvp[i].keystr, kvp[i].length,
+						 bin, sizeof(bin));
+				if (binlen <= 0) {
+					load_status = -1;
+				} else {
+					load_status = Attribute_Load(
+						kvp[i].id, bin, binlen);
+				}
 			}
+			if (load_status < 0) {
+				break;
+			}
+		}
+
+		if (load_status < 0) {
+			LOG_ERR("Failed to set id: 0x%x '%s'", kvp[i].id,
+				log_strdup(Attribute_GetName(kvp[i].id)));
+			LOG_HEXDUMP_DBG(kvp[i].keystr, kvp[i].length,
+					"kvp data");
 		}
 		k_free(kvp);
 		k_free(fstr);
-		if (failure) {
+		if (load_status < 0) {
 			r = -EINVAL;
 		}
 	}
 
 	return r;
 }
-
-#if 0
-static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg)
-{
-	UNUSED_PARAMETER(pMsg);
-
-	k_mutex_lock(&attribute_mutex, K_FOREVER);
-	LOG_DBG("Restoring default attributes");
-	Attribute_SetNonBackupValuesToDefault();
-	SaveAttributes();
-	k_mutex_unlock(&attribute_mutex);
-
-	// The control task will reset the processor.
-	pMsg->header.rxId = FWK_ID_CONTROL_TASK;
-	pMsg->header.txId = pMsgRxer->id;
-	pMsg->header.msgCode = FMC_SOFTWARE_RESET;
-	FRAMEWORK_MSG_SEND(pMsg);
-	return DISPATCH_DO_NOT_FREE;
-}
-
-static DispatchResult_t AttrTaskPeriodicMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg)
-{
-	UNUSED_PARAMETER(pMsg);
-
-	//if (pObj->factoryResetImminent) {
-	//	return DISPATCH_OK;
-	//}
-
-	k_mutex_lock(&attribute_mutex, K_FOREVER);
-
-	size_t j;
-	bool writeRequired = false;
-	for (j = 0; j < ATTR_TABLE_SIZE; j++) {
-		if (attrTable[j].modified &&
-		    (attrTable[j].category == READ_WRITE)) {
-			writeRequired = true;
-		}
-	}
-
-	if (writeRequired) {
-		SaveAttributes();
-	}
-
-	//
-	// Send the update message after the values have been updated.  This is so tasks aren't
-	// blocked when they try to read new values.
-	//
-	//GenerateAttributeChangedMessage(pObj);
-
-	k_mutex_unlock(&attribute_mutex);
-
-	return DISPATCH_OK;
-}
-#endif
 
 bool Attribute_IsString(attr_idx_t Index)
 {

@@ -48,7 +48,6 @@ struct AttributeEntry {
 	int (*pValidator)(AttributeEntry_t *, void *, size_t, bool);
 	const uint32_t min;
 	const uint32_t max;
-	bool modified;
 	bool deprecated;
 };
 
@@ -61,6 +60,8 @@ struct AttributeEntry {
 #define ATTR_MAX_STR_LENGTH 100
 
 #define ATTR_MAX_STR_SIZE (ATTR_MAX_STR_LENGTH + 1)
+
+#define ATTR_MAX_HEX_SIZE 4
 
 #define ATTR_MAX_VERSION_LENGTH 11
 
@@ -185,6 +186,9 @@ struct AttributeEntry {
 #define ATTR_INDEX_bootloaderVersion                     113
 /* pyend */
 /* clang-format on */
+
+/* Validators return negative error code, 0 on success, 1 if value changed */
+#define ATTR_MODIFIED 1
 
 /******************************************************************************/
 /* Global Function Prototypes                                                 */
