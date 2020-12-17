@@ -78,7 +78,7 @@ void Sentrius_mgmt_register_group(void)
 /******************************************************************************/
 int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 {
-	long long unsigned int paramID = 255;
+	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
 	int32_t intData;
 	uint32_t uintData;
@@ -136,6 +136,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 						  &floatData);
 		break;
 	default:
+		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
 		break;
 	}
 
@@ -185,7 +186,7 @@ int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
 }
 int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 {
-	long long unsigned int paramID = 255;
+	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
 	struct CborValue dataCopy = ctxt->it;
 	struct cbor_attr_t params_value[2] = { 0 };
@@ -218,7 +219,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-	//err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	if (err != 0) {

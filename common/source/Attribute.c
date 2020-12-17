@@ -108,11 +108,9 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		r = Validate(Index, pValue, ValueLength, false);
-		if (r == 0) {
-			memcpy(pValue, attrTable[Index].pData, attrTable[Index].size);
-			//*pValue = (attrTable[Index].pData);
-		}
+
+		memcpy(pValue, attrTable[Index].pData, attrTable[Index].size);
+		r = 0;
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
