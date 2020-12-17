@@ -51,6 +51,16 @@ AttributeType_t Attribute_GetType(attr_idx_t Index);
 int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength);
 
 /**
+ * @brief  Get value
+ *
+ * @param Index A valid index into attribute table.
+ * @param pValue string representation of variable
+ * @param ValueLength The length (without null char) of the string being passed in.
+ *
+ * @retval negative error code, 0 on success, 1 if value was changed
+ */
+int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength);
+/**
  * @brief  Set a string
  *
  * @param Index A valid index into attribute table.
@@ -70,7 +80,11 @@ int Attribute_SetString(attr_idx_t Index, char const *pValue,
  *
  * @retval negative error code, 0 on success, 1 if value was changed
  */
+int Attribute_SetUint8(attr_idx_t Index, uint8_t Value);
+int Attribute_SetUint16(attr_idx_t Index, uint16_t Value);
 int Attribute_SetUint32(attr_idx_t Index, uint32_t Value);
+int Attribute_SetSigned8(attr_idx_t Index, int8_t Value);
+int Attribute_SetSigned16(attr_idx_t Index, int16_t Value);
 int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
 
 /**
@@ -94,16 +108,6 @@ int Attribute_SetFloat(attr_idx_t Index, float Value);
  */
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength);
 
-/**
- * @brief  Used to get the value of a variable as an unsigned/signed integer.
- *
- * @param pValue, 0 if attribute is a string.
- * @param Index A valid index into attribute table
- *
- * @retval negative error code, 0 on success
- */
-int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index);
-int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index);
 
 /**
  * @brief  Used to get the value of a variable as float.

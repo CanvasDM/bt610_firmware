@@ -74,13 +74,21 @@ class attributes:
 
     def _GetType(self, itype: str) -> str:
         if itype == "char":
-            return "s"
-        elif "int" in itype:
-            return "i"
+            return "s  "
         elif itype == "float":
-            return "f"
-        else:
-            return "u"
+            return "f  "    
+        elif "int8" in itype:
+            return "i8 "
+        elif "int16" in itype:
+            return "i16"
+        elif "int32" in itype:
+            return "i32"     
+        elif "uint8" in itype:
+            return "u8 "
+        elif "uint32" in itype:
+            return "u16"        
+        elif "uint32" in itype:
+            return "u32"
             
     def _GetAttributeMacro(self, itype: str, readWrite: bool, readOnly: bool, name: str) -> str:
         """Get the c-macro for the RW or RO attribute"""

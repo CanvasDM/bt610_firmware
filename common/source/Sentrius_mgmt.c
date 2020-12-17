@@ -114,20 +114,24 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	/*Get the value*/
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
-		getResult = Attribute_GetSigned32(&intData, paramID);
+		//getResult = Attribute_GetSigned32(&intData, paramID);
+		getResult = Attribute_Get(paramID, &intData, sizeof(int32_t));
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		getResult = Attribute_GetUint32(&uintData, paramID);
+		//getResult = Attribute_GetUint32(&uintData, paramID);
+		getResult = Attribute_Get(paramID, &uintData, sizeof(uint32_t));
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
-		getResult = Attribute_GetString(bufferData, paramID,
-						ATTR_MAX_STR_LENGTH);
+		//getResult = Attribute_GetString(bufferData, paramID,
+		//				ATTR_MAX_STR_LENGTH);
+		getResult = Attribute_Get(paramID, bufferData, ATTR_MAX_STR_LENGTH);				
 		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
 		break;
 	case CborAttrFloatType:
-		getResult = Attribute_GetFloat(&floatData, paramID);
+		//getResult = Attribute_GetFloat(&floatData, paramID);
+		getResult = Attribute_Get(paramID, &floatData, sizeof(float));
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;
@@ -214,7 +218,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	//err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	if (err != 0) {
@@ -230,26 +234,40 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	paramIint = LLONG_MAX;
 	paramFloat = FLOAT_MAX;
 	memset(paramString, 0, ATTR_MAX_STR_SIZE);
+	AttributeType_t parameterType;
 
 	attrs->attribute = "p2";
 	attrs->nodefault = true;
-	if (Attribute_IsUnsigned(paramID)) {
+	parameterType = Attribute_GetType(paramID);
+
+	switch (parameterType) {
+	case SIGNED_EIGHT_BIT_TYPE:
+	case SIGNED_SIXTEEN_BIT_TYPE:
+	case SIGNED_THIRTY_TWO_BIT_TYPE:
 		attrs->type = CborAttrIntegerType;
-		attrs->addr.integer = &paramUint;
-	} else if (Attribute_IsSigned(paramID)) {
+		attrs->addr.integer = &paramIint;
+		break;
+	case UNSIGNED_EIGHT_BIT_TYPE:
+	case UNSIGNED_SIXTEEN_BIT_TYPE:
+	case UNSIGNED_THIRTY_TWO_BIT_TYPE:
 		attrs->type = CborAttrUnsignedIntegerType;
-		attrs->addr.uinteger = &paramIint;
-	} else if (Attribute_IsString(paramID)) {
+		attrs->addr.integer = &paramUint;
+		break;
+	case STRING_TYPE:
 		attrs->type = CborAttrTextStringType;
 		attrs->addr.string = paramString;
 		attrs->len = sizeof(paramString);
-	} else if (Attribute_IsFloat(paramID)) {
+		break;
+	case FLOAT_TYPE:
 		attrs->type = CborAttrFloatType;
 		attrs->addr.fval = &paramFloat;
-	} else {
+		break;
+	default:
 		attrs->type = CborAttrNullType;
 		attrs->attribute = NULL;
-	}
+		break;
+	};
+
 	return (attrs->type);
 }
 

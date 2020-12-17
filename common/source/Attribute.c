@@ -101,6 +101,22 @@ int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength)
 	}
 	return r;
 }
+int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
+{
+	memset(pValue, 0, ValueLength);
+	int r = -EPERM;
+
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		r = Validate(Index, pValue, ValueLength, false);
+		if (r == 0) {
+			memcpy(pValue, attrTable[Index].pData, attrTable[Index].size);
+			//*pValue = (attrTable[Index].pData);
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
 
 int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
@@ -113,79 +129,6 @@ int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
 	}
 	return r;
 }
-
-int Attribute_SetString(attr_idx_t Index, char const *pValue,
-			size_t ValueLength)
-{
-	int r = -EPERM;
-
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == STRING_TYPE) {
-			r = Validate(Index, (void *)pValue, ValueLength, true);
-		}
-		if (r == ATTR_MODIFIED) {
-			r = SaveAttributes();
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
-
-int Attribute_SetUint32(attr_idx_t Index, uint32_t Value)
-{
-	uint32_t local = Value;
-	int r = -EPERM;
-
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == UNSIGNED_TYPE) {
-			r = Validate(Index, &local, sizeof(local), true);
-		}
-		if (r == ATTR_MODIFIED) {
-			r = SaveAttributes();
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
-
-int Attribute_SetSigned32(attr_idx_t Index, int32_t Value)
-{
-	int32_t local = Value;
-	int r = -EPERM;
-
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == SIGNED_TYPE) {
-			r = Validate(Index, &local, sizeof(local), true);
-		}
-		if (r == ATTR_MODIFIED) {
-			r = SaveAttributes();
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
-
-int Attribute_SetFloat(attr_idx_t Index, float Value)
-{
-	float local = Value;
-	int r = -EPERM;
-
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == FLOAT_TYPE) {
-			r = Validate(Index, &local, sizeof(local), true);
-		}
-		if (r == ATTR_MODIFIED) {
-			r = SaveAttributes();
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
-
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 {
 	int r = -EPERM;
@@ -196,7 +139,36 @@ int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 	}
 	return r;
 }
+int Attribute_GetUint8(uint8_t *pValue, attr_idx_t Index)
+{
+	*pValue = 0;
+	int r = -EPERM;
 
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		if (attrTable[Index].type == UNSIGNED_EIGHT_BIT_TYPE) {
+			*pValue = *((uint8_t *)attrTable[Index].pData);
+			r = 0;
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
+int Attribute_GetUint16(uint16_t *pValue, attr_idx_t Index)
+{
+	*pValue = 0;
+	int r = -EPERM;
+
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		if (attrTable[Index].type == UNSIGNED_SIXTEEN_BIT_TYPE) {
+			*pValue = *((uint16_t *)attrTable[Index].pData);
+			r = 0;
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
 int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
@@ -204,7 +176,7 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == UNSIGNED_TYPE) {
+		if (attrTable[Index].type == UNSIGNED_THIRTY_TWO_BIT_TYPE) {
 			*pValue = *((uint32_t *)attrTable[Index].pData);
 			r = 0;
 		}
@@ -212,7 +184,36 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 	}
 	return r;
 }
+int Attribute_GetSigned8(int8_t *pValue, attr_idx_t Index)
+{
+	*pValue = 0;
+	int r = -EPERM;
 
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		if (attrTable[Index].type == SIGNED_EIGHT_BIT_TYPE) {
+			*pValue = *((int8_t *)attrTable[Index].pData);
+			r = 0;
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
+int Attribute_GetSigned16(int16_t *pValue, attr_idx_t Index)
+{
+	*pValue = 0;
+	int r = -EPERM;
+
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		if (attrTable[Index].type == SIGNED_SIXTEEN_BIT_TYPE) {
+			*pValue = *((int16_t *)attrTable[Index].pData);
+			r = 0;
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
 int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
@@ -220,7 +221,7 @@ int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == SIGNED_TYPE) {
+		if (attrTable[Index].type == SIGNED_THIRTY_TWO_BIT_TYPE) {
 			*pValue = *((int32_t *)attrTable[Index].pData);
 			r = 0;
 		}
@@ -384,19 +385,51 @@ bool Attribute_IsFloat(attr_idx_t Index)
 	}
 }
 
-bool Attribute_IsUnsigned(attr_idx_t Index)
+bool Attribute_IsUnint8(attr_idx_t Index)
 {
 	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == UNSIGNED_TYPE);
+		return (attrTable[Index].type == UNSIGNED_EIGHT_BIT_TYPE);
+	} else {
+		return false;
+	}
+}
+bool Attribute_IsUnint16(attr_idx_t Index)
+{
+	if (Index < ATTR_TABLE_SIZE) {
+		return (attrTable[Index].type == UNSIGNED_SIXTEEN_BIT_TYPE);
+	} else {
+		return false;
+	}
+}
+bool Attribute_IsUnint32(attr_idx_t Index)
+{
+	if (Index < ATTR_TABLE_SIZE) {
+		return (attrTable[Index].type == UNSIGNED_THIRTY_TWO_BIT_TYPE);
 	} else {
 		return false;
 	}
 }
 
-bool Attribute_IsSigned(attr_idx_t Index)
+bool Attribute_IsInt8(attr_idx_t Index)
 {
 	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == SIGNED_TYPE);
+		return (attrTable[Index].type == SIGNED_EIGHT_BIT_TYPE);
+	} else {
+		return false;
+	}
+}
+bool Attribute_IsInt16(attr_idx_t Index)
+{
+	if (Index < ATTR_TABLE_SIZE) {
+		return (attrTable[Index].type == SIGNED_SIXTEEN_BIT_TYPE);
+	} else {
+		return false;
+	}
+}
+bool Attribute_IsInt32(attr_idx_t Index)
+{
+	if (Index < ATTR_TABLE_SIZE) {
+		return (attrTable[Index].type == SIGNED_THIRTY_TWO_BIT_TYPE);
 	} else {
 		return false;
 	}
