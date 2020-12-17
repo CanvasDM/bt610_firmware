@@ -11,7 +11,7 @@ class attributes:
 
         # The following items are loaded from the configuration file
         self.methodList = 0
-        self.toatalFunctions = 0
+        self.totalFunctions = 0
         self.paramList = 0        
         self.paramListTotal = 0
         self.resultList = 0
@@ -60,7 +60,7 @@ class attributes:
         with open(fname, 'r') as f:
             data = json.load(f)
             self.methodList = data['methods']
-            self.toatalFunctions = len(self.methodList)
+            self.totalFunctions = len(self.methodList)
 
             file_name = self.headerFilePath +self.fileName
             self.inputHeaderFileName = file_name
@@ -75,7 +75,7 @@ class attributes:
             self.outputSourceHandlerfileName = file_name + ""
 
 
-            for i in range(self.toatalFunctions):
+            for i in range(self.totalFunctions):
                 self.functionNames.append(self.methodList[i]['name'])
                 self.functionId.append(self.methodList[i]['x-id'])
 
@@ -94,15 +94,15 @@ class attributes:
                         #self.AttributeSummary.append(self.paramList[j]['summary'])
                         self.ParamName.append(self.paramList[j]['name'])
                         self.ParamSummary.append(self.paramList[j]['summary'])
-                        self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
-                        self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
+                        #self.AttributeMax.append(self.paramList[j]['schema'][self.maxName])
+                        #self.AttributeMin.append(self.paramList[j]['schema'][self.minName])
                         self.AttributeDefault.append(self.paramList[j]['schema']['x-default'])
                         #self.AttributeType.append(self.paramList[j]['schema']['x-ctype'])     
                         self.ParamType.append(self.paramList[j]['schema']['x-ctype'])                       
-                        self.AttributeStringMax.append(self.paramList[j]['schema']['maximumlength'])
-                        self.AttributeBackup.append(self.paramList[j]['schema']['x-backup'])
-                        self.AttributeLockable.append(self.paramList[j]['schema']['x-lockable'])
-                        self.AttributeBroadcast.append(self.paramList[j]['schema']['x-broadcast'])
+                        #self.AttributeStringMax.append(self.paramList[j]['schema']['maximumlength'])
+                        #self.AttributeBackup.append(self.paramList[j]['schema']['x-backup'])
+                        #self.AttributeLockable.append(self.paramList[j]['schema']['x-lockable'])
+                        #self.AttributeBroadcast.append(self.paramList[j]['schema']['x-broadcast'])
                 else:
                     #Read only because it is a get function 
                     self.AttributeTotal = self.AttributeTotal + self.resultSizeList
@@ -228,7 +228,7 @@ class attributes:
         """Creates the functions and default values for the attributes"""
         struct = []
         parameterNumber = 0        
-        for i in range(0, self.toatalFunctions):
+        for i in range(0, self.totalFunctions):
             function = f"int {self.handlerFunctionName[i]}(struct mgmt_ctxt *ctxt)\n"
             struct.append(function)
             function = "{" + "\n"
@@ -363,7 +363,7 @@ class attributes:
     def _CreateHandler(self) -> str:
         """Creates the structures and default values for Set and Get attributes"""
         struct = []
-        for i in range(0, self.toatalFunctions):
+        for i in range(0, self.totalFunctions):
             name = self.functionNames[i]
             result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " +"{" + "\n"
             struct.append(result)
@@ -411,7 +411,7 @@ class attributes:
 
     def _CreateAttrIndices(self) -> str:
         """Create attribute indices for header file"""
-        for i in range(0, self.toatalFunctions):
+        for i in range(0, self.totalFunctions):
             name = self.functionNames[i]
             id = self.functionId[i]
             result = f"#define {self.mgmtIdPrefex}{name.upper():<37} {id}" + "\n"
@@ -421,7 +421,7 @@ class attributes:
     def _CreateAttrDefinitions(self) -> str:
         """Create some definitinons for header file"""
         defs = []
-        for i in range(0, self.toatalFunctions):
+        for i in range(0, self.totalFunctions):
             name = self.functionNames[i]
             self.handlerFunctionName.append(f"{self.fileName}" + "_" + f"{name}")
             defs.append( f"mgmt_handler_fn {self.handlerFunctionName[i]};\n")

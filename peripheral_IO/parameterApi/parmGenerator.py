@@ -4,8 +4,12 @@ import collections
 import os
 import getpass
 
-
-
+def toyn(b) -> str:
+  if b:
+    return "y"
+  else:
+    return "n"
+      
 class attributes:
     def __init__(self, fname: str = "BT6ApiParams.json"):
 
@@ -39,6 +43,7 @@ class attributes:
         self.AttributeReadOnly = []
         self.AttributeWriteOnly = []
         self.AttributeReadWrite = []
+        self.AttributeSavable = []
         self.resultName = []
         self._LoadConfig(fname)
 
@@ -70,6 +75,7 @@ class attributes:
                 self.AttributeReadOnly.append(self.componetList[i]['schema']['x-readonly'])
                 self.AttributeWriteOnly.append(self.componetList[i]['schema']['x-writeonly'])
                 self.AttributeReadWrite.append(self.componetList[i]['schema']['x-readwrite'])
+                self.AttributeSavable.append(self.componetList[i]['schema']['x-savable'])
             pass
 
     def _GetType(self, itype: str) -> str:
@@ -144,13 +150,14 @@ class attributes:
             i_type = self.AttributeType[i]
             i_min = self.AttributeMin[i]
             i_max = self.AttributeMax[i]
-            backup = str(self.AttributeBackup[i])
-            lockable = str(self.AttributeLockable[i])
-            broadcast = str(self.AttributeBroadcast[i])
+            backup = toyn(self.AttributeBackup[i])
+            lockable = toyn(self.AttributeLockable[i])
+            broadcast = toyn(self.AttributeBroadcast[i])
+            savable = toyn(self.AttributeSavable[i])
             i_hash = i
             result = f"    [{i_hash:<3}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<48}, {self._GetType(i_type)}, {backup.lower()}, {lockable.lower()}, {broadcast.lower()}, {self._GetValidatorString(i_type):<33}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<40}, {self._GetType(i_type)}, {savable}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<28}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)

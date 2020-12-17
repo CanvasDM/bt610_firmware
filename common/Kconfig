@@ -1,33 +1,14 @@
+#
 # Copyright (c) 2020 Laird Connectivity
+#
 # SPDX-License-Identifier: Apache-2.0
-
+#
 
 menuconfig APPLICATION_COMMON
      bool "Config Common Application Modules"
 	 default y
 
 if APPLICATION_COMMON
-
-config ADC_BT6
-    bool "Enable BT6 ADC Module"
-    depends on ADC_NRFX_SAADC
-    depends on ADC_CONFIGURABLE_INPUTS
-    default y
-
-config ADC_BT6_LOG_LEVEL
-    int "Log level for BT6xx ADC module"
-    range 0 4
-    default 3
-
-config ADC_BT6_OVERSAMPLING
-    int "(2**THIS_VALUE samples to average for each ADC reading"
-    range 0 8
-    default 4
-
-config ADC_BT6_THERMISTOR_CALIBRATION_SAMPLES
-    int "Number of samples to average when calibrating thermistor inputs"
-    range 1 128
-    default 32
 
 config TEST_MENU
     bool "Enable test menu shell"
@@ -74,13 +55,7 @@ config BATTERY_AGE_TICK_RATE_SECONDS
     range 1 3600
     default 60
 
-config ATTRIBUTES_LOG_LEVEL
-    int "Log level for Attributes module"
-    range 0 4
-    default 3
-
-config ATTRIBUTES_FILE_NAME
-    string "File name for attributes"
-    default "attr.txt"
+rsource "Kconfig.adc_bt6"
+rsource "Kconfig.attribute"
 
 endif # APPLICATION_COMMON

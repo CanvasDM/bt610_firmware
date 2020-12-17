@@ -8,7 +8,7 @@
  */
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(attr, CONFIG_ATTRIBUTES_LOG_LEVEL);
+LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -26,6 +26,11 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTRIBUTES_LOG_LEVEL);
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
+#define BREAK_ON_ERROR(x)                                                      \
+	if (x < 0) {                                                           \
+		break;                                                         \
+	}
+
 static const char EMPTY_STRING[] = "";
 
 /******************************************************************************/
@@ -38,11 +43,25 @@ extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
+#if 0
+static int SaveAndBroadcast(void);
+#endif
+
+static int SaveAndBroadcastSingle(attr_idx_t Index);
 static int SaveAttributes(void);
 static int LoadAttributes(const char *fname);
 
-static int Validate(attr_idx_t Index, void *pValue, size_t Length,
-		    bool DoWrite);
+#if 0
+static void Broadcast(void);
+#endif
+static void BroadcastSingle(attr_idx_t Index);
+
+static int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength);
+
+static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
+		    size_t Length);
+static int Write(attr_idx_t Index, AttrType_t Type, void *pValue,
+		 size_t Length);
 
 extern void AttributeTable_Initialize(void);
 extern void AttributeTable_FactoryReset(void);
@@ -60,73 +79,80 @@ int AttributesInit(void)
 
 	/* The file may not exist yet */
 	if (fsu_single_entry_exists(CONFIG_LCZ_PARAMS_MOUNT_POINT,
-				    CONFIG_ATTRIBUTES_FILE_NAME,
+				    CONFIG_ATTR_FILE_NAME,
 				    FS_DIR_ENTRY_FILE) == -ENOENT) {
 		r = 0;
 		LOG_INF("Parameter file doesn't exist");
 	} else {
 		r = LoadAttributes(CONFIG_LCZ_PARAMS_MOUNT_POINT
-				   "/" CONFIG_ATTRIBUTES_FILE_NAME);
+				   "/" CONFIG_ATTR_FILE_NAME);
 	}
 
 	k_mutex_unlock(&attribute_mutex);
 
-	LOG_DBG("Init status: %d", r);
+	LOG_INF("Load status: %d", r);
 	return r;
 }
 
-AttributeType_t Attribute_GetType(attr_idx_t Index)
+AttrType_t Attribute_GetType(attr_idx_t Index)
 {
 	if (Index < ATTR_TABLE_SIZE) {
 		return attrTable[Index].type;
 	} else {
-		return UNKNOWN_TYPE;
+		return ATTR_TYPE_UNKNOWN;
 	}
 }
 
-int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength)
+int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
+		  size_t ValueLength)
 {
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		r = Validate(Index, pValue, ValueLength, false);
+		r = Validate(Index, Type, pValue, ValueLength);
 		if (r == 0) {
-			r = Validate(Index, pValue, ValueLength, true);
-			if (r == ATTR_MODIFIED) {
-				r = SaveAttributes();
+			r = Write(Index, Type, pValue, ValueLength);
+			if (r == 0) {
+				r = SaveAndBroadcastSingle(Index);
 			}
 		}
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
+
 int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	memset(pValue, 0, ValueLength);
+	size_t size = MIN(attrTable[Index].size, ValueLength);
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-
-		memcpy(pValue, attrTable[Index].pData, attrTable[Index].size);
-		r = 0;
+		memcpy(pValue, attrTable[Index].pData, size);
+		r = size;
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
 
-int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
+int Attribute_SetString(attr_idx_t Index, char const *pValue,
+			size_t ValueLength)
 {
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		r = Validate(Index, pValue, ValueLength, true);
+		r = Write(Index, ATTR_TYPE_STRING, (void *)pValue, ValueLength);
+		if (r == 0) {
+			r = SaveAndBroadcastSingle(Index);
+		}
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
+
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 {
 	int r = -EPERM;
@@ -137,93 +163,83 @@ int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 	}
 	return r;
 }
-int Attribute_GetUint8(uint8_t *pValue, attr_idx_t Index)
+
+int Attribute_SetUint32(attr_idx_t Index, uint32_t Value)
 {
-	*pValue = 0;
+	uint32_t local = Value;
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == UNSIGNED_EIGHT_BIT_TYPE) {
-			*pValue = *((uint8_t *)attrTable[Index].pData);
-			r = 0;
+		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
+		if (r == 0) {
+			r = SaveAndBroadcastSingle(Index);
 		}
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
-int Attribute_GetUint16(uint16_t *pValue, attr_idx_t Index)
+
+int Attribute_SetSigned32(attr_idx_t Index, int32_t Value)
 {
-	*pValue = 0;
+	int32_t local = Value;
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == UNSIGNED_SIXTEEN_BIT_TYPE) {
-			*pValue = *((uint16_t *)attrTable[Index].pData);
-			r = 0;
+		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
+		if (r == 0) {
+			r = SaveAndBroadcastSingle(Index);
 		}
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
+
+int Attribute_SetFloat(attr_idx_t Index, float Value)
+{
+	float local = Value;
+	int r = -EPERM;
+
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		r = Write(Index, ATTR_TYPE_FLOAT, &local, sizeof(local));
+		if (r == 0) {
+			r = SaveAndBroadcastSingle(Index);
+		}
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return r;
+}
+
 int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == UNSIGNED_THIRTY_TWO_BIT_TYPE) {
+		if (attrTable[Index].type == ATTR_TYPE_U32) {
+			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((uint32_t *)attrTable[Index].pData);
 			r = 0;
+			k_mutex_unlock(&attribute_mutex);
 		}
-		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
-int Attribute_GetSigned8(int8_t *pValue, attr_idx_t Index)
-{
-	*pValue = 0;
-	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == SIGNED_EIGHT_BIT_TYPE) {
-			*pValue = *((int8_t *)attrTable[Index].pData);
-			r = 0;
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
-int Attribute_GetSigned16(int16_t *pValue, attr_idx_t Index)
-{
-	*pValue = 0;
-	int r = -EPERM;
-
-	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == SIGNED_SIXTEEN_BIT_TYPE) {
-			*pValue = *((int16_t *)attrTable[Index].pData);
-			r = 0;
-		}
-		k_mutex_unlock(&attribute_mutex);
-	}
-	return r;
-}
 int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == SIGNED_THIRTY_TWO_BIT_TYPE) {
+		if (attrTable[Index].type == ATTR_TYPE_S32) {
+			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((int32_t *)attrTable[Index].pData);
 			r = 0;
+			k_mutex_unlock(&attribute_mutex);
 		}
-		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
 }
@@ -234,14 +250,51 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		if (attrTable[Index].type == FLOAT_TYPE) {
+		if (attrTable[Index].type == ATTR_TYPE_FLOAT) {
+			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((float *)attrTable[Index].pData);
 			r = 0;
+			k_mutex_unlock(&attribute_mutex);
 		}
-		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
+}
+
+/* todo: check type? */
+uint32_t Attribute_AltGetUint32(attr_idx_t Index, uint32_t Default)
+{
+	uint32_t v = Default;
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		v = 0;
+		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return v;
+}
+
+int32_t Attribute_AltGetSigned32(attr_idx_t Index, int32_t Default)
+{
+	int32_t v = Default;
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		v = 0;
+		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return v;
+}
+
+float Attribute_AltGetFloat(attr_idx_t Index, float Default)
+{
+	float v = Default;
+	if (Index < ATTR_TABLE_SIZE) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		v = 0.0;
+		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
+		k_mutex_unlock(&attribute_mutex);
+	}
+	return v;
 }
 
 const char *Attribute_GetName(attr_idx_t Index)
@@ -259,7 +312,7 @@ const char *Attribute_GetName(attr_idx_t Index)
 /* Convert the attribute type into the parameter file type */
 static param_t ConvertParameterType(attr_idx_t idx)
 {
-	if (attrTable[idx].type == STRING_TYPE) {
+	if (attrTable[idx].type == ATTR_TYPE_STRING) {
 		return PARAM_STR;
 	} else {
 		return PARAM_BIN;
@@ -268,50 +321,151 @@ static param_t ConvertParameterType(attr_idx_t idx)
 
 static size_t GetParameterLength(attr_idx_t idx)
 {
-	if (attrTable[idx].type == STRING_TYPE) {
+	if (attrTable[idx].type == ATTR_TYPE_STRING) {
 		return strlen(attrTable[idx].pData);
 	} else {
 		return attrTable[idx].size;
 	}
 }
 
+#if 0
+static int SaveAndBroadcast(void)
+{
+	int r = SaveAttributes();
+	/* Broadcast after save is complete because attributes access is wrapped by mutex */
+	Broadcast();
+	return r;
+}
+#endif
+
+static int SaveAndBroadcastSingle(attr_idx_t Index)
+{
+	int r = 0;
+	AttributeEntry_t *pEntry = &attrTable[Index];
+
+	if (pEntry->modified) {
+		if (pEntry->savable && !pEntry->deprecated) {
+			r = SaveAttributes();
+		}
+		BroadcastSingle(Index);
+	}
+	return r;
+}
+
 static int SaveAttributes(void)
 {
 	int r = -EPERM;
-	attr_idx_t i;
 	char *fstr = NULL;
+	attr_idx_t i;
 
 	k_mutex_lock(&attribute_mutex, K_FOREVER);
 
 	/* Converting to file format is larger, but makes it easier to go between
 	 * different versions.
 	 */
-	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
-		if (attrTable[i].writeable && !attrTable[i].deprecated) {
-			r = lcz_params_generate_file(i, ConvertParameterType(i),
-						     attrTable[i].pData,
-						     GetParameterLength(i),
-						     &fstr);
-			if (r < 0) {
-				LOG_ERR("Error converting attribute table into file");
-				break;
+	do {
+		for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+			if (attrTable[i].savable && !attrTable[i].deprecated) {
+				r = lcz_params_generate_file(
+					i, ConvertParameterType(i),
+					attrTable[i].pData,
+					GetParameterLength(i), &fstr);
+				if (r < 0) {
+					LOG_ERR("Error converting attribute table into file");
+					break;
+				}
 			}
 		}
-	}
-	if (r >= 0) {
+		BREAK_ON_ERROR(r);
+
 		r = lcz_params_validate_file(fstr, strlen(fstr));
-	}
-	if (r >= 0) {
-		r = (int)lcz_params_write(CONFIG_ATTRIBUTES_FILE_NAME, fstr,
+		BREAK_ON_ERROR(r);
+
+		r = (int)lcz_params_write(CONFIG_ATTR_FILE_NAME, fstr,
 					  strlen(fstr));
-		LOG_DBG("Write %d (%d) bytes of parameters to file",
-			strlen(fstr), r);
-	}
+		LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
+			strlen(fstr));
+
+	} while (0);
 
 	k_free(fstr);
 	k_mutex_unlock(&attribute_mutex);
 
 	return (r < 0) ? r : 0;
+}
+
+#if 0
+static void Broadcast(void)
+{
+#ifdef CONFIG_ATTR_BROADCAST
+	size_t msgSize = sizeof(AttrBroadcastMsg_t);
+	AttrBroadcastMsg_t *pb = BufferPool_Take(msgSize);
+
+	if (pb == NULL) {
+		LOG_ERR("Unable to allocate memory for attr broadcast");
+	}
+
+	pb->header.msgCode = FMC_ATTR_CHANGED;
+	pb->header.txId = FWK_ID_RESERVED;
+	pb->header.rxId = FWK_ID_RESERVED;
+
+	LOG_DBG("Broadcast");
+
+	size_t i;
+	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+		if (attrTable[i].modified && attrTable[i].broadcast) {
+			pb->list[pb->count++] = (uint8_t)i;
+			if (IS_ENABLED(CONFIG_ATTR_BROADCAST_NAME)) {
+				LOG_DBG("\t%s", attrTable[i].name);
+			}
+		}
+		attrTable[i].modified = false;
+	}
+
+	/* no one may have registered for message */
+	if (Framework_Broadcast((FwkMsg_t *)pb, msgSize) != FWK_SUCCESS) {
+		pb->count = 0;
+	}
+
+	if (pb->count == 0) {
+		BufferPool_Free(pb);
+	}
+#endif
+}
+#endif
+
+static void BroadcastSingle(attr_idx_t Index)
+{
+#ifdef CONFIG_ATTR_BROADCAST
+	if (!attrTable[Index].modified || !attrTable[Index].broadcast) {
+		return;
+	}
+
+	size_t msgSize = sizeof(AttrBroadcastMsg_t);
+	AttrBroadcastMsg_t *pb = BufferPool_Take(msgSize);
+
+	if (pb == NULL) {
+		LOG_ERR("Unable to allocate memory for attr broadcast");
+	}
+
+	pb->header.msgCode = FMC_ATTR_CHANGED;
+	pb->header.txId = FWK_ID_RESERVED;
+	pb->header.rxId = FWK_ID_RESERVED;
+	pb->list[pb->count++] = (uint8_t)Index;
+
+	attrTable[Index].modified = false;
+
+	LOG_DBG("Broadcast %s", attrTable[Index].name);
+
+	/* no one may have registered for message */
+	if (Framework_Broadcast((FwkMsg_t *)pb, msgSize) != FWK_SUCCESS) {
+		pb->count = 0;
+	}
+
+	if (pb->count == 0) {
+		BufferPool_Free(pb);
+	}
+#endif
 }
 
 static int LoadAttributes(const char *fname)
@@ -345,16 +499,20 @@ static int LoadAttributes(const char *fname)
 				}
 			}
 			if (load_status < 0) {
-				break;
+				LOG_ERR("Failed to set id: 0x%x '%s'",
+					kvp[i].id,
+					log_strdup(
+						Attribute_GetName(kvp[i].id)));
+				LOG_HEXDUMP_DBG(kvp[i].keystr, kvp[i].length,
+						"kvp data");
+			}
+			if (IS_ENABLED(CONFIG_ATTR_BREAK_ON_LOAD_FAILURE)) {
+				if (load_status < 0) {
+					break;
+				}
 			}
 		}
 
-		if (load_status < 0) {
-			LOG_ERR("Failed to set id: 0x%x '%s'", kvp[i].id,
-				log_strdup(Attribute_GetName(kvp[i].id)));
-			LOG_HEXDUMP_DBG(kvp[i].keystr, kvp[i].length,
-					"kvp data");
-		}
 		k_free(kvp);
 		k_free(fstr);
 		if (load_status < 0) {
@@ -365,85 +523,40 @@ static int LoadAttributes(const char *fname)
 	return r;
 }
 
-bool Attribute_IsString(attr_idx_t Index)
+static int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
+	int r = -EPERM;
+
 	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == STRING_TYPE);
-	} else {
-		return false;
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		r = Write(Index, ATTR_TYPE_ANY, pValue, ValueLength);
+		attrTable[Index].modified = false;
+		k_mutex_unlock(&attribute_mutex);
 	}
+	return r;
 }
 
-bool Attribute_IsFloat(attr_idx_t Index)
+static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
+		    size_t Length)
 {
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == FLOAT_TYPE);
-	} else {
-		return false;
-	}
-}
-
-bool Attribute_IsUnint8(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == UNSIGNED_EIGHT_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-bool Attribute_IsUnint16(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == UNSIGNED_SIXTEEN_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-bool Attribute_IsUnint32(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == UNSIGNED_THIRTY_TWO_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-
-bool Attribute_IsInt8(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == SIGNED_EIGHT_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-bool Attribute_IsInt16(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == SIGNED_SIXTEEN_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-bool Attribute_IsInt32(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return (attrTable[Index].type == SIGNED_THIRTY_TWO_BIT_TYPE);
-	} else {
-		return false;
-	}
-}
-
-bool Attribute_IsWritable(attr_idx_t Index)
-{
-	if (Index < ATTR_TABLE_SIZE) {
-		return attrTable[Index].writeable;
-	} else {
-		return false;
-	}
-}
-
-static int Validate(attr_idx_t Index, void *pValue, size_t Length, bool DoWrite)
-{
+	int r = -EPERM;
 	AttributeEntry_t *pEntry = &attrTable[Index];
-	return pEntry->pValidator(pEntry, pValue, Length, DoWrite);
+
+	if (Type == pEntry->type || Type == ATTR_TYPE_ANY) {
+		r = pEntry->pValidator(pEntry, pValue, Length, false);
+	}
+
+	return r;
+}
+
+static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
+{
+	int r = -EPERM;
+	AttributeEntry_t *pEntry = &attrTable[Index];
+
+	if (Type == pEntry->type || Type == ATTR_TYPE_ANY) {
+		r = pEntry->pValidator(pEntry, pValue, Length, true);
+	}
+
+	return r;
 }

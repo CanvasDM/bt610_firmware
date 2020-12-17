@@ -25,6 +25,15 @@ extern "C" {
  */
 void UserInterfaceTask_Initialize(void);
 
+/**
+ * @brief Run LED test
+ *
+ * @param duration of each step in milliseconds
+ *
+ * @retval negative error code, 0 on success
+ */
+int UserInterfaceTask_LedTest(uint32_t duration);
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,7 +19,25 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef CONFIG_ATTR_BROADCAST
+#include "FrameworkIncludes.h"
+#endif
+
 #include "AttributeTable.h"
+
+/******************************************************************************/
+/* Global Constants, Macros and Type Definitions                              */
+/******************************************************************************/
+#ifdef CONFIG_ATTR_BROADCAST
+
+typedef struct AttrBroadcastMsg {
+	FwkMsgHeader_t header;
+	size_t count;
+	uint8_t list[ATTR_TABLE_SIZE];
+} AttrBroadcastMsg_t;
+BUILD_ASSERT(ATTR_TABLE_SIZE <= UINT8_MAX, "List element size too small");
+
+#endif
 
 /******************************************************************************/
 /* Function Definitions                                                       */
@@ -37,65 +55,46 @@ int AttributesInit(void);
  *
  * @retval type of variable
  */
-AttributeType_t Attribute_GetType(attr_idx_t Index);
+AttrType_t Attribute_GetType(attr_idx_t Index);
 
 /**
- * @brief  Set value
+ * @brief  Set value.  This is the only function that should be
+ * used from the SMP interface.
  *
  * @param Index A valid index into attribute table.
+ * @param Type the type of attribute
  * @param pValue string representation of variable
- * @param ValueLength The length (without null char) of the string being passed in.
+ * @param ValueLength The length (without null char) of the string
+ * being passed in.
  *
- * @retval negative error code, 0 on success, 1 if value was changed
+ * @retval negative error code, 0 on success
  */
-int Attribute_Set(attr_idx_t Index, void *pValue, size_t ValueLength);
+int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
+		  size_t ValueLength);
 
 /**
- * @brief  Get value
+ * @brief Copy an attribute
  *
  * @param Index A valid index into attribute table.
- * @param pValue string representation of variable
- * @param ValueLength The length (without null char) of the string being passed in.
+ * @param pValue pointer to location to copy string
+ * @param ValueLength is the size of pValue.
  *
- * @retval negative error code, 0 on success, 1 if value was changed
+ * @retval negative error code, size of value on return
  */
 int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength);
+
 /**
  * @brief  Set a string
  *
  * @param Index A valid index into attribute table.
  * @param pValue string representation of variable
- * @param ValueLength The length (without null char) of the string being passed in.
+ * @param ValueLength The length (without null char) of the
+ * string being passed in.
  *
- * @retval negative error code, 0 on success, 1 if value was changed
+ * @retval negative error code, 0 on success
  */
 int Attribute_SetString(attr_idx_t Index, char const *pValue,
 			size_t ValueLength);
-
-/**
- * @brief  Used to set the value of an integer attribute.
- *
- * @param Index A valid index into attribute table.
- * @param Value The value to set.
- *
- * @retval negative error code, 0 on success, 1 if value was changed
- */
-int Attribute_SetUint8(attr_idx_t Index, uint8_t Value);
-int Attribute_SetUint16(attr_idx_t Index, uint16_t Value);
-int Attribute_SetUint32(attr_idx_t Index, uint32_t Value);
-int Attribute_SetSigned8(attr_idx_t Index, int8_t Value);
-int Attribute_SetSigned16(attr_idx_t Index, int16_t Value);
-int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
-
-/**
- * @brief  Used to set the value of a floating point attribute
- *
- * @param Index A valid index into attribute table.
- * @param Value The value to set.
- *
- * @retval negative error code, 0 on success, 1 if value was changed
- */
-int Attribute_SetFloat(attr_idx_t Index, float Value);
 
 /**
  * @brief Copy a string
@@ -108,16 +107,98 @@ int Attribute_SetFloat(attr_idx_t Index, float Value);
  */
 int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength);
 
+/**
+ * @brief Helper function for setting uint8, 16 or 32
+ *
+ * @param Index A valid index into attribute table.
+ * @param Value The value to set.
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_SetUint32(attr_idx_t Index, uint32_t Value);
 
 /**
- * @brief  Used to get the value of a variable as float.
+ * @brief Helper function for setting int8, int16, or int32
  *
- * @param pValue, 0 if attribute is a string.
+ * @param Index A valid index into attribute table.
+ * @param Value The value to set.
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
+
+/**
+ * @brief  Accessor Function for uint32
+ *
+ * @param pValue pointer to data
+ * @param Index A valid index into attribute table
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index);
+
+/**
+ * @brief  Accessor Function for int32
+ *
+ * @param pValue pointer to data
+ * @param Index A valid index into attribute table
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index);
+
+/**
+ * @brief  Used to set the value of a floating point attribute
+ *
+ * @param Index A valid index into attribute table.
+ * @param Value The value to set.
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_SetFloat(attr_idx_t Index, float Value);
+
+/**
+ * @brief  Accessor Function for float
+ *
+ * @param pValue pointer to data
  * @param Index A valid index into attribute table
  *
  * @retval negative error code, 0 on success
  */
 int Attribute_GetFloat(float *pValue, attr_idx_t Index);
+
+/**
+ * @brief Alternate Accessor function for uint32
+ *
+ * @param Index A valid index into attribute table
+ * @param Default value
+ *
+ * @retval default value if not found, invalid index,  or wrong type;
+ * otherwise the attribute value
+ */
+uint32_t Attribute_AltGetUint32(attr_idx_t Index, uint32_t Default);
+
+/**
+ * @brief Alternate Accessor function for int32
+ *
+ * @param Index A valid index into attribute table
+ * @param Default value
+ *
+ * @retval default value if not found, invalid index,  or wrong type;
+ * otherwise the attribute value
+ */
+int32_t Attribute_AltGetSigned32(attr_idx_t Index, int32_t Default);
+
+/**
+ * @brief Alternate Accessor function for float
+ *
+ * @param Index A valid index into attribute table
+ * @param Default value
+ *
+ * @retval default value if not found, invalid index,  or wrong type;
+ * otherwise the attribute value
+ */
+float Attribute_AltGetFloat(attr_idx_t Index, float Default);
 
 /**
  * @brief Get the name of an attribute
@@ -127,51 +208,6 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index);
  * @param empty string if not found
  */
 const char *Attribute_GetName(attr_idx_t Index);
-
-/**
- * @param Index - A valid index into the attribute table
- *
- * @retval true if the index is associated with a string, otherwise false
- */
-bool Attribute_IsString(attr_idx_t Index);
-
-/**
- * @param Index - A valid index into the attribute table
- *
- * @retval true if the index is associated with a float, otherwise false
- */
-bool Attribute_IsFloat(attr_idx_t Index);
-
-/**
- * @param Index - A valid index into the attribute table
- *
- * @retval true if the index is associated with a unsigned int, otherwise false
- */
-bool Attribute_IsUnsigned(attr_idx_t Index);
-
-/**
- * @param Index - A valid index into the attribute table
- *
- * @retval true if the index is associated with a signed int, otherwise false
- */
-bool Attribute_IsSigned(attr_idx_t Index);
-
-/**
- * @param index - A valid index into the attribute table
- *
- * @retval true if the value is writable (including lock flag), false otherwise
- */
-bool Attribute_IsWritable(attr_idx_t Index);
-
-/**
- * @retval true if the value has a category of read write, false otherwise
- */
-bool Attribute_IsReadWrite(attr_idx_t Index);
-
-/**
- * @retval true if the value has a category of read only, false otherwise
- */
-bool Attribute_IsReadOnly(attr_idx_t Index);
 
 #ifdef __cplusplus
 }

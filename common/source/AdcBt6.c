@@ -26,6 +26,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #include "laird_utility_macros.h"
 #include "file_system_utilities.h"
 #include "lcz_params.h"
+#include "Attribute.h"
 #include "AdcBt6.h"
 
 /******************************************************************************/
@@ -158,6 +159,8 @@ int AdcBt6_Init(void)
 
 	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
+	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
+	Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
 
 	return status;
 }
@@ -259,6 +262,8 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 			   strlen(str));
 		lcz_params_write("ge", &adcObj.ge, sizeof(adcObj.ge));
 		lcz_params_write("oe", &adcObj.oe, sizeof(adcObj.oe));
+		Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
+		Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
 	} else {
 		LOG_ERR("Thermistor calibration error");
 	}
@@ -358,11 +363,17 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw)
 	return result;
 }
 
+/* doesn't there need to be a set for each input ? */
 float AdcBt6_ConvertThermToTemperature(int32_t raw)
 {
 	float calibrated = AdcBt6_ApplyThermistorCalibration(raw);
-	return Steinhart_Hart(calibrated, THERMISTOR_S_H_A, THERMISTOR_S_H_B,
-			      THERMISTOR_S_H_C) -
+	return Steinhart_Hart(calibrated,
+			      Attribute_AltGetFloat(ATTR_INDEX_coefficientA,
+						    THERMISTOR_S_H_A),
+			      Attribute_AltGetFloat(ATTR_INDEX_coefficientB,
+						    THERMISTOR_S_H_B),
+			      Attribute_AltGetFloat(ATTR_INDEX_coefficientC,
+						    THERMISTOR_S_H_C)) -
 	       THERMISTOR_S_H_OFFSET;
 }
 

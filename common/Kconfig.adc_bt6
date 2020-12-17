@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2020 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config ADC_BT6
+    bool "Enable BT6 ADC Module"
+    depends on ADC_NRFX_SAADC
+    depends on ADC_CONFIGURABLE_INPUTS
+    default y
+
+config ADC_BT6_LOG_LEVEL
+    int "Log level for BT6xx ADC module"
+    range 0 4
+    default 3
+
+config ADC_BT6_OVERSAMPLING
+    int "(2**THIS_VALUE samples to average for each ADC reading"
+    range 0 8
+    default 4
+
+config ADC_BT6_THERMISTOR_CALIBRATION_SAMPLES
+    int "Number of samples to average when calibrating thermistor inputs"
+    range 1 128
+    default 32

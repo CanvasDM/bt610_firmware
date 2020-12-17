@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2020 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config ATTR_LOG_LEVEL
+    int "Log level for Attributes module"
+    range 0 4
+    default 3
+
+config ATTR_FILE_NAME
+    string "File name for attributes"
+    default "attr.txt"
+
+config ATTR_BREAK_ON_LOAD_FAILURE
+    bool "Stop loading on first failure"
+
+config ATTR_BROADCAST
+    bool "Enable attribute broadcast message"
+    depends on FRAMEWORK
+
+config ATTR_BROADCAST_NAME
+    bool "During broadcast print name of each attribute that has changed"
+    depends on ATTR_BROADCAST
+    depends on ATTR_LOG_LEVEL > 3

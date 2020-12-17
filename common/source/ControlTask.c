@@ -29,6 +29,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
 #include "lcz_no_init_ram_var.h"
+#include "file_system_utilities.h"
 #include "laird_bluetooth.h"
 #include "Attribute.h"
 
@@ -51,11 +52,10 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #define CONTROL_TASK_QUEUE_DEPTH 10
 #endif
 
-#define MINIMUM_LED_TEST_STEP_DURATION_MS (10)
+#define RESET_COUNT_FNAME CONFIG_FSU_MOUNT_POINT "/reset_count"
 
 typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
-	uint32_t reset_reason;
 } ControlTaskObj_t;
 
 /******************************************************************************/
@@ -83,6 +83,8 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg);
+
+static void RebootHandler(void);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -149,6 +151,8 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	AttributesInit();
 
+	RebootHandler();
+
 	mcumgr_wrapper_register_subsystems();
 
 	UserInterfaceTask_Initialize();
@@ -159,11 +163,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();
 #endif
-
-	pObj->reset_reason = nrf_power_resetreas_get(NRF_POWER);
-	nrf_power_resetreas_clear(NRF_POWER, pObj->reset_reason);
-	LOG_INF("Reset Reason %s", log_strdup(lbt_get_nrf52_reset_reason_string(
-					   pObj->reset_reason)));
 
 	//Test only
 	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.rxer.id,
@@ -184,6 +183,27 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
+}
+
+static void RebootHandler(void)
+{
+	Attribute_SetString(ATTR_INDEX_firmwareVersion, VERSION_STRING,
+			    strlen(VERSION_STRING));
+
+	uint32_t reason = nrf_power_resetreas_get(NRF_POWER);
+	const char *s = lbt_get_nrf52_reset_reason_string(reason);
+	nrf_power_resetreas_clear(NRF_POWER, reason);
+	LOG_INF("Reset Reason %s", log_strdup(s));
+	Attribute_SetString(ATTR_INDEX_resetReason, s, strlen(s));
+
+	uint32_t count = 0;
+	if (fsu_lfs_mount() == 0) {
+		fsu_read_abs(RESET_COUNT_FNAME, &count, sizeof(count));
+		count += 1;
+		fsu_write_abs(RESET_COUNT_FNAME, &count, sizeof(count));
+	}
+	LOG_INF("Reset Count %u", count);
+	Attribute_SetUint32(ATTR_INDEX_firmwareVersion, count);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,

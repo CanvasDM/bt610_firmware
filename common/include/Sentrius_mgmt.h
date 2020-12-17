@@ -28,17 +28,27 @@ extern "C" {
 /* pystart - mgmt handler function defines */
 mgmt_handler_fn Sentrius_mgmt_GetParameter;
 mgmt_handler_fn Sentrius_mgmt_SetParameter;
-mgmt_handler_fn Sentrius_mgmt_Echo;
+mgmt_handler_fn Sentrius_mgmt_RevEcho;
+mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor;
+mgmt_handler_fn Sentrius_mgmt_TestLed;
 /* pyend */
 
 /**
  * Command IDs for file system management group.
+ *
+ * @note location zero isn't used because API generator doesn't
+ * support multiple commands with the same id (even though their
+ * group number is different).
  */
+/* clang-format off */
 /* pystart - mgmt function indices */
-#define SENTRIUS_MGMT_ID_GETPARAMETER 1
-#define SENTRIUS_MGMT_ID_SETPARAMETER 2
-#define SENTRIUS_MGMT_ID_ECHO 3
+#define SENTRIUS_MGMT_ID_GETPARAMETER                          1
+#define SENTRIUS_MGMT_ID_SETPARAMETER                          2
+#define SENTRIUS_MGMT_ID_REVECHO                               3
+#define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR                   4
+#define SENTRIUS_MGMT_ID_TESTLED                               5
 /* pyend */
+/* clang-format on */
 
 /******************************************************************************/
 /* Global Function Prototypes                                                 */

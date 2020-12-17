@@ -15,8 +15,12 @@
 #include <string.h>
 #include "cborattr/cborattr.h"
 #include "mgmt/mgmt.h"
-#include "Sentrius_mgmt.h"
+
 #include "Attribute.h"
+#include "UserInterfaceTask.h"
+#include "AdcBt6.h"
+
+#include "Sentrius_mgmt.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -39,19 +43,28 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
-	// pystart - mgmt handlers
+    /* pystart - mgmt handlers */
     [SENTRIUS_MGMT_ID_GETPARAMETER] = {
          .mh_read = Sentrius_mgmt_GetParameter,
-         .mh_write = NULL,
+         .mh_write = Sentrius_mgmt_GetParameter,
     },
     [SENTRIUS_MGMT_ID_SETPARAMETER] = {
          .mh_write = Sentrius_mgmt_SetParameter,
-         .mh_read = NULL,
+         .mh_read = Sentrius_mgmt_SetParameter,
     },
-    [SENTRIUS_MGMT_ID_ECHO] = {
-         Sentrius_mgmt_Echo, Sentrius_mgmt_Echo
+    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
+		.mh_write = Sentrius_mgmt_CalibrateThermistor,
+		.mh_read = Sentrius_mgmt_CalibrateThermistor
     },
-	// pyend
+    [SENTRIUS_MGMT_ID_TESTLED] = {
+		.mh_write = Sentrius_mgmt_TestLed,
+		.mh_read = Sentrius_mgmt_TestLed
+    },
+    [SENTRIUS_MGMT_ID_REVECHO] = {
+         .mh_write = Sentrius_mgmt_RevEcho,
+		 .mh_read = Sentrius_mgmt_RevEcho
+    },
+    /* pyend */
 };
 
 static struct mgmt_group sentrius_mgmt_group = {
@@ -93,7 +106,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 			.attribute = "p1",
 			.type = CborAttrUnsignedIntegerType,
 			.addr.uinteger = &paramID,
-			.nodefault = 1,
+			.nodefault = true,
 		},
 		{ .attribute = NULL }
 	};
@@ -114,24 +127,20 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	/*Get the value*/
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
-		//getResult = Attribute_GetSigned32(&intData, paramID);
-		getResult = Attribute_Get(paramID, &intData, sizeof(int32_t));
+		getResult = Attribute_GetSigned32(&intData, paramID);
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		//getResult = Attribute_GetUint32(&uintData, paramID);
-		getResult = Attribute_Get(paramID, &uintData, sizeof(uint32_t));
+		getResult = Attribute_GetUint32(&uintData, paramID);
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
-		//getResult = Attribute_GetString(bufferData, paramID,
-		//				ATTR_MAX_STR_LENGTH);
-		getResult = Attribute_Get(paramID, bufferData, ATTR_MAX_STR_LENGTH);				
+		getResult = Attribute_GetString(bufferData, paramID,
+						ATTR_MAX_STR_LENGTH);
 		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
 		break;
 	case CborAttrFloatType:
-		//getResult = Attribute_GetFloat(&floatData, paramID);
-		getResult = Attribute_Get(paramID, &floatData, sizeof(float));
+		getResult = Attribute_GetFloat(&floatData, paramID);
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;
@@ -149,10 +158,11 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	return 0;
 }
 
-int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 {
-	char echo_buf[128];
-	CborError err;
+	char echo_buf[64] = { 0 };
+	char rev_buf[64] = { 0 };
+	size_t echo_len = 0;
 
 	const struct cbor_attr_t attrs[2] = {
         [0] = {
@@ -160,7 +170,7 @@ int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
             .type = CborAttrTextStringType,
             .addr.string = echo_buf,
             .len = sizeof echo_buf,
-            .nodefault = 1,
+            .nodefault = true,
         },
         [1] = {
             .attribute = NULL
@@ -169,14 +179,19 @@ int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
 
 	echo_buf[0] = '\0';
 
-	err = cbor_read_object(&ctxt->it, attrs);
-	if (err != 0) {
+	if (cbor_read_object(&ctxt->it, attrs) != 0) {
 		return MGMT_ERR_EINVAL;
 	}
 
+	echo_len = strlen(echo_buf);
+	size_t i;
+	for (i = 0; i < echo_len; i++) {
+		rev_buf[i] = echo_buf[echo_len - 1 - i];
+	}
+
+	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
-	err |= cbor_encode_text_string(&ctxt->encoder, echo_buf,
-				       strlen(echo_buf));
+	err |= cbor_encode_text_string(&ctxt->encoder, rev_buf, echo_len);
 
 	if (err != 0) {
 		return MGMT_ERR_ENOMEM;
@@ -184,6 +199,7 @@ int Sentrius_mgmt_Echo(struct mgmt_ctxt *ctxt)
 
 	return 0;
 }
+
 int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
@@ -197,7 +213,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 		{ .attribute = "p1",
 		  .type = CborAttrUnsignedIntegerType,
 		  .addr.uinteger = &paramID,
-		  .nodefault = 1 },
+		  .nodefault = true },
 		{ .attribute = NULL }
 	};
 	readCbor = cbor_read_object(&ctxt->it, params_attr);
@@ -228,38 +244,100 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	return 0;
 }
 
+int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
+{
+	int r = -EINVAL;
+	long long unsigned int duration = ULLONG_MAX;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &duration,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	if (duration < UINT32_MAX) {
+		r = UserInterfaceTask_LedTest(duration);
+	}
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
+{
+	int r = -EINVAL;
+	float c1 = 0.0;
+	float c2 = 0.0;
+	float ge = 0.0;
+	float oe = 0.0;
+
+	struct cbor_attr_t params_attr[] = { { .attribute = "p1",
+					       .type = CborAttrFloatType,
+					       .addr.fval = &c1,
+					       .nodefault = true },
+					     { .attribute = "p2",
+					       .type = CborAttrFloatType,
+					       .addr.fval = &c2,
+					       .nodefault = true },
+					     { .attribute = NULL } };
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "ge");
+	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &ge);
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
+	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
 static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs)
 {
-	paramUint = ULLONG_MAX;
-	paramIint = LLONG_MAX;
-	paramFloat = FLOAT_MAX;
-	memset(paramString, 0, ATTR_MAX_STR_SIZE);
-	AttributeType_t parameterType;
+	AttrType_t parameterType = Attribute_GetType(paramID);
 
 	attrs->attribute = "p2";
 	attrs->nodefault = true;
-	parameterType = Attribute_GetType(paramID);
 
 	switch (parameterType) {
-	case SIGNED_EIGHT_BIT_TYPE:
-	case SIGNED_SIXTEEN_BIT_TYPE:
-	case SIGNED_THIRTY_TWO_BIT_TYPE:
+	case ATTR_TYPE_S8:
+	case ATTR_TYPE_S16:
+	case ATTR_TYPE_S32:
+		paramIint = LLONG_MAX;
 		attrs->type = CborAttrIntegerType;
 		attrs->addr.integer = &paramIint;
 		break;
-	case UNSIGNED_EIGHT_BIT_TYPE:
-	case UNSIGNED_SIXTEEN_BIT_TYPE:
-	case UNSIGNED_THIRTY_TWO_BIT_TYPE:
+	case ATTR_TYPE_U8:
+	case ATTR_TYPE_U16:
+	case ATTR_TYPE_U32:
+		paramUint = ULLONG_MAX;
 		attrs->type = CborAttrUnsignedIntegerType;
 		attrs->addr.integer = &paramUint;
 		break;
-	case STRING_TYPE:
+	case ATTR_TYPE_STRING:
+		memset(paramString, 0, ATTR_MAX_STR_SIZE);
 		attrs->type = CborAttrTextStringType;
 		attrs->addr.string = paramString;
 		attrs->len = sizeof(paramString);
 		break;
-	case FLOAT_TYPE:
+	case ATTR_TYPE_FLOAT:
+		paramFloat = FLOAT_MAX;
 		attrs->type = CborAttrFloatType;
 		attrs->addr.fval = &paramFloat;
 		break;
@@ -281,25 +359,30 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 	case CborAttrIntegerType:
 		if (*attrs->addr.integer >= INT32_MIN &&
 		    *attrs->addr.integer <= INT32_MAX) {
-			status = Attribute_Set(id, attrs->addr.integer,
+			status = Attribute_Set(id, Attribute_GetType(id),
+					       attrs->addr.integer,
+
 					       sizeof(int32_t));
 		}
 		break;
 	case CborAttrUnsignedIntegerType:
 		if (*attrs->addr.uinteger >= 0 &&
 		    *attrs->addr.uinteger <= UINT32_MAX) {
-			status = Attribute_Set(id, attrs->addr.uinteger,
+			status = Attribute_Set(id, Attribute_GetType(id),
+					       attrs->addr.uinteger,
 					       sizeof(uint32_t));
 		}
 		break;
 
 	case CborAttrTextStringType:
-		status = Attribute_Set(id, attrs->addr.string,
+		status = Attribute_Set(id, Attribute_GetType(id),
+				       attrs->addr.string,
 				       strlen(attrs->addr.string));
 		break;
 
 	case CborAttrFloatType:
-		status = Attribute_Set(id, attrs->addr.fval, sizeof(float));
+		status = Attribute_Set(id, Attribute_GetType(id),
+				       attrs->addr.fval, sizeof(float));
 		break;
 
 	default:

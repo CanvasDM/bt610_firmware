@@ -33,12 +33,11 @@ int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
 		size_t currentLength = strlen(pEntry->pData);
 		if (DoWrite && ((memcmp(pEntry->pData, pValue, Length) != 0) ||
 				Length == 0 || currentLength != Length)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			memset(pEntry->pData, 0, pEntry->size);
 			strncpy(pEntry->pData, pValue, Length);
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -53,11 +52,10 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint32_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((uint32_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -72,11 +70,10 @@ int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint16_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((uint16_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -91,11 +88,10 @@ int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
 		if (DoWrite && value != *((uint8_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((uint8_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -111,11 +107,10 @@ int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
 
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((int32_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((int32_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -131,11 +126,10 @@ int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
 
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((int16_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((int16_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -151,11 +145,10 @@ int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
 
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((int8_t *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((int8_t *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }
@@ -171,11 +164,10 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 
 	if (((value >= min) && (value <= max)) || (min == max)) {
 		if (DoWrite && value != *((float *)pEntry->pData)) {
-			r = ATTR_MODIFIED;
+			pEntry->modified = true;
 			*((float *)pEntry->pData) = value;
-		} else {
-			r = 0;
 		}
+		r = 0;
 	}
 	return r;
 }

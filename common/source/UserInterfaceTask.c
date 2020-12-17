@@ -39,6 +39,8 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #define USER_IF_TASK_QUEUE_DEPTH 8
 #endif
 
+#define MINIMUM_LED_TEST_STEP_DURATION_MS (10)
+
 #define FLAGS_OR_ZERO(node)                                                    \
 	COND_CODE_1(DT_PHA_HAS_CELL(node, gpios, flags),                       \
 		    (DT_GPIO_FLAGS(node, gpios)), (0))
@@ -51,6 +53,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #else
 #error "Unsupported board: sw1 devicetree alias is not defined"
 #endif
+
 #define BUTTON2_NODE DT_ALIAS(sw2)
 #if DT_NODE_HAS_STATUS(BUTTON2_NODE, okay)
 #define BUTTON2_DEV DT_GPIO_LABEL(BUTTON2_NODE, gpios)
@@ -156,6 +159,26 @@ void UserInterfaceTask_Initialize(void)
 	k_thread_name_set(userIfTaskObject.msgTask.pTid, THIS_FILE);
 }
 
+int UserInterfaceTask_LedTest(uint32_t duration)
+{
+	uint32_t delay = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, duration);
+	LOG_DBG("delay %u", delay);
+
+	lcz_led_turn_on(GREEN_LED);
+	k_sleep(K_MSEC(delay));
+
+	lcz_led_turn_on(RED_LED);
+	k_sleep(K_MSEC(delay));
+
+	lcz_led_turn_off(GREEN_LED);
+	k_sleep(K_MSEC(delay));
+
+	lcz_led_turn_off(RED_LED);
+	k_sleep(K_MSEC(delay));
+
+	return 0;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -184,6 +207,7 @@ static void InitializeButton(void)
 		LOG_DBG("Error: didn't find %s device", BUTTON1_DEV);
 		return;
 	}
+
 	button2Device = device_get_binding(BUTTON2_DEV);
 	if (button2Device == NULL) {
 		printk("Error: didn't find %s device\n", BUTTON2_DEV);
@@ -223,16 +247,7 @@ static DispatchResult_t LedTestMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsgRxer);
 	UNUSED_PARAMETER(pMsg);
-	const uint32_t delayMs = 1000;
-	k_sleep(K_MSEC(delayMs));
-	lcz_led_turn_on(GREEN_LED);
-	k_sleep(K_MSEC(delayMs));
-	lcz_led_turn_on(RED_LED);
-	k_sleep(K_MSEC(delayMs));
-	lcz_led_turn_off(GREEN_LED);
-	k_sleep(K_MSEC(delayMs));
-	lcz_led_turn_off(RED_LED);
-	k_sleep(K_MSEC(delayMs));
+	(void)UserInterfaceTask_LedTest(1000);
 	return DISPATCH_OK;
 }
 
@@ -268,6 +283,7 @@ void Button1HandlerIsr(const struct device *dev, struct gpio_callback *cb,
 	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 					      FMC_CODE_BLE_START_ADVERTISING);
 }
+
 void Button2HandlerIsr(const struct device *dev, struct gpio_callback *cb,
 		      uint32_t pins)
 {
