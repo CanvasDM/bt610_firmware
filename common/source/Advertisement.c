@@ -19,15 +19,8 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
+#include "Attribute.h"
 #include "Advertisement.h"
-
-/******************************************************************************/
-/* Local Constant, Macro and Type Definitions                                 */
-/******************************************************************************/
-
-/******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -73,6 +66,8 @@ int Advertisement_Init(void)
 	size_t count = 1;
 	bt_addr_le_t addr;
 	char addr_str[BT_ADDR_LE_STR_LEN] = { 0 };
+	char bdaddr[BT_ADDR_LE_STR_LEN] = { 0 };
+	size_t size = Attribute_GetSize(ATTR_INDEX_bluetoothAddress);
 
 	bt_id_get(&addr, &count);
 	if (count < 1) {
@@ -83,6 +78,18 @@ int Advertisement_Init(void)
 	bt_addr_le_to_str(&addr, addr_str, sizeof(addr_str));
 	LOG_INF("Bluetooth Address: %s count: %d status: %d",
 		log_strdup(addr_str), count, r);
+
+	/* remove ':' from default format */
+	size_t i;
+	size_t j;
+	for (i = 0, j = 0; j < size - 1; i++) {
+		if (addr_str[i] != ':') {
+			bdaddr[j] = addr_str[i];
+			j += 1;
+		}
+	}
+	Attribute_Set(ATTR_INDEX_bluetoothAddress, ATTR_TYPE_STRING, bdaddr,
+		      size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;

@@ -205,9 +205,18 @@ float Attribute_AltGetFloat(attr_idx_t Index, float Default);
  *
  * @param Index a valid index into table
  *
- * @param empty string if not found
+ * @retval empty string if not found
  */
 const char *Attribute_GetName(attr_idx_t Index);
+
+/**
+ * @brief Get the size of an attribute
+ *
+ * @param Index a valid index into table
+ *
+ * @param size of attribute, size with null if string
+ */
+size_t Attribute_GetSize(attr_idx_t Index);
 
 #ifdef __cplusplus
 }

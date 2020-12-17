@@ -60,8 +60,11 @@ static int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength);
 
 static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
 		    size_t Length);
+
 static int Write(attr_idx_t Index, AttrType_t Type, void *pValue,
 		 size_t Length);
+
+static void LogAttrChange(attr_idx_t Index);
 
 extern void AttributeTable_Initialize(void);
 extern void AttributeTable_FactoryReset(void);
@@ -306,6 +309,15 @@ const char *Attribute_GetName(attr_idx_t Index)
 	return p;
 }
 
+size_t Attribute_GetSize(attr_idx_t Index)
+{
+	size_t size = 0;
+	if (Index < ATTR_TABLE_SIZE) {
+		size = attrTable[Index].size;
+	}
+	return size;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -455,8 +467,6 @@ static void BroadcastSingle(attr_idx_t Index)
 
 	attrTable[Index].modified = false;
 
-	LOG_DBG("Broadcast %s", attrTable[Index].name);
-
 	/* no one may have registered for message */
 	if (Framework_Broadcast((FwkMsg_t *)pb, msgSize) != FWK_SUCCESS) {
 		pb->count = 0;
@@ -466,6 +476,47 @@ static void BroadcastSingle(attr_idx_t Index)
 		BufferPool_Free(pb);
 	}
 #endif
+
+	LogAttrChange(Index);
+}
+
+static void LogAttrChange(attr_idx_t Index)
+{
+	AttributeEntry_t *p = &attrTable[Index];
+	uint32_t d = 0;
+	int32_t i = 0;
+	float f = 0.0;
+
+	switch (p->type) {
+	case ATTR_TYPE_U8:
+	case ATTR_TYPE_U16:
+	case ATTR_TYPE_U32:
+		memcpy(&d, p->pData, p->size);
+		LOG_DBG("%s %u", p->name, d);
+		break;
+
+	case ATTR_TYPE_S8:
+	case ATTR_TYPE_S16:
+	case ATTR_TYPE_S32:
+		memcpy(&i, p->pData, p->size);
+		LOG_DBG("%s %u", p->name, i);
+		break;
+
+	case ATTR_TYPE_FLOAT:
+		memcpy(&f, p->pData, p->size);
+		LOG_DBG("%s %0.4f", p->name, f);
+		break;
+
+	case ATTR_TYPE_STRING:
+		LOG_DBG("%s %s", p->name, log_strdup(p->pData));
+		break;
+
+	case ATTR_TYPE_UNKNOWN:
+	case ATTR_TYPE_ANY:
+	default:
+		LOG_HEXDUMP_DBG(p->pData, p->size, p->name);
+		break;
+	}
 }
 
 static int LoadAttributes(const char *fname)

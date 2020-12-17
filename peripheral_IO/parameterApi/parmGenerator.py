@@ -83,17 +83,17 @@ class attributes:
             return "s  "
         elif itype == "float":
             return "f  "    
-        elif "int8" in itype:
+        elif itype == "int8_t":
             return "i8 "
-        elif "int16" in itype:
+        elif itype == "int16_t":
             return "i16"
-        elif "int32" in itype:
+        elif itype == "int32_t":
             return "i32"     
-        elif "uint8" in itype:
+        elif itype == "uint8_t":
             return "u8 "
-        elif "uint32" in itype:
+        elif itype == "uint16_t":
             return "u16"        
-        elif "uint32" in itype:
+        elif itype == "uint32_t":
             return "u32"
             
     def _GetAttributeMacro(self, itype: str, readWrite: bool, readOnly: bool, name: str) -> str:

@@ -289,7 +289,7 @@
           "description": "Ideal ADC counts for 560 Ohm resistor (R1 = 559.4 ohms --> C1 = 4096 * 559.4/(10000 + 559.4) = 217.0)",
           "required": true,
           "schema": {
-            "type": "float",
+            "type": "number",
             "minimum": 0.0,
             "maximum": 0.0,
             "x-ctype": "float",
@@ -304,7 +304,7 @@
           "description": "Ideal ADC counts for 330K resistor (R2 = 331.9k --> C2 = 4096 * 331900/(10000 + 331900) = 3976.2)",
           "required": true,
           "schema": {
-            "type": "float",
+            "type": "number",
             "minimum": 0.0,
             "maximum": 0.0,
             "x-ctype": "float",
@@ -329,7 +329,7 @@
             },
             {
               "name": "ge",
-              "type": "float",
+              "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
               "x-ctype": "float",
@@ -338,7 +338,7 @@
             },
             {
               "name": "oe",
-              "type": "float",
+              "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
               "x-ctype": "float",
