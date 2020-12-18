@@ -24,7 +24,10 @@
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
-      }
+      },
+      "dependsOn": [
+        "ibv mcuboot"
+      ]
     },
     {
       "label": "flash",
@@ -37,6 +40,15 @@
     },
     {
       "label": "ibv",
+      "type": "shell",
+      "command": "python3 increment_build_version ./peripheral_IO/include/version.h",
+      "windows": {
+        "command": "py increment_build_version.py .\\peripheral_IO\\include\\version.h"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "ibv mcuboot",
       "type": "shell",
       "command": "python3 increment_build_version ./peripheral_IO/include/version.h ./peripheral_IO/prj.conf",
       "windows": {
