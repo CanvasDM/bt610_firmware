@@ -31,6 +31,7 @@ mgmt_handler_fn Sentrius_mgmt_SetParameter;
 mgmt_handler_fn Sentrius_mgmt_RevEcho;
 mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor;
 mgmt_handler_fn Sentrius_mgmt_TestLed;
+mgmt_handler_fn Sentrius_mgmt_CalibrateThermistorVersion2;
 /* pyend */
 
 /**
@@ -47,6 +48,7 @@ mgmt_handler_fn Sentrius_mgmt_TestLed;
 #define SENTRIUS_MGMT_ID_REVECHO                               3
 #define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR                   4
 #define SENTRIUS_MGMT_ID_TESTLED                               5
+#define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2          6
 /* pyend */
 /* clang-format on */
 

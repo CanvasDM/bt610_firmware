@@ -56,15 +56,14 @@ static void Broadcast(void);
 #endif
 static void BroadcastSingle(attr_idx_t Index);
 
-static int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength);
-
+static int Load(attr_idx_t Index, void *pValue, size_t ValueLength);
 static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
 		    size_t Length);
-
 static int Write(attr_idx_t Index, AttrType_t Type, void *pValue,
 		 size_t Length);
 
 static void LogAttrChange(attr_idx_t Index);
+static bool IsWritable(attr_idx_t Index);
 
 extern void AttributeTable_Initialize(void);
 extern void AttributeTable_FactoryReset(void);
@@ -112,6 +111,7 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
+		if (IsWritable(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Validate(Index, Type, pValue, ValueLength);
 		if (r == 0) {
@@ -121,6 +121,7 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 			}
 		}
 		k_mutex_unlock(&attribute_mutex);
+	}
 	}
 	return r;
 }
@@ -536,8 +537,7 @@ static int LoadAttributes(const char *fname)
 	if (r > 0) {
 		for (i = 0; i < r; i++) {
 			if (ConvertParameterType(i) == PARAM_STR) {
-				load_status =
-					Attribute_Load(kvp[i].id, kvp[i].keystr,
+				load_status = Load(kvp[i].id, kvp[i].keystr,
 						       kvp[i].length);
 			} else {
 				binlen = hex2bin(kvp[i].keystr, kvp[i].length,
@@ -545,8 +545,8 @@ static int LoadAttributes(const char *fname)
 				if (binlen <= 0) {
 					load_status = -1;
 				} else {
-					load_status = Attribute_Load(
-						kvp[i].id, bin, binlen);
+					load_status =
+						Load(kvp[i].id, bin, binlen);
 				}
 			}
 			if (load_status < 0) {
@@ -574,7 +574,7 @@ static int LoadAttributes(const char *fname)
 	return r;
 }
 
-static int Attribute_Load(attr_idx_t Index, void *pValue, size_t ValueLength)
+static int Load(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	int r = -EPERM;
 
@@ -609,5 +609,21 @@ static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 		r = pEntry->pValidator(pEntry, pValue, Length, true);
 	}
 
+	return r;
+}
+
+static bool IsWritable(attr_idx_t Index)
+{
+	bool r = false;
+	uint8_t lock = *((uint8_t *)attrTable[ATTR_INDEX_lock].pData);
+	if (Index < ATTR_TABLE_SIZE) {
+		if (attrTable[Index].writable) {
+			if (attrTable[Index].lockable) {
+				r = (lock == 0);
+			} else {
+				r = true;
+			}
+		}
+	}
 	return r;
 }

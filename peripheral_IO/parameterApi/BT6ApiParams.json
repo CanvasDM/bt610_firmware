@@ -132,7 +132,7 @@
               "x-broadcast": false,
               "name": "r1",
               "summary": "Result",
-              "description": "0 = success\r\n1 = read only\r\n2 = out of range\r\n3 = other error",
+              "description": "",
               "type": "integer",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -289,7 +289,7 @@
           "description": "Ideal ADC counts for 560 Ohm resistor (R1 = 559.4 ohms --> C1 = 4096 * 559.4/(10000 + 559.4) = 217.0)",
           "required": true,
           "schema": {
-            "type": "float",
+            "type": "number",
             "minimum": 0.0,
             "maximum": 0.0,
             "x-ctype": "float",
@@ -304,7 +304,7 @@
           "description": "Ideal ADC counts for 330K resistor (R2 = 331.9k --> C2 = 4096 * 331900/(10000 + 331900) = 3976.2)",
           "required": true,
           "schema": {
-            "type": "float",
+            "type": "number",
             "minimum": 0.0,
             "maximum": 0.0,
             "x-ctype": "float",
@@ -329,7 +329,7 @@
             },
             {
               "name": "ge",
-              "type": "float",
+              "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
               "x-ctype": "float",
@@ -338,7 +338,88 @@
             },
             {
               "name": "oe",
-              "type": "float",
+              "type": "number",
+              "summary": "Offset Error",
+              "description": "This is applied to all thermistor readings",
+              "x-ctype": "float",
+              "x-example": "-12.8",
+              "x-sequencenumber": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "CalibrateThermistorVersion2",
+      "summary": "",
+      "description": "Uses uint32_t for input parameters",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 6,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Calibration factor x10000",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 1,
+            "x-default": "2207351",
+            "x-example": "2207351"
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "Parameter 2",
+          "description": "Calibration factor x10000",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 2,
+            "x-default": "39800000",
+            "x-example": "39800000"
+          }
+        }
+      ],
+      "result": {
+        "name": "CalibrateThermistorResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "ge",
+              "type": "number",
+              "summary": "Gain Error",
+              "description": "This is applied to all thermistor readings",
+              "x-ctype": "float",
+              "x-example": "0.998",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "oe",
+              "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
               "x-ctype": "float",
@@ -3085,8 +3166,8 @@
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "char",
-              "x-default": "0",
-              "x-example": "1",
+              "x-default": "0.0",
+              "x-example": "0.0",
               "x-backup": false,
               "x-lockable": false,
               "x-broadcast": false,

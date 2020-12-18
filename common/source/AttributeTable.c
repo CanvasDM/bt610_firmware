@@ -273,7 +273,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.digitalInput1Mv = 0,
 	.digitalInput2Mv = 0,
 	.magnetState = 0,
-	.bootloaderVersion = "0"
+	.bootloaderVersion = "0.0"
 	/* pyend */
 };
 

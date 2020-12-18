@@ -64,6 +64,10 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
          .mh_write = Sentrius_mgmt_RevEcho,
 		 .mh_read = Sentrius_mgmt_RevEcho
     },
+	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
+         .mh_write = Sentrius_mgmt_CalibrateThermistorVersion2,
+		 .mh_read = Sentrius_mgmt_CalibrateThermistorVersion2
+    }
     /* pyend */
 };
 
@@ -295,6 +299,44 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	}
 
 	r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "ge");
+	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &ge);
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
+	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
+{
+	int r = -EINVAL;
+	long long unsigned int c1 = 0;
+	long long unsigned int c2 = 0;
+	float ge = 0.0;
+	float oe = 0.0;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &c1,
+		  .nodefault = true },
+		{ .attribute = "p2",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &c2,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	r = AdcBt6_CalibrateThermistor(((float)c1 / 10000.0),
+				       ((float)c2 / 10000.0), &ge, &oe);
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
