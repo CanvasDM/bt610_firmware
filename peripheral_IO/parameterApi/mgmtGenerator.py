@@ -126,7 +126,7 @@ class attributes:
 
     def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
         """Create the min/max portion of the attribute table entry"""
-        if i_type == "char":
+        if i_type == "string":
             # string validation is different and doesn't use min/max
             return "0, 0"
         elif i_type == "float":
@@ -143,26 +143,26 @@ class attributes:
             return s_min + ", " + s_max
 
     def _GetStringSize(self, itype: str, imax: str) -> str:
-        if itype == "char":
+        if itype == "string":
             return f"[{imax}+1]" # add one for the NUL character
         else:
             return ""
 
     def _GetDefault(self, itype: str, default: str) -> str:
         if default == "NA":
-            if itype == "char":
+            if itype == "string":
                 return '""'
             elif itype == "float":
                 return 0.0
             else:
                 return 0
         else:
-            if itype == "char":
+            if itype == "string":
                 return ('"' + default + '"')
             else:
                 return default     
     def _GetCborType(self, itype: str) -> str:
-        if itype == "char":
+        if itype == "string":
             return "CborAttrTextStringType"
         elif itype == "float":
             return "CborAttrFloatType"
@@ -215,7 +215,7 @@ class attributes:
                 function = f"     float "
                 struct.append(function)
                 function = f"{self.ParamSummary[self.defineParameter]};\n"    
-            elif "char" in self.ParamType[self.defineParameter]:
+            elif "string" in self.ParamType[self.defineParameter]:
                 function = f"     char {self.ParamSummary[self.defineParameter]}{self._GetStringSize(self.ParamType[self.defineParameter], self.AttributeStringMax[self.defineParameter])};\n"
                 # struct.append(function)
             
@@ -259,7 +259,7 @@ class attributes:
                 struct.append(function)
                 function = "{:>21}".format(".addr.")
                 struct.append(function)
-                if "char" in self.ParamType[parameterNumber]:
+                if "string" in self.ParamType[parameterNumber]:
                     function = "string = "
                     struct.append(function)
                     function = f"{self.ParamSummary[parameterNumber]},\n"
@@ -338,7 +338,7 @@ class attributes:
             response.append(cborStringsz)
             response.append('"'+f"r{i+1}" + '");\n')
             response.append(errorStart)  
-            if self.ParamType[self.cborParameterNumber] == "char":
+            if self.ParamType[self.cborParameterNumber] == "string":
                 #response.append(cborString)
                 response.append(cborStringsz)                
             elif self.ParamType[self.cborParameterNumber] == "float":

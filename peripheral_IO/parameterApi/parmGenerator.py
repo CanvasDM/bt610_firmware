@@ -79,7 +79,7 @@ class attributes:
             pass
 
     def _GetType(self, itype: str) -> str:
-        if itype == "char":
+        if itype == "string":
             return "s  "
         elif itype == "float":
             return "f  "    
@@ -99,7 +99,7 @@ class attributes:
     def _GetAttributeMacro(self, itype: str, readWrite: bool, readOnly: bool, name: str) -> str:
         """Get the c-macro for the RW or RO attribute"""
         # the order is important here because all protocol values are read-only
-        if itype == "char":
+        if itype == "string":
             if readOnly == True:
                 return "RO_ATTRS(" + name + ")"
             elif readWrite == True:
@@ -110,14 +110,14 @@ class attributes:
             return "RW_ATTRX(" + name + ")"
 
     def _GetValidatorString(self, i_type: str) -> str:
-        if i_type == "char":
+        if i_type == "string":
             return "AttributeValidator_" + "string"
         else:
             return "AttributeValidator_" + (i_type).replace('_t', '')
 
     def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
         """Create the min/max portion of the attribute table entry"""
-        if i_type == "char":
+        if i_type == "string":
             # string validation is different and doesn't use min/max
             return "0, 0"
         elif i_type == "float":
@@ -220,7 +220,10 @@ class attributes:
         for i in range(0, self.totalParameters):
             if ((category == 'rw') & (self.AttributeReadWrite[i] == True)) or ((category == 'ro') & (self.AttributeReadOnly[i] == True)):
                 name = self.ParamNames[i]
-                i_type = self.AttributeType[i]
+                if self.AttributeType[i] == "string":
+                    i_type = "char"
+                else:
+                    i_type = self.AttributeType[i]
                 i_max = self.AttributeStringMax[i]
                 default = self.AttributeDefault[i]
                 if default_values:
