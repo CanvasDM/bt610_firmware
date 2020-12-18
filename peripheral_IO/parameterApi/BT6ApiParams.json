@@ -2029,7 +2029,7 @@
             "name": "ge",
             "summary": "ADC Calibrated Thermistor Gain Error",
             "required": true,
-            "x-id": 65,
+            "x-id": 64,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -2053,7 +2053,7 @@
             "name": "oe",
             "summary": "ADC calibrated offset error",
             "required": true,
-            "x-id": 66,
+            "x-id": 65,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -2077,7 +2077,7 @@
             "name": "coefficientA",
             "summary": "Steinhart-Hart Temperature Equation coefficient A",
             "required": true,
-            "x-id": 67,
+            "x-id": 66,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -2101,7 +2101,7 @@
             "name": "coefficientB",
             "summary": "Steinhart-Hart Temperature Equation coefficient B",
             "required": true,
-            "x-id": 68,
+            "x-id": 67,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -2125,7 +2125,7 @@
             "name": "coefficientC",
             "summary": "Steinhart-Hart Temperature Equation  coefficient C",
             "required": true,
-            "x-id": 69,
+            "x-id": 68,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -2149,7 +2149,7 @@
             "name": "thermistorIndex",
             "summary": "Thermistor Index",
             "required": true,
-            "x-id": 70,
+            "x-id": 69,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2173,7 +2173,7 @@
             "name": "temperatureResult1",
             "summary": "Temperature in hundredths of a degree C",
             "required": true,
-            "x-id": 71,
+            "x-id": 70,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2197,7 +2197,7 @@
             "name": "temperatureResult2",
             "summary": "Temperature in hundredths of a degree C",
             "required": true,
-            "x-id": 72,
+            "x-id": 71,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2221,7 +2221,7 @@
             "name": "temperatureResult3",
             "summary": "Temperature in hundredths of a degree C",
             "required": true,
-            "x-id": 73,
+            "x-id": 72,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2245,7 +2245,7 @@
             "name": "temperatureResult4",
             "summary": "Temperature in hundredths of a degree C",
             "required": true,
-            "x-id": 74,
+            "x-id": 73,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2269,7 +2269,7 @@
             "name": "batteryVoltageMv",
             "summary": "Battery Voltage in millivolts",
             "required": true,
-            "x-id": 75,
+            "x-id": 74,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2293,7 +2293,7 @@
             "name": "digitalInput1Alarm",
             "summary": "Digital Input 1 Alarm.\r\n0 = Current State\r\n1 = State Changed",
             "required": true,
-            "x-id": 76,
+            "x-id": 75,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2317,7 +2317,7 @@
             "name": "digitalInput2Alarm",
             "summary": "Digital Input 2 Alarm.\r\n0 = Current State\r\n1 = State Changed",
             "required": true,
-            "x-id": 77,
+            "x-id": 76,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2341,7 +2341,7 @@
             "name": "currentReadingMa",
             "summary": "Current in milliamps",
             "required": true,
-            "x-id": 78,
+            "x-id": 77,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2365,7 +2365,7 @@
             "name": "highTemperature1Alarm",
             "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 79,
+            "x-id": 78,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2389,7 +2389,7 @@
             "name": "lowTemperature1Alarm",
             "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 80,
+            "x-id": 79,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2413,7 +2413,7 @@
             "name": "deltaTemperature1Alarm",
             "summary": "Delta Temperature Alarm.",
             "required": true,
-            "x-id": 81,
+            "x-id": 80,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2437,7 +2437,7 @@
             "name": "highTemperature2Alarm",
             "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 82,
+            "x-id": 81,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2461,7 +2461,7 @@
             "name": "lowTemperature2Alarm",
             "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 83,
+            "x-id": 82,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2485,7 +2485,7 @@
             "name": "deltaTemperature2Alarm",
             "summary": "Delta Temperature Alarm.",
             "required": true,
-            "x-id": 84,
+            "x-id": 83,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2509,7 +2509,7 @@
             "name": "highTemperature3Alarm",
             "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 85,
+            "x-id": 84,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2533,7 +2533,7 @@
             "name": "lowTemperature3Alarm",
             "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 86,
+            "x-id": 85,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2557,7 +2557,7 @@
             "name": "deltaTemperature3Alarm",
             "summary": "Delta Temperature Alarm.",
             "required": true,
-            "x-id": 87,
+            "x-id": 86,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2581,7 +2581,7 @@
             "name": "highTemperature4Alarm",
             "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 88,
+            "x-id": 87,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2605,7 +2605,7 @@
             "name": "lowTemperature4Alarm",
             "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 89,
+            "x-id": 88,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2629,7 +2629,7 @@
             "name": "deltaTemperature4Alarm",
             "summary": "Delta Temperature Alarm.",
             "required": true,
-            "x-id": 90,
+            "x-id": 89,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2653,7 +2653,7 @@
             "name": "highAnalog1Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 91,
+            "x-id": 90,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2677,7 +2677,7 @@
             "name": "lowAnalog1Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 92,
+            "x-id": 91,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2701,7 +2701,7 @@
             "name": "deltaAnalog1Alarm",
             "summary": "Delta Analog Alarm.",
             "required": true,
-            "x-id": 93,
+            "x-id": 92,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2725,7 +2725,7 @@
             "name": "highAnalog2Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 91,
+            "x-id": 93,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2749,7 +2749,7 @@
             "name": "lowAnalog2Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 92,
+            "x-id": 94,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2773,7 +2773,7 @@
             "name": "deltaAnalog2Alarm",
             "summary": "Delta Analog Alarm.",
             "required": true,
-            "x-id": 93,
+            "x-id": 95,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2797,7 +2797,7 @@
             "name": "highAnalog3Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 91,
+            "x-id": 96,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2821,7 +2821,7 @@
             "name": "lowAnalog3Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 92,
+            "x-id": 97,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2845,7 +2845,7 @@
             "name": "deltaAnalog3Alarm",
             "summary": "Delta Analog Alarm.",
             "required": true,
-            "x-id": 93,
+            "x-id": 98,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2869,7 +2869,7 @@
             "name": "highAnalog4Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 91,
+            "x-id": 99,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2893,7 +2893,7 @@
             "name": "lowAnalog4Alarm",
             "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
             "required": true,
-            "x-id": 92,
+            "x-id": 100,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2917,7 +2917,7 @@
             "name": "deltaAnalog4Alarm",
             "summary": "Delta Analog Alarm.",
             "required": true,
-            "x-id": 93,
+            "x-id": 101,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2938,34 +2938,10 @@
             }
           },
           {
-            "name": "hwVersion",
-            "summary": "Hardware Version",
-            "required": true,
-            "x-id": 94,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 255.0,
-              "x-ctype": "string",
-              "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
             "name": "firmwareVersion",
             "summary": "Firmware Version.\r\nFormat = Major.Minor.Build",
             "required": true,
-            "x-id": 95,
+            "x-id": 102,
             "x-groupid": 65,
             "schema": {
               "type": "string",
@@ -2989,7 +2965,7 @@
             "name": "resetReason",
             "summary": "For Development",
             "required": true,
-            "x-id": 96,
+            "x-id": 103,
             "x-groupid": 65,
             "schema": {
               "type": "string",
@@ -3013,7 +2989,7 @@
             "name": "bluetoothAddress",
             "summary": "Bluetooth MAC",
             "required": true,
-            "x-id": 97,
+            "x-id": 104,
             "x-groupid": 65,
             "schema": {
               "type": "string",
@@ -3037,7 +3013,7 @@
             "name": "flags",
             "summary": "Flags",
             "required": true,
-            "x-id": 99,
+            "x-id": 105,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -3061,7 +3037,7 @@
             "name": "resetCount",
             "summary": "reset Count",
             "required": true,
-            "x-id": 100,
+            "x-id": 106,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -3082,10 +3058,10 @@
             }
           },
           {
-            "name": "digitalInput1Mv",
+            "name": "digitalInput1Status",
             "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
             "required": true,
-            "x-id": 101,
+            "x-id": 107,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -3106,10 +3082,10 @@
             }
           },
           {
-            "name": "digitalInput2Mv",
+            "name": "digitalInput2Status",
             "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
             "required": true,
-            "x-id": 102,
+            "x-id": 108,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -3133,7 +3109,7 @@
             "name": "magnetState",
             "summary": "Magnet status",
             "required": true,
-            "x-id": 103,
+            "x-id": 109,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -3157,7 +3133,7 @@
             "name": "bootloaderVersion",
             "summary": "bootloader Version.\r\nFormat = Major.Minor",
             "required": true,
-            "x-id": 104,
+            "x-id": 110,
             "x-groupid": 65,
             "schema": {
               "type": "string",

@@ -215,7 +215,6 @@ typedef struct RoAttributesTag {
 	uint8_t highAnalog4Alarm;
 	uint8_t lowAnalog4Alarm;
 	uint8_t deltaAnalog4Alarm;
-	char hwVersion[0 + 1];
 	char firmwareVersion[11 + 1];
 	char resetReason[8 + 1];
 	char bluetoothAddress[12 + 1];
@@ -264,7 +263,6 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.highAnalog4Alarm = 0,
 	.lowAnalog4Alarm = 0,
 	.deltaAnalog4Alarm = 0,
-	.hwVersion = "0",
 	.firmwareVersion = "0",
 	.resetReason = "0",
 	.bluetoothAddress = "0",
@@ -417,16 +415,15 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [99 ] = { RO_ATTRX(highAnalog4Alarm)              , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 2 },
     [100] = { RO_ATTRX(lowAnalog4Alarm)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 2 },
     [101] = { RO_ATTRX(deltaAnalog4Alarm)             , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [102] = { RO_ATTRS(hwVersion)                     , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
-    [103] = { RO_ATTRS(firmwareVersion)               , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
-    [104] = { RO_ATTRS(resetReason)                   , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
-    [105] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
-    [106] = { RO_ATTRX(flags)                         , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
-    [107] = { RO_ATTRX(resetCount)                    , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
-    [108] = { RO_ATTRX(digitalInput1Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [109] = { RO_ATTRX(digitalInput2Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [110] = { RO_ATTRX(magnetState)                   , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [111] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, n, n, AttributeValidator_string   , 0, 0 }
+    [102] = { RO_ATTRS(firmwareVersion)               , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [103] = { RO_ATTRS(resetReason)                   , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [104] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [105] = { RO_ATTRX(flags)                         , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
+    [106] = { RO_ATTRX(resetCount)                    , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
+    [107] = { RO_ATTRX(digitalInput1Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [108] = { RO_ATTRX(digitalInput2Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [109] = { RO_ATTRX(magnetState)                   , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [110] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, n, n, AttributeValidator_string   , 0, 0 }
     /* pyend */
 };
 /* clang-format on */

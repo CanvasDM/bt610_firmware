@@ -15,7 +15,8 @@
   },
   "tasks": [
     {
-      "label": "build with mcuboot",
+      /*ALWAYS RUN FIRST.... Run for a complete build*/
+      "label": "build with mcuboot *Build First*",
       "type": "shell",
       "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO -- -Dmcuboot_CONF_FILE=\"${workspaceRoot}/peripheral_IO/mcuboot-bt6.conf\"",
       "windows": {

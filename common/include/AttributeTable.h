@@ -60,7 +60,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 112
+#define ATTR_TABLE_SIZE 111
 
 /* pyend */
 
@@ -180,16 +180,15 @@ struct AttributeEntry {
 #define ATTR_INDEX_highAnalog4Alarm                      99
 #define ATTR_INDEX_lowAnalog4Alarm                       100
 #define ATTR_INDEX_deltaAnalog4Alarm                     101
-#define ATTR_INDEX_hwVersion                             102
-#define ATTR_INDEX_firmwareVersion                       103
-#define ATTR_INDEX_resetReason                           104
-#define ATTR_INDEX_bluetoothAddress                      105
-#define ATTR_INDEX_flags                                 106
-#define ATTR_INDEX_resetCount                            107
-#define ATTR_INDEX_digitalInput1Mv                       108
-#define ATTR_INDEX_digitalInput2Mv                       109
-#define ATTR_INDEX_magnetState                           110
-#define ATTR_INDEX_bootloaderVersion                     111
+#define ATTR_INDEX_firmwareVersion                       102
+#define ATTR_INDEX_resetReason                           103
+#define ATTR_INDEX_bluetoothAddress                      104
+#define ATTR_INDEX_flags                                 105
+#define ATTR_INDEX_resetCount                            106
+#define ATTR_INDEX_digitalInput1Mv                       107
+#define ATTR_INDEX_digitalInput2Mv                       108
+#define ATTR_INDEX_magnetState                           109
+#define ATTR_INDEX_bootloaderVersion                     110
 /* pyend */
 /* clang-format on */
 
