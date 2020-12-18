@@ -105,7 +105,7 @@ typedef struct AdcObj {
 } AdcObj_t;
 
 /* Size of float conversion and identifier string */
-#define THERMISTOR_CAL_CONVERSION_MAX_STRLEN (4 * (25 + 4))
+#define THERMISTOR_CAL_CONVERSION_MAX_STR_SIZE (4 * (25 + 4))
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -229,7 +229,7 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 		return rc;
 	}
 
-	char str[THERMISTOR_CAL_CONVERSION_MAX_STRLEN];
+	char str[THERMISTOR_CAL_CONVERSION_MAX_STR_SIZE];
 	const int SAMPLES = CONFIG_ADC_BT6_THERMISTOR_CALIBRATION_SAMPLES;
 	float m1 = 0.0;
 	float m2 = 0.0;

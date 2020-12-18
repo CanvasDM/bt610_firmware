@@ -33,6 +33,8 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 
 static const char EMPTY_STRING[] = "";
 
+#define FLOAT_MAX_STR_SIZE (25 + 4)
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -62,11 +64,13 @@ static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
 static int Write(attr_idx_t Index, AttrType_t Type, void *pValue,
 		 size_t Length);
 
-static void LogAttrChange(attr_idx_t Index);
 static bool IsWritable(attr_idx_t Index);
 
 extern void AttributeTable_Initialize(void);
 extern void AttributeTable_FactoryReset(void);
+
+static void Show(attr_idx_t Index);
+static bool ValidIndex(attr_idx_t Index);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -98,7 +102,7 @@ int AttributesInit(void)
 
 AttrType_t Attribute_GetType(attr_idx_t Index)
 {
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		return attrTable[Index].type;
 	} else {
 		return ATTR_TYPE_UNKNOWN;
@@ -110,18 +114,18 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 {
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		if (IsWritable(Index)) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		r = Validate(Index, Type, pValue, ValueLength);
-		if (r == 0) {
-			r = Write(Index, Type, pValue, ValueLength);
+			k_mutex_lock(&attribute_mutex, K_FOREVER);
+			r = Validate(Index, Type, pValue, ValueLength);
 			if (r == 0) {
-				r = SaveAndBroadcastSingle(Index);
+				r = Write(Index, Type, pValue, ValueLength);
+				if (r == 0) {
+					r = SaveAndBroadcastSingle(Index);
+				}
 			}
+			k_mutex_unlock(&attribute_mutex);
 		}
-		k_mutex_unlock(&attribute_mutex);
-	}
 	}
 	return r;
 }
@@ -132,7 +136,7 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 	size_t size = MIN(attrTable[Index].size, ValueLength);
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		memcpy(pValue, attrTable[Index].pData, size);
 		r = size;
@@ -146,7 +150,7 @@ int Attribute_SetString(attr_idx_t Index, char const *pValue,
 {
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Write(Index, ATTR_TYPE_STRING, (void *)pValue, ValueLength);
 		if (r == 0) {
@@ -161,7 +165,7 @@ int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 {
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		strncpy(pValue, attrTable[Index].pData, MaxStringLength);
 		r = 0;
 	}
@@ -173,7 +177,7 @@ int Attribute_SetUint32(attr_idx_t Index, uint32_t Value)
 	uint32_t local = Value;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
 		if (r == 0) {
@@ -189,7 +193,7 @@ int Attribute_SetSigned32(attr_idx_t Index, int32_t Value)
 	int32_t local = Value;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
 		if (r == 0) {
@@ -205,7 +209,7 @@ int Attribute_SetFloat(attr_idx_t Index, float Value)
 	float local = Value;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Write(Index, ATTR_TYPE_FLOAT, &local, sizeof(local));
 		if (r == 0) {
@@ -221,7 +225,7 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 	*pValue = 0;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_U32) {
 			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((uint32_t *)attrTable[Index].pData);
@@ -237,7 +241,7 @@ int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 	*pValue = 0;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_S32) {
 			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((int32_t *)attrTable[Index].pData);
@@ -253,7 +257,7 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 	*pValue = 0.0;
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_FLOAT) {
 			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			*pValue = *((float *)attrTable[Index].pData);
@@ -268,7 +272,7 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 uint32_t Attribute_AltGetUint32(attr_idx_t Index, uint32_t Default)
 {
 	uint32_t v = Default;
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		v = 0;
 		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
@@ -280,7 +284,7 @@ uint32_t Attribute_AltGetUint32(attr_idx_t Index, uint32_t Default)
 int32_t Attribute_AltGetSigned32(attr_idx_t Index, int32_t Default)
 {
 	int32_t v = Default;
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		v = 0;
 		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
@@ -292,7 +296,7 @@ int32_t Attribute_AltGetSigned32(attr_idx_t Index, int32_t Default)
 float Attribute_AltGetFloat(attr_idx_t Index, float Default)
 {
 	float v = Default;
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		v = 0.0;
 		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
@@ -304,7 +308,7 @@ float Attribute_AltGetFloat(attr_idx_t Index, float Default)
 const char *Attribute_GetName(attr_idx_t Index)
 {
 	const char *p = EMPTY_STRING;
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		p = (const char *)attrTable[Index].name;
 	}
 	return p;
@@ -313,11 +317,38 @@ const char *Attribute_GetName(attr_idx_t Index)
 size_t Attribute_GetSize(attr_idx_t Index)
 {
 	size_t size = 0;
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		size = attrTable[Index].size;
 	}
 	return size;
 }
+
+#ifdef CONFIG_ATTR_SHELL
+
+attr_idx_t Attribute_GetIndex(const char *Name)
+{
+	attr_idx_t i;
+	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+		if (strcmp(Name, attrTable[i].name) == 0) {
+			break;
+		}
+	}
+	return i;
+}
+
+int Attribute_Show(attr_idx_t Index)
+{
+	if (ValidIndex(Index)) {
+		k_mutex_lock(&attribute_mutex, K_FOREVER);
+		Show(Index);
+		k_mutex_unlock(&attribute_mutex);
+		return 0;
+	} else {
+		return -EINVAL;
+	}
+}
+
+#endif /* CONFIG_ATTR_SHELL */
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -354,13 +385,14 @@ static int SaveAndBroadcast(void)
 static int SaveAndBroadcastSingle(attr_idx_t Index)
 {
 	int r = 0;
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	AttributeEntry_t *p = &attrTable[Index];
 
-	if (pEntry->modified) {
-		if (pEntry->savable && !pEntry->deprecated) {
+	if (p->modified) {
+		if (p->savable && !p->deprecated) {
 			r = SaveAttributes();
 		}
 		BroadcastSingle(Index);
+		Show(Index);
 	}
 	return r;
 }
@@ -477,39 +509,40 @@ static void BroadcastSingle(attr_idx_t Index)
 		BufferPool_Free(pb);
 	}
 #endif
-
-	LogAttrChange(Index);
 }
 
-static void LogAttrChange(attr_idx_t Index)
+void Show(attr_idx_t Index)
 {
 	AttributeEntry_t *p = &attrTable[Index];
 	uint32_t d = 0;
 	int32_t i = 0;
 	float f = 0.0;
+	char float_str[FLOAT_MAX_STR_SIZE];
 
 	switch (p->type) {
 	case ATTR_TYPE_U8:
 	case ATTR_TYPE_U16:
 	case ATTR_TYPE_U32:
 		memcpy(&d, p->pData, p->size);
-		LOG_DBG("%s %u", p->name, d);
+		LOG_DBG("[%u] %s %u", Index, p->name, d);
 		break;
 
 	case ATTR_TYPE_S8:
 	case ATTR_TYPE_S16:
 	case ATTR_TYPE_S32:
 		memcpy(&i, p->pData, p->size);
-		LOG_DBG("%s %u", p->name, i);
+		LOG_DBG("[%u] %s %u", Index, p->name, i);
 		break;
 
 	case ATTR_TYPE_FLOAT:
 		memcpy(&f, p->pData, p->size);
-		LOG_DBG("%s %0.4f", p->name, f);
+		snprintf(float_str, sizeof(float_str), "%.4f", f);
+		LOG_DBG("[%u] %s %s", Index, p->name, log_strdup(float_str));
 		break;
 
 	case ATTR_TYPE_STRING:
-		LOG_DBG("%s %s", p->name, log_strdup(p->pData));
+		LOG_DBG("[%u] %s '%s'", Index, p->name,
+			log_strdup((char *)p->pData));
 		break;
 
 	case ATTR_TYPE_UNKNOWN:
@@ -538,7 +571,7 @@ static int LoadAttributes(const char *fname)
 		for (i = 0; i < r; i++) {
 			if (ConvertParameterType(i) == PARAM_STR) {
 				load_status = Load(kvp[i].id, kvp[i].keystr,
-						       kvp[i].length);
+						   kvp[i].length);
 			} else {
 				binlen = hex2bin(kvp[i].keystr, kvp[i].length,
 						 bin, sizeof(bin));
@@ -578,7 +611,7 @@ static int Load(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	int r = -EPERM;
 
-	if (Index < ATTR_TABLE_SIZE) {
+	if (ValidIndex(Index)) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		r = Write(Index, ATTR_TYPE_ANY, pValue, ValueLength);
 		attrTable[Index].modified = false;
@@ -591,39 +624,61 @@ static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
 		    size_t Length)
 {
 	int r = -EPERM;
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	AttributeEntry_t *p = &attrTable[Index];
 
-	if (Type == pEntry->type || Type == ATTR_TYPE_ANY) {
-		r = pEntry->pValidator(pEntry, pValue, Length, false);
+	if (Type == p->type || Type == ATTR_TYPE_ANY) {
+		r = p->pValidator(p, pValue, Length, false);
 	}
 
+	if (r < 0) {
+		LOG_WRN("failure %u %s", Index, p->name);
+		LOG_HEXDUMP_DBG(pValue, Length, "attr data");
+	}
 	return r;
 }
 
 static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 {
 	int r = -EPERM;
-	AttributeEntry_t *pEntry = &attrTable[Index];
+	AttributeEntry_t *p = &attrTable[Index];
 
-	if (Type == pEntry->type || Type == ATTR_TYPE_ANY) {
-		r = pEntry->pValidator(pEntry, pValue, Length, true);
+	if (Type == p->type || Type == ATTR_TYPE_ANY) {
+		r = p->pValidator(p, pValue, Length, true);
 	}
 
+	if (r < 0) {
+		LOG_WRN("validation failure %u %s", Index, p->name);
+		LOG_HEXDUMP_DBG(pValue, Length, "attr data");
+	}
 	return r;
 }
 
 static bool IsWritable(attr_idx_t Index)
 {
 	bool r = false;
-	uint8_t lock = *((uint8_t *)attrTable[ATTR_INDEX_lock].pData);
-	if (Index < ATTR_TABLE_SIZE) {
-		if (attrTable[Index].writable) {
-			if (attrTable[Index].lockable) {
-				r = (lock == 0);
-			} else {
-				r = true;
-			}
+	bool unlocked = ((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
+	AttributeEntry_t *p = &attrTable[Index];
+
+	if (p->writable) {
+		if (p->lockable) {
+			r = unlocked;
+		} else {
+			r = true;
 		}
 	}
+
+	if (!r) {
+		LOG_DBG("[%u] %s is Not writable", Index, p->name);
+	}
 	return r;
+}
+
+static bool ValidIndex(attr_idx_t Index)
+{
+	if (Index < ATTR_TABLE_SIZE) {
+		return true;
+	} else {
+		LOG_ERR("Invalid index %u", Index);
+		return false;
+	}
 }

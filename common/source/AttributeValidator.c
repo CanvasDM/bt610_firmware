@@ -42,6 +42,19 @@ int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
+int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	uint64_t value = *((uint64_t *)pValue);
+
+	if (DoWrite && value != *((uint64_t *)pEntry->pData)) {
+		pEntry->modified = true;
+		*((uint64_t *)pEntry->pData) = value;
+	}
+	return 0;
+}
+
 int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite)
 {
@@ -94,6 +107,19 @@ int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 		r = 0;
 	}
 	return r;
+}
+
+int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int64_t value = *((int64_t *)pValue);
+
+	if (DoWrite && value != *((int64_t *)pEntry->pData)) {
+		pEntry->modified = true;
+		*((int64_t *)pEntry->pData) = value;
+	}
+	return 0;
 }
 
 int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,

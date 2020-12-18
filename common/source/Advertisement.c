@@ -66,7 +66,7 @@ int Advertisement_Init(void)
 	size_t count = 1;
 	bt_addr_le_t addr;
 	char addr_str[BT_ADDR_LE_STR_LEN] = { 0 };
-	char bdaddr[BT_ADDR_LE_STR_LEN] = { 0 };
+	char bd_addr[BT_ADDR_LE_STR_LEN];
 	size_t size = Attribute_GetSize(ATTR_INDEX_bluetoothAddress);
 
 	bt_id_get(&addr, &count);
@@ -84,12 +84,13 @@ int Advertisement_Init(void)
 	size_t j;
 	for (i = 0, j = 0; j < size - 1; i++) {
 		if (addr_str[i] != ':') {
-			bdaddr[j] = addr_str[i];
+			bd_addr[j] = addr_str[i];
 			j += 1;
 		}
 	}
-	Attribute_Set(ATTR_INDEX_bluetoothAddress, ATTR_TYPE_STRING, bdaddr,
-		      size - 1);
+	bd_addr[j] = 0;
+	LOG_DBG("bd addr %s", log_strdup(bd_addr));
+	Attribute_SetString(ATTR_INDEX_bluetoothAddress, bd_addr, size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;

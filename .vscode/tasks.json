@@ -15,8 +15,8 @@
   },
   "tasks": [
     {
-      /*ALWAYS RUN FIRST.... Run for a complete build*/
-      "label": "build with mcuboot *Build First*",
+      /* ALWAYS RUN FIRST.... Run this to build merged bootloader and application properly. */
+      "label": "build with mcuboot *Run this First*",
       "type": "shell",
       "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO -- -Dmcuboot_CONF_FILE=\"${workspaceRoot}/peripheral_IO/mcuboot-bt6.conf\"",
       "windows": {

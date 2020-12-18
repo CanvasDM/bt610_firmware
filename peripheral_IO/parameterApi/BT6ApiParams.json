@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.7",
+    "version": "1.8",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -70,7 +70,7 @@
     {
       "name": "SetParameter",
       "summary": "Set Parameter",
-      "description": "",
+      "description": "Set an attribute",
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
@@ -2950,8 +2950,8 @@
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "string",
-              "x-default": "0",
-              "x-example": "1",
+              "x-default": "0.0.0",
+              "x-example": "1.0.0",
               "x-backup": false,
               "x-lockable": false,
               "x-broadcast": false,
@@ -3151,6 +3151,105 @@
               "x-readonly": true,
               "x-writeonly": false,
               "x-readwrite": false
+            }
+          },
+          {
+            "name": "paramPath",
+            "summary": "Folder on file system used for Parse/Dump commands",
+            "required": true,
+            "x-id": 111,
+            "x-groupid": 65,
+            "schema": {
+              "type": "string",
+              "minimumlength": 0,
+              "maximumlength": 8,
+              "x-ctype": "string",
+              "x-default": "/ext",
+              "x-example": "/lfs",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "ainSelects",
+            "summary": "Configures analog inputs for Current Sense. This is a bitmask",
+            "required": true,
+            "x-id": 112,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 15.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "8",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-readonly": false,
+              "x-writeonly": false,
+              "x-readwrite": true
+            }
+          },
+          {
+            "name": "batteryAge",
+            "summary": "Time in seconds that the battery has been in use",
+            "required": true,
+            "x-id": 113,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "upTime",
+            "summary": "Time in milliseconds since the last reboot",
+            "required": true,
+            "x-id": 114,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint64_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "apiVersion",
+            "summary": "The API version that the current firmware supports",
+            "required": true,
+            "x-id": 115,
+            "x-groupid": 65,
+            "schema": {
+              "type": "string",
+              "maximumlength": 11,
+              "x-ctype": "string",
+              "x-default": "1.8",
+              "x-example": "123.456.789",
+              "x-readonly": true
             }
           }
         ]

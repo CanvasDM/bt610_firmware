@@ -14,7 +14,7 @@ class attributes:
     def __init__(self, fname: str = "BT6ApiParams.json"):
 
         # The following items are loaded from the configuration file
-        self.componetList = 0
+        self.componentList = 0
         self.totalParameters = 0
 
         self.headerFilePath = "../../common/include/"
@@ -46,12 +46,27 @@ class attributes:
         self.AttributeSavable = []
         self.resultName = []
         self._LoadConfig(fname)
+    
+    def _GetNumberField(self, index, item: str):
+        """ Handles items not being present (lazy get) """
+        try:
+          r = self.componentList[index]['schema'][item]
+          return r
+        except:
+          return 0.0
 
+    def _GetBoolField(self, index, item: str):
+        try:
+          r = self.componentList[index]['schema'][item]
+          return r
+        except:
+          return False
+            
     def _LoadConfig(self, fname: str) -> None:
         with open(fname, 'r') as f:
             data = json.load(f)
-            self.componetList = data['components']['contentDescriptors']['deviceParams']['x-deviceparameters']
-            self.totalParameters = len(self.componetList)
+            self.componentList = data['components']['contentDescriptors']['deviceParams']['x-deviceparameters']
+            self.totalParameters = len(self.componentList)
             file_name = self.headerFilePath + self.fileName
             self.inputHeaderFileName = file_name
             self.outputHeaderFileName = file_name + ""
@@ -61,21 +76,22 @@ class attributes:
 
 
             for i in range(self.totalParameters):
-                self.ParamNames.append(self.componetList[i]['name'])
-                self.ParamId.append(self.componetList[i]['x-id'])
+                self.ParamNames.append(self.componentList[i]['name'])
+                self.ParamId.append(self.componentList[i]['x-id'])
                 #schema sub
-                self.AttributeStringMax.append(self.componetList[i]['schema']['maximumlength'])
-                self.AttributeMax.append(self.componetList[i]['schema']['maximum'])
-                self.AttributeMin.append(self.componetList[i]['schema']['minimum'])
-                self.AttributeDefault.append(self.componetList[i]['schema']['x-default'])
-                self.AttributeType.append(self.componetList[i]['schema']['x-ctype'])
-                self.AttributeBackup.append(self.componetList[i]['schema']['x-backup'])
-                self.AttributeLockable.append(self.componetList[i]['schema']['x-lockable'])
-                self.AttributeBroadcast.append(self.componetList[i]['schema']['x-broadcast'])
-                self.AttributeReadOnly.append(self.componetList[i]['schema']['x-readonly'])
-                self.AttributeWriteOnly.append(self.componetList[i]['schema']['x-writeonly'])
-                self.AttributeReadWrite.append(self.componetList[i]['schema']['x-readwrite'])
-                self.AttributeSavable.append(self.componetList[i]['schema']['x-savable'])
+                self.AttributeStringMax.append(self._GetNumberField(i, 'maximumlength'))
+                self.AttributeMax.append(self._GetNumberField(i,'maximum'))
+                self.AttributeMin.append(self._GetNumberField(i,'minimum'))
+                self.AttributeDefault.append(self.componentList[i]['schema']['x-default'])
+                self.AttributeType.append(self.componentList[i]['schema']['x-ctype'])
+                self.AttributeBackup.append(self._GetBoolField(i, 'x-backup'))
+                self.AttributeLockable.append(self._GetBoolField(i, 'x-lockable'))
+                self.AttributeBroadcast.append(self._GetBoolField(i, 'x-broadcast'))
+                self.AttributeReadOnly.append(self._GetBoolField(i, 'x-readonly'))
+                self.AttributeWriteOnly.append(self._GetBoolField(i, 'x-writeonly'))
+                self.AttributeReadWrite.append(self._GetBoolField(i, 'x-readwrite'))
+                self.AttributeSavable.append(self._GetBoolField(i, 'x-savable'))
+                # todo: max string length
             pass
 
     def _GetType(self, itype: str) -> str:
@@ -95,6 +111,12 @@ class attributes:
             return "u16"        
         elif itype == "uint32_t":
             return "u32"
+        elif itype == "int64_t":
+            return "i64"
+        elif itype == "uint64_t":
+            return "u64"
+        else: #u8 array
+            return "a  "
             
     def _GetAttributeMacro(self, itype: str, readWrite: bool, readOnly: bool, name: str) -> str:
         """Get the c-macro for the RW or RO attribute"""
@@ -220,6 +242,7 @@ class attributes:
         for i in range(0, self.totalParameters):
             if ((category == 'rw') & (self.AttributeReadWrite[i] == True)) or ((category == 'ro') & (self.AttributeReadOnly[i] == True)):
                 name = self.ParamNames[i]
+                # string is required in test tool, c requires char type
                 if self.AttributeType[i] == "string":
                     i_type = "char"
                 else:

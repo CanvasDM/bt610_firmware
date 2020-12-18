@@ -24,3 +24,11 @@ config ATTR_BROADCAST_NAME
     bool "During broadcast print name of each attribute that has changed"
     depends on ATTR_BROADCAST
     depends on ATTR_LOG_LEVEL > 3
+
+config ATTR_SHELL
+    bool "Enable Attribute Shell"
+    depends on SHELL
+    depends on FILE_SYSTEM_UTILITIES
+    depends on ATTR_LOG_LEVEL > 3
+    depends on FRAMEWORK
+

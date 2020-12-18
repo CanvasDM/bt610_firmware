@@ -65,7 +65,8 @@ AttrType_t Attribute_GetType(attr_idx_t Index);
  * @param Type the type of attribute
  * @param pValue string representation of variable
  * @param ValueLength The length (without null char) of the string
- * being passed in.
+ * being passed in.  If the value isn't a string, then the length is
+ * not used.
  *
  * @retval negative error code, 0 on success
  */
@@ -217,6 +218,27 @@ const char *Attribute_GetName(attr_idx_t Index);
  * @param size of attribute, size with null if string
  */
 size_t Attribute_GetSize(attr_idx_t Index);
+
+#ifdef CONFIG_ATTR_SHELL
+/**
+ * @brief Get the index of an attribute
+ *
+ * @param Name of the attribute
+ *
+ * @param attr_idx_t index of attribute
+ */
+attr_idx_t Attribute_GetIndex(const char *Name);
+
+/**
+ * @brief Print the value of an attribute (LOG_DBG)
+ *
+ * @param Index a valid index into table
+ *
+ * @param negative error code, 0 on success
+ */
+int Attribute_Show(attr_idx_t Index);
+
+#endif /* CONFIG_ATTR_SHELL */
 
 #ifdef __cplusplus
 }

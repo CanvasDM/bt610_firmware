@@ -164,19 +164,9 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	Sentrius_mgmt_register_group();
 #endif
 
-	//Test only
+	/* todo: test only */
 	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.rxer.id,
 					      FMC_LED_TEST);
-
-	if (lcz_no_init_ram_var_is_valid(battery_age,
-					 sizeof(battery_age->data))) {
-		LOG_INF("Battery age: %u", battery_age->data);
-	} else {
-		LOG_WRN("Battery age not valid");
-		memset(battery_age, 0, sizeof(*battery_age));
-		lcz_no_init_ram_var_update_header(battery_age,
-						  sizeof(battery_age->data));
-	}
 
 	Framework_StartTimer(&pObj->msgTask);
 
@@ -193,7 +183,6 @@ static void RebootHandler(void)
 	uint32_t reason = nrf_power_resetreas_get(NRF_POWER);
 	const char *s = lbt_get_nrf52_reset_reason_string(reason);
 	nrf_power_resetreas_clear(NRF_POWER, reason);
-	LOG_INF("Reset Reason %s", log_strdup(s));
 	Attribute_SetString(ATTR_INDEX_resetReason, s, strlen(s));
 
 	uint32_t count = 0;
@@ -202,8 +191,18 @@ static void RebootHandler(void)
 		count += 1;
 		fsu_write_abs(RESET_COUNT_FNAME, &count, sizeof(count));
 	}
-	LOG_INF("Reset Count %u", count);
-	Attribute_SetUint32(ATTR_INDEX_firmwareVersion, count);
+	Attribute_SetUint32(ATTR_INDEX_resetCount, count);
+
+	bool valid = lcz_no_init_ram_var_is_valid(battery_age,
+						  sizeof(battery_age->data));
+	if (valid) {
+		LOG_INF("Battery age: %u", battery_age->data);
+	} else {
+		LOG_WRN("Battery age not valid");
+		memset(battery_age, 0, sizeof(*battery_age));
+		lcz_no_init_ram_var_update_header(battery_age,
+						  sizeof(battery_age->data));
+	}
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,

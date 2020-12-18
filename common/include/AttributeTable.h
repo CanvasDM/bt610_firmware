@@ -29,14 +29,17 @@ typedef enum {
 	ATTR_TYPE_U8,
 	ATTR_TYPE_U16,
 	ATTR_TYPE_U32,
+	ATTR_TYPE_U64,
 	ATTR_TYPE_S8,
 	ATTR_TYPE_S16,
 	ATTR_TYPE_S32,
+	ATTR_TYPE_S64,
 	ATTR_TYPE_FLOAT,
 	ATTR_TYPE_STRING,
-	ATTR_TYPE_BYTE_ARRAY,
 	ATTR_TYPE_ANY
 } AttrType_t;
+
+#define ATTR_TYPE_BYTE_ARRAY ATTR_TYPE_STRING
 
 typedef struct AttributeEntry AttributeEntry_t;
 
@@ -60,7 +63,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 111
+#define ATTR_TABLE_SIZE 116
 
 /* pyend */
 
@@ -185,10 +188,15 @@ struct AttributeEntry {
 #define ATTR_INDEX_bluetoothAddress                      104
 #define ATTR_INDEX_flags                                 105
 #define ATTR_INDEX_resetCount                            106
-#define ATTR_INDEX_digitalInput1Mv                       107
-#define ATTR_INDEX_digitalInput2Mv                       108
+#define ATTR_INDEX_digitalInput1Status                   107
+#define ATTR_INDEX_digitalInput2Status                   108
 #define ATTR_INDEX_magnetState                           109
 #define ATTR_INDEX_bootloaderVersion                     110
+#define ATTR_INDEX_paramPath                             111
+#define ATTR_INDEX_ainSelects                            112
+#define ATTR_INDEX_batteryAge                            113
+#define ATTR_INDEX_upTime                                114
+#define ATTR_INDEX_apiVersion                            115
 /* pyend */
 /* clang-format on */
 
@@ -203,11 +211,15 @@ struct AttributeEntry {
  */
 int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
+int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite);
 int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
 int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
 int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite);
+int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
 int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
