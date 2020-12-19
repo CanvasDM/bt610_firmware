@@ -46,7 +46,7 @@ int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
-	uint64_t value = *((uint64_t *)pValue);
+	uint64_t value = *(uint64_t *)pValue;
 
 	if (DoWrite && value != *((uint64_t *)pEntry->pData)) {
 		pEntry->modified = true;
@@ -60,7 +60,7 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	uint32_t value = *((uint32_t *)pValue);
+	uint32_t value = *(uint32_t *)pValue;
 
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
@@ -78,7 +78,7 @@ int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	uint16_t value = *((uint16_t *)pValue);
+	uint32_t value = (uint32_t)(*(uint16_t *)pValue);
 
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
@@ -96,7 +96,7 @@ int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	uint8_t value = *((uint8_t *)pValue);
+	uint32_t value = (uint32_t)(*(uint8_t *)pValue);
 
 	if (((value >= pEntry->min) && (value <= pEntry->max)) ||
 	    (pEntry->min == pEntry->max)) {
@@ -113,7 +113,7 @@ int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
-	int64_t value = *((int64_t *)pValue);
+	int64_t value = *(int64_t *)pValue;
 
 	if (DoWrite && value != *((int64_t *)pEntry->pData)) {
 		pEntry->modified = true;
@@ -127,7 +127,7 @@ int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	int32_t value = *((int32_t *)pValue);
+	int32_t value = *(int32_t *)pValue;
 	int32_t min = (int32_t)pEntry->min;
 	int32_t max = (int32_t)pEntry->max;
 
@@ -146,7 +146,7 @@ int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	int16_t value = *((int16_t *)pValue);
+	int32_t value = (int32_t)(*(int16_t *)pValue);
 	int32_t min = (int32_t)pEntry->min;
 	int32_t max = (int32_t)pEntry->max;
 
@@ -165,7 +165,7 @@ int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	int8_t value = *((int8_t *)pValue);
+	int32_t value = (int32_t)(*(int8_t *)pValue);
 	int32_t min = (int32_t)pEntry->min;
 	int32_t max = (int32_t)pEntry->max;
 

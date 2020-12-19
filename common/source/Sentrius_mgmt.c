@@ -19,6 +19,7 @@
 #include "Attribute.h"
 #include "UserInterfaceTask.h"
 #include "AdcBt6.h"
+#include "qrtc.h"
 
 #include "Sentrius_mgmt.h"
 
@@ -67,6 +68,14 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
          .mh_write = Sentrius_mgmt_CalibrateThermistorVersion2,
 		 .mh_read = Sentrius_mgmt_CalibrateThermistorVersion2
+    },
+	[SENTRIUS_MGMT_ID_SET_RTC] = {
+         .mh_write = Sentrius_mgmt_SetRtc,
+		 .mh_read = Sentrius_mgmt_SetRtc
+    },
+	[SENTRIUS_MGMT_ID_GET_RTC] = {
+         .mh_write = Sentrius_mgmt_GetRtc,
+		 .mh_read = Sentrius_mgmt_GetRtc
     }
     /* pyend */
 };
@@ -345,6 +354,49 @@ int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &ge);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
+{
+	int r = -EPERM;
+	int t = 0;
+	long long unsigned int epoch = ULLONG_MAX;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &epoch,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	if (epoch < UINT32_MAX) {
+		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, epoch);
+		t = Qrtc_SetEpoch(epoch);
+	}
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");
+	err |= cbor_encode_int(&ctxt->encoder, t);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_GetRtc(struct mgmt_ctxt *ctxt)
+{
+	int t = Qrtc_GetEpoch();
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");
+	err |= cbor_encode_int(&ctxt->encoder, t);
 
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }

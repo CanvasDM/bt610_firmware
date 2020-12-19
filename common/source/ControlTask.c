@@ -18,6 +18,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <power/reboot.h>
 #include <pm_config.h>
 #include <hal/nrf_power.h>
+#include <logging/log_ctrl.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"
@@ -32,6 +33,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "file_system_utilities.h"
 #include "laird_bluetooth.h"
 #include "Attribute.h"
+#include "qrtc.h"
 
 #include "ControlTask.h"
 
@@ -56,7 +58,18 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 
 typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
+	uint32_t broadcastCount;
 } ControlTaskObj_t;
+
+/**
+ * @note Items in non-initialized RAM need to survive a reset.
+ */
+typedef struct no_init_ram {
+	no_init_ram_header_t header;
+	uint32_t battery_age;
+	uint32_t qrtc;
+} no_init_ram_t;
+#define SIZE_OF_NIRD 8
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -70,8 +83,7 @@ K_THREAD_STACK_DEFINE(controlTaskStack, CONTROL_TASK_STACK_DEPTH);
 K_MSGQ_DEFINE(controlTaskQueue, FWK_QUEUE_ENTRY_SIZE, CONTROL_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
-static no_init_ram_uint32_t *battery_age =
-	(no_init_ram_uint32_t *)PM_LCZ_NOINIT_SRAM_ADDRESS;
+static no_init_ram_t *pnird = (no_init_ram_t *)PM_LCZ_NOINIT_SRAM_ADDRESS;
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -83,6 +95,9 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg);
+
+static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						FwkMsg_t *pMsg);
 
 static void RebootHandler(void);
 
@@ -97,6 +112,7 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_INVALID:                   return Framework_UnknownMsgHandler;
 	case FMC_PERIODIC:                  return HeartbeatMsgHandler;
 	case FMC_SOFTWARE_RESET:            return SoftwareResetMsgHandler;
+	case FMC_ATTR_CHANGED:              return AttrBroadcastMsgHandler;
 	default:                            return NULL;
 	}
 	/* clang-format on */
@@ -110,8 +126,7 @@ void ControlTask_Initialize(void)
 	cto.msgTask.rxer.id = FWK_ID_CONTROL_TASK;
 	cto.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	cto.msgTask.rxer.pMsgDispatcher = ControlTaskMsgDispatcher;
-	cto.msgTask.timerDurationTicks =
-		K_SECONDS(CONFIG_BATTERY_AGE_TICK_RATE_SECONDS);
+	cto.msgTask.timerDurationTicks = K_SECONDS(CONFIG_HEARTBEAT_SECONDS);
 	cto.msgTask.timerPeriodTicks = K_MSEC(0);
 	cto.msgTask.rxer.pQueue = &controlTaskQueue;
 
@@ -193,15 +208,16 @@ static void RebootHandler(void)
 	}
 	Attribute_SetUint32(ATTR_INDEX_resetCount, count);
 
-	bool valid = lcz_no_init_ram_var_is_valid(battery_age,
-						  sizeof(battery_age->data));
+	bool valid = lcz_no_init_ram_var_is_valid(pnird, SIZE_OF_NIRD);
 	if (valid) {
-		LOG_INF("Battery age: %u", battery_age->data);
+		LOG_INF("Battery age: %u", pnird->battery_age);
+		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
+		Qrtc_SetEpoch(pnird->qrtc);
 	} else {
-		LOG_WRN("Battery age not valid");
-		memset(battery_age, 0, sizeof(*battery_age));
-		lcz_no_init_ram_var_update_header(battery_age,
-						  sizeof(battery_age->data));
+		LOG_WRN("No init ram data is not valid");
+		pnird->battery_age = 0;
+		pnird->qrtc = 0;
+		lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 	}
 }
 
@@ -210,10 +226,42 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
-	battery_age->data += CONFIG_BATTERY_AGE_TICK_RATE_SECONDS;
-	lcz_no_init_ram_var_update_header(battery_age,
-					  sizeof(battery_age->data));
+
+	/* One reason for this being milliseconds is to test the int64 type. */
+	int64_t uptimeMs = k_uptime_get();
+	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
+
+	pnird->battery_age = Attribute_AltGetUint32(ATTR_INDEX_batteryAge, 0) +
+			     CONFIG_HEARTBEAT_SECONDS;
+	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
+
+	/* Read value from system because it should have less error
+	 * than seconds maintained by this function. */
+	pnird->qrtc = Qrtc_GetEpoch();
+	Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
+
+	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
+
 	Framework_StartTimer(&pObj->msgTask);
+	return DISPATCH_OK;
+}
+
+static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						FwkMsg_t *pMsg)
+{
+	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
+	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	size_t i;
+
+	pObj->broadcastCount += 1;
+
+	for (i = 0; i < pb->count; i++) {
+		switch (pb->list[i]) {
+		default:
+			/* Don't care about this attribute. This is a broadcast. */
+			break;
+		}
+	}
 	return DISPATCH_OK;
 }
 
@@ -222,7 +270,8 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsgRxer);
 	UNUSED_PARAMETER(pMsg);
-	// todo: log panic ?
+
+	log_panic();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
 	LOG_ERR("Software Reset in ~5 seconds");
 	k_sleep(K_SECONDS(5));

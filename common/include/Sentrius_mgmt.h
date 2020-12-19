@@ -32,6 +32,8 @@ mgmt_handler_fn Sentrius_mgmt_RevEcho;
 mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor;
 mgmt_handler_fn Sentrius_mgmt_TestLed;
 mgmt_handler_fn Sentrius_mgmt_CalibrateThermistorVersion2;
+mgmt_handler_fn Sentrius_mgmt_SetRtc;
+mgmt_handler_fn Sentrius_mgmt_GetRtc;
 /* pyend */
 
 /**
@@ -49,6 +51,8 @@ mgmt_handler_fn Sentrius_mgmt_CalibrateThermistorVersion2;
 #define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR                   4
 #define SENTRIUS_MGMT_ID_TESTLED                               5
 #define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2          6
+#define SENTRIUS_MGMT_ID_SET_RTC                               7
+#define SENTRIUS_MGMT_ID_GET_RTC                               8
 /* pyend */
 /* clang-format on */
 

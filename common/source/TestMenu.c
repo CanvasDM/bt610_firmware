@@ -73,7 +73,7 @@ static int sample(const struct shell *shell, int channel,
 	for (i = 0; i < samples; i++) {
 		status = AdcBt6_Measure(&raw, channel, type, MEASURE_SINGLE);
 		conv = func(raw);
-		shell_print(shell, "[%u] status: %d raw: %d converted: %.4f", i,
+		shell_print(shell, "[%u] status: %d raw: %d converted: %.4e", i,
 			    status, raw, conv);
 		if (status != 0) {
 			break;
@@ -84,7 +84,7 @@ static int sample(const struct shell *shell, int channel,
 	}
 	avg_raw /= samples;
 	avg_conv /= samples;
-	shell_print(shell, "averages: raw: %d converted: %.4f", avg_raw,
+	shell_print(shell, "averages: raw: %d converted: %.4e", avg_raw,
 		    avg_conv);
 	return 0;
 }
@@ -199,8 +199,8 @@ static int cal(const struct shell *shell, size_t argc, char **argv)
 	ARG_UNUSED(argc);
 	float c1 = atof(argv[1]);
 	float c2 = atof(argv[2]);
-	shell_print(shell, "c1 set to %.4f", c1);
-	shell_print(shell, "c2 set to %.4f", c2);
+	shell_print(shell, "c1 set to %.4e", c1);
+	shell_print(shell, "c2 set to %.4e", c2);
 
 	float ge;
 	float oe;
@@ -212,7 +212,7 @@ static int cal(const struct shell *shell, size_t argc, char **argv)
 			shell_print(shell, "error: %d", status);
 			break;
 		}
-		shell_print(shell, "ge: %.4f oe: %.4f", ge, oe);
+		shell_print(shell, "ge: %.4e oe: %.4e", ge, oe);
 		k_sleep(K_MSEC(delay));
 	}
 

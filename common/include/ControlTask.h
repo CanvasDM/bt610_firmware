@@ -1,48 +1,44 @@
-/******************************************************************************/
-//! @file ControlTask.h
-//!
-//! @brief
-//!
-//! @copyright Copyright 2019 Laird
-//!            All Rights Reserved.
-/******************************************************************************/
+/**
+ * @file ControlTask.h
+ * @brief
+ *
+ * Copyright (c) 2020 Laird Connectivity
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+#ifndef __CONTROL_TASK_H__
+#define __CONTROL_TASK_H__
 
-#ifndef CONTROL_TASK_H
-#define CONTROL_TASK_H
-
-//EXTERN_C_BEGIN
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
 
-//! The main thread can either have a stack large enough to do initialization, or
-//! the control thread can be the "main" thread, or
-//!
+/** The main thread can either have a stack large enough to do initialization, or
+ * the control thread can be the "main" thread, or
+ */
 #ifndef CONTROL_TASK_USES_MAIN_THREAD
 #define CONTROL_TASK_USES_MAIN_THREAD 1
 #endif
 
 /******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
-// NA
-
-/******************************************************************************/
 /* Global Function Prototypes                                                 */
 /******************************************************************************/
-
-//-----------------------------------------------
-//!
+/**
+ * @brief Initialize control task and all other application tasks.
+ */
 void ControlTask_Initialize(void);
 
-//-----------------------------------------------
-//! If CONTROL_TASK_USES_MAIN_THREAD is non-zero then this needs to part of main.
-//!
+/**
+ * @brief Run main/control thread.
+ */
 void ControlTask_Thread(void);
 
-//EXTERN_C_END
-
+#ifdef __cplusplus
+}
 #endif
 
-// end
+#endif /* __CONTROL_TASK_H__ */

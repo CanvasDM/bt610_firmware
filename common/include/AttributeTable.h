@@ -63,7 +63,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 116
+#define ATTR_TABLE_SIZE 118
 
 /* pyend */
 
@@ -197,6 +197,8 @@ struct AttributeEntry {
 #define ATTR_INDEX_batteryAge                            113
 #define ATTR_INDEX_upTime                                114
 #define ATTR_INDEX_apiVersion                            115
+#define ATTR_INDEX_qrtc                                  116
+#define ATTR_INDEX_qrtcLastSet                           117
 /* pyend */
 /* clang-format on */
 

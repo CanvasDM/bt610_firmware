@@ -89,7 +89,6 @@ int Advertisement_Init(void)
 		}
 	}
 	bd_addr[j] = 0;
-	LOG_DBG("bd addr %s", log_strdup(bd_addr));
 	Attribute_SetString(ATTR_INDEX_bluetoothAddress, bd_addr, size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;

@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.8",
+    "version": "1.9",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -470,6 +470,107 @@
               "description": "negative error code, 0 on success",
               "x-example": "0",
               "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetRtc",
+      "summary": "Set the RTC",
+      "description": "Time in seconds.  Reference is often Jan 1, 1970",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 7,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Time in seconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "1000",
+            "x-example": "1000",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "Rtc",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "t",
+              "type": "integer",
+              "summary": "Epoch Time",
+              "description": "Time in seconds",
+              "x-example": "0",
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetRtc",
+      "summary": "Get the current RTC value",
+      "description": "Time in seconds.  Default reference is Jan 1, 1970",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 8,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter required for test tool",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "1000",
+            "x-example": "1000",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "Rtc",
+        "schema": {
+          "items": [
+            {
+              "name": "t",
+              "type": "integer",
+              "summary": "Result",
+              "description": "Time in seconds",
+              "x-example": "0",
+              "x-ctype": "uint32_t",
               "x-sequencenumber": 1
             }
           ]
@@ -3208,13 +3309,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": true
             }
           },
           {
@@ -3225,7 +3320,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "x-ctype": "uint64_t",
+              "x-ctype": "int64_t",
               "x-default": "0",
               "x-example": "0",
               "x-backup": false,
@@ -3249,6 +3344,35 @@
               "x-ctype": "string",
               "x-default": "1.8",
               "x-example": "123.456.789",
+              "x-readonly": true
+            }
+          },
+          {
+            "name": "qrtc",
+            "summary": "Quasi-RTC (epoch, Seconds from Jan 1, 1970)",
+            "required": true,
+            "x-id": 116,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-readonly": true
+            }
+          },
+          {
+            "name": "qrtcLastSet",
+            "summary": "Last time the RTC was set",
+            "required": true,
+            "x-id": 117,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-savable": true,
               "x-readonly": true
             }
           }
