@@ -19,25 +19,18 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef CONFIG_ATTR_BROADCAST
 #include "FrameworkIncludes.h"
-#endif
-
 #include "AttributeTable.h"
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-#ifdef CONFIG_ATTR_BROADCAST
-
 typedef struct AttrBroadcastMsg {
 	FwkMsgHeader_t header;
 	size_t count;
 	uint8_t list[ATTR_TABLE_SIZE];
 } AttrChangedMsg_t;
 BUILD_ASSERT(ATTR_TABLE_SIZE <= UINT8_MAX, "List element size too small");
-
-#endif
 
 typedef enum AttrDumpType {
 	ATTR_DUMP_RW = 0,
@@ -54,7 +47,14 @@ typedef enum AttrDumpType {
  *
  * @retval negative error code, 0 on success
  */
-int AttributesInit(void);
+int Attribute_Init(void);
+
+/**
+ * @brief Set values to default (except items configured during production).
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_FactoryReset(void);
 
 /**
  * @brief Get the type of the attribute

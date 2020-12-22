@@ -16,10 +16,6 @@ config ATTR_FILE_NAME
 config ATTR_BREAK_ON_LOAD_FAILURE
     bool "Stop loading on first failure"
 
-config ATTR_BROADCAST
-    bool "Enable attribute broadcast message"
-    depends on FRAMEWORK
-
 config ATTR_SHELL
     bool "Enable Attribute Shell"
     depends on SHELL

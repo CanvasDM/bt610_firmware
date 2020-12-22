@@ -19,11 +19,6 @@ config LOG_LEVEL_BLE_TASK
     range 0 4
     default 3
 
-config UI_TASK_LOG_LEVEL
-    int "Log level for BLE Msg Task"
-    range 0 4
-    default 3
-
 config CONTROL_TASK_LOG_LEVEL
     int "Log level for Control Task"
     range 0 4
@@ -59,5 +54,6 @@ config HEARTBEAT_SECONDS
 
 rsource "Kconfig.adc_bt6"
 rsource "Kconfig.attribute"
+rsource "Kconfig.ui"
 
 endif # APPLICATION_COMMON

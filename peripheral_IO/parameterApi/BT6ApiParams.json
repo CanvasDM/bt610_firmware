@@ -1974,7 +1974,7 @@
               "x-example": "0",
               "x-backup": false,
               "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,

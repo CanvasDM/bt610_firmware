@@ -111,7 +111,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	/* clang-format off */
 	switch (MsgCode) {
 	case FMC_INVALID:                     return Framework_UnknownMsgHandler;
-	case FMC_CODE_BLE_START_ADVERTISING:  return StartAdvertisingMsgHandler;
+	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */

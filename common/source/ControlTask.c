@@ -99,6 +99,9 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						FwkMsg_t *pMsg);
 
+static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg);
+
 static void RebootHandler(void);
 
 /******************************************************************************/
@@ -113,6 +116,7 @@ static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_PERIODIC:                  return HeartbeatMsgHandler;
 	case FMC_SOFTWARE_RESET:            return SoftwareResetMsgHandler;
 	case FMC_ATTR_CHANGED:              return AttrBroadcastMsgHandler;
+	case FMC_FACTORY_RESET:             return FactoryResetMsgHandler;
 	default:                            return NULL;
 	}
 	/* clang-format on */
@@ -164,7 +168,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	LOG_WRN("Version %s", VERSION_STRING);
 
-	AttributesInit();
+	Attribute_Init();
 
 	RebootHandler();
 
@@ -178,10 +182,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();
 #endif
-
-	/* todo: test only */
-	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(pObj->msgTask.rxer.id,
-					      FMC_LED_TEST);
 
 	Framework_StartTimer(&pObj->msgTask);
 
@@ -224,7 +224,7 @@ static void RebootHandler(void)
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg)
 {
-	UNUSED_PARAMETER(pMsg);
+	ARG_UNUSED(pMsg);
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
 
 	/* One reason for this being milliseconds is to test the int64 type. */
@@ -265,11 +265,21 @@ static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
+static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+	LOG_WRN("Factory Reset");
+	Attribute_FactoryReset();
+	return DISPATCH_OK;
+}
+
 static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						FwkMsg_t *pMsg)
 {
-	UNUSED_PARAMETER(pMsgRxer);
-	UNUSED_PARAMETER(pMsg);
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
 
 	log_panic();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);

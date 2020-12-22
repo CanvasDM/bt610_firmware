@@ -100,7 +100,7 @@ static void systemWorkqShowHandler(struct k_work *item);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
-int AttributesInit(void)
+int Attribute_Init(void)
 {
 	int r = -EPERM;
 
@@ -124,6 +124,12 @@ int AttributesInit(void)
 	GIVE_MUTEX(attr_mutex);
 
 	return r;
+}
+
+int Attribute_FactoryReset(void)
+{
+	AttributeTable_FactoryReset();
+	return SaveAttributes();
 }
 
 AttrType_t Attribute_GetType(attr_idx_t Index)
@@ -585,7 +591,6 @@ static int SaveAttributes(void)
 
 static void Broadcast(void)
 {
-#ifdef CONFIG_ATTR_BROADCAST
 	size_t msgSize = sizeof(AttrChangedMsg_t);
 	AttrChangedMsg_t *pb = BufferPool_Take(msgSize);
 
@@ -609,19 +614,14 @@ static void Broadcast(void)
 			attrTable[i].modified = false;
 		}
 
-		/* no one may have registered for message */
-		if (Framework_Broadcast((FwkMsg_t *)pb, msgSize) !=
-		    FWK_SUCCESS) {
-			pb->count = 0;
-		}
-
 		if (pb->count == 0) {
 			BufferPool_Free(pb);
-		} else {
-			LOG_DBG("Count %u", pb->count);
+		} else if (Framework_Broadcast((FwkMsg_t *)pb, msgSize) !=
+			   FWK_SUCCESS) {
+			/* no one may have registered for message */
+			BufferPool_Free(pb);
 		}
 	}
-#endif
 }
 
 void Show(attr_idx_t Index)
