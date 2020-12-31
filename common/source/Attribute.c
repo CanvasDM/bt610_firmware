@@ -112,16 +112,16 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 
 	if (Index < ATTR_TABLE_SIZE) {
 		if (IsWritable(Index)) {
-		k_mutex_lock(&attribute_mutex, K_FOREVER);
-		r = Validate(Index, Type, pValue, ValueLength);
-		if (r == 0) {
-			r = Write(Index, Type, pValue, ValueLength);
+			k_mutex_lock(&attribute_mutex, K_FOREVER);
+			r = Validate(Index, Type, pValue, ValueLength);
 			if (r == 0) {
-				r = SaveAndBroadcastSingle(Index);
+				r = Write(Index, Type, pValue, ValueLength);
+				if (r == 0) {
+					r = SaveAndBroadcastSingle(Index);
+				}
 			}
+			k_mutex_unlock(&attribute_mutex);
 		}
-		k_mutex_unlock(&attribute_mutex);
-	}
 	}
 	return r;
 }
@@ -538,7 +538,7 @@ static int LoadAttributes(const char *fname)
 		for (i = 0; i < r; i++) {
 			if (ConvertParameterType(i) == PARAM_STR) {
 				load_status = Load(kvp[i].id, kvp[i].keystr,
-						       kvp[i].length);
+						   kvp[i].length);
 			} else {
 				binlen = hex2bin(kvp[i].keystr, kvp[i].length,
 						 bin, sizeof(bin));
@@ -615,6 +615,12 @@ static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 static bool IsWritable(attr_idx_t Index)
 {
 	bool r = false;
+	static bool BleAddressInternalWritten = false;
+	if ((Index == ATTR_INDEX_bluetoothAddress) &&
+	    (BleAddressInternalWritten == false)) {
+		BleAddressInternalWritten = true;
+		return (true);
+	}
 	uint8_t lock = *((uint8_t *)attrTable[ATTR_INDEX_lock].pData);
 	if (Index < ATTR_TABLE_SIZE) {
 		if (attrTable[Index].writable) {
