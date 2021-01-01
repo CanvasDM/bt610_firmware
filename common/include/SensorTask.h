@@ -1,13 +1,13 @@
 /**
- * @file UserCommTask.h
+ * @file SensorTask.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __USER_COMM_TASK_H__
-#define __USER_COMM_TASK_H__
+#ifndef __SENSOR_TASK_H__
+#define __SENSOR_TASK_H__
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -22,13 +22,9 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-typedef enum {
-	UART_COMM = 0,
-	I2C_COMM,
-	SPI_CS1_COMM,
-	SPI_CS2_COMM,
-	NUMBER_COMMS,
-} commType_t;
+//typedef enum {
+
+//} sensorType_t;
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -45,22 +41,19 @@ typedef enum {
  *
  * @retval
  */
-void UserCommTask_Initialize(void);
+void SensorTask_Initialize(void);
 /******************************************************************************/
 /**
  * @brief
- *  Send a message out using one of the COMM ports (UART,SPI,I2C)
+ *  
  * @param
  * @param
  *
  * @retval
  */
-uint8_t UserCommTask_SendData(commType_t comm, const uint8_t *data, size_t len);
-
-//void UserCommTask_ConfigSPI(spi_config *config);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __USER_COMM_TASK__ */
+#endif /* __SENSOR_TASK__ */

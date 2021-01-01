@@ -106,12 +106,12 @@ AttrType_t Attribute_GetType(attr_idx_t Index)
 }
 
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength)
+		  size_t ValueLength, ParamSetLocation_t setLocation)
 {
 	int r = -EPERM;
 
 	if (Index < ATTR_TABLE_SIZE) {
-		if (IsWritable(Index)) {
+		if ((IsWritable(Index)) || (setLocation == INTERNAL_SET)) {
 			k_mutex_lock(&attribute_mutex, K_FOREVER);
 			r = Validate(Index, Type, pValue, ValueLength);
 			if (r == 0) {
@@ -135,7 +135,7 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 	if (Index < ATTR_TABLE_SIZE) {
 		k_mutex_lock(&attribute_mutex, K_FOREVER);
 		memcpy(pValue, attrTable[Index].pData, size);
-		r = size;
+		r = 0;
 		k_mutex_unlock(&attribute_mutex);
 	}
 	return r;
@@ -615,12 +615,6 @@ static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 static bool IsWritable(attr_idx_t Index)
 {
 	bool r = false;
-	static bool BleAddressInternalWritten = false;
-	if ((Index == ATTR_INDEX_bluetoothAddress) &&
-	    (BleAddressInternalWritten == false)) {
-		BleAddressInternalWritten = true;
-		return (true);
-	}
 	uint8_t lock = *((uint8_t *)attrTable[ATTR_INDEX_lock].pData);
 	if (Index < ATTR_TABLE_SIZE) {
 		if (attrTable[Index].writable) {

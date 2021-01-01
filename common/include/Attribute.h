@@ -38,6 +38,10 @@ typedef struct AttrBroadcastMsg {
 BUILD_ASSERT(ATTR_TABLE_SIZE <= UINT8_MAX, "List element size too small");
 
 #endif
+typedef enum{
+	INTERNAL_SET = 0,
+	EXTERNAL_SET
+} ParamSetLocation_t;
 
 /******************************************************************************/
 /* Function Definitions                                                       */
@@ -70,7 +74,7 @@ AttrType_t Attribute_GetType(attr_idx_t Index);
  * @retval negative error code, 0 on success
  */
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength);
+		  size_t ValueLength, ParamSetLocation_t setLocation);
 
 /**
  * @brief Copy an attribute

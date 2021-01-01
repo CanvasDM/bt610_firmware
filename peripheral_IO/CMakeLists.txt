@@ -31,7 +31,7 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
-    ${CMAKE_SOURCE_DIR}/../common/source/UserCommTask.c
+    ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
 )
 

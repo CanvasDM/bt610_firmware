@@ -131,20 +131,20 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	/*Get the value*/
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
-		getResult = Attribute_GetSigned32(&intData, paramID);
+		getResult = Attribute_Get(paramID, &intData, sizeof(int32_t));
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		getResult = Attribute_GetUint32(&uintData, paramID);
+		getResult = Attribute_Get(paramID, &uintData, sizeof(uint32_t));
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
-		getResult = Attribute_GetString(bufferData, paramID,
-						ATTR_MAX_STR_LENGTH);
+		getResult =
+			Attribute_Get(paramID, bufferData, ATTR_MAX_STR_LENGTH);
 		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
 		break;
 	case CborAttrFloatType:
-		getResult = Attribute_GetFloat(&floatData, paramID);
+		getResult = Attribute_Get(paramID, &floatData, sizeof(float));
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;
@@ -403,8 +403,7 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.integer <= INT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.integer,
-
-					       sizeof(int32_t));
+					       sizeof(int32_t), EXTERNAL_SET);
 		}
 		break;
 	case CborAttrUnsignedIntegerType:
@@ -412,19 +411,21 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.uinteger <= UINT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.uinteger,
-					       sizeof(uint32_t));
+					       sizeof(uint32_t), EXTERNAL_SET);
 		}
 		break;
 
 	case CborAttrTextStringType:
-		status = Attribute_Set(id, Attribute_GetType(id),
-				       attrs->addr.string,
-				       strlen(attrs->addr.string));
+		status =
+			Attribute_Set(id, Attribute_GetType(id),
+				      attrs->addr.string,
+				      strlen(attrs->addr.string), EXTERNAL_SET);
 		break;
 
 	case CborAttrFloatType:
 		status = Attribute_Set(id, Attribute_GetType(id),
-				       attrs->addr.fval, sizeof(float));
+				       attrs->addr.fval, sizeof(float),
+				       EXTERNAL_SET);
 		break;
 
 	default:
