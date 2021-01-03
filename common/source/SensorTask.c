@@ -26,6 +26,7 @@ LOG_MODULE_REGISTER(Sensor);
 #include "FrameworkIncludes.h"
 #include "Attribute.h"
 #include "SensorTask.h"
+#include "BspSupport.h"
 #include "AdcBt6.h"
 
 /******************************************************************************/
@@ -70,6 +71,12 @@ K_MSGQ_DEFINE(digitalIOTaskQueue, FWK_QUEUE_ENTRY_SIZE, SENSOR_TASK_QUEUE_DEPTH,
 /******************************************************************************/
 static void SensorTaskThread(void *, void *, void *);
 static void CheckBattery(void);
+static DispatchResult_t
+SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+				     FwkMsg_t *pMsg);
+static DispatchResult_t
+SensorTaskConfigDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					FwkMsg_t *pMsg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -78,8 +85,10 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:  return Framework_UnknownMsgHandler;
-	default:           return NULL;
+	case FMC_INVALID:       	return Framework_UnknownMsgHandler;
+	case FMC_ATTR_CHANGED:  	return SensorTaskAttributeChangedMsgHandler;
+	case FMC_CONFIG_DIGITAL_IN: return SensorTaskConfigDigitalInputdMsgHandler;
+	default:                	return NULL;
 	}
 	/* clang-format on */
 }
@@ -118,8 +127,11 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	SensorTaskObj_t *pObj = (SensorTaskObj_t *)pArg1;
 
 	/*Setup Digital Inputs based on configuration*/
+	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_CONFIG_DIGITAL_IN);
 
 	CheckBattery();
+
+	Framework_StartTimer(&pObj->msgTask);
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -135,6 +147,77 @@ static void CheckBattery(void)
 	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
 		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
 		      sizeof(int32_t), INTERNAL_SET);
+}
+
+static DispatchResult_t
+SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	//if (activeMode) {
+	AttrBroadcastMsg_t *pAttrMsg = (AttrBroadcastMsg_t *)pMsg;
+	size_t i;
+	for (i = 0; i < pAttrMsg->count; i++) {
+		switch (pAttrMsg->list[i]) {
+		case ATTR_INDEX_batterySenseInterval:
+			//FRAMEWORK_MSG_CREATE_AND_SEND(
+			//	FWK_ID_SENSOR_TASK,
+			//	FWK_ID_SENSOR_TASK,
+			//	MSG_CODE_READ_BATTERY);
+			break;
+
+		case ATTR_INDEX_temperatureSenseInterval:
+			//FRAMEWORK_MSG_CREATE_AND_SEND(
+			//	FWK_ID_SENSOR_TASK,
+			//	FWK_ID_SENSOR_TASK,
+			//	MSG_CODE_TEMPERATURE_MEASURE);
+			break;
+
+		case ATTR_INDEX_digitalInput1:
+		case ATTR_INDEX_digitalInput2:
+			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
+						   FMC_CONFIG_DIGITAL_IN);
+			break;
+		case ATTR_INDEX_analogInput1Type:
+		case ATTR_INDEX_analogInput2Type:
+		case ATTR_INDEX_analogInput3Type:
+		case ATTR_INDEX_analogInput4Type:
+			break;
+
+		case ATTR_INDEX_activeMode:
+			// It isn't expected that host will write this.
+			break;
+
+		default:
+			// don't do anything - this is a broadcast
+			break;
+		}
+	}
+	//}
+
+	return DISPATCH_OK;
+}
+static DispatchResult_t
+SensorTaskConfigDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					FwkMsg_t *pMsg)
+{
+	uint8_t input1TriggerLevel;
+	uint8_t input2TriggerLevel;
+	Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
+		      sizeof(uint8_t));
+	Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
+		      sizeof(uint8_t));
+
+	if (input1TriggerLevel == 0) {
+		/*Set alarm when input is low*/
+	} else {
+		/*Set alarm when input is High*/
+	}
+	if (input2TriggerLevel == 0) {
+		/*Set alarm when input is low*/
+	} else {
+		/*Set alarm when input is High*/
+	}
+
+	return DISPATCH_OK;
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

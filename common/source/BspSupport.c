@@ -40,7 +40,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 gpio_port_pins_t pins);
 
 static void ConfigureInputs(void);
-static void ConfigureOutputs(void);
+static void InitDigitalInputInterrupt(void) static void ConfigureOutputs(void);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -170,7 +170,26 @@ static void ConfigureInputs(void)
 	/* Port1 */
 	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
 }
+static void InitDigitalInputInterrupt(void)
+{
+	/* DIN1 */
+	gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
+	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+				     (GPIO_INT_EDGE_BOTH));
 
+	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
+	gpio_add_callback(port0, &digitalIn1_cb_data);
+
+	/* DIN2 */
+	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
+	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+				     (GPIO_INT_EDGE_BOTH));
+
+	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
+	gpio_add_callback(port1, &digitalIn2_cb_data);
+}
 static void ConfigureOutputs(void)
 {
 	/* Port0 */
