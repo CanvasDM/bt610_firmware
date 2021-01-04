@@ -104,8 +104,12 @@ typedef struct AdcObj {
 	float oe;
 } AdcObj_t;
 
-/* Size of float conversion and identifier string */
-#define THERMISTOR_CAL_CONVERSION_MAX_STRLEN (4 * (25 + 4))
+#define THERM_CAL_FMT_STR                                                      \
+	"c1: " F_FMT " c2: " F_FMT " ge: " F_FMT "oe: " F_FMT "\r\n"
+#define THERM_CAL_FMT_STR_MAX_SIZE                                             \
+	((4 * CONFIG_ATTR_FLOAT_MAX_STR_SIZE) + sizeof(THERM_CAL_FMT_STR))
+
+#define F_FMT CONFIG_ATTR_FLOAT_FMT
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -157,6 +161,7 @@ int AdcBt6_Init(void)
 
 	status = InitExpander();
 
+	/* These were kept separate because Attributes were in a state of flux. */
 	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
 	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
@@ -229,7 +234,7 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 		return rc;
 	}
 
-	char str[THERMISTOR_CAL_CONVERSION_MAX_STRLEN];
+	char str[THERM_CAL_FMT_STR_MAX_SIZE];
 	const int SAMPLES = CONFIG_ADC_BT6_THERMISTOR_CALIBRATION_SAMPLES;
 	float m1 = 0.0;
 	float m2 = 0.0;
@@ -255,9 +260,7 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 		adcObj.oe = m1 - (adcObj.ge * c1);
 		*ge = adcObj.ge;
 		*oe = adcObj.oe;
-		snprintf(str, sizeof(str),
-			 "c1: %.4f c2: %.4f ge: %.4f oe: %.4f\r\n", c1, c2, *ge,
-			 *oe);
+		snprintf(str, sizeof(str), THERM_CAL_FMT_STR, c1, c2, *ge, *oe);
 		fsu_append(CONFIG_FSU_MOUNT_POINT, "thermistor_cal.txt", str,
 			   strlen(str));
 		lcz_params_write("ge", &adcObj.ge, sizeof(adcObj.ge));
@@ -421,7 +424,8 @@ int AdcBt6_SetAinSelect(uint8_t bitmask)
 	int r = -EPERM;
 	uint8_t ain_sel = MIN(bitmask, 0xf);
 
-	r = lcz_params_write("ain_sel", &ain_sel, sizeof(ain_sel));
+	r = Attribute_Set(ATTR_INDEX_ainSelects, ATTR_TYPE_U8, &ain_sel,
+			  sizeof(ain_sel));
 	if (r >= 0) {
 		r = ConfigAinSelects();
 	}
@@ -545,14 +549,12 @@ static int InitExpander(void)
 static int ConfigAinSelects(void)
 {
 	int rc = -EPERM;
-	uint8_t ain_sel = 0;
-
 	if (adcObj.i2c == NULL) {
 		return rc;
 	}
 
-	lcz_params_read("ain_sel", &ain_sel, sizeof(ain_sel));
-	adcObj.expander.bits.ain_sel = ain_sel;
+	adcObj.expander.bits.ain_sel =
+		(uint8_t)Attribute_AltGetUint32(ATTR_INDEX_ainSelects, 0);
 
 	/* To measure current the correspoding output must be set to 1 */
 	uint8_t cmd[] = { TCA9538_REG_OUTPUT, adcObj.expander.byte };

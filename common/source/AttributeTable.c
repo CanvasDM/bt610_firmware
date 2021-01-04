@@ -25,11 +25,14 @@
 #define u8  ATTR_TYPE_U8
 #define u16 ATTR_TYPE_U16
 #define u32 ATTR_TYPE_U32
+#define u64 ATTR_TYPE_U64
 #define i8  ATTR_TYPE_S8
 #define i16 ATTR_TYPE_S16
 #define i32 ATTR_TYPE_S32
+#define i64 ATTR_TYPE_S64
 #define f   ATTR_TYPE_FLOAT
 #define s   ATTR_TYPE_STRING
+#define a   ATTR_TYPE_STRING
 /* clang-format on */
 
 /* Add things to the end!  Do not remove items. Change them to deprecated. */
@@ -103,6 +106,8 @@ typedef struct RwAttributesTag {
 	float coefficientB;
 	float coefficientC;
 	uint8_t thermistorIndex;
+	uint8_t ainSelects;
+	uint32_t batteryAge;
 	/* pyend */
 } RwAttribute_t;
 
@@ -175,7 +180,9 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.coefficientA = 0.001132,
 	.coefficientB = 0.0002338,
 	.coefficientC = 8.780e-8,
-	.thermistorIndex = 0
+	.thermistorIndex = 0,
+	.ainSelects = 0,
+	.batteryAge = 0
 	/* pyend */
 };
 
@@ -224,6 +231,11 @@ typedef struct RoAttributesTag {
 	uint8_t digitalInput2Status;
 	uint8_t magnetState;
 	char bootloaderVersion[11 + 1];
+	char paramPath[8 + 1];
+	int64_t upTime;
+	char apiVersion[11 + 1];
+	uint32_t qrtc;
+	uint32_t qrtcLastSet;
 	/* pyend */
 } RoAttribute_t;
 
@@ -263,7 +275,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.highAnalog4Alarm = 0,
 	.lowAnalog4Alarm = 0,
 	.deltaAnalog4Alarm = 0,
-	.firmwareVersion = "0",
+	.firmwareVersion = "0.0.0",
 	.resetReason = "0",
 	.bluetoothAddress = "0",
 	.flags = 0,
@@ -271,7 +283,12 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.digitalInput1Status = 0,
 	.digitalInput2Status = 0,
 	.magnetState = 0,
-	.bootloaderVersion = "0.0"
+	.bootloaderVersion = "0.0",
+	.paramPath = "/ext",
+	.upTime = 0,
+	.apiVersion = "1.8",
+	.qrtc = 0,
+	.qrtcLastSet = 0
 	/* pyend */
 };
 
@@ -312,7 +329,7 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 /* index.....name.....................................type.savable.backup.lockable.broadcast.validator..min.max. */
 /* clang-format off */
 AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
-  	/* pystart - attribute table */
+    /* pystart - attribute table */
     [0  ] = { RW_ATTRS(sensorName)                    , s  , y, n, n, y, AttributeValidator_string   , 0, 0 },
     [1  ] = { RW_ATTRS(sensorLocation)                , s  , y, n, n, n, AttributeValidator_string   , 0, 0 },
     [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, n, n, y, AttributeValidator_uint16   , 20, 10000 },
@@ -370,7 +387,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [54 ] = { RW_ATTRX(lowAnalog4Thresh1)             , u16, y, n, n, n, AttributeValidator_uint16   , 0, 4096 },
     [55 ] = { RW_ATTRX(lowAnalog4Thresh2)             , u16, y, n, n, n, AttributeValidator_uint16   , 0, 4096 },
     [56 ] = { RW_ATTRX(analog4DeltaThresh)            , u16, y, n, n, n, AttributeValidator_uint16   , 0, 4096 },
-    [57 ] = { RW_ATTRX(activeMode)                    , u8 , y, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [57 ] = { RW_ATTRX(activeMode)                    , u8 , y, n, n, y, AttributeValidator_uint8    , 0, 1 },
     [58 ] = { RW_ATTRX(useCodedPhy)                   , u8 , y, n, n, n, AttributeValidator_uint8    , 0, 1 },
     [59 ] = { RW_ATTRX(txPower)                       , i8 , y, n, n, n, AttributeValidator_int8     , (int8_t)-40, 8 },
     [60 ] = { RW_ATTRX(networkId)                     , u16, y, n, n, n, AttributeValidator_uint16   , 0, 65535 },
@@ -423,7 +440,14 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [107] = { RO_ATTRX(digitalInput1Status)           , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
     [108] = { RO_ATTRX(digitalInput2Status)           , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
     [109] = { RO_ATTRX(magnetState)                   , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [110] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, n, n, AttributeValidator_string   , 0, 0 }
+    [110] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [111] = { RO_ATTRS(paramPath)                     , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [112] = { RW_ATTRX(ainSelects)                    , u8 , y, n, n, y, AttributeValidator_uint8    , 0, 15 },
+    [113] = { RW_ATTRX(batteryAge)                    , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
+    [114] = { RO_ATTRX(upTime)                        , i64, n, n, n, n, AttributeValidator_int64    , 0, 0 },
+    [115] = { RO_ATTRS(apiVersion)                    , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
+    [116] = { RO_ATTRX(qrtc)                          , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
+    [117] = { RO_ATTRX(qrtcLastSet)                   , u32, y, n, n, n, AttributeValidator_uint32   , 0, 0 }
     /* pyend */
 };
 /* clang-format on */
@@ -431,13 +455,18 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
+/**
+ * @brief Copy defaults (before loading from flash)
+ */
 void AttributeTable_Initialize(void)
 {
 	memcpy(&rw, &DRW, sizeof(RwAttribute_t));
 	memcpy(&ro, &DRO, sizeof(RoAttribute_t));
 }
 
-/* set non-backup values to default */
+/**
+ * @brief set non-backup values to default
+ */
 void AttributeTable_FactoryReset(void)
 {
 	size_t i = 0;

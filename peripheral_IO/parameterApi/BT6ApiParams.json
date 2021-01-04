@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.8",
+    "version": "1.9",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -70,7 +70,7 @@
     {
       "name": "SetParameter",
       "summary": "Set Parameter",
-      "description": "",
+      "description": "Set an attribute",
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
@@ -468,6 +468,199 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SetRtc",
+      "summary": "Set the RTC",
+      "description": "Time in seconds.  Reference is often Jan 1, 1970",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 7,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Time in seconds",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "1000",
+            "x-example": "1000",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "Rtc",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "t",
+              "type": "integer",
+              "summary": "Epoch Time",
+              "description": "Time in seconds",
+              "x-example": "0",
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GetRtc",
+      "summary": "Get the current RTC value",
+      "description": "Time in seconds.  Default reference is Jan 1, 1970",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 8,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter required for test tool",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "1000",
+            "x-example": "1000",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "Rtc",
+        "schema": {
+          "items": [
+            {
+              "name": "t",
+              "type": "integer",
+              "summary": "Result",
+              "description": "Time in seconds",
+              "x-example": "0",
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Load",
+      "summary": "Load parameters from a file",
+      "description": "Used in conjunction with file system commands",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 9,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter required for test tool",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "LoadResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Dump",
+      "summary": "Dump chosen parameters to a file",
+      "description": "Used in conjunction with file system commands",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 10,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dump Type: 0 = read/write, 1 = writable, 2 = read-only",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "2",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "DumpResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, length of file in bytes on success",
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -1873,7 +2066,7 @@
               "x-example": "0",
               "x-backup": false,
               "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
@@ -2950,8 +3143,8 @@
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "string",
-              "x-default": "0",
-              "x-example": "1",
+              "x-default": "0.0.0",
+              "x-example": "1.0.0",
               "x-backup": false,
               "x-lockable": false,
               "x-broadcast": false,
@@ -3151,6 +3344,128 @@
               "x-readonly": true,
               "x-writeonly": false,
               "x-readwrite": false
+            }
+          },
+          {
+            "name": "paramPath",
+            "summary": "Folder on file system used for Parse/Dump commands",
+            "required": true,
+            "x-id": 111,
+            "x-groupid": 65,
+            "schema": {
+              "type": "string",
+              "minimumlength": 0,
+              "maximumlength": 8,
+              "x-ctype": "string",
+              "x-default": "/ext",
+              "x-example": "/lfs",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "ainSelects",
+            "summary": "Configures analog inputs for Current Sense. This is a bitmask",
+            "required": true,
+            "x-id": 112,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 15.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "8",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-readonly": false,
+              "x-writeonly": false,
+              "x-readwrite": true
+            }
+          },
+          {
+            "name": "batteryAge",
+            "summary": "Time in seconds that the battery has been in use",
+            "required": true,
+            "x-id": 113,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-readwrite": true
+            }
+          },
+          {
+            "name": "upTime",
+            "summary": "Time in milliseconds since the last reboot",
+            "required": true,
+            "x-id": 114,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "int64_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-backup": false,
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-readonly": true,
+              "x-writeonly": false,
+              "x-readwrite": false
+            }
+          },
+          {
+            "name": "apiVersion",
+            "summary": "The API version that the current firmware supports",
+            "required": true,
+            "x-id": 115,
+            "x-groupid": 65,
+            "schema": {
+              "type": "string",
+              "maximumlength": 11,
+              "x-ctype": "string",
+              "x-default": "1.8",
+              "x-example": "123.456.789",
+              "x-readonly": true
+            }
+          },
+          {
+            "name": "qrtc",
+            "summary": "Quasi-RTC (epoch, Seconds from Jan 1, 1970)",
+            "required": true,
+            "x-id": 116,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-readonly": true
+            }
+          },
+          {
+            "name": "qrtcLastSet",
+            "summary": "Last time the RTC was set",
+            "required": true,
+            "x-id": 117,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-savable": true,
+              "x-readonly": true
             }
           }
         ]

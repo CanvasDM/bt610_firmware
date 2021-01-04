@@ -16,11 +16,32 @@ config ATTR_FILE_NAME
 config ATTR_BREAK_ON_LOAD_FAILURE
     bool "Stop loading on first failure"
 
-config ATTR_BROADCAST
-    bool "Enable attribute broadcast message"
+config ATTR_SHELL
+    bool "Enable Attribute Shell"
+    depends on SHELL
+    depends on FILE_SYSTEM_UTILITIES
+    depends on ATTR_LOG_LEVEL > 3
     depends on FRAMEWORK
 
-config ATTR_BROADCAST_NAME
-    bool "During broadcast print name of each attribute that has changed"
-    depends on ATTR_BROADCAST
+config ATTR_SHELL_SHOW_ALL_DELAY_MS
+    int "Amount of time to delay between each debug log print"
+    depends on ATTR_SHELL
+    default 10
+    help
+        This is used to prevent log system overflow.
+
+config ATTR_SHOW_FMT
+    string "Format for the attribute show command index name"
     depends on ATTR_LOG_LEVEL > 3
+    default "[%03u] %-30s"
+
+config ATTR_FLOAT_FMT
+    string "Default format for floats"
+    default "%.4e"
+
+config ATTR_FLOAT_MAX_STR_SIZE
+    int "Number of characters (and NULL) for floats converted to string using"
+    default 13
+    help
+         An example with ATTR_FLOAT_FMT of %0.4e is -2.8171e+000.
+

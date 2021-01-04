@@ -17,6 +17,7 @@ set(PM_STATIC_YML_FILE
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 
@@ -41,4 +42,8 @@ target_sources(app PRIVATE
 )
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+if(CONFIG_ATTR_SHELL)
+target_sources(app PRIVATE
+    ${CMAKE_SOURCE_DIR}/../common/source/AttributeShell.c
+)
+endif()

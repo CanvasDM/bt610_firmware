@@ -25,6 +25,13 @@ extern "C" {
 #include "FrameworkMsgCodes.h"
 #include "FrameworkMsgTypes.h"
 
+/******************************************************************************/
+/* Global Constants, Macros and Type Definitions                              */
+/******************************************************************************/
+/* Shortened names help functions fit on one line */
+typedef DispatchResult_t Dispatch_t;
+typedef FwkMsgReceiver_t FwkMsgRxer_t;
+
 #ifdef __cplusplus
 }
 #endif

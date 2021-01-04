@@ -19,6 +19,8 @@
     "C_Cpp.errorSquiggles": "Disabled",
     "cmake.configureOnOpen": false,
     "cSpell.words": [
-      "fstr"
+      "fstr",
+      "nird",
+      "pnird"
     ]
 }

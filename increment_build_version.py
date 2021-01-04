@@ -17,7 +17,8 @@ def increment_build_version(argv) -> str:
     Reads header file (argv[1]),
     increments build/patch number,
     and writes header file
-    If arg[2] is present (prj.conf), then update version in this file.
+    If arg[2] is present (prj.conf), then update version in project file.  This
+    will cause a full rebuild.
     """
     logger = logging.getLogger('increment_build_version')
     logger.setLevel(logging.INFO)
@@ -60,9 +61,8 @@ def increment_build_version(argv) -> str:
     vs = major + "." + minor + "." + patch
     logger.info(vs)
 
-    # The problem with this is that is causes a full rebuild.
-    # if len(argv) > 2:
-    #    update_zephyr_file(vs, argv[2])
+    if len(argv) > 2:
+        update_zephyr_file(vs, argv[2])
 
     return vs
 

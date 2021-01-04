@@ -203,13 +203,9 @@ SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	uint8_t pinStatus = pSensorMsg->status;
 
 	if (pSensorMsg->pin == DIN1_MCU_PIN) {
-		Attribute_Set(ATTR_INDEX_digitalInput1Status,
-			      Attribute_GetType(ATTR_INDEX_digitalInput1Status),
-			      &pinStatus, sizeof(uint8_t), INTERNAL_SET);
+		Attribute_SetUint32(ATTR_INDEX_digitalInput1Status, pinStatus);
 	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
-		Attribute_Set(ATTR_INDEX_digitalInput2Status,
-			      Attribute_GetType(ATTR_INDEX_digitalInput2Status),
-			      &pinStatus, sizeof(uint8_t), INTERNAL_SET);
+		Attribute_SetUint32(ATTR_INDEX_digitalInput2Status, pinStatus);
 	} else {
 		/* Error, only 2 digital pins */
 	}

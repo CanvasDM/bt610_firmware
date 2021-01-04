@@ -19,11 +19,6 @@ config LOG_LEVEL_BLE_TASK
     range 0 4
     default 3
 
-config UI_TASK_LOG_LEVEL
-    int "Log level for BLE Msg Task"
-    range 0 4
-    default 3
-
 config CONTROL_TASK_LOG_LEVEL
     int "Log level for Control Task"
     range 0 4
@@ -50,12 +45,15 @@ config MCUMGR_CMD_SENTRIUS_MGMT
     depends on MCUMGR
     default y
 
-config BATTERY_AGE_TICK_RATE_SECONDS
-    int "Update rate for increasing battery age counter"
+config HEARTBEAT_SECONDS
+    int "Heartbeat tick rate seconds"
     range 1 3600
     default 60
+    help
+        Update rate for increasing battery age counter and qrtc in attributes.
 
 rsource "Kconfig.adc_bt6"
 rsource "Kconfig.attribute"
+rsource "Kconfig.ui"
 
 endif # APPLICATION_COMMON

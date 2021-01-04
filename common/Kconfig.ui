@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2020 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config UI_TASK_LOG_LEVEL
+    int "Log level for BLE Msg Task"
+    range 0 4
+    default 3
+
+config UI_LED_TEST_ON_RESET
+    bool "Light LEDs after reset using test pattern"
+
+config UI_LED_TEST_ON_RESET_DURATION_MS
+    int "Time in ms for each step"
+    depends on UI_LED_TEST_ON_RESET
+    default 1000
+
+#
+# Non-customizable items
+#
+config UI_NUMBER_OF_BUTTONS
+    int
+    default 3
+
+config UI_PAIR_MIN_MS
+    int
+    default 3000
+    help
+        Pairing request means start advertising
+        Applies to SW1 and SW3 (AMR)
+
+config UI_PAIR_MAX_MS
+    int
+    default 10000
+
+config UI_MAX_ALIVE_MS
+    int
+    default 1000
+
+config UI_MIN_FACTORY_RESET_MS
+    int
+    default 10000
+
+config UI_MAX_FACTORY_RESET_MS
+    int
+    default 20000
