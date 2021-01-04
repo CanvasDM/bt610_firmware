@@ -534,7 +534,7 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.integer <= INT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.integer,
-					       sizeof(int32_t), EXTERNAL_SET);
+					       sizeof(int32_t));
 		}
 		break;
 	case CborAttrUnsignedIntegerType:
@@ -542,21 +542,19 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.uinteger <= UINT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.uinteger,
-					       sizeof(uint32_t), EXTERNAL_SET);
+					       sizeof(uint32_t));
 		}
 		break;
 
 	case CborAttrTextStringType:
-		status =
-			Attribute_Set(id, Attribute_GetType(id),
-				      attrs->addr.string,
-				      strlen(attrs->addr.string), EXTERNAL_SET);
+		status = Attribute_Set(id, Attribute_GetType(id),
+				       attrs->addr.string,
+				       strlen(attrs->addr.string));
 		break;
 
 	case CborAttrFloatType:
 		status = Attribute_Set(id, Attribute_GetType(id),
-				       attrs->addr.fval, sizeof(float),
-				       EXTERNAL_SET);
+				       attrs->addr.fval, sizeof(float));
 		break;
 
 	default:

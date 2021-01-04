@@ -145,16 +145,14 @@ static void CheckBattery(void)
 	int32_t mv = 0;
 	AdcBt6_ReadBatteryMv(&raw, &mv);
 
-	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
-		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
-		      sizeof(int32_t), INTERNAL_SET);
+	Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
 }
 
 static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	//if (activeMode) {
-	AttrBroadcastMsg_t *pAttrMsg = (AttrBroadcastMsg_t *)pMsg;
+	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {

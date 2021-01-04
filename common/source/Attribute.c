@@ -147,7 +147,7 @@ bool Attribute_ValidIndex(attr_idx_t Index)
 }
 
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength, ParamSetLocation_t setLocation)
+		  size_t ValueLength)
 {
 	int r = -EPERM;
 

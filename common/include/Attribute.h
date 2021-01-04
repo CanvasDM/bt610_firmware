@@ -84,7 +84,7 @@ bool Attribute_ValidIndex(attr_idx_t Index);
  * @retval negative error code, 0 on success
  */
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength, ParamSetLocation_t setLocation);
+		  size_t ValueLength);
 
 /**
  * @brief Copy an attribute
