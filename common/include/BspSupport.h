@@ -64,6 +64,7 @@ void BSP_Init(void);
 int BSP_PinSet(uint8_t pin, int value);
 int BSP_PinToggle(uint8_t pin);
 int BSP_PinGet(uint8_t pin, uint32_t *value);
+void BSP_DigitalPinsStatus(void);
 
 /*** Used in hardware test ****/
 void InitializeDigitalPinsNoPull(void);

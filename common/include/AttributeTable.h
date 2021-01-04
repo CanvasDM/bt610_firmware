@@ -185,8 +185,8 @@ struct AttributeEntry {
 #define ATTR_INDEX_bluetoothAddress                      104
 #define ATTR_INDEX_flags                                 105
 #define ATTR_INDEX_resetCount                            106
-#define ATTR_INDEX_digitalInput1Mv                       107
-#define ATTR_INDEX_digitalInput2Mv                       108
+#define ATTR_INDEX_digitalInput1Status                   107
+#define ATTR_INDEX_digitalInput2Status                   108
 #define ATTR_INDEX_magnetState                           109
 #define ATTR_INDEX_bootloaderVersion                     110
 /* pyend */

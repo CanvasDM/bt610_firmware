@@ -220,8 +220,8 @@ typedef struct RoAttributesTag {
 	char bluetoothAddress[12 + 1];
 	uint32_t flags;
 	uint32_t resetCount;
-	uint8_t digitalInput1Mv;
-	uint8_t digitalInput2Mv;
+	uint8_t digitalInput1Status;
+	uint8_t digitalInput2Status;
 	uint8_t magnetState;
 	char bootloaderVersion[11 + 1];
 	/* pyend */
@@ -268,8 +268,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.bluetoothAddress = "0",
 	.flags = 0,
 	.resetCount = 0,
-	.digitalInput1Mv = 0,
-	.digitalInput2Mv = 0,
+	.digitalInput1Status = 0,
+	.digitalInput2Status = 0,
 	.magnetState = 0,
 	.bootloaderVersion = "0.0"
 	/* pyend */
@@ -420,8 +420,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [104] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, n, n, AttributeValidator_string   , 0, 0 },
     [105] = { RO_ATTRX(flags)                         , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
     [106] = { RO_ATTRX(resetCount)                    , u32, n, n, n, n, AttributeValidator_uint32   , 0, 0 },
-    [107] = { RO_ATTRX(digitalInput1Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
-    [108] = { RO_ATTRX(digitalInput2Mv)               , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [107] = { RO_ATTRX(digitalInput1Status)           , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
+    [108] = { RO_ATTRX(digitalInput2Status)           , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
     [109] = { RO_ATTRX(magnetState)                   , u8 , n, n, n, n, AttributeValidator_uint8    , 0, 1 },
     [110] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, n, n, AttributeValidator_string   , 0, 0 }
     /* pyend */

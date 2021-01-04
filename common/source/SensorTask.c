@@ -78,7 +78,7 @@ static DispatchResult_t
 SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
 SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-				       FwkMsg_t *pMsg);
+				      FwkMsg_t *pMsg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -129,9 +129,10 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	SensorTaskObj_t *pObj = (SensorTaskObj_t *)pArg1;
 
-	CheckBattery();
+	/*Get the current status of the digital inputs connections*/
+	BSP_DigitalPinsStatus();
 
-	Framework_StartTimer(&pObj->msgTask);
+	CheckBattery();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -198,17 +199,26 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 static DispatchResult_t
 SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
-	if(pin ==DIN1_MCU_PIN)
-	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
-		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
-		      sizeof(int32_t), INTERNAL_SET);
-	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
-		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
-		      sizeof(int32_t), INTERNAL_SET);		  
+	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
+	uint8_t pinStatus = pSensorMsg->status;
+
+	if (pSensorMsg->pin == DIN1_MCU_PIN) {
+		Attribute_Set(ATTR_INDEX_digitalInput1Status,
+			      Attribute_GetType(ATTR_INDEX_digitalInput1Status),
+			      &pinStatus, sizeof(uint8_t), INTERNAL_SET);
+	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
+		Attribute_Set(ATTR_INDEX_digitalInput2Status,
+			      Attribute_GetType(ATTR_INDEX_digitalInput2Status),
+			      &pinStatus, sizeof(uint8_t), INTERNAL_SET);
+	} else {
+		/* Error, only 2 digital pins */
+	}
+
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+				      FwkMsg_t *pMsg)
 {
 	uint8_t input1TriggerLevel;
 	uint8_t input2TriggerLevel;

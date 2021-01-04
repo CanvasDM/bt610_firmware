@@ -118,6 +118,33 @@ int BSP_PinGet(uint8_t pin, uint32_t *value)
 {
 	return -EPERM;
 }
+void BSP_DigitalPinsStatus(void)
+{
+	/*Check the current state of the connected pin*/
+	uint8_t din1Status = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
+	uint8_t din2Status = gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN));
+	DigitalInMsg_t *pMsgSend =
+		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
+	DigitalInMsg_t *pMsg2Send =
+		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));	
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
+		pMsgSend->header.txId = FWK_ID_RESERVED;
+		pMsgSend->header.rxId = FWK_ID_SENSOR_TASK;
+		pMsgSend->status = din1Status;
+		pMsgSend->pin = DIN1_MCU_PIN;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}
+	if (pMsg2Send != NULL) {
+		pMsg2Send->header.msgCode = FMC_DIGITAL_IN;
+		pMsg2Send->header.txId = FWK_ID_RESERVED;
+		pMsg2Send->header.rxId = FWK_ID_SENSOR_TASK;
+		pMsg2Send->status = din2Status;
+		pMsg2Send->pin = DIN2_MCU_PIN;
+		FRAMEWORK_MSG_SEND(pMsg2Send);
+	}
+}
 
 void InitializeDigitalPinsPull(void)
 {
@@ -162,7 +189,6 @@ void InitializeDigitalPinsNoPull(void)
 			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
 	gpio_add_callback(port1, &digitalIn2_cb_data);
 }
-
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -172,29 +198,6 @@ static void ConfigureInputs(void)
 	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
 	/* Port1 */
 	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
-
-	/*Check the current state of the connected pin*/
-	uint8_t din1Status = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
-	uint8_t din2Status = gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN));
-	DigitalInMsg_t *pMsgSend =
-		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
-
-	if (pMsgSend != NULL) {
-		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
-		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
-		pMsgSend->header.rxId = FWK_ID_RESERVED;
-		pMsgSend->status = din1Status;
-		pMsgSend->pin = DIN1_MCU_PIN;
-		FRAMEWORK_MSG_SEND(pMsgSend);
-	}
-	if (pMsgSend != NULL) {
-		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
-		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
-		pMsgSend->header.rxId = FWK_ID_RESERVED;
-		pMsgSend->status = din2Status;
-		pMsgSend->pin = DIN2_MCU_PIN;
-		FRAMEWORK_MSG_SEND(pMsgSend);
-	}
 }
 static void InitDigitalInputInterrupt(void)
 {
@@ -253,8 +256,8 @@ static void DigitalIn1HandlerIsr(const struct device *port,
 
 	if (pMsgSend != NULL) {
 		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
-		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
-		pMsgSend->header.rxId = FWK_ID_RESERVED;
+		pMsgSend->header.txId = FWK_ID_RESERVED;
+		pMsgSend->header.rxId = FWK_ID_SENSOR_TASK;
 		pMsgSend->status = pinStatus;
 		pMsgSend->pin = DIN1_MCU_PIN;
 		FRAMEWORK_MSG_SEND(pMsgSend);
@@ -265,6 +268,19 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins)
 {
-	LOG_DBG("Digital pin%d is %u", DIN2_MCU_PIN,
-		gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN)));
+	uint8_t pinStatus = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
+
+	LOG_DBG("Digital pin%d is %u", DIN2_MCU_PIN, pinStatus);
+
+	DigitalInMsg_t *pMsgSend =
+		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
+		pMsgSend->header.txId = FWK_ID_RESERVED;
+		pMsgSend->header.rxId = FWK_ID_SENSOR_TASK;
+		pMsgSend->status = pinStatus;
+		pMsgSend->pin = DIN2_MCU_PIN;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}	
 }
