@@ -75,8 +75,10 @@ static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				     FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskConfigDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					FwkMsg_t *pMsg);
+SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t
+SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+				       FwkMsg_t *pMsg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -87,7 +89,8 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:       	return Framework_UnknownMsgHandler;
 	case FMC_ATTR_CHANGED:  	return SensorTaskAttributeChangedMsgHandler;
-	case FMC_CONFIG_DIGITAL_IN: return SensorTaskConfigDigitalInputdMsgHandler;
+	case FMC_DIGITAL_IN: 		return SensorTaskDigitalInputdMsgHandler;
+	case FMC_DIGITAL_IN_ALARM:  return SensorTaskDigitalInAlarmSetMsgHandler;
 	default:                	return NULL;
 	}
 	/* clang-format on */
@@ -125,9 +128,6 @@ void SensorTask_Initialize(void)
 static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	SensorTaskObj_t *pObj = (SensorTaskObj_t *)pArg1;
-
-	/*Setup Digital Inputs based on configuration*/
-	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_CONFIG_DIGITAL_IN);
 
 	CheckBattery();
 
@@ -174,7 +174,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_digitalInput1:
 		case ATTR_INDEX_digitalInput2:
 			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-						   FMC_CONFIG_DIGITAL_IN);
+						   FMC_DIGITAL_IN_ALARM);
 			break;
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
@@ -196,8 +196,19 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskConfigDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					FwkMsg_t *pMsg)
+SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	if(pin ==DIN1_MCU_PIN)
+	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
+		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
+		      sizeof(int32_t), INTERNAL_SET);
+	Attribute_Set(ATTR_INDEX_batteryVoltageMv,
+		      Attribute_GetType(ATTR_INDEX_batteryVoltageMv), &mv,
+		      sizeof(int32_t), INTERNAL_SET);		  
+	return DISPATCH_OK;
+}
+static DispatchResult_t
+SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	uint8_t input1TriggerLevel;
 	uint8_t input2TriggerLevel;
