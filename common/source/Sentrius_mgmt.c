@@ -20,6 +20,7 @@
 #include "UserInterfaceTask.h"
 #include "AdcBt6.h"
 #include "qrtc.h"
+#include "file_system_utilities.h"
 
 #include "Sentrius_mgmt.h"
 
@@ -76,6 +77,15 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	[SENTRIUS_MGMT_ID_GET_RTC] = {
          .mh_write = Sentrius_mgmt_GetRtc,
 		 .mh_read = Sentrius_mgmt_GetRtc
+    }
+	,
+	[SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
+         .mh_write = Sentrius_mgmt_LoadParameterFile,
+		 .mh_read = Sentrius_mgmt_LoadParameterFile
+    },
+	[SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
+         .mh_write = Sentrius_mgmt_DumpParameterFile,
+		 .mh_read = Sentrius_mgmt_DumpParameterFile,
     }
     /* pyend */
 };
@@ -397,6 +407,75 @@ int Sentrius_mgmt_GetRtc(struct mgmt_ctxt *ctxt)
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");
 	err |= cbor_encode_int(&ctxt->encoder, t);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_LoadParameterFile(struct mgmt_ctxt *ctxt)
+{
+	int r = -EPERM;
+
+	/* The input file is an optional parameter. */
+	strncpy(paramString, "/ext/params.txt", sizeof(paramString));
+
+	struct cbor_attr_t params_attr[] = { { .attribute = "p1",
+					       .type = CborAttrTextStringType,
+					       .addr.string = paramString,
+					       .len = sizeof(paramString),
+					       .nodefault = false },
+					     { .attribute = NULL } };
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	r = Attribute_Load(paramString);
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_DumpParameterFile(struct mgmt_ctxt *ctxt)
+{
+	int r = -EPERM;
+	long long unsigned int type = ULLONG_MAX;
+	char *fstr = NULL;
+
+	/* The output file is an optional parameter. */
+	strncpy(paramString, "/ext/dump.txt", sizeof(paramString));
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &type,
+		  .nodefault = true },
+		{ .attribute = "p2",
+		  .type = CborAttrTextStringType,
+		  .addr.string = paramString,
+		  .len = sizeof(paramString),
+		  .nodefault = false },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	/* This will malloc a string as large as maximum parameter file size. */
+	if (type < UINT8_MAX) {
+		r = Attribute_Dump(&fstr, type);
+		if (r >= 0) {
+			r = fsu_write_abs(paramString, fstr, strlen(fstr));
+			k_free(fstr);
+		}
+	}
+
+	CborError err = 0;
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
 
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }

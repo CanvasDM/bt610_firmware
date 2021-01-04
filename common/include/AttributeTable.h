@@ -72,7 +72,7 @@ struct AttributeEntry {
 
 #define ATTR_MAX_STR_SIZE (ATTR_MAX_STR_LENGTH + 1)
 
-#define ATTR_MAX_HEX_SIZE 4
+#define ATTR_MAX_HEX_SIZE 8
 
 #define ATTR_MAX_VERSION_LENGTH 11
 

@@ -747,6 +747,12 @@ static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
 			r = vw(idx, ATTR_TYPE_STRING, kvp[i].keystr,
 			       kvp[i].length);
 		} else {
+			/* Attribute validators for numbers don't look at the length passed
+			 * into the function.  However, they do cast based on the size
+			 * of the parameter.
+			 */
+			memset(bin, 0, sizeof(bin));
+
 			binlen = hex2bin(kvp[i].keystr, kvp[i].length, bin,
 					 sizeof(bin));
 			if (binlen <= 0) {

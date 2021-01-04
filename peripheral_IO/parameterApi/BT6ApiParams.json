@@ -576,6 +576,98 @@
           ]
         }
       }
+    },
+    {
+      "name": "Load",
+      "summary": "Load parameters from a file",
+      "description": "Used in conjunction with file system commands",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 9,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter required for test tool",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "LoadResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Dump",
+      "summary": "Dump chosen parameters to a file",
+      "description": "Used in conjunction with file system commands",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 10,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dump Type: 0 = read/write, 1 = writable, 2 = read-only",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "2",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "DumpResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, length of file in bytes on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
     }
   ],
   "components": {
