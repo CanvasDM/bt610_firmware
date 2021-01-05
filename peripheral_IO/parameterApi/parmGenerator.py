@@ -44,6 +44,7 @@ class attributes:
         self.AttributeWriteOnly = []
         self.AttributeReadWrite = []
         self.AttributeSavable = []
+        self.AttributeValidator = []
         self.resultName = []
         self._LoadConfig(fname)
     
@@ -61,6 +62,13 @@ class attributes:
           return r
         except:
           return False
+
+    def _GetStringField(self, index, item: str):
+        try:
+          r = self.componentList[index]['schema'][item]
+          return r
+        except:
+          return ""
             
     def _LoadConfig(self, fname: str) -> None:
         with open(fname, 'r') as f:
@@ -91,6 +99,7 @@ class attributes:
                 self.AttributeWriteOnly.append(self._GetBoolField(i, 'x-writeonly'))
                 self.AttributeReadWrite.append(self._GetBoolField(i, 'x-readwrite'))
                 self.AttributeSavable.append(self._GetBoolField(i, 'x-savable'))
+                self.AttributeValidator.append(self._GetStringField(i, 'x-validator'))
                 # todo: max string length
             pass
 
@@ -131,8 +140,12 @@ class attributes:
         elif readWrite == True:
             return "RW_ATTRX(" + name + ")"
 
-    def _GetValidatorString(self, i_type: str) -> str:
-        if i_type == "string":
+    def _GetValidatorString(self, i_type: str, index: int) -> str:
+        """Use custom validator if it exists.  Otherwise use validator based on type"""
+        validator = self.AttributeValidator[index]
+        if validator != "":
+            return "AttributeValidator_" + validator
+        elif i_type == "string":
             return "AttributeValidator_" + "string"
         else:
             return "AttributeValidator_" + (i_type).replace('_t', '')
@@ -179,7 +192,7 @@ class attributes:
             i_hash = i
             result = f"    [{i_hash:<3}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<40}, {self._GetType(i_type)}, {savable}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type):<28}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<40}, {self._GetType(i_type)}, {savable}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type, i):<28}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
