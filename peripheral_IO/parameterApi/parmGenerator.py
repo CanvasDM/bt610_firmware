@@ -44,6 +44,7 @@ class attributes:
         self.AttributeWriteOnly = []
         self.AttributeReadWrite = []
         self.AttributeSavable = []
+        self.AttributeDeprecated = []
         self.AttributeValidator = []
         self.resultName = []
         self._LoadConfig(fname)
@@ -99,6 +100,7 @@ class attributes:
                 self.AttributeWriteOnly.append(self._GetBoolField(i, 'x-writeonly'))
                 self.AttributeReadWrite.append(self._GetBoolField(i, 'x-readwrite'))
                 self.AttributeSavable.append(self._GetBoolField(i, 'x-savable'))
+                self.AttributeDeprecated.append(self._GetBoolField(i, 'x-deprecated'))
                 self.AttributeValidator.append(self._GetStringField(i, 'x-validator'))
                 # todo: max string length
             pass
@@ -189,10 +191,11 @@ class attributes:
             lockable = toyn(self.AttributeLockable[i])
             broadcast = toyn(self.AttributeBroadcast[i])
             savable = toyn(self.AttributeSavable[i])
+            deprecated = toyn(self.AttributeDeprecated[i])
             i_hash = i
             result = f"    [{i_hash:<3}] = " \
                     + "{ " \
-                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<40}, {self._GetType(i_type)}, {savable}, {backup}, {lockable}, {broadcast}, {self._GetValidatorString(i_type, i):<28}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                    + f"{self._GetAttributeMacro(i_type, readWrite, readOnly, name):<40}, {self._GetType(i_type)}, {savable}, {backup}, {lockable}, {broadcast}, {deprecated}, {self._GetValidatorString(i_type, i):<28}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                     + " }," \
                     + "\n"
             attributeTable.append(result)
