@@ -268,7 +268,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins)
 {
-	uint8_t pinStatus = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
+	uint8_t pinStatus = gpio_pin_get(port1, GPIO_PIN_MAP(DIN1_MCU_PIN));
 
 	LOG_DBG("Digital pin%d is %u", DIN2_MCU_PIN, pinStatus);
 

@@ -436,6 +436,9 @@ static void Button3HandlerIsr(const struct device *dev,
 		LOG_DBG("Falling amr");
 		(void)k_uptime_delta(&amrEventTime);
 	}
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+                                FWK_ID_SENSOR_TASK,
+                                FMC_MAGNET_STATE);
 }
 
 static bool ValidAliveDuration(int64_t duration)

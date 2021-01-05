@@ -28,6 +28,7 @@ extern "C" {
 /* Inputs */
 #define DIN1_MCU_PIN (9)  /* SIO_09 Port0 */
 #define DIN2_MCU_PIN (43) /* SIO_43 Port1 */
+#define MAGNET_MCU_PIN (47) /* SIO_47 Port1 */
 #define UART_RXD_PIN (6)  /* SIO_06 Port0 */
 
 /* Outputs */

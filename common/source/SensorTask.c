@@ -79,6 +79,8 @@ SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
 SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FwkMsg_t *pMsg);
+static DispatchResult_t
+SensorTaskMagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -91,6 +93,7 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_ATTR_CHANGED:  	return SensorTaskAttributeChangedMsgHandler;
 	case FMC_DIGITAL_IN: 		return SensorTaskDigitalInputdMsgHandler;
 	case FMC_DIGITAL_IN_ALARM:  return SensorTaskDigitalInAlarmSetMsgHandler;
+	case FMC_MAGNET_STATE:      return SensorTaskMagnetStateMsgHandler;
 	default:                	return NULL;
 	}
 	/* clang-format on */
@@ -232,6 +235,17 @@ SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		/*Set alarm when input is High*/
 	}
 
+	return DISPATCH_OK;
+}
+static DispatchResult_t
+SensorTaskMagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	uint8_t pinStatus;
+	const struct device *dev;
+
+	dev = device_get_binding(DT_GPIO_LABEL(DT_ALIAS(sw3), gpios));
+	pinStatus = gpio_pin_get(dev, GPIO_PIN_MAP(MAGNET_MCU_PIN));
+	Attribute_SetUint32(ATTR_INDEX_magnetState, pinStatus);
 	return DISPATCH_OK;
 }
 /******************************************************************************/
