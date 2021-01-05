@@ -55,11 +55,11 @@ struct AttributeEntry {
 	const bool backup; /* not factory resetable */
 	const bool lockable;
 	const bool broadcast;
+	const bool deprecated;
 	int (*pValidator)(AttributeEntry_t *, void *, size_t, bool);
 	const uint32_t min;
 	const uint32_t max;
 	bool modified;
-	bool deprecated;
 };
 
 /* pystart - attribute table size */
