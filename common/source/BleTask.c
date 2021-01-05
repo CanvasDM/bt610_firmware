@@ -34,6 +34,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "laird_bluetooth.h"
 #include "Advertisement.h"
 #include "lcz_params.h"
+#include "Attribute.h"
 #include "BleTask.h"
 
 /******************************************************************************/
@@ -74,7 +75,11 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r);
 static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg);
 
+static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg);
+
 static int BluetoothInit(void);
+static int UpdateName(void);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -112,6 +117,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:                     return Framework_UnknownMsgHandler;
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
+	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */
@@ -139,6 +145,26 @@ void BleTask_Initialize(void)
 
 	k_thread_name_set(bto.msgTask.pTid, THIS_FILE);
 }
+
+/* The Zephyr settings module and Laird settings both use internal flash
+ * that has the default mount point of /lfs.
+ */
+int lcz_params_mount_fs(void)
+{
+	int r = 0;
+	k_mutex_lock(&mount_mutex, K_FOREVER);
+	if (!bto.lfs_mounted) {
+		r = fs_mount(&settings_mnt);
+		if (r != 0) {
+			LOG_ERR("settings lfs mount: %d", r);
+		} else {
+			bto.lfs_mounted = true;
+		}
+	}
+	k_mutex_unlock(&mount_mutex);
+	return r;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -168,6 +194,11 @@ static int BluetoothInit(void)
 		}
 
 		bt_conn_cb_register(&connectionCallbacks);
+
+		r = UpdateName();
+		if (r != 0) {
+			break;
+		}
 
 		r = Advertisement_Init();
 		if (r != 0) {
@@ -203,7 +234,29 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
+
 	Advertisement_Start();
+	return DISPATCH_OK;
+}
+
+static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg)
+{
+	UNUSED_PARAMETER(pMsgRxer);
+	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	size_t i;
+
+	for (i = 0; i < pb->count; i++) {
+		switch (pb->list[i]) {
+		case ATTR_INDEX_sensorName:
+			UpdateName();
+			break;
+
+		default:
+			/* Don't care about this attribute. This is a broadcast. */
+			break;
+		}
+	}
 	return DISPATCH_OK;
 }
 
@@ -246,21 +299,18 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	Advertisement_Start();
 }
 
-/* The Zephyr settings module and Laird settings both use internal flash
- * that has the default mount point of /lfs.
+/* Update name in Bluetooth stack.  Zephyr will handle updating name in
+ * advertisement.
  */
-int lcz_params_mount_fs(void)
+static int UpdateName(void)
 {
-	int r = 0;
-	k_mutex_lock(&mount_mutex, K_FOREVER);
-	if (!bto.lfs_mounted) {
-		r = fs_mount(&settings_mnt);
-		if (r != 0) {
-			LOG_ERR("settings lfs mount: %d", r);
-		} else {
-			bto.lfs_mounted = true;
-		}
+	int r = -EPERM;
+	char name[ATTR_MAX_STR_SIZE] = { 0 };
+
+	Attribute_Get(ATTR_INDEX_sensorName, name, ATTR_MAX_STR_LENGTH);
+	r = bt_set_name(name);
+	if (r < 0) {
+		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
 	}
-	k_mutex_unlock(&mount_mutex);
 	return r;
 }

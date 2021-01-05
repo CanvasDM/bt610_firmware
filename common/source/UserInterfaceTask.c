@@ -116,6 +116,8 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					  FwkMsg_t *pMsg);
 static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg);
+static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
+static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
 static void green_led_on(void);
@@ -209,6 +211,8 @@ static FwkMsgHandler_t UserIfTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_TAMPER:          return TamperMsgHandler;
 	case FMC_EXIT_SHELF_MODE: return ExitShelfModeMsgHandler;
 	case FMC_FACTORY_RESET:   return UiFactoryResetMsgHandler;
+	case FMC_AMR_LED_ON:      return AmrLedOnMsgHandler;
+	case FMC_LEDS_OFF:        return LedsOffMsgHandler;
 	default:                  return NULL;
 	}
 	/* clang-format on */
@@ -356,6 +360,23 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 
+static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+	lcz_led_turn_on(GREEN_LED);
+	return DISPATCH_OK;
+}
+
+static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+	lcz_led_turn_off(GREEN_LED);
+	lcz_led_turn_off(RED_LED);
+	return DISPATCH_OK;
+}
+
 static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					  FwkMsg_t *pMsg)
 {
@@ -363,6 +384,8 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	lcz_led_blink(GREEN_LED, &EXIT_SHELF_MODE_PATTERN);
 	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
+				      FMC_BLE_START_ADVERTISING);
 	return DISPATCH_OK;
 }
 
@@ -425,20 +448,22 @@ static void Button3HandlerIsr(const struct device *dev,
 {
 	ARG_UNUSED(cb);
 	ARG_UNUSED(pins);
+	FwkMsgCode_t code = FMC_LEDS_OFF;
 
 	if (gpio_pin_get(dev, BUTTON_CFG[2].pin)) {
 		LOG_DBG("Rising amr");
 		if (ValidExitShelfModeDuration(k_uptime_delta(&amrEventTime))) {
-			FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(
-				FWK_ID_USER_IF_TASK, FMC_EXIT_SHELF_MODE);
+			code = FMC_EXIT_SHELF_MODE;
 		}
 	} else {
 		LOG_DBG("Falling amr");
 		(void)k_uptime_delta(&amrEventTime);
+		code = FMC_AMR_LED_ON;
 	}
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
-                                FWK_ID_SENSOR_TASK,
-                                FMC_MAGNET_STATE);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
+				      FMC_MAGNET_STATE);
+
+	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, code);
 }
 
 static bool ValidAliveDuration(int64_t duration)
