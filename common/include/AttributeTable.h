@@ -56,7 +56,7 @@ struct AttributeEntry {
 	const bool lockable;
 	const bool broadcast;
 	const bool deprecated;
-	int (*pValidator)(AttributeEntry_t *, void *, size_t, bool);
+	int (*const pValidator)(AttributeEntry_t *, void *, size_t, bool);
 	const uint32_t min;
 	const uint32_t max;
 	bool modified;
@@ -193,7 +193,7 @@ struct AttributeEntry {
 #define ATTR_INDEX_magnetState                           109
 #define ATTR_INDEX_bootloaderVersion                     110
 #define ATTR_INDEX_paramPath                             111
-#define ATTR_INDEX_ainSelects                            112
+#define ATTR_INDEX_ainSelects_deprecated                 112
 #define ATTR_INDEX_batteryAge                            113
 #define ATTR_INDEX_upTime                                114
 #define ATTR_INDEX_apiVersion                            115
@@ -231,6 +231,9 @@ int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
 			    size_t Length, bool DoWrite);
 int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
+
+int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
+			   size_t Length, bool DoWrite);
 
 #ifdef __cplusplus
 }

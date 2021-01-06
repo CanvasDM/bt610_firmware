@@ -17,7 +17,18 @@ LOG_MODULE_REGISTER(attrval, LOG_LEVEL_DBG);
 #include <string.h>
 #include <ctype.h>
 
+#include "AnalogInput.h"
 #include "AttributeTable.h"
+
+/******************************************************************************/
+/* Global Data Definitions                                                    */
+/******************************************************************************/
+extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
+
+/******************************************************************************/
+/* Local Function Prototypes                                                  */
+/******************************************************************************/
+static int validate_analog_input_config(void);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -196,4 +207,75 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 		r = 0;
 	}
 	return r;
+}
+
+int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
+			   size_t Length, bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	uint8_t saved = *((uint8_t *)pEntry->pData);
+	r = AttributeValidator_uint8(pEntry, pValue, Length, false);
+	if (r == 0) {
+		/* Assume value is ok.  This makes secondary validation simpler
+		 * because it is independent of the channel being changed.
+		 */
+		*((uint8_t *)pEntry->pData) = *(uint8_t *)pValue;
+
+		r = validate_analog_input_config();
+		if (r < 0 || !DoWrite) {
+			*((uint8_t *)pEntry->pData) = saved;
+			pEntry->modified = false;
+		} else {
+			pEntry->modified = true;
+		}
+	}
+
+	if (r < 0) {
+		LOG_ERR("Invalid analog input configuration");
+	}
+	return r;
+}
+
+/******************************************************************************/
+/* Local Function Definitions                                                 */
+/******************************************************************************/
+static int validate_analog_input_config(void)
+{
+	int pressure_sensors = 0;
+	int ultrasonic_sensors = 0;
+	uint32_t ch;
+	size_t i;
+
+	/* This assumes the 4 channels have consecutive IDs. */
+	for (i = 0; i < ANALOG_INPUT_NUMBER_OF_CHANNELS; i++) {
+		ch = 0;
+		memcpy(&ch, attrTable[ATTR_INDEX_analogInput1Type + i].pData,
+		       attrTable[ATTR_INDEX_analogInput1Type + i].size);
+
+		switch (ch) {
+		case ANALOG_INPUT_PRESSURE:
+			pressure_sensors += 1;
+			break;
+		case ANALOG_INPUT_ULTRASONIC:
+			ultrasonic_sensors += 1;
+			break;
+		default:
+			/* There aren't any restrictions on the number of voltage or
+			 * current sense inputs.
+			 */
+			break;
+		}
+	}
+
+	if (ultrasonic_sensors > ANALOG_INPUTS_MAX_ULTRASONIC ||
+	    pressure_sensors > ANALOG_INPUTS_MAX_PRESSURE_SENSORS) {
+		return -EPERM;
+	} else if (ultrasonic_sensors > 0 &&
+		   (pressure_sensors >
+		    ANALOG_INPUTS_MAX_PRESSURE_SENSORS_WITH_ULTRASONIC)) {
+		return -EPERM;
+	} else {
+		return 0;
+	}
 }

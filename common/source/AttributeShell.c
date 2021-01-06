@@ -109,7 +109,8 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 						  strlen(argv[2]));
 			} else if (Attribute_GetType(idx) != ATTR_TYPE_STRING) {
 				long x = strtol(argv[2], NULL, 0);
-				r = Attribute_Set(idx, ATTR_TYPE_ANY, &x, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &x,
+						  sizeof(x));
 				if (r < 0) {
 					shell_error(shell, "Set failed");
 				}

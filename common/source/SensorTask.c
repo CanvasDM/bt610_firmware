@@ -75,7 +75,7 @@ static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				     FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
 SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FwkMsg_t *pMsg);
@@ -89,12 +89,12 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:       	return Framework_UnknownMsgHandler;
-	case FMC_ATTR_CHANGED:  	return SensorTaskAttributeChangedMsgHandler;
-	case FMC_DIGITAL_IN: 		return SensorTaskDigitalInputdMsgHandler;
+	case FMC_INVALID:           return Framework_UnknownMsgHandler;
+	case FMC_ATTR_CHANGED:      return SensorTaskAttributeChangedMsgHandler;
+	case FMC_DIGITAL_IN:        return SensorTaskDigitalInputMsgHandler;
 	case FMC_DIGITAL_IN_ALARM:  return SensorTaskDigitalInAlarmSetMsgHandler;
 	case FMC_MAGNET_STATE:      return SensorTaskMagnetStateMsgHandler;
-	default:                	return NULL;
+	default:                    return NULL;
 	}
 	/* clang-format on */
 }
@@ -198,7 +198,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
 	uint8_t pinStatus = pSensorMsg->status;
@@ -248,6 +248,3 @@ SensorTaskMagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	Attribute_SetUint32(ATTR_INDEX_magnetState, pinStatus);
 	return DISPATCH_OK;
 }
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/

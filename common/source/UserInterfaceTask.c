@@ -460,6 +460,7 @@ static void Button3HandlerIsr(const struct device *dev,
 		(void)k_uptime_delta(&amrEventTime);
 		code = FMC_AMR_LED_ON;
 	}
+
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_MAGNET_STATE);
 

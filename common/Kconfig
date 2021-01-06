@@ -55,5 +55,6 @@ config HEARTBEAT_SECONDS
 rsource "Kconfig.adc_bt6"
 rsource "Kconfig.attribute"
 rsource "Kconfig.ui"
+rsource "Kconfig.event_log"
 
 endif # APPLICATION_COMMON

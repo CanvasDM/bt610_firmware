@@ -151,11 +151,18 @@ float AdcBt6_ConvertVoltage(int32_t raw);
 float AdcBt6_ConvertCurrent(int32_t raw);
 
 /**
- * @brief Accessor Function to set analog input mux
+ * @brief Configure the analog input selection.
+ *
+ * @note
+ * The AINx_SEL lines need to be maintained at all times.
+ * There will always be a voltage or current applied at the terminal so
+ * the proper terminal load is required.
+ * (2M for voltage input, 250 ohm for current input)
  *
  * @retval negative error code, 0 on success
  */
-int AdcBt6_SetAinSelect(uint8_t bitmask);
+/* todo: this needs to be called from sensor task when type 1-4 changes */
+int AdcBt6_ConfigAinSelects(void);
 
 /**
  * @brief Conversion function

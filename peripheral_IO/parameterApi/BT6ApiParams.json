@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.10",
+    "version": "1.11",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -35,10 +35,7 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         }
       ],
@@ -47,9 +44,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -95,10 +89,7 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         },
         {
@@ -115,10 +106,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 2,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         }
       ],
@@ -127,9 +115,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Result",
               "description": "",
@@ -175,10 +160,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "hello world",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "hello world"
           }
         }
       ],
@@ -187,9 +169,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -236,10 +215,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "hello world",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "hello world"
           }
         }
       ],
@@ -248,9 +224,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -812,7 +785,8 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "should the backup column be removed?"
             }
           },
           {
@@ -1100,12 +1074,16 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "The summary is unclear to me?  Is this a configuration control? Maybe the 'Switch to' part needs to be removed",
+              "x-review2": "I wonder if this should be a bitmask.  Easier to support up to 8,16,32 outputs..",
+              "x-review3": "What is digitalInput1Status/Alarm?"
             }
           },
           {
             "name": "analogInput1Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "summary": "Analog Input Channel 1 configuration",
+            "description": "Enumeration:\n 0 = Unused\n 1 = Voltage (0V - 10V DC)\n 2 = Current (4mA - 20mA)\n 3 = Pressure\n 4 = Ultrasonic\nIf changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.",
             "required": true,
             "x-id": 13,
             "x-groupid": 65,
@@ -1114,22 +1092,20 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-validator": "aic",
+              "x-review": "can we link an enumeration to these?"
             }
           },
           {
             "name": "analogInput2Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "summary": "Analog Input Channel 2 configuration",
             "required": true,
             "x-id": 14,
             "x-groupid": 65,
@@ -1138,22 +1114,19 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-validator": "aic"
             }
           },
           {
             "name": "analogInput3Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "summary": "Analog Input Channel 3 configuration",
             "required": true,
             "x-id": 15,
             "x-groupid": 65,
@@ -1162,22 +1135,19 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-validator": "aic"
             }
           },
           {
             "name": "analogInput4Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "summary": "Analog Input Channel 4 configuration",
             "required": true,
             "x-id": 16,
             "x-groupid": 65,
@@ -1186,17 +1156,14 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-validator": "aic"
             }
           },
           {
@@ -1220,7 +1187,8 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "should these be floats?"
             }
           },
           {
@@ -1700,7 +1668,8 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "should the thresholds assume the units of the type of input?  using counts seems inconsistent/not user friendly."
             }
           },
           {
@@ -2276,12 +2245,14 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "Do we need this and Config type? This was used to detect if the phone had written a configuration (so that the gateway wouldn't overwrite it."
             }
           },
           {
             "name": "configType",
             "summary": "0 = Not Configured\r\n1 = Analog\r\n2 = Digital\r\n3 = Temperature\r\n4 = Current\r\n5 = UltraSonic/Pressure\r\n6 = SPI/I2C",
+            "description": "Writing this will cause other attributes to be set with the correct value.",
             "required": true,
             "x-id": 62,
             "x-groupid": 65,
@@ -2300,7 +2271,7 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
             }
           },
           {
@@ -2469,7 +2440,8 @@
               "x-savable": true,
               "x-readonly": false,
               "x-writeonly": false,
-              "x-readwrite": true
+              "x-readwrite": true,
+              "x-review": "Is this a configuration thing?"
             }
           },
           {
@@ -2493,7 +2465,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "float?"
             }
           },
           {
@@ -2517,7 +2490,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "should this be a float?"
             }
           },
           {
@@ -2613,7 +2587,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "do we need alarms? or just the state?"
             }
           },
           {
@@ -2661,7 +2636,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "should this be a float?, need x3 more"
             }
           },
           {
@@ -2685,7 +2661,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "I think this should be a bitmask.  Then it can match event log"
             }
           },
           {
@@ -3410,7 +3387,7 @@
           },
           {
             "name": "magnetState",
-            "summary": "Magnet status",
+            "summary": "Magnet State\n 0 = Magnet Near, 1 = Magnet Far",
             "required": true,
             "x-id": 109,
             "x-groupid": 65,
@@ -3453,7 +3430,8 @@
               "x-savable": false,
               "x-readonly": true,
               "x-writeonly": false,
-              "x-readwrite": false
+              "x-readwrite": false,
+              "x-review": "mcuboot doesn't have a version"
             }
           },
           {
@@ -3479,7 +3457,7 @@
             }
           },
           {
-            "name": "ainSelects",
+            "name": "ainSelects_deprecated",
             "summary": "Configures analog inputs for Current Sense. This is a bitmask",
             "required": true,
             "x-id": 112,
@@ -3491,12 +3469,8 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "8",
-              "x-backup": false,
-              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
               "x-readwrite": true,
               "x-deprecated": true
             }
@@ -3547,7 +3521,8 @@
               "x-ctype": "string",
               "x-default": "1.8",
               "x-example": "123.456.789",
-              "x-readonly": true
+              "x-readonly": true,
+              "x-review": "the default value for this should be generated by python script"
             }
           },
           {

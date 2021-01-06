@@ -150,20 +150,20 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	/*Get the value*/
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
-		getResult = Attribute_Get(paramID, &intData, sizeof(int32_t));
+		getResult = Attribute_GetSigned32(&intData, paramID);
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		getResult = Attribute_Get(paramID, &uintData, sizeof(uint32_t));
+		getResult = Attribute_GetUint32(&uintData, paramID);
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
-		getResult =
-			Attribute_Get(paramID, bufferData, ATTR_MAX_STR_LENGTH);
+		getResult = Attribute_GetString(bufferData, paramID,
+						ATTR_MAX_STR_LENGTH);
 		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
 		break;
 	case CborAttrFloatType:
-		getResult = Attribute_Get(paramID, &floatData, sizeof(float));
+		getResult = Attribute_GetFloat(&floatData, paramID);
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;

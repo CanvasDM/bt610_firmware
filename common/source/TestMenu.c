@@ -89,50 +89,46 @@ static int sample(const struct shell *shell, int channel,
 	return 0;
 }
 
+/* Return channel from 1 to x */
+static int convert_channel(const char *str)
+{
+	return MAX(1, atoi(str));
+}
+
 static int vin(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int ch = MAX(0, atoi(argv[1]));
+	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_ANALOG_VOLTAGE;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch, type, AdcBt6_ConvertVoltage);
+	return sample(shell, ch - 1, type, AdcBt6_ConvertVoltage);
 }
 
 static int cin(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int ch = MAX(0, atoi(argv[1]));
+	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_ANALOG_CURRENT;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch, type, AdcBt6_ConvertCurrent);
-}
-
-static int ain(const struct shell *shell, size_t argc, char **argv)
-{
-	ARG_UNUSED(argc);
-	int mask = MAX(0, atoi(argv[1]));
-	shell_print(shell, "ch0: %d ch1: %d ch2: %d ch3: %d", mask & 0x1,
-		    mask & 0x2, mask & 0x4, mask & 0x8);
-	shell_print(shell, "status: %d", AdcBt6_SetAinSelect(mask));
-	return 0;
+	return sample(shell, ch - 1, type, AdcBt6_ConvertCurrent);
 }
 
 static int therm(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int ch = MAX(0, atoi(argv[1]));
+	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch, type, AdcBt6_ApplyThermistorCalibration);
+	return sample(shell, ch - 1, type, AdcBt6_ApplyThermistorCalibration);
 }
 
 static int temp(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int ch = MAX(0, atoi(argv[1]));
+	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	int rc = sample(shell, ch, type, AdcBt6_ConvertThermToTemperature);
+	int rc = sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
 	return rc;
 }
 
@@ -225,11 +221,18 @@ static int cal(const struct shell *shell, size_t argc, char **argv)
 SHELL_STATIC_SUBCMD_SET_CREATE(
 	sub_inputs,
 	SHELL_CMD(battery, NULL, "Battery Measurement", batteryMeasurement),
-	SHELL_CMD(vin, NULL, "Read analog voltage <channel 0-3>", vin),
-	SHELL_CMD(cin, NULL, "Read current <channel 0-3>", cin),
-	SHELL_CMD(ain, NULL, "Set analog input select bitmask <0 - 15>", ain),
-	SHELL_CMD(therm, NULL, "Read thermistor <channel 0-3>", therm),
-	SHELL_CMD(temp, NULL, "Get temperature (therm) <channel 0-3>", temp),
+	SHELL_CMD(
+		vin, NULL,
+		"Read analog voltage <channel 1-4>\n"
+		"Set channel to voltage sense using 'attr set analogInput<1-4>Type 1'",
+		vin),
+	SHELL_CMD(
+		cin, NULL,
+		"Read current <channel 1-4>\n"
+		"Set channel to current sense using 'attr set analogInput<1-4>Type 2'",
+		cin),
+	SHELL_CMD(therm, NULL, "Read thermistor <channel 1-4>", therm),
+	SHELL_CMD(temp, NULL, "Get temperature (therm) <channel 1-4>", temp),
 	SHELL_CMD(vref, NULL, "Read vref", vref),
 	SHELL_CMD(five, NULL, "Set 5V", fiveSet),
 	SHELL_CMD(b_plus, NULL, "Set Battery Out", batterySet),
