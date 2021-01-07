@@ -86,8 +86,8 @@ static void UpdateDin1(void);
 static void UpdateDin2(void);
 static void UpdateMagnet(void);
 
-static int Analog(attr_idx_t channel);
-static int Thermistor(attr_idx_t channel);
+static int Analog(size_t channel);
+static int Thermistor(size_t channel);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -338,7 +338,7 @@ static void UpdateMagnet(void)
 	/* todo: set flag or deprecate flag bits for bt6 */
 }
 
-static int Analog(attr_idx_t channel)
+static int Analog(size_t channel)
 {
 	int r = -EPERM;
 	float result = 0.0;
@@ -396,7 +396,7 @@ static int Analog(attr_idx_t channel)
 	return r;
 }
 
-static int Thermistor(attr_idx_t channel)
+static int Thermistor(size_t channel)
 {
 	int r = -EPERM;
 	float result = 0.0;
