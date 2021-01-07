@@ -183,6 +183,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_analogInput3Type:
 		case ATTR_INDEX_analogInput4Type:
 			break;
+		case ATTR_INDEX_configType:
+			//FRAMEWORK_MSG_CREATE_AND_BROADCAST(id, FMC_SENSOR_CONFIG_CHANGE); 
+			break;	
 
 		case ATTR_INDEX_activeMode:
 			// It isn't expected that host will write this.
