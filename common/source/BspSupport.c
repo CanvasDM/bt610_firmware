@@ -41,7 +41,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 gpio_port_pins_t pins);
 
 static void ConfigureInputs(void);
-static void InitDigitalInputInterrupt(void); 
+static void InitDigitalInputInterrupt(void);
 static void ConfigureOutputs(void);
 
 /******************************************************************************/
@@ -114,10 +114,19 @@ int BSP_PinToggle(uint8_t pin)
 	return (gpioReturn);
 }
 
-int BSP_PinGet(uint8_t pin, uint32_t *value)
+int BSP_PinGet(uint8_t pin)
 {
-	return -EPERM;
+	if (pin > GPIO_PIN_MAX) {
+		return -ENODEV;
+	} else if (pin > GPIO_PER_PORT) {
+		return gpio_pin_get(port1, GPIO_PIN_MAP(pin));
+	} else {
+		return gpio_pin_get(port0, GPIO_PIN_MAP(pin));
+	}
 }
+
+/* todo: I think this should be refactored to call the interrupt handler because it duplicates code*/
+
 void BSP_DigitalPinsStatus(void)
 {
 	/*Check the current state of the connected pin*/
@@ -126,7 +135,7 @@ void BSP_DigitalPinsStatus(void)
 	DigitalInMsg_t *pMsgSend =
 		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
 	DigitalInMsg_t *pMsg2Send =
-		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));	
+		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
 
 	if (pMsgSend != NULL) {
 		pMsgSend->header.msgCode = FMC_DIGITAL_IN;
@@ -247,10 +256,14 @@ static void DigitalIn1HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins)
 {
-	uint8_t pinStatus = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
+	int pinStatus = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
 
-	LOG_DBG("Digital pin%d is %u", DIN1_MCU_PIN, pinStatus);
+	LOG_DBG("Digital pin %d is %u", DIN1_MCU_PIN, pinStatus);
 
+	/* todo: this should be refactored
+	 * it is used 4 times in this file and the AMR switch can also use it
+	 * imo the bsp shouldn't have framework in it
+	 */
 	DigitalInMsg_t *pMsgSend =
 		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
 
@@ -268,9 +281,9 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins)
 {
-	uint8_t pinStatus = gpio_pin_get(port1, GPIO_PIN_MAP(DIN1_MCU_PIN));
+	int pinStatus = gpio_pin_get(port1, GPIO_PIN_MAP(DIN1_MCU_PIN));
 
-	LOG_DBG("Digital pin%d is %u", DIN2_MCU_PIN, pinStatus);
+	LOG_DBG("Digital pin %d is %u", DIN2_MCU_PIN, pinStatus);
 
 	DigitalInMsg_t *pMsgSend =
 		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
@@ -282,5 +295,5 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 		pMsgSend->status = pinStatus;
 		pMsgSend->pin = DIN2_MCU_PIN;
 		FRAMEWORK_MSG_SEND(pMsgSend);
-	}	
+	}
 }

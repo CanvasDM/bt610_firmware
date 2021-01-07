@@ -173,11 +173,11 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			//	MSG_CODE_TEMPERATURE_MEASURE);
 			break;
 
-		case ATTR_INDEX_digitalInput1:
-		case ATTR_INDEX_digitalInput2:
-			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-						   FMC_DIGITAL_IN_ALARM);
-			break;
+			//		case ATTR_INDEX_digitalInput1:
+			//		case ATTR_INDEX_digitalInput2:
+			//			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
+			//						   FMC_DIGITAL_IN_ALARM);
+			//			break;
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
@@ -204,9 +204,9 @@ SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	uint8_t pinStatus = pSensorMsg->status;
 
 	if (pSensorMsg->pin == DIN1_MCU_PIN) {
-		Attribute_SetUint32(ATTR_INDEX_digitalInput1Status, pinStatus);
+		//Attribute_SetUint32(ATTR_INDEX_digitalInput1Status, pinStatus);
 	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
-		Attribute_SetUint32(ATTR_INDEX_digitalInput2Status, pinStatus);
+		//Attribute_SetUint32(ATTR_INDEX_digitalInput2Status, pinStatus);
 	} else {
 		/* Error, only 2 digital pins */
 	}
@@ -219,10 +219,10 @@ SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	uint8_t input1TriggerLevel;
 	uint8_t input2TriggerLevel;
-	Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
-		      sizeof(uint8_t));
-	Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
-		      sizeof(uint8_t));
+	//Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
+	//	      sizeof(uint8_t));
+	//Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
+	//	      sizeof(uint8_t));
 
 	if (input1TriggerLevel == 0) {
 		/*Set alarm when input is low*/

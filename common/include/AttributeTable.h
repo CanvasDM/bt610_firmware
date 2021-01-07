@@ -41,6 +41,14 @@ typedef enum {
 
 #define ATTR_TYPE_BYTE_ARRAY ATTR_TYPE_STRING
 
+typedef struct minmax {
+	union {
+		uint32_t ux;
+		int32_t sx;
+		float fx;
+	};
+} minmax_t;
+
 typedef struct AttributeEntry AttributeEntry_t;
 
 struct AttributeEntry {
@@ -48,22 +56,22 @@ struct AttributeEntry {
 	void *pData;
 	void const *const pDefault;
 	const size_t size;
-	const bool writable;
-	const bool readable;
 	const AttrType_t type;
 	const bool savable;
-	const bool backup; /* not factory resetable */
+	const bool writable;
+	const bool readable;
 	const bool lockable;
 	const bool broadcast;
 	const bool deprecated;
 	int (*const pValidator)(AttributeEntry_t *, void *, size_t, bool);
-	const uint32_t min;
-	const uint32_t max;
+	int (*const pRead)(void);
+	const minmax_t min;
+	const minmax_t max;
 	bool modified;
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 118
+#define ATTR_TABLE_SIZE 96
 
 /* pyend */
 
@@ -92,12 +100,12 @@ struct AttributeEntry {
 #define ATTR_INDEX_temperatureAggregationCount           8
 #define ATTR_INDEX_digitalOutput1Mv                      9
 #define ATTR_INDEX_digitalOutput2Mv                      10
-#define ATTR_INDEX_digitalInput1                         11
-#define ATTR_INDEX_digitalInput2                         12
-#define ATTR_INDEX_analogInput1Type                      13
-#define ATTR_INDEX_analogInput2Type                      14
-#define ATTR_INDEX_analogInput3Type                      15
-#define ATTR_INDEX_analogInput4Type                      16
+#define ATTR_INDEX_firmwareVersion                       11
+#define ATTR_INDEX_resetReason                           12
+#define ATTR_INDEX_bluetoothAddress                      13
+#define ATTR_INDEX_resetCount                            14
+#define ATTR_INDEX_bootloaderVersion                     15
+#define ATTR_INDEX_upTime                                16
 #define ATTR_INDEX_highTemp1Thresh1                      17
 #define ATTR_INDEX_highTemp1Thresh2                      18
 #define ATTR_INDEX_lowTemp1Thresh1                       19
@@ -150,55 +158,33 @@ struct AttributeEntry {
 #define ATTR_INDEX_coefficientA                          66
 #define ATTR_INDEX_coefficientB                          67
 #define ATTR_INDEX_coefficientC                          68
-#define ATTR_INDEX_thermistorIndex                       69
+#define ATTR_INDEX_thermistorConfig                      69
 #define ATTR_INDEX_temperatureResult1                    70
 #define ATTR_INDEX_temperatureResult2                    71
 #define ATTR_INDEX_temperatureResult3                    72
 #define ATTR_INDEX_temperatureResult4                    73
-#define ATTR_INDEX_batteryVoltageMv                      74
-#define ATTR_INDEX_digitalInput1Alarm                    75
-#define ATTR_INDEX_digitalInput2Alarm                    76
-#define ATTR_INDEX_currentReadingMa                      77
-#define ATTR_INDEX_highTemperature1Alarm                 78
-#define ATTR_INDEX_lowTemperature1Alarm                  79
-#define ATTR_INDEX_deltaTemperature1Alarm                80
-#define ATTR_INDEX_highTemperature2Alarm                 81
-#define ATTR_INDEX_lowTemperature2Alarm                  82
-#define ATTR_INDEX_deltaTemperature2Alarm                83
-#define ATTR_INDEX_highTemperature3Alarm                 84
-#define ATTR_INDEX_lowTemperature3Alarm                  85
-#define ATTR_INDEX_deltaTemperature3Alarm                86
-#define ATTR_INDEX_highTemperature4Alarm                 87
-#define ATTR_INDEX_lowTemperature4Alarm                  88
-#define ATTR_INDEX_deltaTemperature4Alarm                89
-#define ATTR_INDEX_highAnalog1Alarm                      90
-#define ATTR_INDEX_lowAnalog1Alarm                       91
-#define ATTR_INDEX_deltaAnalog1Alarm                     92
-#define ATTR_INDEX_highAnalog2Alarm                      93
-#define ATTR_INDEX_lowAnalog2Alarm                       94
-#define ATTR_INDEX_deltaAnalog2Alarm                     95
-#define ATTR_INDEX_highAnalog3Alarm                      96
-#define ATTR_INDEX_lowAnalog3Alarm                       97
-#define ATTR_INDEX_deltaAnalog3Alarm                     98
-#define ATTR_INDEX_highAnalog4Alarm                      99
-#define ATTR_INDEX_lowAnalog4Alarm                       100
-#define ATTR_INDEX_deltaAnalog4Alarm                     101
-#define ATTR_INDEX_firmwareVersion                       102
-#define ATTR_INDEX_resetReason                           103
-#define ATTR_INDEX_bluetoothAddress                      104
-#define ATTR_INDEX_flags                                 105
-#define ATTR_INDEX_resetCount                            106
-#define ATTR_INDEX_digitalInput1Status                   107
-#define ATTR_INDEX_digitalInput2Status                   108
-#define ATTR_INDEX_magnetState                           109
-#define ATTR_INDEX_bootloaderVersion                     110
-#define ATTR_INDEX_paramPath                             111
-#define ATTR_INDEX_ainSelects_deprecated                 112
-#define ATTR_INDEX_batteryAge                            113
-#define ATTR_INDEX_upTime                                114
-#define ATTR_INDEX_apiVersion                            115
-#define ATTR_INDEX_qrtc                                  116
-#define ATTR_INDEX_qrtcLastSet                           117
+#define ATTR_INDEX_temperatureAlarms                     74
+#define ATTR_INDEX_batteryVoltageMv                      75
+#define ATTR_INDEX_digitalInput                          76
+#define ATTR_INDEX_digitalAlarms                         77
+#define ATTR_INDEX_digitalInput1Config                   78
+#define ATTR_INDEX_digitalInput2Config                   79
+#define ATTR_INDEX_analogInput1                          80
+#define ATTR_INDEX_analogInput2                          81
+#define ATTR_INDEX_analogInput3                          82
+#define ATTR_INDEX_analogInput4                          83
+#define ATTR_INDEX_analogAlarms                          84
+#define ATTR_INDEX_analogInput1Type                      85
+#define ATTR_INDEX_analogInput2Type                      86
+#define ATTR_INDEX_analogInput3Type                      87
+#define ATTR_INDEX_analogInput4Type                      88
+#define ATTR_INDEX_flags                                 89
+#define ATTR_INDEX_magnetState                           90
+#define ATTR_INDEX_paramPath                             91
+#define ATTR_INDEX_batteryAge                            92
+#define ATTR_INDEX_apiVersion                            93
+#define ATTR_INDEX_qrtc                                  94
+#define ATTR_INDEX_qrtcLastSet                           95
 /* pyend */
 /* clang-format on */
 
@@ -234,6 +220,11 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 
 int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 			   size_t Length, bool DoWrite);
+
+/* The weak implementations should be overridden application. */
+/* pystart - prepare for read */
+int AttributePrepare_batteryVoltageMv(void);
+/* pyend */
 
 #ifdef __cplusplus
 }

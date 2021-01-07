@@ -231,8 +231,8 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int64_t uptimeMs = k_uptime_get();
 	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
 
-	pnird->battery_age = Attribute_AltGetUint32(ATTR_INDEX_batteryAge, 0) +
-			     CONFIG_HEARTBEAT_SECONDS;
+	/* Any benefit of a writable battery age isn't worth the complexity. */
+	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
 	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
 
 	/* Read value from system because it should have less error
