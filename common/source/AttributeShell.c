@@ -32,6 +32,7 @@ static int ats_type_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_quiet_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv);
+static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv);
 
 static int attr_shell_init(const struct device *device);
 
@@ -44,6 +45,11 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		  ats_set_cmd),
 	SHELL_CMD(query, NULL, "query attribute <number or name>",
 		  ats_query_cmd),
+	SHELL_CMD(
+		get, NULL,
+		"get attribute <number or name>\n"
+		"If a prepare to read function exists it will be called to update parameter value",
+		ats_get_cmd),
 	SHELL_CMD(dump, NULL,
 		  "<0 = rw, 1 = w, 2 = ro> <abs_path>\n"
 		  "if path not included then default is /ext/dump.txt",
@@ -87,6 +93,7 @@ static bool is_string(const char *str)
 static attr_idx_t get_index(const char *str)
 {
 	attr_idx_t idx = 0;
+
 	if (is_string(str)) {
 		idx = Attribute_GetIndex(str);
 	} else {
@@ -109,7 +116,8 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 						  strlen(argv[2]));
 			} else if (Attribute_GetType(idx) != ATTR_TYPE_STRING) {
 				long x = strtol(argv[2], NULL, 0);
-				r = Attribute_Set(idx, ATTR_TYPE_ANY, &x, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &x,
+						  sizeof(x));
 				if (r < 0) {
 					shell_error(shell, "Set failed");
 				}
@@ -127,9 +135,30 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 static int ats_query_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	int r = -EPERM;
+
 	if ((argc == 2) && (argv[1] != NULL)) {
 		r = Attribute_Show(get_index(argv[1]));
 		shell_print(shell, "query status: %d", r);
+	} else {
+		shell_error(shell, "Unexpected parameters");
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
+{
+	int r = -EPERM;
+	attr_idx_t idx = 0;
+	uint8_t dummy[ATTR_MAX_STR_SIZE];
+
+	if ((argc == 2) && (argv[1] != NULL)) {
+		idx = get_index(argv[1]);
+		/* If the value changed then prepare will cause a duplicate show. */
+		Attribute_Show(idx);
+		/* Discard data (assumes show is enabled). */
+		r = Attribute_Get(idx, dummy, sizeof(dummy));
+		shell_print(shell, "get status: %d", r);
 	} else {
 		shell_error(shell, "Unexpected parameters");
 		return -EINVAL;

@@ -25,7 +25,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "BspSupport.h"
 #include "UserInterfaceTask.h"
 #include "SensorTask.h"
-#include "AdcBt6.h"
 #include "Version.h"
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
@@ -177,7 +176,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	UserInterfaceTask_Initialize();
 	BleTask_Initialize();
 	SensorTask_Initialize();
-	AdcBt6_Init();
 
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();
@@ -231,8 +229,8 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int64_t uptimeMs = k_uptime_get();
 	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
 
-	pnird->battery_age = Attribute_AltGetUint32(ATTR_INDEX_batteryAge, 0) +
-			     CONFIG_HEARTBEAT_SECONDS;
+	/* Any benefit of a writable battery age isn't worth the complexity. */
+	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
 	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
 
 	/* Read value from system because it should have less error

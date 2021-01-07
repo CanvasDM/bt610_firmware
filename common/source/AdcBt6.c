@@ -27,6 +27,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #include "file_system_utilities.h"
 #include "lcz_params.h"
 #include "Attribute.h"
+#include "AnalogInput.h"
 #include "AdcBt6.h"
 
 /******************************************************************************/
@@ -130,7 +131,6 @@ static int ConfigureChannel(AnalogChannel_t channel);
 
 static AnalogChannel_t GetChannel(AdcMeasurementType_t type);
 static int InitExpander(void);
-static int ConfigAinSelects(void);
 static int ConfigMux(MuxInput_t input);
 static bool ValidInputForCurrentMeasurement(MuxInput_t input);
 static float Steinhart_Hart(float calibrated, float a, float b, float c);
@@ -154,14 +154,10 @@ int AdcBt6_Init(void)
 	adcObj.ref = adc_ref_internal(adcObj.dev);
 	LOG_DBG("Internal reference %u", adcObj.ref);
 
-	int16_t raw = 0;
-	int32_t mv = 0;
-	int rc = AdcBt6_ReadBatteryMv(&raw, &mv);
-	LOG_INF("status: %d battery raw: %d mv: %d", rc, raw, mv);
-
 	status = InitExpander();
 
-	/* These were kept separate because Attributes were in a state of flux. */
+	/* Calibration is independent of parameters/attributes module. */
+	/* todo: should these be in external flash or shadowed there too ? */
 	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
 	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
@@ -180,6 +176,7 @@ int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv)
 		rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
 					   ADC_RESOLUTION, mv);
 	}
+
 	k_mutex_unlock(&adcMutex);
 	return rc;
 }
@@ -419,17 +416,39 @@ void AdcBt6_DisablePower(void)
 	BSP_PinSet(THERM_ENABLE_PIN, 1);
 }
 
-int AdcBt6_SetAinSelect(uint8_t bitmask)
+/* The AINx_SEL lines need to be maintained at all times.
+ * There will always be a voltage or current applied at the terminal so
+ * the proper terminal load is required.
+ * (2M for voltage input, 250 ohm for current input)
+ */
+int AdcBt6_ConfigAinSelects(void)
 {
-	int r = -EPERM;
-	uint8_t ain_sel = MIN(bitmask, 0xf);
+	int rc = -EPERM;
 
-	r = Attribute_Set(ATTR_INDEX_ainSelects, ATTR_TYPE_U8, &ain_sel,
-			  sizeof(ain_sel));
-	if (r >= 0) {
-		r = ConfigAinSelects();
+	if (adcObj.i2c == NULL) {
+		return rc;
 	}
-	return r;
+
+	adcObj.expander.bits.ain_sel = 0;
+	size_t i;
+	uint32_t config;
+	for (i = 0; i < ANALOG_INPUT_NUMBER_OF_CHANNELS; i++) {
+		config = Attribute_AltGetUint32(ATTR_INDEX_analogInput1Type + i,
+						0);
+		if (config == ANALOG_INPUT_CURRENT) {
+			adcObj.expander.bits.ain_sel |= (1 << i);
+		}
+	}
+
+	/* To measure current the correspoding output must be set to 1 */
+	uint8_t cmd[] = { TCA9538_REG_OUTPUT, adcObj.expander.byte };
+	if (i2c_write(adcObj.i2c, cmd, sizeof(cmd), EXPANDER_ADDRESS) < 0) {
+		LOG_ERR("I2C Failure");
+		rc = -EIO;
+	} else {
+		rc = 0;
+	}
+	return rc;
 }
 
 /******************************************************************************/
@@ -536,31 +555,7 @@ static int InitExpander(void)
 		LOG_ERR("I2C failure");
 		adcObj.i2c = NULL;
 	} else {
-		rc = ConfigAinSelects();
-	}
-	return rc;
-}
-
-/* The AINx_SEL lines need to be maintained at all times.
- * There will always be a voltage or current applied at the terminal so
- * the proper terminal load is required.
- * (2M for voltage input, 250 ohm for current input)
- */
-static int ConfigAinSelects(void)
-{
-	int rc = -EPERM;
-	if (adcObj.i2c == NULL) {
-		return rc;
-	}
-
-	adcObj.expander.bits.ain_sel =
-		(uint8_t)Attribute_AltGetUint32(ATTR_INDEX_ainSelects, 0);
-
-	/* To measure current the correspoding output must be set to 1 */
-	uint8_t cmd[] = { TCA9538_REG_OUTPUT, adcObj.expander.byte };
-	if (i2c_write(adcObj.i2c, cmd, sizeof(cmd), EXPANDER_ADDRESS) < 0) {
-		LOG_ERR("I2C Failure");
-		rc = -EIO;
+		rc = AdcBt6_ConfigAinSelects();
 	}
 	return rc;
 }

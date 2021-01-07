@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.10",
+    "version": "1.12",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -35,10 +35,7 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         }
       ],
@@ -47,9 +44,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -95,10 +89,7 @@
             "x-ctype": "uint16_t",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         },
         {
@@ -115,10 +106,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 2,
             "x-default": null,
-            "x-example": "1",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "1"
           }
         }
       ],
@@ -127,9 +115,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Result",
               "description": "",
@@ -175,10 +160,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "hello world",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "hello world"
           }
         }
       ],
@@ -187,9 +169,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -236,10 +215,7 @@
             "x-ctype": "string",
             "x-sequencenumber": 1,
             "x-default": null,
-            "x-example": "hello world",
-            "x-backup": false,
-            "x-lockable": false,
-            "x-broadcast": false
+            "x-example": "hello world"
           }
         }
       ],
@@ -248,9 +224,6 @@
         "schema": {
           "items": [
             {
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -806,13 +779,10 @@
               "x-ctype": "string",
               "x-default": "BT610",
               "x-example": "BT610",
-              "x-backup": false,
-              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -830,13 +800,9 @@
               "x-ctype": "string",
               "x-default": "NA",
               "x-example": "myRoom",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -854,13 +820,10 @@
               "x-ctype": "uint16_t",
               "x-default": "1000",
               "x-example": "1000",
-              "x-backup": false,
-              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -878,13 +841,10 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "15000",
-              "x-backup": false,
-              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -902,13 +862,9 @@
               "x-ctype": "string",
               "x-default": "123456",
               "x-example": "123456",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -926,13 +882,9 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -950,13 +902,9 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "60",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -974,13 +922,9 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "60",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -998,13 +942,9 @@
               "x-ctype": "uint8_t",
               "x-default": "1",
               "x-example": "5",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1022,13 +962,9 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "50",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1046,157 +982,103 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "50",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
-            "name": "digitalInput1",
-            "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
+            "name": "firmwareVersion",
+            "summary": "Firmware Version.\nFormat = Major.Minor.Build",
             "required": true,
             "x-id": 11,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": true,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "type": "string",
+              "minimumlength": 3,
+              "maximumlength": 11,
+              "x-ctype": "string",
+              "x-default": "0.0.0",
+              "x-example": "1.0.0",
+              "x-readable": true
             }
           },
           {
-            "name": "digitalInput2",
-            "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
+            "name": "resetReason",
+            "summary": "For Development",
             "required": true,
             "x-id": 12,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "x-ctype": "string",
               "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "maximumlength": 8,
               "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": true,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-example": "1",
+              "x-readable": true
             }
           },
           {
-            "name": "analogInput1Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "name": "bluetoothAddress",
+            "summary": "Bluetooth MAC",
             "required": true,
             "x-id": 13,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "type": "string",
+              "minimumlength": 12,
+              "maximumlength": 12,
+              "x-ctype": "string",
               "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-example": "010203040506",
+              "x-readable": true
             }
           },
           {
-            "name": "analogInput2Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "name": "resetCount",
+            "summary": "reset Count",
             "required": true,
             "x-id": 14,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "x-ctype": "uint32_t",
               "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-example": "1",
+              "x-readable": true
             }
           },
           {
-            "name": "analogInput3Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "name": "bootloaderVersion",
+            "summary": "Bootloader Version\nFormat = Major.Minor",
             "required": true,
             "x-id": 15,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
+              "type": "string",
+              "minimumlength": 3,
+              "maximumlength": 11,
               "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "maximum": 0.0,
+              "x-ctype": "string",
+              "x-default": "0.0",
+              "x-example": "0.0",
+              "x-readable": true
             }
           },
           {
-            "name": "analogInput4Type",
-            "summary": "0 = 0V - 5V DC\r\n1 = 0V - 10V DC\r\n2 = 4mA - 20mA",
+            "name": "upTime",
+            "summary": "Time in milliseconds since the last reboot",
             "required": true,
             "x-id": 16,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "type": "number",
+              "x-ctype": "int64_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-readable": true
             }
           },
           {
@@ -1211,16 +1093,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1235,16 +1114,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
-              "x-example": "120",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-example": "100",
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1259,16 +1135,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1283,40 +1156,33 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "temp1DeltaThresh",
-            "summary": "Delta Temperature Alarm Threshold",
+            "summary": "Delta Temperature Alarm Threshold in degrees C",
+            "description": "Disabled when negative",
             "required": true,
             "x-id": 21,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
+              "minimum": -1.0,
               "maximum": 255.0,
-              "x-ctype": "uint16_t",
-              "x-default": "255",
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "255",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1331,16 +1197,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1355,16 +1218,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1379,16 +1239,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1399,20 +1256,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1423,20 +1275,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
+              "minimum": -1.0,
               "maximum": 255.0,
-              "x-ctype": "uint16_t",
-              "x-default": "255",
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "255",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1447,20 +1294,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1471,20 +1313,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1495,20 +1332,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1519,20 +1351,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1543,20 +1370,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
+              "minimum": -1.0,
               "maximum": 255.0,
-              "x-ctype": "uint16_t",
-              "x-default": "255",
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "255",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1571,16 +1393,13 @@
               "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1591,20 +1410,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1615,20 +1429,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1639,20 +1448,15 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": -128.0,
               "maximum": 127.0,
-              "x-ctype": "int16_t",
+              "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -1663,505 +1467,400 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
+              "minimum": -1.0,
               "maximum": 255.0,
-              "x-ctype": "uint16_t",
-              "x-default": "255",
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "255",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog1Thresh1",
-            "summary": "High Analog Alarm Threshold 1 Counts",
+            "summary": "High Analog Alarm Threshold 1",
             "required": true,
             "x-id": 37,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog1Thresh2",
-            "summary": "High Analog Alarm Threshold 1 Counts",
+            "summary": "High Analog Alarm Threshold 1",
             "required": true,
             "x-id": 38,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog1Thresh1",
-            "summary": "Low Analog Alarm Threshold 1 Counts",
+            "summary": "Low Analog Alarm Threshold 1",
             "required": true,
             "x-id": 39,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog1Thresh2",
-            "summary": "Low Analog Alarm Threshold 2 Counts",
+            "summary": "Low Analog Alarm Threshold 2",
             "required": true,
             "x-id": 40,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "analog1DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold Counts",
+            "summary": "Delta Analog Alarm Threshold",
             "required": true,
             "x-id": 41,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog2Thresh1",
-            "summary": "High Analog Alarm Threshold 1 Counts",
+            "summary": "High Analog Alarm Threshold 1",
             "required": true,
             "x-id": 42,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog2Thresh2",
-            "summary": "High Analog Alarm Threshold 2 Counts",
+            "summary": "High Analog Alarm Threshold 2",
             "required": true,
             "x-id": 43,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog2Thresh1",
-            "summary": "Low Analog Alarm Threshold 1 Counts",
+            "summary": "Low Analog Alarm Threshold 1",
             "required": true,
             "x-id": 44,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog2Thresh2",
-            "summary": "Low Analog Alarm Threshold 2 Counts",
+            "summary": "Low Analog Alarm Threshold 2",
             "required": true,
             "x-id": 45,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "analog2DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold Counts",
+            "summary": "Delta Analog Alarm Threshold",
             "required": true,
             "x-id": 46,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog3Thresh1",
-            "summary": "High Analog Alarm Threshold 1 Counts",
+            "summary": "High Analog Alarm Threshold 1",
             "required": true,
             "x-id": 47,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog3Thresh2",
-            "summary": "High Analog Alarm Threshold 2 Counts",
+            "summary": "High Analog Alarm Threshold 2",
             "required": true,
             "x-id": 48,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog3Thresh1",
-            "summary": "Low Analog Alarm Threshold 1 Counts",
+            "summary": "Low Analog Alarm Threshold 1",
             "required": true,
             "x-id": 49,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog3Thresh2",
-            "summary": "Low Analog Alarm Threshold 2 Counts",
+            "summary": "Low Analog Alarm Threshold 2",
             "required": true,
             "x-id": 50,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "analog3DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold Counts",
+            "summary": "Delta Analog Alarm Threshold",
             "required": true,
             "x-id": 51,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog4Thresh1",
-            "summary": "High Analog Alarm Threshold 1 Counts",
+            "summary": "High Analog Alarm Threshold 1",
             "required": true,
             "x-id": 52,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "highAnalog4Thresh2",
-            "summary": "High Analog Alarm Threshold 2 Counts",
+            "summary": "High Analog Alarm Threshold 2",
             "required": true,
             "x-id": 53,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog4Thresh1",
-            "summary": "Low Analog Alarm Threshold 1 Counts",
+            "summary": "Low Analog Alarm Threshold 1",
             "required": true,
             "x-id": 54,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "lowAnalog4Thresh2",
-            "summary": "Low Analog Alarm Threshold 2 Counts",
+            "summary": "Low Analog Alarm Threshold 2",
             "required": true,
             "x-id": 55,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "0",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "analog4DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold Counts",
+            "summary": "Delta Analog Alarm Threshold",
             "required": true,
             "x-id": 56,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4096.0,
-              "x-ctype": "uint16_t",
-              "x-default": "4096",
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "-1",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "activeMode",
-            "summary": "0 = inactive\r\n1 = active (RTC enabled, sample enabled)",
+            "summary": "0 = inactive (shelf mode)\n1 = active (sample enabled)",
             "required": true,
             "x-id": 57,
             "x-groupid": 65,
@@ -2174,13 +1873,10 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
               "x-broadcast": true,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x_savable": true,
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2198,13 +1894,9 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2222,13 +1914,10 @@
               "x-ctype": "int8_t",
               "x-default": "0",
               "x-example": "8",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2246,18 +1935,16 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "100",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "configVersion",
             "summary": "Config Version",
+            "description": "This is used for synchronization between clients (Bluegrass/Phone application).",
             "required": true,
             "x-id": 61,
             "x-groupid": 65,
@@ -2270,18 +1957,16 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "10",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "configType",
-            "summary": "0 = Not Configured\r\n1 = Analog\r\n2 = Digital\r\n3 = Temperature\r\n4 = Current\r\n5 = UltraSonic/Pressure\r\n6 = SPI/I2C",
+            "summary": "0 = Not Configured\n1 = Analog Voltage\n2 = Digital\n3 = Temperature\n4 = Current\n5 = UltraSonic/Pressure\n6 = SPI/I2C",
+            "description": "Writing this will cause other attributes to be set with the correct value.",
             "required": true,
             "x-id": 62,
             "x-groupid": 65,
@@ -2294,19 +1979,16 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "2",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "hardwareMinorVersion",
             "summary": "Hardware minor version set during production",
-            "todo": "should this just be Hardware Version, there aren't resistors on the board",
+            "x-review": "should this just be Hardware Version, there aren't resistors on the board",
             "required": true,
             "x-id": 63,
             "x-groupid": 65,
@@ -2319,13 +2001,10 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "3",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
+              "x-broadcast": true,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2343,13 +2022,7 @@
               "x-ctype": "float",
               "x-default": "0.0",
               "x-example": "0.998",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
@@ -2367,13 +2040,7 @@
               "x-ctype": "float",
               "x-default": "0.0",
               "x-example": "-12.2",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": true,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
@@ -2391,13 +2058,9 @@
               "x-ctype": "float",
               "x-default": "0.001132",
               "x-example": "0.001132",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2415,13 +2078,9 @@
               "x-ctype": "float",
               "x-default": "0.0002338",
               "x-example": "0.0002338",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
@@ -2439,18 +2098,14 @@
               "x-ctype": "float",
               "x-default": "8.780e-8",
               "x-example": "8.780e-8",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
-            "name": "thermistorIndex",
-            "summary": "Thermistor Index",
+            "name": "thermistorConfig",
+            "summary": "Bitmask of Thermistor Inputs.  Bit 0 is thermistor 1.  1 is enabled, 0 is disabled",
             "required": true,
             "x-id": 69,
             "x-groupid": 65,
@@ -2459,120 +2114,103 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 3.0,
+              "maximum": 15.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
             "name": "temperatureResult1",
-            "summary": "Temperature in hundredths of a degree C",
+            "summary": "Temperature in C",
             "required": true,
             "x-id": 70,
             "x-groupid": 65,
             "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": -12800.0,
-              "maximum": 12700.0,
-              "x-ctype": "int16_t",
+              "type": "float",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
             "name": "temperatureResult2",
-            "summary": "Temperature in hundredths of a degree C",
+            "summary": "Temperature in C",
             "required": true,
             "x-id": 71,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": -12800.0,
-              "maximum": 12700.0,
-              "x-ctype": "int16_t",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
             "name": "temperatureResult3",
-            "summary": "Temperature in hundredths of a degree C",
+            "summary": "Temperature in C",
             "required": true,
             "x-id": 72,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": -12800.0,
-              "maximum": 12700.0,
-              "x-ctype": "int16_t",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
             "name": "temperatureResult4",
-            "summary": "Temperature in hundredths of a degree C",
+            "summary": "Temperature in C",
             "required": true,
             "x-id": 73,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": -12800.0,
-              "maximum": 12700.0,
-              "x-ctype": "int16_t",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
+            }
+          },
+          {
+            "name": "temperatureAlarms",
+            "summary": "Bitmask for all 4 channels",
+            "required": true,
+            "x-id": 74,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": false
             }
           },
           {
             "name": "batteryVoltageMv",
             "summary": "Battery Voltage in millivolts",
+            "description": "Not a float to match previous system",
             "required": true,
-            "x-id": 74,
+            "x-id": 75,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
@@ -2583,114 +2221,67 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "3000",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
-            "name": "digitalInput1Alarm",
-            "summary": "Digital Input 1 Alarm.\r\n0 = Current State\r\n1 = State Changed",
-            "required": true,
-            "x-id": 75,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "digitalInput2Alarm",
-            "summary": "Digital Input 2 Alarm.\r\n0 = Current State\r\n1 = State Changed",
+            "name": "digitalInput",
+            "summary": "Bit 0 is digital input 1, Bit 1 is digital input 2",
             "required": true,
             "x-id": 76,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 3.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-example": "0",
+              "x-readable": true
             }
           },
           {
-            "name": "currentReadingMa",
-            "summary": "Current in milliamps",
+            "name": "digitalAlarms",
+            "summary": "Bitmask of alarms for Digital Inputs 1 and 2; Alarm is set when 1",
+            "description": "Bit 0 = Input 1, Bit 1 = Input 2; When writing set bit to 1 to clear",
             "required": true,
             "x-id": 77,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 20.0,
-              "x-ctype": "uint8_t",
+              "maximum": 3.0,
+              "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": false
             }
           },
           {
-            "name": "highTemperature1Alarm",
-            "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "digitalInput1Config",
+            "summary": "Bit 8 : Enable/Disable; Bits 1:0 Alarm Enumeration:\n 0 = None\n 1 = falling edge\n 2 = rising edge\n 3 = both",
             "required": true,
             "x-id": 78,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 0.0,
               "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-default": "131",
+              "x-example": "128",
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
-            "name": "lowTemperature1Alarm",
-            "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "digitalInput2Config",
+            "summary": "Bit 8 : Enable/Disable; Bits 1:0 Alarm Enumeration:\n 0 = None\n 1 = falling edge\n 2 = rising edge\n 3 = both",
             "required": true,
             "x-id": 79,
             "x-groupid": 65,
@@ -2699,142 +2290,106 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 0.0,
               "x-ctype": "uint8_t",
-              "x-default": "0",
+              "x-default": "131",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {
-            "name": "deltaTemperature1Alarm",
-            "summary": "Delta Temperature Alarm.",
+            "name": "analogInput1",
+            "summary": "Unit depends on Analog Input Configuration Type",
             "required": true,
             "x-id": 80,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
-            "name": "highTemperature2Alarm",
-            "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogInput2",
+            "summary": "Unit depends on Analog Input Configuration Type",
             "required": true,
             "x-id": 81,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
-            "name": "lowTemperature2Alarm",
-            "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogInput3",
+            "summary": "Unit depends on Analog Input Configuration Type",
             "required": true,
             "x-id": 82,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
-            "name": "deltaTemperature2Alarm",
-            "summary": "Delta Temperature Alarm.",
+            "name": "analogInput4",
+            "summary": "Unit depends on Analog Input Configuration Type",
             "required": true,
             "x-id": 83,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
-            "name": "highTemperature3Alarm",
-            "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogAlarms",
+            "summary": "Bitmask for all 4 channels",
             "required": true,
             "x-id": 84,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": false
             }
           },
           {
-            "name": "lowTemperature3Alarm",
-            "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogInput1Type",
+            "summary": "Analog Input Channel 1 configuration",
+            "description": "Enumeration:\n 0 = Unused\n 1 = Voltage (0V - 10V DC)\n 2 = Current (4mA - 20mA)\n 3 = Pressure\n 4 = Ultrasonic\nIf changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.",
             "required": true,
             "x-id": 85,
             "x-groupid": 65,
@@ -2843,22 +2398,21 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "aic",
+              "x-review": "can we link an enumeration to these?"
             }
           },
           {
-            "name": "deltaTemperature3Alarm",
-            "summary": "Delta Temperature Alarm.",
+            "name": "analogInput2Type",
+            "summary": "Analog Input Channel 2 configuration",
             "required": true,
             "x-id": 86,
             "x-groupid": 65,
@@ -2867,22 +2421,20 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 1.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "aic"
             }
           },
           {
-            "name": "highTemperature4Alarm",
-            "summary": "High Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogInput3Type",
+            "summary": "Analog Input Channel 3 configuration",
             "required": true,
             "x-id": 87,
             "x-groupid": 65,
@@ -2891,22 +2443,20 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "aic"
             }
           },
           {
-            "name": "lowTemperature4Alarm",
-            "summary": "Low Temperature Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "analogInput4Type",
+            "summary": "Analog Input Channel 4 configuration",
             "required": true,
             "x-id": 88,
             "x-groupid": 65,
@@ -2915,22 +2465,20 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
+              "maximum": 4.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-broadcast": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "aic"
             }
           },
           {
-            "name": "deltaTemperature4Alarm",
-            "summary": "Delta Temperature Alarm.",
+            "name": "flags",
+            "summary": "Flags",
             "required": true,
             "x-id": 89,
             "x-groupid": 65,
@@ -2939,22 +2487,18 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
               "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-example": "1",
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": false
             }
           },
           {
-            "name": "highAnalog1Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
+            "name": "magnetState",
+            "summary": "Magnet State\n 0 = Magnet Near, 1 = Magnet Far",
             "required": true,
             "x-id": 90,
             "x-groupid": 65,
@@ -2963,504 +2507,18 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "lowAnalog1Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 91,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "deltaAnalog1Alarm",
-            "summary": "Delta Analog Alarm.",
-            "required": true,
-            "x-id": 92,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "highAnalog2Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 93,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "lowAnalog2Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 94,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "deltaAnalog2Alarm",
-            "summary": "Delta Analog Alarm.",
-            "required": true,
-            "x-id": 95,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "highAnalog3Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 96,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "lowAnalog3Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 97,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "deltaAnalog3Alarm",
-            "summary": "Delta Analog Alarm.",
-            "required": true,
-            "x-id": 98,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "highAnalog4Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 99,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "lowAnalog4Alarm",
-            "summary": "High Analog Alarm.\r\n0 = No Alarm\r\n1 = Threshold 1\r\n2 = Threshold 2\r\n",
-            "required": true,
-            "x-id": 100,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 2.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "deltaAnalog4Alarm",
-            "summary": "Delta Analog Alarm.",
-            "required": true,
-            "x-id": 101,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "firmwareVersion",
-            "summary": "Firmware Version.\r\nFormat = Major.Minor.Build",
-            "required": true,
-            "x-id": 102,
-            "x-groupid": 65,
-            "schema": {
-              "type": "string",
-              "minimumlength": 3,
-              "maximumlength": 11,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "string",
-              "x-default": "0.0.0",
-              "x-example": "1.0.0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "resetReason",
-            "summary": "For Development",
-            "required": true,
-            "x-id": 103,
-            "x-groupid": 65,
-            "schema": {
-              "type": "string",
-              "minimumlength": 0,
-              "maximumlength": 8,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "string",
-              "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "bluetoothAddress",
-            "summary": "Bluetooth MAC",
-            "required": true,
-            "x-id": 104,
-            "x-groupid": 65,
-            "schema": {
-              "type": "string",
-              "minimumlength": 12,
-              "maximumlength": 12,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "string",
-              "x-default": "0",
-              "x-example": "010203040506",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "flags",
-            "summary": "Flags",
-            "required": true,
-            "x-id": 105,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "uint32_t",
-              "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "resetCount",
-            "summary": "reset Count",
-            "required": true,
-            "x-id": 106,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "uint32_t",
-              "x-default": "0",
-              "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "digitalInput1Status",
-            "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
-            "required": true,
-            "x-id": 107,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "digitalInput2Status",
-            "summary": "0 = Switch to Ground\r\n1 = Switch to Battery",
-            "required": true,
-            "x-id": 108,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "magnetState",
-            "summary": "Magnet status",
-            "required": true,
-            "x-id": 109,
-            "x-groupid": 65,
-            "schema": {
-              "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "1",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "bootloaderVersion",
-            "summary": "bootloader Version.\r\nFormat = Major.Minor",
-            "required": true,
-            "x-id": 110,
-            "x-groupid": 65,
-            "schema": {
-              "type": "string",
-              "minimumlength": 3,
-              "maximumlength": 11,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "string",
-              "x-default": "0.0",
-              "x-example": "0.0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
             "name": "paramPath",
             "summary": "Folder on file system used for Parse/Dump commands",
             "required": true,
-            "x-id": 111,
+            "x-id": 91,
             "x-groupid": 65,
             "schema": {
               "type": "string",
@@ -3469,77 +2527,29 @@
               "x-ctype": "string",
               "x-default": "/ext",
               "x-example": "/lfs",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
               "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
-            }
-          },
-          {
-            "name": "ainSelects",
-            "summary": "Configures analog inputs for Current Sense. This is a bitmask",
-            "required": true,
-            "x-id": 112,
-            "x-groupid": 65,
-            "schema": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 15.0,
-              "x-ctype": "uint8_t",
-              "x-default": "0",
-              "x-example": "8",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": true,
-              "x-savable": true,
-              "x-readonly": false,
-              "x-writeonly": false,
-              "x-readwrite": true,
-              "x-deprecated": true
+              "x-readable": true
             }
           },
           {
             "name": "batteryAge",
             "summary": "Time in seconds that the battery has been in use",
             "required": true,
-            "x-id": 113,
+            "x-id": 92,
             "x-groupid": 65,
             "schema": {
               "type": "number",
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
-              "x-readwrite": true
-            }
-          },
-          {
-            "name": "upTime",
-            "summary": "Time in milliseconds since the last reboot",
-            "required": true,
-            "x-id": 114,
-            "x-groupid": 65,
-            "schema": {
-              "type": "number",
-              "x-ctype": "int64_t",
-              "x-default": "0",
-              "x-example": "0",
-              "x-backup": false,
-              "x-lockable": false,
-              "x-broadcast": false,
-              "x-savable": false,
-              "x-readonly": true,
-              "x-writeonly": false,
-              "x-readwrite": false
+              "x-readable": true
             }
           },
           {
             "name": "apiVersion",
             "summary": "The API version that the current firmware supports",
             "required": true,
-            "x-id": 115,
+            "x-id": 93,
             "x-groupid": 65,
             "schema": {
               "type": "string",
@@ -3547,28 +2557,29 @@
               "x-ctype": "string",
               "x-default": "1.8",
               "x-example": "123.456.789",
-              "x-readonly": true
+              "x-readable": true,
+              "x-review": "the default value for this should be generated by python script"
             }
           },
           {
             "name": "qrtc",
             "summary": "Quasi-RTC (epoch, Seconds from Jan 1, 1970)",
             "required": true,
-            "x-id": 116,
+            "x-id": 94,
             "x-groupid": 65,
             "schema": {
               "type": "number",
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
-              "x-readonly": true
+              "x-readable": true
             }
           },
           {
             "name": "qrtcLastSet",
             "summary": "Last time the RTC was set",
             "required": true,
-            "x-id": 117,
+            "x-id": 95,
             "x-groupid": 65,
             "schema": {
               "type": "number",
@@ -3576,7 +2587,7 @@
               "x-default": "0",
               "x-example": "0",
               "x-savable": true,
-              "x-readonly": true
+              "x-readable": true
             }
           }
         ]

@@ -31,10 +31,9 @@ typedef struct {
 
 } LedTestMsg_t;
 
-
 typedef struct {
 	FwkMsgHeader_t header;
-	uint8_t status;
+	int status;
 	uint16_t pin;
 } DigitalInMsg_t;
 

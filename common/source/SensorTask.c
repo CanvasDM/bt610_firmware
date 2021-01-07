@@ -8,8 +8,7 @@
  */
 
 #include <logging/log.h>
-#define LOG_LEVEL LOG_LEVEL_DBG
-LOG_MODULE_REGISTER(Sensor);
+LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define THIS_FILE "Sensor"
 
 /******************************************************************************/
@@ -25,9 +24,10 @@ LOG_MODULE_REGISTER(Sensor);
 
 #include "FrameworkIncludes.h"
 #include "Attribute.h"
-#include "SensorTask.h"
 #include "BspSupport.h"
 #include "AdcBt6.h"
+
+#include "SensorTask.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -70,17 +70,20 @@ K_MSGQ_DEFINE(digitalIOTaskQueue, FWK_QUEUE_ENTRY_SIZE, SENSOR_TASK_QUEUE_DEPTH,
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void SensorTaskThread(void *, void *, void *);
-static void CheckBattery(void);
 static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				     FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
 SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FwkMsg_t *pMsg);
-static DispatchResult_t
-SensorTaskMagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					      FwkMsg_t *pMsg);
+
+static void UpdateDin1(void);
+static void UpdateDin2(void);
+static void UpdateMagnet(void);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -89,12 +92,12 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:       	return Framework_UnknownMsgHandler;
-	case FMC_ATTR_CHANGED:  	return SensorTaskAttributeChangedMsgHandler;
-	case FMC_DIGITAL_IN: 		return SensorTaskDigitalInputdMsgHandler;
+	case FMC_INVALID:           return Framework_UnknownMsgHandler;
+	case FMC_ATTR_CHANGED:      return SensorTaskAttributeChangedMsgHandler;
+	case FMC_DIGITAL_IN:        return SensorTaskDigitalInputMsgHandler;
 	case FMC_DIGITAL_IN_ALARM:  return SensorTaskDigitalInAlarmSetMsgHandler;
-	case FMC_MAGNET_STATE:      return SensorTaskMagnetStateMsgHandler;
-	default:                	return NULL;
+	case FMC_MAGNET_STATE:      return MagnetStateMsgHandler;
+	default:                    return NULL;
 	}
 	/* clang-format on */
 }
@@ -125,30 +128,63 @@ void SensorTask_Initialize(void)
 	k_thread_name_set(digitalIOTaskObject.msgTask.pTid, THIS_FILE);
 }
 
+int AttributePrepare_batteryVoltageMv(void)
+{
+	int16_t raw = 0;
+	int32_t mv = 0;
+	int r = AdcBt6_ReadBatteryMv(&raw, &mv);
+
+	if (r >= 0) {
+		r = Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
+	}
+	return r;
+}
+
+int AttributePrepare_analogInput1(void)
+{
+	return 0;
+}
+
+int AttributePrepare_analogInput2(void)
+{
+	return 0;
+}
+
+int AttributePrepare_analogInput3(void)
+{
+	return 0;
+}
+
+int AttributePrepare_analogInput4(void)
+{
+	return 0;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	SensorTaskObj_t *pObj = (SensorTaskObj_t *)pArg1;
+	int r;
 
-	/*Get the current status of the digital inputs connections*/
-	BSP_DigitalPinsStatus();
+	r = AdcBt6_Init();
+	if (r < 0) {
+		LOG_ERR("BT6 ADC module init error: %d", r);
+	}
 
-	CheckBattery();
+	/* todo: Enable Din1 and Din2 based on configuration. */
+	BSP_PinSet(DIN1_ENABLE_PIN, 1);
+	BSP_PinSet(DIN2_ENABLE_PIN, 1);
+
+	AttributePrepare_batteryVoltageMv();
+	UpdateDin1();
+	UpdateDin2();
+	UpdateMagnet();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
-}
-
-static void CheckBattery(void)
-{
-	int16_t raw = 0;
-	int32_t mv = 0;
-	AdcBt6_ReadBatteryMv(&raw, &mv);
-
-	Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
 }
 
 static DispatchResult_t
@@ -173,11 +209,11 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			//	MSG_CODE_TEMPERATURE_MEASURE);
 			break;
 
-		case ATTR_INDEX_digitalInput1:
-		case ATTR_INDEX_digitalInput2:
-			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-						   FMC_DIGITAL_IN_ALARM);
-			break;
+			//		case ATTR_INDEX_digitalInput1:
+			//		case ATTR_INDEX_digitalInput2:
+			//			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
+			//						   FMC_DIGITAL_IN_ALARM);
+			//			break;
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
@@ -201,17 +237,15 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskDigitalInputdMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
 	uint8_t pinStatus = pSensorMsg->status;
 
 	if (pSensorMsg->pin == DIN1_MCU_PIN) {
-		Attribute_SetUint32(ATTR_INDEX_digitalInput1Status, pinStatus);
+		UpdateDin1();
 	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
-		Attribute_SetUint32(ATTR_INDEX_digitalInput2Status, pinStatus);
-	} else {
-		/* Error, only 2 digital pins */
+		UpdateDin1();
 	}
 
 	return DISPATCH_OK;
@@ -222,10 +256,10 @@ SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	uint8_t input1TriggerLevel;
 	uint8_t input2TriggerLevel;
-	Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
-		      sizeof(uint8_t));
-	Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
-		      sizeof(uint8_t));
+	//Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
+	//	      sizeof(uint8_t));
+	//Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
+	//	      sizeof(uint8_t));
 
 	if (input1TriggerLevel == 0) {
 		/*Set alarm when input is low*/
@@ -240,17 +274,45 @@ SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	return DISPATCH_OK;
 }
-static DispatchResult_t
-SensorTaskMagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	uint8_t pinStatus;
-	const struct device *dev;
 
-	dev = device_get_binding(DT_GPIO_LABEL(DT_ALIAS(sw3), gpios));
-	pinStatus = gpio_pin_get(dev, GPIO_PIN_MAP(MAGNET_MCU_PIN));
-	Attribute_SetUint32(ATTR_INDEX_magnetState, pinStatus);
+static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					      FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+
+	UpdateMagnet();
 	return DISPATCH_OK;
 }
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/
+
+static void UpdateDin1(void)
+{
+	int v = BSP_PinGet(DIN1_MCU_PIN);
+
+	if (v >= 0) {
+		Attribute_SetMask32(ATTR_INDEX_digitalInput, 0, v);
+	}
+
+	/* todo: refactor for 1/2?; check alarm; update alarm */
+	/* maybe having two attributes is better */
+}
+
+static void UpdateDin2(void)
+{
+	int v = BSP_PinGet(DIN2_MCU_PIN);
+
+	if (v >= 0) {
+		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
+	}
+}
+
+static void UpdateMagnet(void)
+{
+	int v = BSP_PinGet(MAGNET_MCU_PIN);
+
+	if (v >= 0) {
+		v = Attribute_SetUint32(ATTR_INDEX_magnetState, v);
+	}
+
+	/* todo: set flag or deprecate flag bits for bt6 */
+}
