@@ -163,7 +163,7 @@ int AdcBt6_Init(void)
 	status = InitExpander();
 
 	/* Calibration is independent of parameters/attributes module. */
-	/* todo: should these be in external flash or shadowed there too ? */
+	/* todo: should these be shadowed in external flash ? */
 	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
 	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);

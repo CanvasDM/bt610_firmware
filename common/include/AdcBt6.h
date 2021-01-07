@@ -53,7 +53,9 @@ typedef enum AdcMeasurementType {
 typedef enum AdcPwrSequence {
 	/* Enable/Disable power required for measurement */
 	ADC_PWR_SEQ_SINGLE = 0,
-	/* Enable analog/thermistor circuit Power */
+	/* Enable analog/thermistor circuit power.
+	 * Analog and Thermistor cannot be interleaved.
+	 */
 	ADC_PWR_SEQ_START,
 	/* Circuit Power setting remains unchanged */
 	ADC_PWR_SEQ_CONTINUE,
