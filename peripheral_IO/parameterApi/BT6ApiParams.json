@@ -2015,8 +2015,6 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "float",
@@ -2033,8 +2031,6 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "float",
@@ -2051,8 +2047,6 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "float",
@@ -2071,8 +2065,6 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "float",
@@ -2111,8 +2103,6 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimumlength": 0,
-              "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 15.0,
               "x-ctype": "uint8_t",
@@ -2136,7 +2126,8 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-readable": true
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
@@ -2152,7 +2143,8 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-readable": true
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
@@ -2168,7 +2160,8 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-readable": true
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
@@ -2184,7 +2177,8 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
-              "x-readable": true
+              "x-readable": true,
+              "x-prepare": true
             }
           },
           {
@@ -2244,7 +2238,7 @@
           {
             "name": "digitalAlarms",
             "summary": "Bitmask of alarms for Digital Inputs 1 and 2; Alarm is set when 1",
-            "description": "Bit 0 = Input 1, Bit 1 = Input 2; When writing set bit to 1 to clear",
+            "description": "Bit 0 = Input 1, Bit 1 = Input 2",
             "required": true,
             "x-id": 77,
             "x-groupid": 65,
@@ -2587,6 +2581,24 @@
               "x-default": "0",
               "x-example": "0",
               "x-savable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "shOffset",
+            "summary": "Steinhart-Hart Temperature Equation offset",
+            "required": true,
+            "x-id": 96,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "float",
+              "x-default": "273.15",
+              "x-example": "273.15",
+              "x-savable": true,
+              "x-writeable": true,
               "x-readable": true
             }
           }

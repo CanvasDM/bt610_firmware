@@ -71,7 +71,8 @@ static int sample(const struct shell *shell, int channel,
 	int status;
 	size_t i;
 	for (i = 0; i < samples; i++) {
-		status = AdcBt6_Measure(&raw, channel, type, MEASURE_SINGLE);
+		status =
+			AdcBt6_Measure(&raw, channel, type, ADC_PWR_SEQ_SINGLE);
 		conv = func(raw);
 		shell_print(shell, "[%u] status: %d raw: %d converted: %.4e", i,
 			    status, raw, conv);
@@ -99,7 +100,7 @@ static int vin(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
 	int ch = convert_channel(argv[1]);
-	AdcMeasurementType_t type = ADC_TYPE_ANALOG_VOLTAGE;
+	AdcMeasurementType_t type = ADC_TYPE_VOLTAGE;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
 	return sample(shell, ch - 1, type, AdcBt6_ConvertVoltage);
 }
@@ -108,7 +109,7 @@ static int cin(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
 	int ch = convert_channel(argv[1]);
-	AdcMeasurementType_t type = ADC_TYPE_ANALOG_CURRENT;
+	AdcMeasurementType_t type = ADC_TYPE_CURRENT;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
 	return sample(shell, ch - 1, type, AdcBt6_ConvertCurrent);
 }

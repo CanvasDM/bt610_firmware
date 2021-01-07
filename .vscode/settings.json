@@ -20,7 +20,10 @@
     "cmake.configureOnOpen": false,
     "cSpell.words": [
       "fstr",
+      "imax",
+      "imin",
       "nird",
-      "pnird"
+      "pnird",
+      "toyn"
     ]
 }

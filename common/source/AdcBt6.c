@@ -65,10 +65,13 @@ const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
 #define MUX_SWITCH_DELAY_US 100
 #define V_5_ENABLE_DELAY_MS 3
 #define B_PLUS_ENABLE_DELAY_MS 1
+#define ULTRASONIC_DELAY_MS 400 /* 2 measurements */
+#define PRESSURE_DELAY_MS 5
 
 /* Constants for converting ADC counts to voltage */
 #define ANALOG_VOLTAGE_CONVERSION_FACTOR 281.2
 #define ANALOG_CURRENT_CONVERSION_FACTOR 71.875
+#define ULTRASONIC_CONVERSION_FACTOR (10240.0 / 5.0)
 
 /* Constants for Steinhart-Hart Equation for the Focus thermistor */
 #define THERMISTOR_S_H_A 1.132e-3
@@ -132,6 +135,8 @@ static int ConfigureChannel(AnalogChannel_t channel);
 static AnalogChannel_t GetChannel(AdcMeasurementType_t type);
 static int InitExpander(void);
 static int ConfigMux(MuxInput_t input);
+static void UltrasonicOrPressurePowerAndDelayHandler(AdcMeasurementType_t type);
+static void UltrasonicOrPressureDisablePower(AdcMeasurementType_t type);
 static bool ValidInputForCurrentMeasurement(MuxInput_t input);
 static float Steinhart_Hart(float calibrated, float a, float b, float c);
 
@@ -143,6 +148,7 @@ int AdcBt6_Init(void)
 	int status = 0;
 	adcObj.calibrate = true;
 	adcObj.dev = device_get_binding(ADC_DEVICE_NAME);
+
 	if (adcObj.dev == NULL) {
 		__ASSERT(false, "Failed to get device binding");
 		status = -1;
@@ -182,23 +188,26 @@ int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv)
 }
 
 int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
-		   bool single)
+		   AdcPwrSequence_t power)
 {
 	int rc = -EPERM;
 	if (adcObj.dev == NULL) {
 		return rc;
 	}
 
-	if (type == ADC_TYPE_ANALOG_CURRENT) {
+	if (type == ADC_TYPE_CURRENT) {
 		if (!ValidInputForCurrentMeasurement(input)) {
 			LOG_ERR("Invalid input for current measurement");
 			return rc;
 		}
 	}
 
+	/** @ref Hardware Sensor Measurement Procedures.docx */
+
 	if (type < NUMBER_OF_ADC_TYPES) {
 		k_mutex_lock(&adcMutex, K_FOREVER);
-		if (single) {
+
+		if (power == ADC_PWR_SEQ_SINGLE || power == ADC_PWR_SEQ_START) {
 			AdcBt6_ConfigPower(type);
 		}
 
@@ -208,14 +217,24 @@ int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
 			rc = ConfigMux(input);
 		}
 
+		if (power != ADC_PWR_SEQ_BYPASS) {
+			UltrasonicOrPressurePowerAndDelayHandler(type);
+		}
+
 		if (rc == 0) {
 			rc = SampleChannel(raw, GetChannel(type));
 		}
 
-		if (single) {
+		if (power == ADC_PWR_SEQ_SINGLE || power == ADC_PWR_SEQ_END) {
 			AdcBt6_DisablePower();
 		}
+
+		if (power != ADC_PWR_SEQ_BYPASS) {
+			UltrasonicOrPressureDisablePower(type);
+		}
+
 		k_mutex_unlock(&adcMutex);
+
 	} else {
 		LOG_ERR("Invalid measurement type");
 	}
@@ -238,18 +257,22 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 	int status = 0;
 	int16_t raw;
 	size_t i;
+
 	AdcBt6_ConfigPower(ADC_TYPE_THERMISTOR);
 	for (i = 0; ((i < SAMPLES) && (status == 0)); i++) {
-		status = AdcBt6_Measure(&raw, MUX_AIN1_THERM1,
-					ADC_TYPE_THERMISTOR, MEASURE_SEQUENCE);
+		status =
+			AdcBt6_Measure(&raw, MUX_AIN1_THERM1,
+				       ADC_TYPE_THERMISTOR, ADC_PWR_SEQ_BYPASS);
 		m1 += (float)raw;
 	}
 	for (i = 0; ((i < SAMPLES) && (status == 0)); i++) {
-		status = AdcBt6_Measure(&raw, MUX_AIN2_THERM2,
-					ADC_TYPE_THERMISTOR, MEASURE_SEQUENCE);
+		status =
+			AdcBt6_Measure(&raw, MUX_AIN2_THERM2,
+				       ADC_TYPE_THERMISTOR, ADC_PWR_SEQ_BYPASS);
 		m2 += (float)raw;
 	}
 	AdcBt6_DisablePower();
+
 	if (status == 0) {
 		m1 /= (float)SAMPLES;
 		m2 /= (float)SAMPLES;
@@ -273,8 +296,10 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 const char *AdcBt6_GetTypeString(AdcMeasurementType_t type)
 {
 	switch (type) {
-		SWITCH_CASE_RETURN_STRING(ADC_TYPE_ANALOG_VOLTAGE);
-		SWITCH_CASE_RETURN_STRING(ADC_TYPE_ANALOG_CURRENT);
+		SWITCH_CASE_RETURN_STRING(ADC_TYPE_VOLTAGE);
+		SWITCH_CASE_RETURN_STRING(ADC_TYPE_CURRENT);
+		SWITCH_CASE_RETURN_STRING(ADC_TYPE_PRESSURE);
+		SWITCH_CASE_RETURN_STRING(ADC_TYPE_ULTRASONIC);
 		SWITCH_CASE_RETURN_STRING(ADC_TYPE_THERMISTOR);
 		SWITCH_CASE_RETURN_STRING(ADC_TYPE_VREF);
 	default:
@@ -300,10 +325,10 @@ int AdcBt6_FiveVoltEnable(void)
 int AdcBt6_FiveVoltDisable(void)
 {
 	int rc = -EPERM;
-	if (adcObj.bPlusEnabled) {
+	if (!adcObj.bPlusEnabled) {
 		rc = BSP_PinSet(FIVE_VOLT_ENABLE_PIN, 0);
 	} else {
-		LOG_ERR("Disable 5V before disabling b+");
+		LOG_ERR("Disable b+ before disabling 5V");
 	}
 	if (rc == 0) {
 		adcObj.fiveEnabled = false;
@@ -324,10 +349,10 @@ int AdcBt6_BplusEnable(void)
 int AdcBt6_BplusDisable(void)
 {
 	int rc = -EPERM;
-	if (!adcObj.fiveEnabled) {
+	if (adcObj.fiveEnabled) {
 		rc = BSP_PinSet(BATT_OUT_ENABLE_PIN, 0);
 	} else {
-		LOG_ERR("Disable 5V before disabling b+");
+		LOG_ERR("Disable 5V after disabling b+");
 	}
 	if (rc == 0) {
 		adcObj.bPlusEnabled = false;
@@ -338,6 +363,16 @@ int AdcBt6_BplusDisable(void)
 float AdcBt6_ConvertVoltage(int32_t raw)
 {
 	return ((float)raw) / ANALOG_VOLTAGE_CONVERSION_FACTOR;
+}
+
+float AdcBt6_ConvertUltrasonic(int32_t raw)
+{
+	return AdcBt6_ConvertVoltage(raw) * ULTRASONIC_CONVERSION_FACTOR;
+}
+
+float AdcBt6_ConvertPressure(int32_t raw)
+{
+	return (AdcBt6_ConvertVoltage(raw) * 75) - 37.5;
 }
 
 float AdcBt6_ConvertCurrent(int32_t raw)
@@ -363,7 +398,6 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw)
 	return result;
 }
 
-/* doesn't there need to be a set for each input ? */
 float AdcBt6_ConvertThermToTemperature(int32_t raw)
 {
 	float calibrated = AdcBt6_ApplyThermistorCalibration(raw);
@@ -374,19 +408,18 @@ float AdcBt6_ConvertThermToTemperature(int32_t raw)
 						    THERMISTOR_S_H_B),
 			      Attribute_AltGetFloat(ATTR_INDEX_coefficientC,
 						    THERMISTOR_S_H_C)) -
-	       THERMISTOR_S_H_OFFSET;
+	       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
+				     THERMISTOR_S_H_OFFSET);
 }
 
 void AdcBt6_ConfigPower(AdcMeasurementType_t type)
 {
 	/* Thermistor enable is active low. */
 	switch (type) {
-	case ADC_TYPE_ANALOG_VOLTAGE:
-		BSP_PinSet(ANALOG_ENABLE_PIN, 1);
-		BSP_PinSet(THERM_ENABLE_PIN, 1);
-		break;
-
-	case ADC_TYPE_ANALOG_CURRENT:
+	case ADC_TYPE_VOLTAGE:
+	case ADC_TYPE_CURRENT:
+	case ADC_TYPE_PRESSURE:
+	case ADC_TYPE_ULTRASONIC:
 		BSP_PinSet(ANALOG_ENABLE_PIN, 1);
 		BSP_PinSet(THERM_ENABLE_PIN, 1);
 		break;
@@ -458,11 +491,13 @@ static AnalogChannel_t GetChannel(AdcMeasurementType_t type)
 {
 	/* clang-format off */
 	switch (type) {
-	case ADC_TYPE_ANALOG_VOLTAGE:   return ANALOG_SENSOR_1_CH;
-	case ADC_TYPE_ANALOG_CURRENT:   return ANALOG_SENSOR_1_CH;
-	case ADC_TYPE_THERMISTOR:		return THERMISTOR_SENSOR_2_CH;
-	case ADC_TYPE_VREF:             return VREF_5_CH;
-	default:                        return BATTERY_ADC_CH;
+	case ADC_TYPE_VOLTAGE:      return ANALOG_SENSOR_1_CH;
+	case ADC_TYPE_CURRENT:      return ANALOG_SENSOR_1_CH;
+	case ADC_TYPE_PRESSURE:     return ANALOG_SENSOR_1_CH;
+	case ADC_TYPE_ULTRASONIC:   return ANALOG_SENSOR_1_CH;
+	case ADC_TYPE_THERMISTOR:   return THERMISTOR_SENSOR_2_CH;
+	case ADC_TYPE_VREF:         return VREF_5_CH;
+	default:                    return BATTERY_ADC_CH;
 	}
 	/* clang-format on */
 }
@@ -590,6 +625,30 @@ static int ConfigMux(MuxInput_t input)
 	return rc;
 }
 
+static void UltrasonicOrPressurePowerAndDelayHandler(AdcMeasurementType_t type)
+{
+	if (type == ADC_TYPE_PRESSURE || type == ADC_TYPE_ULTRASONIC) {
+		AdcBt6_FiveVoltEnable();
+		AdcBt6_BplusEnable();
+	}
+
+	if (type == ADC_TYPE_PRESSURE) {
+		k_sleep(K_MSEC(PRESSURE_DELAY_MS));
+	}
+
+	if (type == ADC_TYPE_ULTRASONIC) {
+		k_sleep(K_MSEC(ULTRASONIC_DELAY_MS));
+	}
+}
+
+static void UltrasonicOrPressureDisablePower(AdcMeasurementType_t type)
+{
+	if (type == ADC_TYPE_PRESSURE || type == ADC_TYPE_ULTRASONIC) {
+		AdcBt6_BplusDisable();
+		AdcBt6_FiveVoltDisable();
+	}
+}
+
 static bool ValidInputForCurrentMeasurement(MuxInput_t input)
 {
 	return ((BIT(input) & adcObj.expander.bits.ain_sel) != 0);
@@ -600,9 +659,7 @@ static float Steinhart_Hart(float calibrated, float a, float b, float c)
 	float r = (10000 * calibrated) / (4096 - calibrated);
 	float x = log(r);
 	float cubed = x * x * x;
-	float temperature = a + (b * log(r)) + (c * cubed);
-	if (temperature != 0) {
-		temperature = 1 / temperature;
-	}
-	return temperature;
+	float denominator = a + (b * x) + (c * cubed);
+	/* Division by zero is safe for this architecture. */
+	return 1 / denominator;
 }

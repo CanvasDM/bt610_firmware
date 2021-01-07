@@ -111,6 +111,7 @@ typedef struct RwAttributesTag {
     uint8_t analogInput4Type;
     uint32_t flags;
     uint32_t qrtcLastSet;
+    float shOffset;
 	/* pyend */
 } RwAttribute_t;
 
@@ -188,7 +189,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
     .analogInput3Type = 0,
     .analogInput4Type = 0,
     .flags = 0,
-    .qrtcLastSet = 0
+    .qrtcLastSet = 0,
+    .shOffset = 273.15
 	/* pyend */
 };
 
@@ -364,10 +366,10 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [67 ] = { RW_ATTRX(coefficientB)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
     [68 ] = { RW_ATTRX(coefficientC)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
     [69 ] = { RW_ATTRX(thermistorConfig)              , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 15.0       },
-    [70 ] = { RO_ATTRX(temperatureResult1)            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [71 ] = { RO_ATTRX(temperatureResult2)            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [72 ] = { RO_ATTRX(temperatureResult3)            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [73 ] = { RO_ATTRX(temperatureResult4)            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
+    [70 ] = { RO_ATTRX(temperatureResult1)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult1       , .min.fx = 0.0       , .max.fx = 0.0        },
+    [71 ] = { RO_ATTRX(temperatureResult2)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult2       , .min.fx = 0.0       , .max.fx = 0.0        },
+    [72 ] = { RO_ATTRX(temperatureResult3)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult3       , .min.fx = 0.0       , .max.fx = 0.0        },
+    [73 ] = { RO_ATTRX(temperatureResult4)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult4       , .min.fx = 0.0       , .max.fx = 0.0        },
     [74 ] = { RO_ATTRX(temperatureAlarms)             , u32, n, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [75 ] = { RO_ATTRX(batteryVoltageMv)              , u16, n, n, y, n, n, n, AttributeValidator_uint16   , AttributePrepare_batteryVoltageMv         , .min.ux = 0.0       , .max.ux = 3800.0     },
     [76 ] = { RO_ATTRX(digitalInput)                  , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
@@ -389,7 +391,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [92 ] = { RO_ATTRX(batteryAge)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [93 ] = { RO_ATTRS(apiVersion)                    , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [94 ] = { RO_ATTRX(qrtc)                          , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
-    [95 ] = { RW_ATTRX(qrtcLastSet)                   , u32, y, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        }
+    [95 ] = { RW_ATTRX(qrtcLastSet)                   , u32, y, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [96 ] = { RW_ATTRX(shOffset)                      , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        }
     /* pyend */
 };
 /* clang-format on */
@@ -492,6 +495,26 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 #endif
 
 /* pystart - prepare for read weak implementations */
+__weak int AttributePrepare_temperatureResult1(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_temperatureResult2(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_temperatureResult3(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_temperatureResult4(void)
+{
+	return 0;
+}
+
 __weak int AttributePrepare_batteryVoltageMv(void)
 {
 	return 0;
