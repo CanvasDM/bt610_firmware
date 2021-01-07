@@ -64,7 +64,7 @@ struct AttributeEntry {
 	const bool broadcast;
 	const bool deprecated;
 	int (*const pValidator)(AttributeEntry_t *, void *, size_t, bool);
-	int (*const pRead)(void);
+	int (*const pPrepare)(void);
 	const minmax_t min;
 	const minmax_t max;
 	bool modified;
@@ -224,6 +224,10 @@ int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
 int AttributePrepare_batteryVoltageMv(void);
+int AttributePrepare_analogInput1(void);
+int AttributePrepare_analogInput2(void);
+int AttributePrepare_analogInput3(void);
+int AttributePrepare_analogInput4(void);
 /* pyend */
 
 #ifdef __cplusplus

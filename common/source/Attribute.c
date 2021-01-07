@@ -17,6 +17,7 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #include <init.h>
 #include <stdio.h>
 #include <logging/log_ctrl.h>
+#include <sys/util.h>
 
 #include "lcz_params.h"
 #include "file_system_utilities.h"
@@ -85,6 +86,7 @@ static void Show(attr_idx_t Index);
 static param_t ConvertParameterType(attr_idx_t idx);
 static size_t GetParameterLength(attr_idx_t idx);
 
+static int PrepareForRead(attr_idx_t Index);
 static bool isValid(attr_idx_t Index);
 static bool isWritable(attr_idx_t Index);
 static bool isDumpRw(attr_idx_t Index);
@@ -174,10 +176,13 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 	int r = -EPERM;
 
 	if (isValid(Index)) {
-		TAKE_MUTEX(attr_mutex);
-		memcpy(pValue, attrTable[Index].pData, size);
-		r = size;
-		GIVE_MUTEX(attr_mutex);
+		r = PrepareForRead(Index);
+		if (r >= 0) {
+			TAKE_MUTEX(attr_mutex);
+			memcpy(pValue, attrTable[Index].pData, size);
+			r = size;
+			GIVE_MUTEX(attr_mutex);
+		}
 	}
 	return r;
 }
@@ -203,8 +208,12 @@ int Attribute_GetString(char *pValue, attr_idx_t Index, size_t MaxStringLength)
 	int r = -EPERM;
 
 	if (isValid(Index)) {
-		strncpy(pValue, attrTable[Index].pData, MaxStringLength);
-		r = 0;
+		r = PrepareForRead(Index);
+		if (r >= 0) {
+			strncpy(pValue, attrTable[Index].pData,
+				MaxStringLength);
+			r = 0;
+		}
 	}
 	return r;
 }
@@ -296,10 +305,13 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 
 	if (isValid(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_U32) {
-			TAKE_MUTEX(attr_mutex);
-			*pValue = *((uint32_t *)attrTable[Index].pData);
-			r = 0;
-			GIVE_MUTEX(attr_mutex);
+			r = PrepareForRead(Index);
+			if (r >= 0) {
+				TAKE_MUTEX(attr_mutex);
+				*pValue = *((uint32_t *)attrTable[Index].pData);
+				r = 0;
+				GIVE_MUTEX(attr_mutex);
+			}
 		}
 	}
 	return r;
@@ -312,10 +324,13 @@ int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 
 	if (isValid(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_S32) {
-			TAKE_MUTEX(attr_mutex);
-			*pValue = *((int32_t *)attrTable[Index].pData);
-			r = 0;
-			GIVE_MUTEX(attr_mutex);
+			r = PrepareForRead(Index);
+			if (r >= 0) {
+				TAKE_MUTEX(attr_mutex);
+				*pValue = *((int32_t *)attrTable[Index].pData);
+				r = 0;
+				GIVE_MUTEX(attr_mutex);
+			}
 		}
 	}
 	return r;
@@ -328,10 +343,13 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 
 	if (isValid(Index)) {
 		if (attrTable[Index].type == ATTR_TYPE_FLOAT) {
-			TAKE_MUTEX(attr_mutex);
-			*pValue = *((float *)attrTable[Index].pData);
-			r = 0;
-			GIVE_MUTEX(attr_mutex);
+			r = PrepareForRead(Index);
+			if (r >= 0) {
+				TAKE_MUTEX(attr_mutex);
+				*pValue = *((float *)attrTable[Index].pData);
+				r = 0;
+				GIVE_MUTEX(attr_mutex);
+			}
 		}
 	}
 	return r;
@@ -389,6 +407,42 @@ size_t Attribute_GetSize(attr_idx_t Index)
 		size = attrTable[Index].size;
 	}
 	return size;
+}
+
+int Attribute_SetMask32(attr_idx_t Index, uint8_t Bit, uint8_t Value)
+{
+	uint32_t local;
+	int r = -EPERM;
+
+	if (isValid(Index) && Bit < 32) {
+		TAKE_MUTEX(attr_mutex);
+		local = *(uint32_t *)attrTable[Index].pData;
+		WRITE_BIT(local, Bit, Value);
+		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
+		if (r == 0) {
+			r = SaveAndBroadcast(Index);
+		}
+		GIVE_MUTEX(attr_mutex);
+	}
+	return r;
+}
+
+int Attribute_SetMask64(attr_idx_t Index, uint8_t Bit, uint8_t Value)
+{
+	uint64_t local;
+	int r = -EPERM;
+
+	if (isValid(Index) && Bit < 64) {
+		TAKE_MUTEX(attr_mutex);
+		local = *(uint64_t *)attrTable[Index].pData;
+		local = Value ? (local | BIT64(Bit)) : (local & ~BIT64(Bit));
+		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
+		if (r == 0) {
+			r = SaveAndBroadcast(Index);
+		}
+		GIVE_MUTEX(attr_mutex);
+	}
+	return r;
 }
 
 #ifdef CONFIG_ATTR_SHELL
@@ -807,6 +861,19 @@ static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 	if (r < 0) {
 		LOG_WRN("validation failure %u %s", Index, p->name);
 		LOG_HEXDUMP_DBG(pValue, Length, "attr data");
+	}
+	return r;
+}
+
+/**
+ * @brief Cause actions that will update an attribute.
+ * For the majority of attributes, this function doesn't do anything.
+ */
+static int PrepareForRead(attr_idx_t Index)
+{
+	int r = 0;
+	if (attrTable[Index].pPrepare != NULL) {
+		r = attrTable[Index].pPrepare();
 	}
 	return r;
 }

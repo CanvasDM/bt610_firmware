@@ -352,7 +352,7 @@ class attributes:
                 if prototype:
                     s += ";\n"
                 else:
-                    s = "__weak " + s + "\n{\n\treturn 0;\n}\n"
+                    s = "__weak " + s + "\n{\n\treturn 0;\n}\n\n"
 
                 lst.append(s)
 

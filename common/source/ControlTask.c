@@ -25,7 +25,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "BspSupport.h"
 #include "UserInterfaceTask.h"
 #include "SensorTask.h"
-#include "AdcBt6.h"
 #include "Version.h"
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
@@ -177,7 +176,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	UserInterfaceTask_Initialize();
 	BleTask_Initialize();
 	SensorTask_Initialize();
-	AdcBt6_Init();
 
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();

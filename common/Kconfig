@@ -29,6 +29,11 @@ config BSP_LOG_LEVEL
     range 0 4
     default 4
 
+config SENSOR_TASK_LOG_LEVEL
+    int "Log level for Sensor Task"
+    range 0 4
+    default 3
+
 config ADVERTISEMENT_DISABLE
     bool "Disable advertisements for easier debug"
     help

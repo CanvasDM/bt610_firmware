@@ -252,13 +252,35 @@ const char *Attribute_GetName(attr_idx_t Index);
  */
 size_t Attribute_GetSize(attr_idx_t Index);
 
+/**
+ * @brief Set/Clear bit in a 32-bit attribute
+ *
+ * @param Index a valid index into table
+ * @param Bit location to set
+ * @param Value 0 for clear, any other value for set
+ *
+ * @param size of attribute, size with null if string
+ */
+int Attribute_SetMask32(attr_idx_t Index, uint8_t Bit, uint8_t Value);
+
+/**
+ * @brief Set/Clear bit in an 64-bit attribute
+ *
+ * @param Index a valid index into table
+ * @param Bit location to set
+ * @param Value 0 for clear, any other value for set
+ *
+ * @param size of attribute, size with null if string
+ */
+int Attribute_SetMask64(attr_idx_t Index, uint8_t Bit, uint8_t Value);
+
 #ifdef CONFIG_ATTR_SHELL
 /**
  * @brief Get the index of an attribute
  *
  * @param Name of the attribute
  *
- * @param attr_idx_t index of attribute
+ * @retval attr_idx_t index of attribute
  */
 attr_idx_t Attribute_GetIndex(const char *Name);
 

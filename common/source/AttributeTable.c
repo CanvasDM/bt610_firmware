@@ -374,10 +374,10 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [77 ] = { RO_ATTRX(digitalAlarms)                 , u32, n, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
     [78 ] = { RW_ATTRX(digitalInput1Config)           , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [79 ] = { RW_ATTRX(digitalInput2Config)           , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
-    [80 ] = { RO_ATTRX(analogInput1)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [81 ] = { RO_ATTRX(analogInput2)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [82 ] = { RO_ATTRX(analogInput3)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [83 ] = { RO_ATTRX(analogInput4)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
+    [80 ] = { RO_ATTRX(analogInput1)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput1             , .min.fx = 0.0       , .max.fx = 0.0        },
+    [81 ] = { RO_ATTRX(analogInput2)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput2             , .min.fx = 0.0       , .max.fx = 0.0        },
+    [82 ] = { RO_ATTRX(analogInput3)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput3             , .min.fx = 0.0       , .max.fx = 0.0        },
+    [83 ] = { RO_ATTRX(analogInput4)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput4             , .min.fx = 0.0       , .max.fx = 0.0        },
     [84 ] = { RO_ATTRX(analogAlarms)                  , u32, n, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [85 ] = { RW_ATTRX(analogInput1Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [86 ] = { RW_ATTRX(analogInput2Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
@@ -496,4 +496,25 @@ __weak int AttributePrepare_batteryVoltageMv(void)
 {
 	return 0;
 }
+
+__weak int AttributePrepare_analogInput1(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_analogInput2(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_analogInput3(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_analogInput4(void)
+{
+	return 0;
+}
+
 /* pyend */

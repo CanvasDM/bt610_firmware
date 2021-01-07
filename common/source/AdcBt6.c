@@ -154,14 +154,10 @@ int AdcBt6_Init(void)
 	adcObj.ref = adc_ref_internal(adcObj.dev);
 	LOG_DBG("Internal reference %u", adcObj.ref);
 
-	int16_t raw = 0;
-	int32_t mv = 0;
-	int rc = AdcBt6_ReadBatteryMv(&raw, &mv);
-	LOG_INF("status: %d battery raw: %d mv: %d", rc, raw, mv);
-
 	status = InitExpander();
 
-	/* These were kept separate because Attributes were in a state of flux. */
+	/* Calibration is independent of parameters/attributes module. */
+	/* todo: should these be in external flash or shadowed there too ? */
 	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
 	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
@@ -180,6 +176,7 @@ int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv)
 		rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
 					   ADC_RESOLUTION, mv);
 	}
+
 	k_mutex_unlock(&adcMutex);
 	return rc;
 }
@@ -448,6 +445,8 @@ int AdcBt6_ConfigAinSelects(void)
 	if (i2c_write(adcObj.i2c, cmd, sizeof(cmd), EXPANDER_ADDRESS) < 0) {
 		LOG_ERR("I2C Failure");
 		rc = -EIO;
+	} else {
+		rc = 0;
 	}
 	return rc;
 }
