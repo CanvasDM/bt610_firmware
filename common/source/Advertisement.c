@@ -16,7 +16,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
 
-#include "version.h"
+#include "Version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
 #include "Attribute.h"
