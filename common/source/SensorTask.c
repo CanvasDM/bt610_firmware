@@ -82,6 +82,8 @@ SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
 
+static void SensorConfigChange(void);
+
 static void UpdateDin1(void);
 static void UpdateDin2(void);
 static void UpdateMagnet(void);
@@ -244,8 +246,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_analogInput4Type:
 			break;
 		case ATTR_INDEX_configType:
-			FRAMEWORK_MSG_CREATE_AND_BROADCAST(FWK_ID_SENSOR_TASK, FMC_SENSOR_CONFIG_CHANGE); 
-			break;	
+			//FRAMEWORK_MSG_CREATE_AND_BROADCAST(FWK_ID_SENSOR_TASK, FMC_SENSOR_CONFIG_CHANGE);
+			SensorConfigChange();
+			break;
 
 		case ATTR_INDEX_activeMode:
 			// It isn't expected that host will write this.
@@ -309,6 +312,85 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
+static void SensorConfigChange(void)
+{
+	uint32_t configurationType;
+	uint32_t thermistorsConfig = 0;
+	analogConfigType_t analog1Config = ANALOG_UNUSED;
+	analogConfigType_t analog2Config = ANALOG_UNUSED;
+	analogConfigType_t analog3Config = ANALOG_UNUSED;
+	analogConfigType_t analog4Config = ANALOG_UNUSED;
+	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
+
+	switch (configurationType)
+	{
+	case CONFIG_UNDEFINED:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		/*Disable all analogs*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		break;
+	case CONFIG_ANALOG_VOLTAGE:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		/*Configure all analogs to voltage*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_VOLTAGE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_VOLTAGE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_VOLTAGE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_VOLTAGE);
+		break;
+	case CONFIG_DIGITAL:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		/*Disable all analogs*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		break;
+	case CONFIG_TEMPERATURE:
+		/*Enable all the thermistors*/
+		thermistorsConfig = 0x0F;
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		break;
+	case CONFIG_ANALOG_CURRENT:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		/*Configure all analogs to current*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_CURRENT);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_CURRENT);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_CURRENT);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_CURRENT);
+		break;
+	case CONFIG_ULTRASONIC_PRESSURE:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		break;
+	case CONFIG_SPI_I2C:
+		/*Disable all the thermistors*/
+		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+				    thermistorsConfig);
+		/*Disable all analogs*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		break;
+	default:
+		/*Set to undefined*/
+		Attribute_SetUint32(ATTR_INDEX_configType, CONFIG_UNDEFINED);
+		break;
+	}
+}
 static void UpdateDin1(void)
 {
 	int v = BSP_PinGet(DIN1_MCU_PIN);

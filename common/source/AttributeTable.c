@@ -386,7 +386,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [88 ] = { RW_ATTRX(analogInput4Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [89 ] = { RO_ATTRX(flags)                         , u32, n, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
-    [90 ] = { RO_ATTRX(magnetState)                   , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [90 ] = { RO_ATTRX(magnetState)                   , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_analogInput4                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [91 ] = { RO_ATTRS(paramPath)                     , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [92 ] = { RO_ATTRX(batteryAge)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [93 ] = { RO_ATTRS(apiVersion)                    , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },

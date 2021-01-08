@@ -84,6 +84,26 @@ struct AttributeEntry {
 
 #define ATTR_MAX_VERSION_LENGTH 11
 
+typedef enum
+{
+	CONFIG_UNDEFINED = 0,
+	CONFIG_ANALOG_VOLTAGE,
+	CONFIG_DIGITAL,
+	CONFIG_TEMPERATURE,
+	CONFIG_ANALOG_CURRENT,
+	CONFIG_ULTRASONIC_PRESSURE,
+	CONFIG_SPI_I2C,
+}configType_t;
+typedef enum
+{
+	ANALOG_UNUSED = 0,
+	ANALOG_VOLTAGE,
+	ANALOG_CURRENT,
+	ANALOG_PRESSURE,
+	ANALOG_ULTRASONIC,
+}analogConfigType_t;
+
+
 /******************************************************************************/
 /* Indices                                                                    */
 /******************************************************************************/
