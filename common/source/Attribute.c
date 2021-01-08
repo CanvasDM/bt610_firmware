@@ -964,7 +964,7 @@ static int InitializeQuiet(void)
 
 		/* The quiet file should not be smaller than the number of attrs. */
 		if (r != ATTR_TABLE_SIZE) {
-			LOG_WRN("Unexpected file size");
+			LOG_WRN("Unexpected quiet file size");
 			r = -1;
 		}
 

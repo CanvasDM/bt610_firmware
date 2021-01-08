@@ -40,15 +40,30 @@ typedef enum MuxInput {
 } MuxInput_t;
 
 typedef enum AdcMeasurementType {
-	ADC_TYPE_ANALOG_VOLTAGE = 0,
-	ADC_TYPE_ANALOG_CURRENT,
+	ADC_TYPE_VOLTAGE = 0,
+	ADC_TYPE_CURRENT,
+	ADC_TYPE_PRESSURE,
+	ADC_TYPE_ULTRASONIC,
 	ADC_TYPE_THERMISTOR,
 	ADC_TYPE_VREF,
 	NUMBER_OF_ADC_TYPES
 } AdcMeasurementType_t;
 
-#define MEASURE_SINGLE true
-#define MEASURE_SEQUENCE false
+/* The 5V for pressure/ultrasonic is enabled during conversions when required. */
+typedef enum AdcPwrSequence {
+	/* Enable/Disable power required for measurement */
+	ADC_PWR_SEQ_SINGLE = 0,
+	/* Enable analog/thermistor circuit power.
+	 * Analog and Thermistor cannot be interleaved.
+	 */
+	ADC_PWR_SEQ_START,
+	/* Circuit Power setting remains unchanged */
+	ADC_PWR_SEQ_CONTINUE,
+	/* Disable Power when done*/
+	ADC_PWR_SEQ_END,
+	/* Don't do anything with power */
+	ADC_PWR_SEQ_BYPASS
+} AdcPwrSequence_t;
 
 /******************************************************************************/
 /* Global Function Prototypes                                                 */
@@ -75,16 +90,15 @@ int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv);
  * @brief Measure analog input or thermistor input
  *
  * @param pointer to raw
- * @param input is the input (1-4) to measure
+ * @param input is the input (0-3) to measure
  * @param type of measurement to perform
- * @param single do a single measurement - this function will enable/disable power
- * to the analog input or thermistor circuitry.  Otherwise the user must
- * call ConfigPower and DisablePower before and after a sequential operation.
+ * @param pwr Use a power sequence otherwise the user must
+ * call ConfigPower and DisablePower before and this operation.
  *
  * @retval 0 on success, negative otherwise
  */
 int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
-		   bool single);
+		   AdcPwrSequence_t power);
 
 /**
  * @brief Calibrate thermistor with therm1 connected to a  ~560 Ohm resistor
@@ -142,6 +156,20 @@ int AdcBt6_BplusDisable(void);
  * @retval analog input voltage scaled to circuitry (Volts)
  */
 float AdcBt6_ConvertVoltage(int32_t raw);
+
+/**
+ * @brief Conversion function
+ *
+ * @retval millimeters
+ */
+float AdcBt6_ConvertUltrasonic(int32_t raw);
+
+/**
+ * @brief Conversion function
+ *
+ * @retval PSI
+ */
+float AdcBt6_ConvertPressure(int32_t raw);
 
 /**
  * @brief Conversion function

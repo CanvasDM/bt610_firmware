@@ -71,7 +71,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 96
+#define ATTR_TABLE_SIZE 97
 
 /* pyend */
 
@@ -185,6 +185,7 @@ struct AttributeEntry {
 #define ATTR_INDEX_apiVersion                            93
 #define ATTR_INDEX_qrtc                                  94
 #define ATTR_INDEX_qrtcLastSet                           95
+#define ATTR_INDEX_shOffset                              96
 /* pyend */
 /* clang-format on */
 
@@ -223,6 +224,10 @@ int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
+int AttributePrepare_temperatureResult1(void);
+int AttributePrepare_temperatureResult2(void);
+int AttributePrepare_temperatureResult3(void);
+int AttributePrepare_temperatureResult4(void);
 int AttributePrepare_batteryVoltageMv(void);
 int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);

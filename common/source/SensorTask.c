@@ -26,6 +26,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "Attribute.h"
 #include "BspSupport.h"
 #include "AdcBt6.h"
+#include "AnalogInput.h"
 
 #include "SensorTask.h"
 
@@ -85,6 +86,9 @@ static void UpdateDin1(void);
 static void UpdateDin2(void);
 static void UpdateMagnet(void);
 
+static int Analog(size_t channel, AdcPwrSequence_t power);
+static int Thermistor(size_t channel, AdcPwrSequence_t power);
+
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -142,22 +146,42 @@ int AttributePrepare_batteryVoltageMv(void)
 
 int AttributePrepare_analogInput1(void)
 {
-	return 0;
+	return Analog(0, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput2(void)
 {
-	return 0;
+	return Analog(1, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput3(void)
 {
-	return 0;
+	return Analog(2, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput4(void)
 {
-	return 0;
+	return Analog(3, ADC_PWR_SEQ_SINGLE);
+}
+
+int AttributePrepare_temperatureResult1(void)
+{
+	return Thermistor(0, ADC_PWR_SEQ_SINGLE);
+}
+
+int AttributePrepare_temperatureResult2(void)
+{
+	return Thermistor(1, ADC_PWR_SEQ_SINGLE);
+}
+
+int AttributePrepare_temperatureResult3(void)
+{
+	return Thermistor(2, ADC_PWR_SEQ_SINGLE);
+}
+
+int AttributePrepare_temperatureResult4(void)
+{
+	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
 }
 
 /******************************************************************************/
@@ -239,8 +263,8 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 static DispatchResult_t
 SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
+	ARG_UNUSED(pMsgRxer);
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
-	uint8_t pinStatus = pSensorMsg->status;
 
 	if (pSensorMsg->pin == DIN1_MCU_PIN) {
 		UpdateDin1();
@@ -315,4 +339,85 @@ static void UpdateMagnet(void)
 	}
 
 	/* todo: set flag or deprecate flag bits for bt6 */
+}
+
+static int Analog(size_t channel, AdcPwrSequence_t power)
+{
+	int r = -EPERM;
+	float result = 0.0;
+	int16_t raw = 0;
+
+	attr_idx_t base = ATTR_INDEX_analogInput1Type;
+	uint32_t config = Attribute_AltGetUint32(base + channel, 0);
+
+	switch (config) {
+	case ANALOG_INPUT_VOLTAGE:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertVoltage(raw);
+		}
+		break;
+
+	case ANALOG_INPUT_CURRENT:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertCurrent(raw);
+		}
+		break;
+
+	case ANALOG_INPUT_PRESSURE:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_PRESSURE, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertPressure(raw);
+		}
+		break;
+
+	case ANALOG_INPUT_ULTRASONIC:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertUltrasonic(raw);
+		}
+		break;
+
+	default:
+		r = 0;
+		LOG_DBG("Analog input channel %d disabled", channel + 1);
+		break;
+	}
+
+	if (r >= 0) {
+		r = Attribute_SetFloat(ATTR_INDEX_analogInput1 + channel,
+				       result);
+	}
+
+	/* todo: alarm handler */
+
+	return r;
+}
+
+static int Thermistor(size_t channel, AdcPwrSequence_t power)
+{
+	int r = -EPERM;
+	float result = 0.0;
+	int16_t raw = 0;
+
+	uint32_t config =
+		Attribute_AltGetUint32(ATTR_INDEX_thermistorConfig, 0);
+
+	if (config & BIT(channel)) {
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_THERMISTOR, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertThermToTemperature(raw);
+		}
+	} else {
+		LOG_DBG("Thermistor channel %d not enabled", channel + 1);
+		r = 0;
+	}
+
+	if (r >= 0) {
+		r = Attribute_SetFloat(ATTR_INDEX_temperatureResult1 + channel,
+				       result);
+	}
+
+	return r;
 }
