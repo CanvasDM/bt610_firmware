@@ -38,225 +38,225 @@
 /* Add things to the end!  Do not remove items. Change them to deprecated. */
 typedef struct RwAttributesTag {
 	/* pystart - rw attributes */
-    char sensorName[23 + 1];
-    char sensorLocation[32 + 1];
-    uint16_t advertisingInterval;
-    uint16_t advertisingDuration;
-    char passkey[6 + 1];
-    uint8_t lock;
-    uint16_t batterySenseInterval;
-    uint16_t temperatureSenseInterval;
-    uint8_t temperatureAggregationCount;
-    uint16_t digitalOutput1Mv;
-    uint16_t digitalOutput2Mv;
-    float highTemp1Thresh1;
-    float highTemp1Thresh2;
-    float lowTemp1Thresh1;
-    float lowTemp1Thresh2;
-    float temp1DeltaThresh;
-    float highTemp2Thresh1;
-    float highTemp2Thresh2;
-    float lowTemp2Thresh1;
-    float lowTemp2Thresh2;
-    float temp2DeltaThresh;
-    float highTemp3Thresh1;
-    float highTemp3Thresh2;
-    float lowTemp3Thresh1;
-    float lowTemp3Thresh2;
-    float temp3DeltaThresh;
-    float highTemp4Thresh1;
-    float highTemp4Thresh2;
-    float lowTemp4Thresh1;
-    float lowTemp4Thresh2;
-    float temp4DeltaThresh;
-    float highAnalog1Thresh1;
-    float highAnalog1Thresh2;
-    float lowAnalog1Thresh1;
-    float lowAnalog1Thresh2;
-    float analog1DeltaThresh;
-    float highAnalog2Thresh1;
-    float highAnalog2Thresh2;
-    float lowAnalog2Thresh1;
-    float lowAnalog2Thresh2;
-    float analog2DeltaThresh;
-    float highAnalog3Thresh1;
-    float highAnalog3Thresh2;
-    float lowAnalog3Thresh1;
-    float lowAnalog3Thresh2;
-    float analog3DeltaThresh;
-    float highAnalog4Thresh1;
-    float highAnalog4Thresh2;
-    float lowAnalog4Thresh1;
-    float lowAnalog4Thresh2;
-    float analog4DeltaThresh;
-    uint8_t activeMode;
-    uint8_t useCodedPhy;
-    int8_t txPower;
-    uint16_t networkId;
-    uint8_t configVersion;
-    uint8_t configType;
-    uint8_t hardwareMinorVersion;
-    float coefficientA;
-    float coefficientB;
-    float coefficientC;
-    uint8_t thermistorConfig;
-    uint32_t temperatureAlarms;
-    uint32_t digitalAlarms;
-    uint8_t digitalInput1Config;
-    uint8_t digitalInput2Config;
-    uint32_t analogAlarms;
-    uint8_t analogInput1Type;
-    uint8_t analogInput2Type;
-    uint8_t analogInput3Type;
-    uint8_t analogInput4Type;
-    uint32_t flags;
-    uint32_t qrtcLastSet;
-    float shOffset;
+	char sensorName[23 + 1];
+	char sensorLocation[32 + 1];
+	uint16_t advertisingInterval;
+	uint16_t advertisingDuration;
+	char passkey[6 + 1];
+	uint8_t lock;
+	uint16_t batterySenseInterval;
+	uint16_t temperatureSenseInterval;
+	uint8_t temperatureAggregationCount;
+	uint16_t digitalOutput1Mv;
+	uint16_t digitalOutput2Mv;
+	float highTemp1Thresh1;
+	float highTemp1Thresh2;
+	float lowTemp1Thresh1;
+	float lowTemp1Thresh2;
+	float temp1DeltaThresh;
+	float highTemp2Thresh1;
+	float highTemp2Thresh2;
+	float lowTemp2Thresh1;
+	float lowTemp2Thresh2;
+	float temp2DeltaThresh;
+	float highTemp3Thresh1;
+	float highTemp3Thresh2;
+	float lowTemp3Thresh1;
+	float lowTemp3Thresh2;
+	float temp3DeltaThresh;
+	float highTemp4Thresh1;
+	float highTemp4Thresh2;
+	float lowTemp4Thresh1;
+	float lowTemp4Thresh2;
+	float temp4DeltaThresh;
+	float highAnalog1Thresh1;
+	float highAnalog1Thresh2;
+	float lowAnalog1Thresh1;
+	float lowAnalog1Thresh2;
+	float analog1DeltaThresh;
+	float highAnalog2Thresh1;
+	float highAnalog2Thresh2;
+	float lowAnalog2Thresh1;
+	float lowAnalog2Thresh2;
+	float analog2DeltaThresh;
+	float highAnalog3Thresh1;
+	float highAnalog3Thresh2;
+	float lowAnalog3Thresh1;
+	float lowAnalog3Thresh2;
+	float analog3DeltaThresh;
+	float highAnalog4Thresh1;
+	float highAnalog4Thresh2;
+	float lowAnalog4Thresh1;
+	float lowAnalog4Thresh2;
+	float analog4DeltaThresh;
+	uint8_t activeMode;
+	uint8_t useCodedPhy;
+	int8_t txPower;
+	uint16_t networkId;
+	uint8_t configVersion;
+	uint8_t configType;
+	uint8_t hardwareMinorVersion;
+	float coefficientA;
+	float coefficientB;
+	float coefficientC;
+	uint8_t thermistorConfig;
+	uint32_t temperatureAlarms;
+	uint32_t digitalAlarms;
+	uint8_t digitalInput1Config;
+	uint8_t digitalInput2Config;
+	uint32_t analogAlarms;
+	uint8_t analogInput1Type;
+	uint8_t analogInput2Type;
+	uint8_t analogInput3Type;
+	uint8_t analogInput4Type;
+	uint32_t flags;
+	uint32_t qrtcLastSet;
+	float shOffset;
 	/* pyend */
 } RwAttribute_t;
 
 static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	/* pystart - rw defaults */
-    .sensorName = "BT610",
-    .sensorLocation = "",
-    .advertisingInterval = 1000,
-    .advertisingDuration = 0,
-    .passkey = "123456",
-    .lock = 0,
-    .batterySenseInterval = 0,
-    .temperatureSenseInterval = 0,
-    .temperatureAggregationCount = 1,
-    .digitalOutput1Mv = 0,
-    .digitalOutput2Mv = 0,
-    .highTemp1Thresh1 = 127,
-    .highTemp1Thresh2 = 127,
-    .lowTemp1Thresh1 = -127,
-    .lowTemp1Thresh2 = -127,
-    .temp1DeltaThresh = -1,
-    .highTemp2Thresh1 = 127,
-    .highTemp2Thresh2 = 127,
-    .lowTemp2Thresh1 = -127,
-    .lowTemp2Thresh2 = -127,
-    .temp2DeltaThresh = -1,
-    .highTemp3Thresh1 = 127,
-    .highTemp3Thresh2 = 127,
-    .lowTemp3Thresh1 = -127,
-    .lowTemp3Thresh2 = -127,
-    .temp3DeltaThresh = -1,
-    .highTemp4Thresh1 = 127,
-    .highTemp4Thresh2 = 127,
-    .lowTemp4Thresh1 = -127,
-    .lowTemp4Thresh2 = -127,
-    .temp4DeltaThresh = -1,
-    .highAnalog1Thresh1 = -1,
-    .highAnalog1Thresh2 = -1,
-    .lowAnalog1Thresh1 = -1,
-    .lowAnalog1Thresh2 = -1,
-    .analog1DeltaThresh = -1,
-    .highAnalog2Thresh1 = -1,
-    .highAnalog2Thresh2 = -1,
-    .lowAnalog2Thresh1 = -1,
-    .lowAnalog2Thresh2 = -1,
-    .analog2DeltaThresh = -1,
-    .highAnalog3Thresh1 = -1,
-    .highAnalog3Thresh2 = -1,
-    .lowAnalog3Thresh1 = -1,
-    .lowAnalog3Thresh2 = -1,
-    .analog3DeltaThresh = -1,
-    .highAnalog4Thresh1 = -1,
-    .highAnalog4Thresh2 = -1,
-    .lowAnalog4Thresh1 = -1,
-    .lowAnalog4Thresh2 = -1,
-    .analog4DeltaThresh = -1,
-    .activeMode = 0,
-    .useCodedPhy = 0,
-    .txPower = 0,
-    .networkId = 0,
-    .configVersion = 0,
-    .configType = 0,
-    .hardwareMinorVersion = 0,
-    .coefficientA = 0.001132,
-    .coefficientB = 0.0002338,
-    .coefficientC = 8.780e-8,
-    .thermistorConfig = 0,
-    .temperatureAlarms = 0,
-    .digitalAlarms = 0,
-    .digitalInput1Config = 131,
-    .digitalInput2Config = 131,
-    .analogAlarms = 0,
-    .analogInput1Type = 0,
-    .analogInput2Type = 0,
-    .analogInput3Type = 0,
-    .analogInput4Type = 0,
-    .flags = 0,
-    .qrtcLastSet = 0,
-    .shOffset = 273.15
+	.sensorName = "BT610",
+	.sensorLocation = "",
+	.advertisingInterval = 1000,
+	.advertisingDuration = 0,
+	.passkey = "123456",
+	.lock = 0,
+	.batterySenseInterval = 0,
+	.temperatureSenseInterval = 0,
+	.temperatureAggregationCount = 1,
+	.digitalOutput1Mv = 0,
+	.digitalOutput2Mv = 0,
+	.highTemp1Thresh1 = 127,
+	.highTemp1Thresh2 = 127,
+	.lowTemp1Thresh1 = -127,
+	.lowTemp1Thresh2 = -127,
+	.temp1DeltaThresh = -1,
+	.highTemp2Thresh1 = 127,
+	.highTemp2Thresh2 = 127,
+	.lowTemp2Thresh1 = -127,
+	.lowTemp2Thresh2 = -127,
+	.temp2DeltaThresh = -1,
+	.highTemp3Thresh1 = 127,
+	.highTemp3Thresh2 = 127,
+	.lowTemp3Thresh1 = -127,
+	.lowTemp3Thresh2 = -127,
+	.temp3DeltaThresh = -1,
+	.highTemp4Thresh1 = 127,
+	.highTemp4Thresh2 = 127,
+	.lowTemp4Thresh1 = -127,
+	.lowTemp4Thresh2 = -127,
+	.temp4DeltaThresh = -1,
+	.highAnalog1Thresh1 = -1,
+	.highAnalog1Thresh2 = -1,
+	.lowAnalog1Thresh1 = -1,
+	.lowAnalog1Thresh2 = -1,
+	.analog1DeltaThresh = -1,
+	.highAnalog2Thresh1 = -1,
+	.highAnalog2Thresh2 = -1,
+	.lowAnalog2Thresh1 = -1,
+	.lowAnalog2Thresh2 = -1,
+	.analog2DeltaThresh = -1,
+	.highAnalog3Thresh1 = -1,
+	.highAnalog3Thresh2 = -1,
+	.lowAnalog3Thresh1 = -1,
+	.lowAnalog3Thresh2 = -1,
+	.analog3DeltaThresh = -1,
+	.highAnalog4Thresh1 = -1,
+	.highAnalog4Thresh2 = -1,
+	.lowAnalog4Thresh1 = -1,
+	.lowAnalog4Thresh2 = -1,
+	.analog4DeltaThresh = -1,
+	.activeMode = 0,
+	.useCodedPhy = 0,
+	.txPower = 0,
+	.networkId = 0,
+	.configVersion = 0,
+	.configType = 0,
+	.hardwareMinorVersion = 0,
+	.coefficientA = 0.001132,
+	.coefficientB = 0.0002338,
+	.coefficientC = 8.780e-8,
+	.thermistorConfig = 0,
+	.temperatureAlarms = 0,
+	.digitalAlarms = 0,
+	.digitalInput1Config = 131,
+	.digitalInput2Config = 131,
+	.analogAlarms = 0,
+	.analogInput1Type = 0,
+	.analogInput2Type = 0,
+	.analogInput3Type = 0,
+	.analogInput4Type = 0,
+	.flags = 0,
+	.qrtcLastSet = 0,
+	.shOffset = 273.15
 	/* pyend */
 };
 
 typedef struct RoAttributesTag {
 	/* pystart - ro attributes */
-    char firmwareVersion[11 + 1];
-    char resetReason[8 + 1];
-    char bluetoothAddress[12 + 1];
-    uint32_t resetCount;
-    char bootloaderVersion[11 + 1];
-    int64_t upTime;
-    uint8_t activeMode;
-    float ge;
-    float oe;
-    float temperatureResult1;
-    float temperatureResult2;
-    float temperatureResult3;
-    float temperatureResult4;
-    uint32_t temperatureAlarms;
-    uint16_t batteryVoltageMv;
-    uint8_t digitalInput;
-    uint32_t digitalAlarms;
-    float analogInput1;
-    float analogInput2;
-    float analogInput3;
-    float analogInput4;
-    uint32_t analogAlarms;
-    uint32_t flags;
-    uint8_t magnetState;
-    char paramPath[8 + 1];
-    uint32_t batteryAge;
-    char apiVersion[11 + 1];
-    uint32_t qrtc;
+	char firmwareVersion[11 + 1];
+	char resetReason[8 + 1];
+	char bluetoothAddress[12 + 1];
+	uint32_t resetCount;
+	char bootloaderVersion[11 + 1];
+	int64_t upTime;
+	uint8_t activeMode;
+	float ge;
+	float oe;
+	float temperatureResult1;
+	float temperatureResult2;
+	float temperatureResult3;
+	float temperatureResult4;
+	uint32_t temperatureAlarms;
+	uint16_t batteryVoltageMv;
+	uint8_t digitalInput;
+	uint32_t digitalAlarms;
+	float analogInput1;
+	float analogInput2;
+	float analogInput3;
+	float analogInput4;
+	uint32_t analogAlarms;
+	uint32_t flags;
+	uint8_t magnetState;
+	char paramPath[8 + 1];
+	uint32_t batteryAge;
+	char apiVersion[11 + 1];
+	uint32_t qrtc;
 	/* pyend */
 } RoAttribute_t;
 
 static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	/* pystart - ro defaults */
-    .firmwareVersion = "0.0.0",
-    .resetReason = "0",
-    .bluetoothAddress = "0",
-    .resetCount = 0,
-    .bootloaderVersion = "0.0",
-    .upTime = 0,
-    .activeMode = 0,
-    .ge = 0.0,
-    .oe = 0.0,
-    .temperatureResult1 = 0,
-    .temperatureResult2 = 0,
-    .temperatureResult3 = 0,
-    .temperatureResult4 = 0,
-    .temperatureAlarms = 0,
-    .batteryVoltageMv = 0,
-    .digitalInput = 0,
-    .digitalAlarms = 0,
-    .analogInput1 = 0,
-    .analogInput2 = 0,
-    .analogInput3 = 0,
-    .analogInput4 = 0,
-    .analogAlarms = 0,
-    .flags = 0,
-    .magnetState = 0,
-    .paramPath = "/ext",
-    .batteryAge = 0,
-    .apiVersion = "1.8",
-    .qrtc = 0
+	.firmwareVersion = "0.0.0",
+	.resetReason = "0",
+	.bluetoothAddress = "0",
+	.resetCount = 0,
+	.bootloaderVersion = "0.0",
+	.upTime = 0,
+	.activeMode = 0,
+	.ge = 0.0,
+	.oe = 0.0,
+	.temperatureResult1 = 0,
+	.temperatureResult2 = 0,
+	.temperatureResult3 = 0,
+	.temperatureResult4 = 0,
+	.temperatureAlarms = 0,
+	.batteryVoltageMv = 0,
+	.digitalInput = 0,
+	.digitalAlarms = 0,
+	.analogInput1 = 0,
+	.analogInput2 = 0,
+	.analogInput3 = 0,
+	.analogInput4 = 0,
+	.analogAlarms = 0,
+	.flags = 0,
+	.magnetState = 0,
+	.paramPath = "/ext",
+	.batteryAge = 0,
+	.apiVersion = "1.8",
+	.qrtc = 0
 	/* pyend */
 };
 
@@ -386,7 +386,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [88 ] = { RW_ATTRX(analogInput4Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [89 ] = { RO_ATTRX(flags)                         , u32, n, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
-    [90 ] = { RO_ATTRX(magnetState)                   , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_analogInput4                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [90 ] = { RO_ATTRX(magnetState)                   , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [91 ] = { RO_ATTRS(paramPath)                     , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [92 ] = { RO_ATTRX(batteryAge)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [93 ] = { RO_ATTRS(apiVersion)                    , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
