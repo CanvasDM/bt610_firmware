@@ -154,7 +154,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		getResult = Attribute_GetUint32(&uintData, paramID);
+		getResult =  Attribute_Get(paramID, &uintData, sizeof(uint32_t));
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
