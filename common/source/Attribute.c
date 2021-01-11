@@ -88,6 +88,7 @@ static size_t GetParameterLength(attr_idx_t idx);
 
 static int PrepareForRead(attr_idx_t Index);
 static bool isValid(attr_idx_t Index);
+static bool isReadable(attr_idx_t Index);
 static bool isWritable(attr_idx_t Index);
 static bool isDumpRw(attr_idx_t Index);
 static bool isDumpW(attr_idx_t Index);
@@ -176,12 +177,14 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 	int r = -EPERM;
 
 	if (isValid(Index)) {
-		r = PrepareForRead(Index);
-		if (r >= 0) {
-			TAKE_MUTEX(attr_mutex);
-			memcpy(pValue, attrTable[Index].pData, size);
-			r = size;
-			GIVE_MUTEX(attr_mutex);
+		if (isReadable(Index)) {
+			r = PrepareForRead(Index);
+			if (r >= 0) {
+				TAKE_MUTEX(attr_mutex);
+				memcpy(pValue, attrTable[Index].pData, size);
+				r = size;
+				GIVE_MUTEX(attr_mutex);
+			}
 		}
 	}
 	return r;
@@ -886,6 +889,11 @@ static bool isValid(attr_idx_t Index)
 		LOG_ERR("Invalid index %u", Index);
 		return false;
 	}
+}
+
+static bool isReadable(attr_idx_t Index)
+{
+	return attrTable[Index].readable;
 }
 
 static bool isWritable(attr_idx_t Index)

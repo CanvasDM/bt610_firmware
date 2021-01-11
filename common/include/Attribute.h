@@ -87,7 +87,8 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 		  size_t ValueLength);
 
 /**
- * @brief Copy an attribute
+ * @brief Copy an attribute.  This is the only function that should be
+ * used from the SMP interface because it checks the readable flag.
  *
  * @param Index A valid index into attribute table.
  * @param pValue pointer to location to copy string
