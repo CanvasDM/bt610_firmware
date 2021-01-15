@@ -51,6 +51,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #define TCA9538_REG_POL_INV  0x02
 #define TCA9538_REG_CONFIG   0x03
 #define OUTPUT_CONFIG        0xC0 /* pins 6 and 7 are always inputs */
+#define OUTPUT_CONFIG_v2     0x00 /* pins 6 and 7 are always Output */
 /* clang-format on */
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(i2c0), okay)

@@ -44,8 +44,8 @@ typedef struct RwAttributesTag {
 	uint16_t advertisingDuration;
 	char passkey[6 + 1];
 	uint8_t lock;
-	uint16_t batterySenseInterval;
-	uint16_t temperatureSenseInterval;
+	uint32_t batterySenseInterval;
+	uint32_t temperatureSenseInterval;
 	uint8_t temperatureAggregationCount;
 	uint16_t digitalOutput1Mv;
 	uint16_t digitalOutput2Mv;
@@ -302,8 +302,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, n, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
     [4  ] = { RW_ATTRS(passkey)                       , s  , y, y, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [5  ] = { RW_ATTRX(lock)                          , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [6  ] = { RW_ATTRX(batterySenseInterval)          , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
-    [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
+    [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
+    [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [8  ] = { RW_ATTRX(temperatureAggregationCount)   , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
     [9  ] = { RW_ATTRX(digitalOutput1Mv)              , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 30000.0    },
     [10 ] = { RW_ATTRX(digitalOutput2Mv)              , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 30000.0    },
@@ -360,11 +360,11 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [61 ] = { RW_ATTRX(configVersion)                 , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
     [62 ] = { RW_ATTRX(configType)                    , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
     [63 ] = { RW_ATTRX(hardwareMinorVersion)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 9.0        },
-    [64 ] = { RO_ATTRX(ge)                            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [65 ] = { RO_ATTRX(oe)                            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [66 ] = { RW_ATTRX(coefficientA)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [67 ] = { RW_ATTRX(coefficientB)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
-    [68 ] = { RW_ATTRX(coefficientC)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 0.0        },
+    [64 ] = { RO_ATTRX(ge)                            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [65 ] = { RO_ATTRX(oe)                            , f  , n, n, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [66 ] = { RW_ATTRX(coefficientA)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [67 ] = { RW_ATTRX(coefficientB)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [68 ] = { RW_ATTRX(coefficientC)                  , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [69 ] = { RW_ATTRX(thermistorConfig)              , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 15.0       },
     [70 ] = { RO_ATTRX(temperatureResult1)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult1       , .min.fx = 0.0       , .max.fx = 0.0        },
     [71 ] = { RO_ATTRX(temperatureResult2)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult2       , .min.fx = 0.0       , .max.fx = 0.0        },
