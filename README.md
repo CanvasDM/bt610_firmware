@@ -11,7 +11,7 @@ Laird Connectivity’s Sentrius™ BT610 I/O Sensor with Bluetooth 5 turns your 
 The BT610 can operate with differnt sensor configurations:
 * [Thermistor Sensors](#thermistor-sensors)
 * [AC Current Sensors](#ac-current-sensors)
-* [Ultrasonic/Pressure Sensors](#ultrasonic/pressure-sensors)
+* [Ultrasonic and Pressure Sensors](#ultrasonic-and-pressure-sensors)
 
 These configurations are selected within the mobile application or by sending a specific message indicating what is connected. See the following sections for documentation on the demo and how it operates.
 
@@ -23,7 +23,7 @@ When [configured](docs/images/app_temp_selection.png) as a Temperature sensor it
 
 When [configured](docs/images/app_ac_selection.png) as AC Current it is targeted at monitoring 3-Phase, 3-wire AC power circuits, each phase AC signal 120 degrees apart, with 3x AC Current Sensors.
 
-## Ultrasonic/Pressure Sensors
+## Ultrasonic and Pressure Sensors
 
 When [configured](docs/images/app_sonic_selection.png) as Ultrasonic/Pressure sensors it is designed to support a combination of Pressure &/or Ultrasonic Sensors, supporting a maximum of 2 powered devices per BT610 in the form of 2x Pressure sensors (operating temperature range -20°C to +80°C) OR 1x Pressure Sensor / 1x Ultrasonic Sensor (operating temperature range -40°C to +66°C)
 
