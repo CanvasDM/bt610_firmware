@@ -272,7 +272,7 @@ SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	if (pSensorMsg->pin == DIN1_MCU_PIN) {
 		UpdateDin1();
 	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
-		UpdateDin1();
+		UpdateDin2();
 	}
 
 	return DISPATCH_OK;
@@ -322,8 +322,7 @@ static void SensorConfigChange(void)
 	analogConfigType_t analog4Config = ANALOG_UNUSED;
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
 
-	switch (configurationType)
-	{
+	switch (configurationType) {
 	case CONFIG_UNDEFINED:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
