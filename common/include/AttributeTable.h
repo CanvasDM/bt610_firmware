@@ -118,8 +118,8 @@ typedef enum
 #define ATTR_INDEX_batterySenseInterval                  6
 #define ATTR_INDEX_temperatureSenseInterval              7
 #define ATTR_INDEX_temperatureAggregationCount           8
-#define ATTR_INDEX_digitalOutput1Mv                      9
-#define ATTR_INDEX_digitalOutput2Mv                      10
+#define ATTR_INDEX_digitalOutput1Enable                  9
+#define ATTR_INDEX_digitalOutput2Enable                  10
 #define ATTR_INDEX_firmwareVersion                       11
 #define ATTR_INDEX_resetReason                           12
 #define ATTR_INDEX_bluetoothAddress                      13

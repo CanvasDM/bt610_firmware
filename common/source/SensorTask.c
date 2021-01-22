@@ -83,6 +83,8 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
 
 static void SensorConfigChange(void);
+static void SensorOutput1Control();
+static void SensorOutput2Control();
 
 static void UpdateDin1(void);
 static void UpdateDin2(void);
@@ -203,6 +205,9 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	BSP_PinSet(DIN1_ENABLE_PIN, 1);
 	BSP_PinSet(DIN2_ENABLE_PIN, 1);
 
+	SensorOutput1Control();
+	SensorOutput2Control();
+
 	AttributePrepare_batteryVoltageMv();
 	UpdateDin1();
 	UpdateDin2();
@@ -219,6 +224,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	//if (activeMode) {
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
+	uint8_t outputStatus = 0;
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
 		case ATTR_INDEX_batterySenseInterval:
@@ -250,9 +256,15 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			SensorConfigChange();
 			break;
 
+		case ATTR_INDEX_digitalOutput1Enable:
+			SensorOutput1Control();
+			break;
+		case ATTR_INDEX_digitalOutput2Enable:
+			SensorOutput2Control();
+			break;
 		case ATTR_INDEX_activeMode:
 			// It isn't expected that host will write this.
-			break;
+			break;	
 
 		default:
 			// don't do anything - this is a broadcast
@@ -389,6 +401,26 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_configType, CONFIG_UNDEFINED);
 		break;
 	}
+}
+static void SensorOutput1Control()
+{
+	uint8_t outputStatus = 0;
+	Attribute_Get(ATTR_INDEX_digitalOutput1Enable, &outputStatus, sizeof(outputStatus));
+
+	/*Need to inverse the status logic to control the FET*/
+	BSP_PinSet(DO1_PIN, !(outputStatus));
+
+}
+static void SensorOutput2Control()
+{
+	uint8_t outputStatus = 0;
+	Attribute_Get(ATTR_INDEX_digitalOutput2Enable, &outputStatus, sizeof(outputStatus));
+
+	/*Need to inverse the status logic to control the FET*/
+	BSP_PinSet(DO2_PIN, !(outputStatus));
+
+	
+	
 }
 static void UpdateDin1(void)
 {

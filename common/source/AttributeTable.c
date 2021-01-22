@@ -47,8 +47,8 @@ typedef struct RwAttributesTag {
 	uint32_t batterySenseInterval;
 	uint32_t temperatureSenseInterval;
 	uint8_t temperatureAggregationCount;
-	uint16_t digitalOutput1Mv;
-	uint16_t digitalOutput2Mv;
+	uint8_t digitalOutput1Enable;
+	uint8_t digitalOutput2Enable;
 	float highTemp1Thresh1;
 	float highTemp1Thresh2;
 	float lowTemp1Thresh1;
@@ -126,8 +126,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.batterySenseInterval = 0,
 	.temperatureSenseInterval = 0,
 	.temperatureAggregationCount = 1,
-	.digitalOutput1Mv = 0,
-	.digitalOutput2Mv = 0,
+	.digitalOutput1Enable = 0,
+	.digitalOutput2Enable = 0,
 	.highTemp1Thresh1 = 127,
 	.highTemp1Thresh2 = 127,
 	.lowTemp1Thresh1 = -127,
@@ -255,7 +255,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.8",
+	.apiVersion = "1.14",
 	.qrtc = 0
 	/* pyend */
 };
@@ -305,8 +305,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [8  ] = { RW_ATTRX(temperatureAggregationCount)   , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
-    [9  ] = { RW_ATTRX(digitalOutput1Mv)              , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 30000.0    },
-    [10 ] = { RW_ATTRX(digitalOutput2Mv)              , u16, y, y, y, n, n, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 30000.0    },
+    [9  ] = { RW_ATTRX(digitalOutput1Enable)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [10 ] = { RW_ATTRX(digitalOutput2Enable)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [11 ] = { RO_ATTRS(firmwareVersion)               , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [12 ] = { RO_ATTRS(resetReason)                   , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [13 ] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
