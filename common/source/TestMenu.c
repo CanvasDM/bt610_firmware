@@ -190,6 +190,14 @@ static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
 	shell_print(shell, "Set To DIN_EN: %d %d %d", value, status1, status2);
 	return 0;
 }
+static int thermEnable(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	int value = atoi(argv[1]);
+	int status1 = BSP_PinSet(THERM_ENABLE_PIN, value);
+	shell_print(shell, "Set To THERM_EN: %d %d", value, status1);
+	return 0;
+}
 
 static int cal(const struct shell *shell, size_t argc, char **argv)
 {
@@ -240,6 +248,8 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 	SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DigitalOutputToggle),
 	SHELL_CMD(dinEnable, NULL, "Set DIN1_EN and DIN2_EN value",
 		  digitalEnable),
+	SHELL_CMD(thermEnable, NULL, "Set THERM_EN value",
+		  thermEnable),	  
 	SHELL_CMD(cal, NULL,
 		  "Calibrate Thermistor <c1 float> <c2 float>\n"
 		  "Example: test cal 220.7351 3.98e3",

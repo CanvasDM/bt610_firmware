@@ -224,7 +224,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	//if (activeMode) {
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
-	uint8_t outputStatus = 0;
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
 		case ATTR_INDEX_batterySenseInterval:
