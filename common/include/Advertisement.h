@@ -37,8 +37,10 @@ extern "C" {
  * @retval
  */
 int Advertisement_Init(void);
+int Advertisement_End(void);
 int Advertisement_Start(void);
 int Advertisement_Update(void);
+int Advertisement_IntervalUpdate(void);
 
 #ifdef __cplusplus
 }
