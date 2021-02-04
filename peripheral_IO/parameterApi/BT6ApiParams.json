@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.14",
+    "version": "1.15",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -263,8 +263,8 @@
           "required": true,
           "schema": {
             "type": "number",
-            "minimum": 0.0,
-            "maximum": 0.0,
+            "minimum": 1.2e-38,
+            "maximum": 3.4e+38,
             "x-ctype": "float",
             "x-sequencenumber": 1,
             "x-default": "220.7351",
@@ -278,8 +278,8 @@
           "required": true,
           "schema": {
             "type": "number",
-            "minimum": 0.0,
-            "maximum": 0.0,
+            "minimum": 1.2e-38,
+            "maximum": 3.4e+38,
             "x-ctype": "float",
             "x-sequencenumber": 2,
             "x-default": "3.98e3",
@@ -860,8 +860,8 @@
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "string",
-              "x-default": "123456",
-              "x-example": "123456",
+              "x-default": "Last six digits of MAC Address",
+              "x-example": "1234ABF",
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -1489,7 +1489,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1508,7 +1508,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1527,7 +1527,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1546,7 +1546,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1565,7 +1565,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1584,7 +1584,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1603,7 +1603,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1622,7 +1622,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1641,7 +1641,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1660,7 +1660,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1679,7 +1679,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1698,7 +1698,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1717,7 +1717,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1736,7 +1736,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1755,7 +1755,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1774,7 +1774,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1793,7 +1793,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1812,7 +1812,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1831,7 +1831,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -1850,7 +1850,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4096.0,
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "100",
@@ -2123,8 +2123,8 @@
             "x-groupid": 65,
             "schema": {
               "type": "float",
-              "minimum": 0.0,
-              "maximum": 0.0,
+              "minimum": -175.0,
+              "maximum": 175.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2140,8 +2140,8 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": 0.0,
-              "maximum": 0.0,
+              "minimum": -175.0,
+              "maximum": 175.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2157,8 +2157,8 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": 0.0,
-              "maximum": 0.0,
+              "minimum": -175.0,
+              "maximum": 175.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2174,8 +2174,8 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": 0.0,
-              "maximum": 0.0,
+              "minimum": -175.0,
+              "maximum": 175.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2185,7 +2185,7 @@
           },
           {
             "name": "temperatureAlarms",
-            "summary": "Bitmask for all 4 channels",
+            "summary": "Bitmask for all 4 channels and each alarm.\n aaaaabbbbbcccccddddd",
             "required": true,
             "x-id": 74,
             "x-groupid": 65,
@@ -2305,7 +2305,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4095.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2322,7 +2322,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4095.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2339,7 +2339,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4095.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2356,7 +2356,7 @@
             "schema": {
               "type": "integer",
               "minimum": 0.0,
-              "maximum": 0.0,
+              "maximum": 4095.0,
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
@@ -2366,7 +2366,7 @@
           },
           {
             "name": "analogAlarms",
-            "summary": "Bitmask for all 4 channels",
+            "summary": "Bitmask for all 4 channels and each alarm.\n aaaaabbbbbcccccddddd",
             "required": true,
             "x-id": 84,
             "x-groupid": 65,
@@ -2551,7 +2551,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.14",
+              "x-default": "1.15",
               "x-example": "123.456.789",
               "x-readable": true,
               "x-review": "the default value for this should be generated by python script"
@@ -2594,8 +2594,8 @@
             "x-groupid": 65,
             "schema": {
               "type": "number",
-              "minimum": 0.0,
-              "maximum": 0.0,
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
               "x-ctype": "float",
               "x-default": "273.15",
               "x-example": "273.15",

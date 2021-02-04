@@ -75,6 +75,9 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r);
 static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg);
 
+static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg);
+
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 
@@ -117,6 +120,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:                     return Framework_UnknownMsgHandler;
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
+	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
 	default:                              return NULL;
 	}
@@ -205,6 +209,11 @@ static int BluetoothInit(void)
 			LOG_ERR("Init advertisement error: %d", r);
 			break;
 		}
+		r = Advertisement_IntervalUpdate();
+		if (r != 0) {
+			LOG_ERR("Advertisment Interval error: %d", r);
+			break;
+		}
 
 	} while (0);
 
@@ -238,6 +247,15 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	Advertisement_Start();
 	return DISPATCH_OK;
 }
+static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg)
+{
+	UNUSED_PARAMETER(pMsg);
+	UNUSED_PARAMETER(pMsgRxer);
+
+	Advertisement_End();
+	return DISPATCH_OK;
+}
 
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg)
@@ -245,11 +263,16 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	UNUSED_PARAMETER(pMsgRxer);
 	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
 	size_t i;
-
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
 		case ATTR_INDEX_sensorName:
 			UpdateName();
+			break;
+		case ATTR_INDEX_advertisingInterval:
+			Advertisement_IntervalUpdate();
+			break;
+		case ATTR_INDEX_advertisingDuration:
+			//();
 			break;
 
 		default:
@@ -280,12 +303,12 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bt_le_adv_stop();
 	}
 
-#if 0
+
 	int rc = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 	if (rc) {
 		LOG_ERR("Setting security failed: %d", rc);
 	}
-#endif
+
 }
 
 static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
