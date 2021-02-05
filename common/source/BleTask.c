@@ -299,16 +299,13 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 	} else {
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
+
 		/* stop advertising so another central cannot connect */
 		bt_le_adv_stop();
+
+		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
+		LOG_DBG("Setting security status: %d", r);
 	}
-
-
-	int rc = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
-	if (rc) {
-		LOG_ERR("Setting security failed: %d", rc);
-	}
-
 }
 
 static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
