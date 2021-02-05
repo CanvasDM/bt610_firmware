@@ -224,8 +224,8 @@ int Advertisement_Start(void)
 	Attribute_Get(ATTR_INDEX_advertisingDuration, &advertDuration,
 		      sizeof(advertDuration));
 	if ((advertDuration != 0) && (advertDuration > bt_param.interval_max)) {
-		//	k_timer_start(&advertisementDurationTimer,
-		//		      K_MSEC(advertDuration), K_NO_WAIT);
+			k_timer_start(&advertisementDurationTimer,
+				      K_MSEC(advertDuration), K_NO_WAIT);
 	}
 #endif
 	return r;
