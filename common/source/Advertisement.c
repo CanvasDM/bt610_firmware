@@ -19,8 +19,10 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
+#include "laird_bluetooth.h"
 #include "Attribute.h"
 #include "Advertisement.h"
+
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
@@ -30,20 +32,22 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static LczSensorAdEvent_t ad;
 static LczSensorRspWithHeader_t rsp;
-static uint8_t pairCheck = 0;
-static uint8_t passCheck = 0;
+static uint8_t pairCheck;
+static uint8_t passCheck;
 
 enum {
-	UNIT_0_625_MS =
-		625, /**< Number of microseconds in 0.625 milliseconds. */
-	UNIT_1_25_MS =
-		1250, /**< Number of microseconds in 1.25 milliseconds. */
-	UNIT_10_MS = 10000 /**< Number of microseconds in 10 milliseconds. */
+	/**< Number of microseconds in 0.625 milliseconds. */
+	UNIT_0_625_MS = 625,
+	/**< Number of microseconds in 1.25 milliseconds. */
+	UNIT_1_25_MS = 1250,
+	/**< Number of microseconds in 10 milliseconds. */
+	UNIT_10_MS = 10000
 };
 
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
@@ -62,11 +66,10 @@ static struct bt_data bt_ad[] = {
 /* When using BT_LE_ADV_OPT_USE_NAME, device name is added to scan response
  * data by controller.
  */
-/* clang-format off */
 static struct bt_data bt_rsp[] = {
-    BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp))
+	BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp)),
 };
-/* clang-format on */
+
 static struct bt_conn_cb connection_callbacks;
 static struct k_timer advertisementDurationTimer;
 
@@ -87,6 +90,8 @@ static void AuthPairingFailedCb(struct bt_conn *conn,
 
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 
+static void SetPasskey(void);
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -98,7 +103,6 @@ int Advertisement_Init(void)
 	char addr_str[BT_ADDR_LE_STR_LEN] = { 0 };
 	char bd_addr[BT_ADDR_LE_STR_LEN];
 	size_t size = Attribute_GetSize(ATTR_INDEX_bluetoothAddress);
-	uint32_t passkey;
 
 	bt_id_get(&addr, &count);
 	if (count < 1) {
@@ -124,10 +128,6 @@ int Advertisement_Init(void)
 	}
 	bd_addr[j] = 0;
 	Attribute_SetString(ATTR_INDEX_bluetoothAddress, bd_addr, size - 1);
-
-	//memcpy(&passkey, bd_addr, sizeof(uint32_t));
-	//passkey = 555555;
-	//bt_passkey_set((uint16_t)passkey);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;
@@ -160,6 +160,8 @@ int Advertisement_Init(void)
 		.pairing_failed = AuthPairingFailedCb
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
+
+	SetPasskey();
 
 	return r;
 }
@@ -234,6 +236,12 @@ int Advertisement_Start(void)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
+static void SetPasskey(void)
+{
+	bt_passkey_set(BT_PASSKEY_INVALID);
+	bt_passkey_set(123456);
+}
+
 static char *ble_addr(struct bt_conn *conn)
 {
 	static char addr[BT_ADDR_LE_STR_LEN];
@@ -252,14 +260,7 @@ static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 }
 static void AuthPasskeyEntryCb(struct bt_conn *conn)
 {
-	LOG_DBG("..");
-	/*const unsigned int PIN = SENSOR_PIN_DEFAULT;
-	if (conn == st.conn) {
-		__ASSERT_EVAL((void)bt_conn_auth_passkey_entry(conn, PIN),
-			      int result =
-				      bt_conn_auth_passkey_entry(conn, PIN),
-			      result == BT_SUCCESS, "Passkey entry failed");
-	}*/
+	LOG_DBG("Not expected for peripheral");
 }
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
