@@ -54,17 +54,18 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
-
+	uint8_t localActiveMode;
+	struct k_timer *batteryTimer;
 } SensorTaskObj_t;
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
-static SensorTaskObj_t digitalIOTaskObject;
+static SensorTaskObj_t sensorTaskObject;
 
-K_THREAD_STACK_DEFINE(digitalIOTaskStack, SENSOR_TASK_STACK_DEPTH);
+K_THREAD_STACK_DEFINE(sensorTaskStack, SENSOR_TASK_STACK_DEPTH);
 
-K_MSGQ_DEFINE(digitalIOTaskQueue, FWK_QUEUE_ENTRY_SIZE, SENSOR_TASK_QUEUE_DEPTH,
+K_MSGQ_DEFINE(sensorTaskQueue, FWK_QUEUE_ENTRY_SIZE, SENSOR_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
 /******************************************************************************/
@@ -80,6 +81,8 @@ static DispatchResult_t
 SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FwkMsg_t *pMsg);
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					      FwkMsg_t *pMsg);
+static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
 
 static void SensorConfigChange(void);
@@ -105,6 +108,7 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_DIGITAL_IN:        return SensorTaskDigitalInputMsgHandler;
 	case FMC_DIGITAL_IN_ALARM:  return SensorTaskDigitalInAlarmSetMsgHandler;
 	case FMC_MAGNET_STATE:      return MagnetStateMsgHandler;
+	case FMC_READ_BATTERY:      return ReadBatteryMsgHandler;
 	default:                    return NULL;
 	}
 	/* clang-format on */
@@ -115,25 +119,25 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /******************************************************************************/
 void SensorTask_Initialize(void)
 {
-	digitalIOTaskObject.msgTask.rxer.id = FWK_ID_SENSOR_TASK;
-	digitalIOTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
-	digitalIOTaskObject.msgTask.rxer.pMsgDispatcher =
+	sensorTaskObject.msgTask.rxer.id = FWK_ID_SENSOR_TASK;
+	sensorTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
+	sensorTaskObject.msgTask.rxer.pMsgDispatcher =
 		SensorTaskMsgDispatcher;
-	digitalIOTaskObject.msgTask.timerDurationTicks = K_MSEC(1000);
-	digitalIOTaskObject.msgTask.timerPeriodTicks =
+	sensorTaskObject.msgTask.timerDurationTicks = K_MSEC(1000);
+	sensorTaskObject.msgTask.timerPeriodTicks =
 		K_MSEC(0); // 0 for one shot
-	digitalIOTaskObject.msgTask.rxer.pQueue = &digitalIOTaskQueue;
+	sensorTaskObject.msgTask.rxer.pQueue = &sensorTaskQueue;
 
-	Framework_RegisterTask(&digitalIOTaskObject.msgTask);
+	Framework_RegisterTask(&sensorTaskObject.msgTask);
 
-	digitalIOTaskObject.msgTask.pTid =
-		k_thread_create(&digitalIOTaskObject.msgTask.threadData,
-				digitalIOTaskStack,
-				K_THREAD_STACK_SIZEOF(digitalIOTaskStack),
-				SensorTaskThread, &digitalIOTaskObject, NULL,
+	sensorTaskObject.msgTask.pTid =
+		k_thread_create(&sensorTaskObject.msgTask.threadData,
+				sensorTaskStack,
+				K_THREAD_STACK_SIZEOF(sensorTaskStack),
+				SensorTaskThread, &sensorTaskObject, NULL,
 				NULL, SENSOR_TASK_PRIORITY, 0, K_NO_WAIT);
 
-	k_thread_name_set(digitalIOTaskObject.msgTask.pTid, THIS_FILE);
+	k_thread_name_set(sensorTaskObject.msgTask.pTid, THIS_FILE);
 }
 
 int AttributePrepare_batteryVoltageMv(void)
@@ -227,10 +231,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
 		case ATTR_INDEX_batterySenseInterval:
-			//FRAMEWORK_MSG_CREATE_AND_SEND(
-			//	FWK_ID_SENSOR_TASK,
-			//	FWK_ID_SENSOR_TASK,
-			//	MSG_CODE_READ_BATTERY);
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+						      FWK_ID_SENSOR_TASK,
+						      FMC_READ_BATTERY);
 			break;
 
 		case ATTR_INDEX_temperatureSenseInterval:
@@ -263,7 +266,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 		case ATTR_INDEX_activeMode:
 			// It isn't expected that host will write this.
-			break;	
+			break;
 
 		default:
 			// don't do anything - this is a broadcast
@@ -322,7 +325,25 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	UpdateMagnet();
 	return DISPATCH_OK;
 }
-
+static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					      FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsg);
+	ARG_UNUSED(pMsgRxer);	
+	AttributePrepare_batteryVoltageMv();
+	/*Generate Battery Event Message*/
+	/*TODO: ADD FUNCTION*/
+	if (sensorTaskObject.localActiveMode == true) {
+		uint32_t intervalSeconds = 0;
+		Attribute_GetUint32(&intervalSeconds,
+				    ATTR_INDEX_batterySenseInterval);
+		if (intervalSeconds != 0) {
+			k_timer_start(sensorTaskObject.batteryTimer,
+				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+		}
+	}
+	return DISPATCH_OK;
+}
 static void SensorConfigChange(void)
 {
 	uint32_t configurationType;
@@ -404,22 +425,20 @@ static void SensorConfigChange(void)
 static void SensorOutput1Control()
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput1Enable, &outputStatus, sizeof(outputStatus));
+	Attribute_Get(ATTR_INDEX_digitalOutput1Enable, &outputStatus,
+		      sizeof(outputStatus));
 
 	/*Need to inverse the status logic to control the FET*/
 	BSP_PinSet(DO1_PIN, !(outputStatus));
-
 }
 static void SensorOutput2Control()
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput2Enable, &outputStatus, sizeof(outputStatus));
+	Attribute_Get(ATTR_INDEX_digitalOutput2Enable, &outputStatus,
+		      sizeof(outputStatus));
 
 	/*Need to inverse the status logic to control the FET*/
 	BSP_PinSet(DO2_PIN, !(outputStatus));
-
-	
-	
 }
 static void UpdateDin1(void)
 {
