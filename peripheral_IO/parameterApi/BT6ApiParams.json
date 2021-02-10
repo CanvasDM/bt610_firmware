@@ -2623,6 +2623,41 @@
               "x-writeable": true,
               "x-readable": true
             }
+          },
+          {
+            "name": "advertiseBegin",
+            "summary": "This will force the device to begin advtertising: Set to 1 to turn on",
+            "required": true,
+            "x-id": 98,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-writeable": true,
+              "x-readable": true,
+              "x-prepare": true
+            }
+          },
+          {
+            "name": "tamperSwitchStatus",
+            "summary": "Returns the current state of the tamper switch",
+            "required": true,
+            "x-id": 99,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-readable": true,
+              "x-prepare": true
+            }
           }
         ]
       }

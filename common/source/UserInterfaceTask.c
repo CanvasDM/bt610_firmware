@@ -357,6 +357,7 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 2 (Tamper)");
 	lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
 }
 

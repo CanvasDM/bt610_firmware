@@ -263,10 +263,12 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	UNUSED_PARAMETER(pMsgRxer);
 	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
 	size_t i;
+	uint8_t updateData = false;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
 		case ATTR_INDEX_sensorName:
 			UpdateName();
+			updateData = true;
 			break;
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();
@@ -274,11 +276,20 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_advertisingDuration:
 			//();
 			break;
+		case ATTR_INDEX_networkId:
+		case ATTR_INDEX_configVersion:
+			updateData = true;
+			break;	
 
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
 		}
+	}
+
+	if(updateData == true)
+	{
+		Advertisement_Update();
 	}
 	return DISPATCH_OK;
 }
