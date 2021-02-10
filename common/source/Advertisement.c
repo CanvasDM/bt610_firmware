@@ -171,7 +171,9 @@ int Advertisement_IntervalUpdate(void)
 	int r = 0;
 	uint32_t advetInterval = 0;
 
-	Attribute_GetUint32(&advetInterval, ATTR_INDEX_advertisingInterval);  
+	Attribute_Get(ATTR_INDEX_advertisingInterval, &advetInterval,
+		      sizeof(advetInterval));
+
 	advetInterval = MSEC_TO_UNITS(advetInterval, UNIT_0_625_MS);
 	bt_param.interval_max = advetInterval + BT_GAP_ADV_FAST_INT_MAX_1;
 	bt_param.interval_min = advetInterval;
@@ -181,6 +183,8 @@ int Advertisement_IntervalUpdate(void)
 int Advertisement_Update(void)
 {
 	uint16_t networkId = 0;
+	uint8_t configVersion = 0;
+
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = 0;
@@ -190,8 +194,9 @@ int Advertisement_Update(void)
 	ad.epoch = 0;
 	ad.data = 0;
 
-	rsp.rsp.productId = 0;
-	rsp.rsp.configVersion = 0;
+	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
+		      sizeof(configVersion));
+	rsp.rsp.configVersion = configVersion;
 
 	int r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
 				      ARRAY_SIZE(bt_rsp));
@@ -227,8 +232,8 @@ int Advertisement_Start(void)
 	Attribute_Get(ATTR_INDEX_advertisingDuration, &advertDuration,
 		      sizeof(advertDuration));
 	if ((advertDuration != 0) && (advertDuration > bt_param.interval_max)) {
-			k_timer_start(&advertisementDurationTimer,
-				      K_MSEC(advertDuration), K_NO_WAIT);
+		k_timer_start(&advertisementDurationTimer,
+			      K_MSEC(advertDuration), K_NO_WAIT);
 	}
 #endif
 	return r;
