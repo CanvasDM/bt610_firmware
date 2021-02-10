@@ -221,6 +221,10 @@ int AttributePrepare_temperatureResult4(void)
 {
 	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
 }
+int AttributePrepare_tamperSwitchStatus(void)
+{
+	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
+}
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */

@@ -171,8 +171,7 @@ int Advertisement_IntervalUpdate(void)
 	int r = 0;
 	uint32_t advetInterval = 0;
 
-	Attribute_Get(ATTR_INDEX_advertisingInterval, &advetInterval,
-		      sizeof(advetInterval));
+	Attribute_GetUint32(&advetInterval, ATTR_INDEX_advertisingInterval);  
 	advetInterval = MSEC_TO_UNITS(advetInterval, UNIT_0_625_MS);
 	bt_param.interval_max = advetInterval + BT_GAP_ADV_FAST_INT_MAX_1;
 	bt_param.interval_min = advetInterval;
@@ -181,7 +180,9 @@ int Advertisement_IntervalUpdate(void)
 }
 int Advertisement_Update(void)
 {
-	ad.networkId = 0;
+	uint16_t networkId = 0;
+	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
+	ad.networkId = networkId;
 	ad.flags = 0;
 
 	ad.recordType = 0;
