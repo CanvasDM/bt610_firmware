@@ -22,6 +22,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include "led_configuration.h"
 #include "lcz_pwm_led.h"
 #include "Attribute.h"
+#include "BspSupport.h"
 
 #include "UserInterfaceTask.h"
 
@@ -100,6 +101,7 @@ typedef struct UserIfTaskTag {
 static void UserIfTaskThread(void *, void *, void *);
 
 static int InitializeButtons(void);
+static void TamperSwitchStatus(void);
 
 static void Button1HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins);
@@ -315,7 +317,16 @@ static int InitializeButtons(void)
 		LOG_ERR("Configuration failed for %s", BUTTON_CFG[i].label);
 	}
 
+	/*Check the current state of the tamper switch*/
+	TamperSwitchStatus();
 	return r;
+}
+static void TamperSwitchStatus(void)
+{
+	int v = BSP_PinGet(SW2_PIN);
+	if (v >= 0) {
+		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, v);
+	}
 }
 
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
@@ -357,6 +368,7 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 2 (Tamper)");
 	lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+	TamperSwitchStatus();
 	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
 }
