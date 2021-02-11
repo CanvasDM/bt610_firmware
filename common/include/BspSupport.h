@@ -22,8 +22,6 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-#define UART_DEVICE_NAME DT_LABEL(DT_NODELABEL(uart0))
-
 /* clang-format off */
 /* Inputs */
 #define DIN1_MCU_PIN   (9)  /* SIO_09 Port0 */

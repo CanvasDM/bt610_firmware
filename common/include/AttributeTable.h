@@ -117,7 +117,7 @@ typedef enum
 #define ATTR_INDEX_lock                                  5
 #define ATTR_INDEX_batterySenseInterval                  6
 #define ATTR_INDEX_temperatureSenseInterval              7
-#define ATTR_INDEX_temperatureAggregationCount           8
+#define ATTR_INDEX_AggregationCount                      8
 #define ATTR_INDEX_digitalOutput1Enable                  9
 #define ATTR_INDEX_digitalOutput2Enable                  10
 #define ATTR_INDEX_firmwareVersion                       11
@@ -256,8 +256,6 @@ int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
 int AttributePrepare_analogInput3(void);
 int AttributePrepare_analogInput4(void);
-int AttributePrepare_advertiseBegin(void);
-int AttributePrepare_tamperSwitchStatus(void);
 /* pyend */
 
 #ifdef __cplusplus

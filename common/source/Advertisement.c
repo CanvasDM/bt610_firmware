@@ -15,6 +15,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 /******************************************************************************/
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
+#include <stdlib.h>
 
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
@@ -32,6 +33,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
+#define PASSKEY_LENGTH (6 + 1)
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -244,8 +246,16 @@ int Advertisement_Start(void)
 /******************************************************************************/
 static void SetPasskey(void)
 {
+	char passkeyString[PASSKEY_LENGTH];
+	uint32_t key = 0;
+	memset(passkeyString, 0, sizeof(passkeyString));
+
+	Attribute_GetString(passkeyString, ATTR_INDEX_passkey,
+			    sizeof(passkeyString));
+
+	key = atoi(passkeyString);
 	bt_passkey_set(BT_PASSKEY_INVALID);
-	bt_passkey_set(123456);
+	bt_passkey_set(key);
 }
 
 static char *ble_addr(struct bt_conn *conn)

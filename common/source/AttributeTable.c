@@ -46,7 +46,7 @@ typedef struct RwAttributesTag {
 	uint8_t lock;
 	uint32_t batterySenseInterval;
 	uint32_t temperatureSenseInterval;
-	uint8_t temperatureAggregationCount;
+	uint8_t AggregationCount;
 	uint8_t digitalOutput1Enable;
 	uint8_t digitalOutput2Enable;
 	float highTemp1Thresh1;
@@ -123,11 +123,11 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.sensorLocation = "",
 	.advertisingInterval = 1000,
 	.advertisingDuration = 0,
-	.passkey = "Last six digits of MAC Address",
+	.passkey = "123456",
 	.lock = 0,
 	.batterySenseInterval = 0,
 	.temperatureSenseInterval = 0,
-	.temperatureAggregationCount = 1,
+	.AggregationCount = 1,
 	.digitalOutput1Enable = 0,
 	.digitalOutput2Enable = 0,
 	.highTemp1Thresh1 = 127,
@@ -261,7 +261,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.16",
+	.apiVersion = "1.18",
 	.qrtc = 0,
 	.advertiseBegin = 0,
 	.tamperSwitchStatus = 0
@@ -312,7 +312,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [5  ] = { RW_ATTRX(lock)                          , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
-    [8  ] = { RW_ATTRX(temperatureAggregationCount)   , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
+    [8  ] = { RW_ATTRX(AggregationCount)              , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
     [9  ] = { RW_ATTRX(digitalOutput1Enable)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [10 ] = { RW_ATTRX(digitalOutput2Enable)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [11 ] = { RO_ATTRS(firmwareVersion)               , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
@@ -402,8 +402,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [95 ] = { RW_ATTRX(qrtcLastSet)                   , u32, y, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [96 ] = { RW_ATTRX(shOffset)                      , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [97 ] = { RW_ATTRX(analogSenseInterval)           , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
-    [98 ] = { RO_ATTRX(advertiseBegin)                , u8 , n, y, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_advertiseBegin           , .min.ux = 0.0       , .max.ux = 1.0        },
-    [99 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_tamperSwitchStatus       , .min.ux = 0.0       , .max.ux = 1.0        }
+    [98 ] = { RO_ATTRX(advertiseBegin)                , u8 , n, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [99 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        }
     /* pyend */
 };
 /* clang-format on */
@@ -547,16 +547,6 @@ __weak int AttributePrepare_analogInput3(void)
 }
 
 __weak int AttributePrepare_analogInput4(void)
-{
-	return 0;
-}
-
-__weak int AttributePrepare_advertiseBegin(void)
-{
-	return 0;
-}
-
-__weak int AttributePrepare_tamperSwitchStatus(void)
 {
 	return 0;
 }
