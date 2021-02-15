@@ -36,6 +36,8 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/EventLog.c
+    ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
+    ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
 )
 
 if(CONFIG_TEST_MENU)
