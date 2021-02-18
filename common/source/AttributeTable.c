@@ -113,7 +113,6 @@ typedef struct RwAttributesTag {
 	uint32_t qrtcLastSet;
 	float shOffset;
 	uint32_t analogSenseInterval;
-	uint8_t advertiseBegin;
 	/* pyend */
 } RwAttribute_t;
 
@@ -150,26 +149,26 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.lowTemp4Thresh1 = -127,
 	.lowTemp4Thresh2 = -127,
 	.temp4DeltaThresh = -1,
-	.highAnalog1Thresh1 = -1,
-	.highAnalog1Thresh2 = -1,
-	.lowAnalog1Thresh1 = -1,
-	.lowAnalog1Thresh2 = -1,
-	.analog1DeltaThresh = -1,
-	.highAnalog2Thresh1 = -1,
-	.highAnalog2Thresh2 = -1,
-	.lowAnalog2Thresh1 = -1,
-	.lowAnalog2Thresh2 = -1,
-	.analog2DeltaThresh = -1,
-	.highAnalog3Thresh1 = -1,
-	.highAnalog3Thresh2 = -1,
-	.lowAnalog3Thresh1 = -1,
-	.lowAnalog3Thresh2 = -1,
-	.analog3DeltaThresh = -1,
-	.highAnalog4Thresh1 = -1,
-	.highAnalog4Thresh2 = -1,
-	.lowAnalog4Thresh1 = -1,
-	.lowAnalog4Thresh2 = -1,
-	.analog4DeltaThresh = -1,
+	.highAnalog1Thresh1 = 4095,
+	.highAnalog1Thresh2 = 4095,
+	.lowAnalog1Thresh1 = 4095,
+	.lowAnalog1Thresh2 = 4095,
+	.analog1DeltaThresh = 4095,
+	.highAnalog2Thresh1 = 4095,
+	.highAnalog2Thresh2 = 4095,
+	.lowAnalog2Thresh1 = 4095,
+	.lowAnalog2Thresh2 = 4095,
+	.analog2DeltaThresh = 4095,
+	.highAnalog3Thresh1 = 4095,
+	.highAnalog3Thresh2 = 4095,
+	.lowAnalog3Thresh1 = 4095,
+	.lowAnalog3Thresh2 = 4095,
+	.analog3DeltaThresh = 4095,
+	.highAnalog4Thresh1 = 4095,
+	.highAnalog4Thresh2 = 4095,
+	.lowAnalog4Thresh1 = 4095,
+	.lowAnalog4Thresh2 = 4095,
+	.analog4DeltaThresh = 4095,
 	.activeMode = 0,
 	.useCodedPhy = 0,
 	.txPower = 0,
@@ -193,8 +192,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.flags = 0,
 	.qrtcLastSet = 0,
 	.shOffset = 273.15,
-	.analogSenseInterval = 0,
-	.advertiseBegin = 0
+	.analogSenseInterval = 0
 	/* pyend */
 };
 
@@ -206,7 +204,6 @@ typedef struct RoAttributesTag {
 	uint32_t resetCount;
 	char bootloaderVersion[11 + 1];
 	int64_t upTime;
-	uint8_t activeMode;
 	float ge;
 	float oe;
 	float temperatureResult1;
@@ -228,7 +225,6 @@ typedef struct RoAttributesTag {
 	uint32_t batteryAge;
 	char apiVersion[11 + 1];
 	uint32_t qrtc;
-	uint8_t advertiseBegin;
 	uint8_t tamperSwitchStatus;
 	/* pyend */
 } RoAttribute_t;
@@ -241,7 +237,6 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.resetCount = 0,
 	.bootloaderVersion = "0.0",
 	.upTime = 0,
-	.activeMode = 0,
 	.ge = 0.0,
 	.oe = 0.0,
 	.temperatureResult1 = 0,
@@ -261,9 +256,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.18",
+	.apiVersion = "1.19",
 	.qrtc = 0,
-	.advertiseBegin = 0,
 	.tamperSwitchStatus = 0
 	/* pyend */
 };
@@ -361,7 +355,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [54 ] = { RW_ATTRX(lowAnalog4Thresh1)             , f  , y, y, y, n, y, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 4096.0     },
     [55 ] = { RW_ATTRX(lowAnalog4Thresh2)             , f  , y, y, y, n, y, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 4096.0     },
     [56 ] = { RW_ATTRX(analog4DeltaThresh)            , f  , y, y, y, n, y, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 4096.0     },
-    [57 ] = { RO_ATTRX(activeMode)                    , u8 , n, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [57 ] = { RW_ATTRX(activeMode)                    , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [58 ] = { RW_ATTRX(useCodedPhy)                   , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [59 ] = { RW_ATTRX(txPower)                       , i8 , y, y, y, n, y, n, AttributeValidator_int8     , NULL                                      , .min.sx = -40.0     , .max.sx = 8.0        },
     [60 ] = { RW_ATTRX(networkId)                     , u16, y, y, y, n, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
@@ -402,8 +396,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [95 ] = { RW_ATTRX(qrtcLastSet)                   , u32, y, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [96 ] = { RW_ATTRX(shOffset)                      , f  , y, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [97 ] = { RW_ATTRX(analogSenseInterval)           , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
-    [98 ] = { RO_ATTRX(advertiseBegin)                , u8 , n, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [99 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        }
+    [98 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        }
     /* pyend */
 };
 /* clang-format on */
