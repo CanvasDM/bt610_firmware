@@ -275,7 +275,6 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		switch (pb->list[i]) {
 		case ATTR_INDEX_sensorName:
 			UpdateName();
-			updateData = true;
 			break;
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();

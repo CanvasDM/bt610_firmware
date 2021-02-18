@@ -459,6 +459,14 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
+	uint8_t activeModeStatus = 0;
+
+	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+		      sizeof(activeModeStatus));
+	if(activeModeStatus == 0)
+	{
+		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+	}
 	/*Todo: send messages to begin periodic measurments.*/
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,

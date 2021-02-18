@@ -396,7 +396,6 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	lcz_led_blink(GREEN_LED, &EXIT_SHELF_MODE_PATTERN);
-	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 	return DISPATCH_OK;
