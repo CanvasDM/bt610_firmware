@@ -429,32 +429,6 @@ void AttributeTable_FactoryReset(void)
 /* Local Function Definitions                                                 */
 /******************************************************************************/
 #ifdef STILL_WORKING_ON
-bool AttributeValidator_Passkey(uint32_t Index, void *pValue, size_t Length,
-				bool DoWrite)
-{
-	AttributeEntry_t *pEntry = &attrTable[Index];
-	char *p = (char *)pValue;
-
-	if (Length == (PASSKEY_LENGTH - 1)) // -1 to account for NUL
-	{
-		size_t i;
-		for (i = 0; i < Length; i++) {
-			if ((p[i] < '0') || (p[i] > '9')) {
-				return false;
-			}
-		}
-
-		/* Don't use strncmp because pValue may not be NUL terminated */
-		if (DoWrite && ((memcmp(pEntry->pData, pValue, Length) != 0))) {
-			pEntry->modified = true;
-			memset(pEntry->pData, 0, pEntry->size);
-			strncpy(pEntry->pData, pValue, Length);
-		}
-		return true;
-	}
-	return false;
-}
-
 bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 				bool DoWrite)
 {

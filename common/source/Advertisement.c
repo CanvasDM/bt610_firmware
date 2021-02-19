@@ -33,7 +33,6 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
-#define PASSKEY_LENGTH (6 + 1)
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
