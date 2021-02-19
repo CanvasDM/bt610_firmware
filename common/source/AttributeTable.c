@@ -42,7 +42,7 @@ typedef struct RwAttributesTag {
 	char sensorLocation[32 + 1];
 	uint16_t advertisingInterval;
 	uint16_t advertisingDuration;
-	char passkey[6 + 1];
+	uint32_t passkey;
 	uint8_t lock;
 	uint32_t batterySenseInterval;
 	uint32_t temperatureSenseInterval;
@@ -122,7 +122,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.sensorLocation = "",
 	.advertisingInterval = 1000,
 	.advertisingDuration = 0,
-	.passkey = "123456",
+	.passkey = 123456,
 	.lock = 0,
 	.batterySenseInterval = 0,
 	.temperatureSenseInterval = 0,
@@ -256,7 +256,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.19",
+	.apiVersion = "1.20",
 	.qrtc = 0,
 	.tamperSwitchStatus = 0
 	/* pyend */
@@ -302,7 +302,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [1  ] = { RW_ATTRS(sensorLocation)                , s  , y, y, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, n, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 20.0      , .max.ux = 10000.0    },
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, n, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
-    [4  ] = { RW_ATTRS(passkey)                       , s  , y, y, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
+    [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, n, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [5  ] = { RW_ATTRX(lock)                          , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },

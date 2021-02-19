@@ -273,6 +273,9 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t updateData = false;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
+		case ATTR_INDEX_passkey:
+			SetPasskey();
+			break;
 		case ATTR_INDEX_sensorName:
 			UpdateName();
 			break;

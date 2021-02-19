@@ -40,8 +40,6 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 /******************************************************************************/
 static LczSensorAdEvent_t ad;
 static LczSensorRspWithHeader_t rsp;
-static uint8_t pairCheck;
-static uint8_t passCheck;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -80,20 +78,9 @@ static struct k_timer advertisementDurationTimer;
 /******************************************************************************/
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
-
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthPasskeyEntryCb(struct bt_conn *conn);
 static void AuthCancelCb(struct bt_conn *conn);
-static void AuthPairingConfirmCb(struct bt_conn *conn);
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded);
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason);
 
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
-
-static void SetPasskey(void);
-
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -153,13 +140,7 @@ int Advertisement_Init(void)
 	bt_conn_cb_register(&connection_callbacks);
 
 	const struct bt_conn_auth_cb auth_callback = {
-		.passkey_display = AuthPasskeyDisplayCb,
-		.passkey_entry = AuthPasskeyEntryCb,
-		.passkey_confirm = AuthPasskeyConfirmCb,
 		.cancel = AuthCancelCb,
-		.pairing_confirm = AuthPairingConfirmCb,
-		.pairing_complete = AuthPairingCompleteCb,
-		.pairing_failed = AuthPairingFailedCb
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
@@ -240,24 +221,19 @@ int Advertisement_Start(void)
 #endif
 	return r;
 }
-
-/******************************************************************************/
-/* Local Function Definitions                                                 */
-/******************************************************************************/
-static void SetPasskey(void)
+void SetPasskey(void)
 {
-	char passkeyString[PASSKEY_LENGTH];
-	uint32_t key = 0;
-	memset(passkeyString, 0, sizeof(passkeyString));
+	static uint32_t key = 0;
 
-	Attribute_GetString(passkeyString, ATTR_INDEX_passkey,
-			    sizeof(passkeyString));
+	Attribute_Get(ATTR_INDEX_passkey, &key, sizeof(key));
 
-	key = atoi(passkeyString);
 	bt_passkey_set(BT_PASSKEY_INVALID);
 	bt_passkey_set(key);
 }
 
+/******************************************************************************/
+/* Local Function Definitions                                                 */
+/******************************************************************************/
 static char *ble_addr(struct bt_conn *conn)
 {
 	static char addr[BT_ADDR_LE_STR_LEN];
@@ -265,18 +241,6 @@ static char *ble_addr(struct bt_conn *conn)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
 	return addr;
-}
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
-{
-	char addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
-	LOG_INF("Passkey for %s: %06u\n", log_strdup(addr), passkey);
-}
-static void AuthPasskeyEntryCb(struct bt_conn *conn)
-{
-	LOG_DBG("Not expected for peripheral");
 }
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
@@ -288,34 +252,8 @@ static void AuthCancelCb(struct bt_conn *conn)
 
 	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
 }
-void AuthPairingConfirmCb(struct bt_conn *conn)
-{
-	char *addr = ble_addr(conn);
 
-	pairCheck = 1;
 
-	bt_conn_auth_pairing_confirm(conn);
-	LOG_INF("Pairing confirmed: %s", log_strdup(addr));
-}
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
-{
-	char *addr = ble_addr(conn);
-
-	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
-}
-
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey)
-{
-	passCheck = 1;
-}
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason)
-{
-	LOG_DBG(".");
-	///if (conn == st.conn) {
-	//		st.paired = false;
-	//}
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
