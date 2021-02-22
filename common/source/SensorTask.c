@@ -313,6 +313,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
+		case ATTR_INDEX_AggregationCount:
+			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+			//			      FWK_ID_SENSOR_TASK,
+			//			      FMC_ENTER_ACTIVE_MODE);					  
 			break;
 
 		default:
