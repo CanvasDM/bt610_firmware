@@ -39,6 +39,17 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 /******************************************************************************/
 static LczSensorAdEvent_t ad;
 static LczSensorRspWithHeader_t rsp;
+static uint8_t pairCheck;
+static uint8_t passCheck;
+
+enum {
+	/**< Number of microseconds in 0.625 milliseconds. */
+	UNIT_0_625_MS = 625,
+	/**< Number of microseconds in 1.25 milliseconds. */
+	UNIT_1_25_MS = 1250,
+	/**< Number of microseconds in 10 milliseconds. */
+	UNIT_10_MS = 10000
+};
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */

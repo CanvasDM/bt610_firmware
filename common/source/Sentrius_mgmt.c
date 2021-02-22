@@ -15,14 +15,14 @@
 #include <string.h>
 #include "cborattr/cborattr.h"
 #include "mgmt/mgmt.h"
-
 #include "Attribute.h"
 #include "UserInterfaceTask.h"
 #include "AdcBt6.h"
 #include "qrtc.h"
 #include "file_system_utilities.h"
-
 #include "Sentrius_mgmt.h"
+#include "HalfFloatDecoder.h"
+#include "CBORSupport.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -32,14 +32,72 @@
 
 #define FLOAT_MAX 3.4028235E38
 
-/******************************************************************************/
-/* Local Constant, Macro and Type Definitions                                 */
-/******************************************************************************/
+/* These are used to index CBOR message elements. Messages received from 
+   clients are divided into Key Value pairs called parameters, with the first
+   parameter being called P0, the second P1, etc.
+ */
+#define SENTRIUS_MGMT_P0_INDEX 0
+#define SENTRIUS_MGMT_P1_INDEX 1
+#define SENTRIUS_MGMT_P0_NAME_INDEX 0
+#define SENTRIUS_MGMT_P0_VALUE_INDEX 1
+#define SENTRIUS_MGMT_P1_NAME_INDEX 2
+#define SENTRIUS_MGMT_P1_VALUE_INDEX 3
+
+/* These define the number of parameters expected for different message types */
+#define SENTRIUS_MGMT_NUM_PARAMETERS_GET_PARAMETER		2
+#define SENTRIUS_MGMT_NUM_PARAMETERS_REV_ECHO			2
+#define SENTRIUS_MGMT_NUM_PARAMETERS_SET_PARAMETER		2
+#define SENTRIUS_MGMT_NUM_PARAMETERS_CALIBRATE_THERMISTORS	2
+
+/* These are element sizes for specific messages */
+#define SENTRIUS_MGMT_REV_ECHO_BUFFER_SIZE			64
+
+/* These are defines for specific messages */
+#define SENTRIUS_MGMT_CALIBRATION_SCALER			10000.0f
+#define SENTRIUS_MGMT_PARAMETER_FILE_PATH			"/ext/params.txt"
+#define SENTRIUS_MGMT_PARAMETER_DUMP_PATH			"/ext/dump.txt"
+
+/* For float conversion routines, the maximum number of parameters we have
+   to deal with is two, so 4 elements. Defined here in case this changes.
+ */
+#define SENTRIUS_MGMT_MAX_CBOR_ELEMENTS 4
+
+/**@brief Static instance of a cborTypeList. Note this module is not intended
+ *        to be re-entrant so we can safely use a global instance of this.
+ *        Declared globally rather than locally due to the pretty heavy stack
+ *        usage.
+ */
+CONSTRUCT_CBOR_TYPE_LIST(paramTypeList,SENTRIUS_MGMT_MAX_CBOR_ELEMENTS,ATTR_MAX_STR_SIZE);
+
+/* Union type that can cope with all forms of floating point data.
+ * We use this when reading float data from CBOR messages because we
+ * don't know what floating point format will be used for data expected
+ * to be float. An instance of this is used when reading out floating point
+ * data so that we can convert back from the type used to the desired
+ * single precision float point format.
+ */
+typedef union _floatContainer_t
+{
+	uint16_t halfFloatValue;
+	float floatValue;
+	double doubleValue;
+}floatContainer_t;
+
 static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs);
 
 static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 			      struct cbor_attr_t *attrs);
+
+static int FloatParameterExternalValueType(CborType cborType,
+						struct cbor_attr_t *attrs,
+						floatContainer_t *floatContainer);
+
+static int FloatParameterExternalToInternal(CborType externalFormat,
+						AttrType_t internalFormat,
+						struct cbor_attr_t *attrs,
+						floatContainer_t *floatContainer,
+						float *outData);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -96,6 +154,7 @@ static struct mgmt_group sentrius_mgmt_group = {
 	.mg_group_id = MGMT_GROUP_ID_SENTRIUS,
 };
 
+/* These are placeholders for data read from CBOR messages */
 static long long unsigned int paramUint;
 static long long int paramIint;
 static char paramString[ATTR_MAX_STR_SIZE];
@@ -121,7 +180,8 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	float floatData;
 	char bufferData[ATTR_MAX_STR_SIZE];
 	int getResult = -1;
-	struct cbor_attr_t params_value[2] = { 0 };
+	struct cbor_attr_t params_value[
+		SENTRIUS_MGMT_NUM_PARAMETERS_GET_PARAMETER] = { 0 };
 	CborAttrType parameterDataType;
 
 	struct cbor_attr_t params_attr[] = {
@@ -169,34 +229,32 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 						  &floatData);
 		break;
 	default:
-		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
-		break;
+		/* No other types are supported */
+		return MGMT_ERR_EINVAL;
 	}
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
-	if (err != 0) {
-		return MGMT_ERR_ENOMEM;
-	}
-	return 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 {
-	char echo_buf[64] = { 0 };
-	char rev_buf[64] = { 0 };
+	char echo_buf[SENTRIUS_MGMT_REV_ECHO_BUFFER_SIZE] = { 0 };
+	char rev_buf[SENTRIUS_MGMT_REV_ECHO_BUFFER_SIZE] = { 0 };
 	size_t echo_len = 0;
 
-	const struct cbor_attr_t attrs[2] = {
-        [0] = {
+	const struct cbor_attr_t attrs[
+		SENTRIUS_MGMT_NUM_PARAMETERS_REV_ECHO] = {
+        [SENTRIUS_MGMT_P0_INDEX] = {
             .attribute = "d",
             .type = CborAttrTextStringType,
             .addr.string = echo_buf,
             .len = sizeof echo_buf,
             .nodefault = true,
         },
-        [1] = {
+        [SENTRIUS_MGMT_P1_INDEX] = {
             .attribute = NULL
         }
     };
@@ -217,11 +275,7 @@ int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_text_string(&ctxt->encoder, rev_buf, echo_len);
 
-	if (err != 0) {
-		return MGMT_ERR_ENOMEM;
-	}
-
-	return 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
@@ -229,10 +283,31 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
 	struct CborValue dataCopy = ctxt->it;
-	struct cbor_attr_t params_value[2] = { 0 };
+	struct cbor_attr_t params_value[
+		SENTRIUS_MGMT_NUM_PARAMETERS_SET_PARAMETER] = { 0 };
 	CborAttrType parameterDataType;
 	int setResult = -1;
+        CborError err;
+        floatContainer_t floatContainer;
+        int result = 0;
+	/* Local context copy for non-destructive iteration */
+	struct mgmt_ctxt localCtxt = *ctxt;
 
+	/* This is global so reset before use */
+	paramTypeList.typeIndex = 0;
+
+        /* Extract details of the message types */
+	err = GetMessageElementTypes(&localCtxt.it,
+						0,
+                                                ATTR_MAX_STR_SIZE,
+						&paramTypeList);
+
+	/* Don't proceed if the types weren't extracted OK */
+	if (err != 0){
+		return MGMT_ERR_EINVAL;
+	}
+	
+	/* Get the parameter id */
 	struct cbor_attr_t params_attr[] = {
 		{ .attribute = "p1",
 		  .type = CborAttrUnsignedIntegerType,
@@ -245,27 +320,62 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 		return MGMT_ERR_EINVAL;
 	}
 
-	/*type from p1 look up id number match to type*/
+	/* Type from p1 look up id number match to type */
 	parameterDataType =
 		ParameterValueType((attr_idx_t)paramID, params_value);
 
+	/* Now check if the expected parameter type can 
+	   be modifed by CBOR to save space.            */
+	if (Attribute_GetType(paramID) == ATTR_TYPE_FLOAT){
+		
+		/* If it can, we need to remap the params_value
+		   structure so we can convert the data to internal
+		   format */
+		result = FloatParameterExternalValueType(
+						paramTypeList.typeList[
+						SENTRIUS_MGMT_P1_VALUE_INDEX],
+						params_value,
+						&floatContainer);
+		/* Again don't proceed if the type didn't convert */
+		if (result != 0){
+			return MGMT_ERR_EINVAL;
+		}
+	}
+	
+	/* Now go ahead and read the CBOR value */
 	readCbor = cbor_read_object(&dataCopy, params_value);
 	if (readCbor != 0) {
 		return MGMT_ERR_EINVAL;
 	}
-	setResult = SaveParameterValue((attr_idx_t)paramID, parameterDataType,
-				       params_value);
 
-	CborError err = 0;
+	/* Convert it back if needed */
+	if (Attribute_GetType(paramID) == ATTR_TYPE_FLOAT){
+
+		result = FloatParameterExternalToInternal(
+						paramTypeList.typeList[
+						SENTRIUS_MGMT_P1_VALUE_INDEX],
+						ATTR_TYPE_FLOAT,
+						params_value,
+						&floatContainer,
+						&paramFloat);
+	
+		/* And don't proceed if the type didn't convert */
+		if (result != 0){
+			return MGMT_ERR_EINVAL;
+		}
+	}
+
+	/* Now write the parameter value */
+	setResult = SaveParameterValue((attr_idx_t)paramID,
+					parameterDataType,
+					params_value);
+
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
-	if (err != 0) {
-		return MGMT_ERR_ENOMEM;
-	}
-	return 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
@@ -303,7 +413,28 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	float c2 = 0.0;
 	float ge = 0.0;
 	float oe = 0.0;
+	/* Copy of the context for non-destructive iteration */
+	struct mgmt_ctxt localCtxt = *ctxt;
+        CborError err;
+	floatContainer_t floatContainerP1;
+	floatContainer_t floatContainerP2;
+	int result;
 
+	/* This is global so reset before use */
+	paramTypeList.typeIndex = 0;
+
+	/* Pull back the element types of the CBOR message */
+	err = GetMessageElementTypes(&localCtxt.it,
+						0,
+                                                ATTR_MAX_STR_SIZE,
+						&paramTypeList);
+
+	/* Don't proceed if the values weren't extracted OK */
+	if (err != 0){
+		return MGMT_ERR_EINVAL;
+	}
+
+	/* Set up the intended parameters structure */
 	struct cbor_attr_t params_attr[] = { { .attribute = "p1",
 					       .type = CborAttrFloatType,
 					       .addr.fval = &c1,
@@ -314,13 +445,55 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 					       .nodefault = true },
 					     { .attribute = NULL } };
 
+	/* Override it with the actual content of the CBOR message */
+	result = FloatParameterExternalValueType(paramTypeList.typeList[
+					SENTRIUS_MGMT_P0_VALUE_INDEX],
+					params_attr,
+					&floatContainerP1);
+	
+	if (result != 0){
+		return MGMT_ERR_EINVAL;
+	}
+	
+	result = FloatParameterExternalValueType(paramTypeList.typeList[
+					SENTRIUS_MGMT_P1_VALUE_INDEX],
+					&params_attr[SENTRIUS_MGMT_P1_INDEX],
+					&floatContainerP2);
+
+	if (result != 0){
+		return MGMT_ERR_EINVAL;
+	}
+
+	/* Read the values */
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
 		return MGMT_ERR_EINVAL;
 	}
 
+	/* Now convert them back again */
+	result = FloatParameterExternalToInternal(paramTypeList.typeList[
+						SENTRIUS_MGMT_P0_VALUE_INDEX],
+						ATTR_TYPE_FLOAT,
+						params_attr,
+						&floatContainerP1,
+						&c1);
+
+	if (result != 0){
+		return MGMT_ERR_EINVAL;
+	}
+
+	result = FloatParameterExternalToInternal(paramTypeList.typeList[
+						SENTRIUS_MGMT_P1_VALUE_INDEX],
+						ATTR_TYPE_FLOAT,
+						&params_attr[SENTRIUS_MGMT_P1_INDEX],
+						&floatContainerP2,
+						&c2);
+
+	if (result != 0){
+		return MGMT_ERR_EINVAL;
+	}
+	/* Then perform the calibration */
 	r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
 
-	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "ge");
@@ -355,8 +528,8 @@ int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
 		return MGMT_ERR_EINVAL;
 	}
 
-	r = AdcBt6_CalibrateThermistor(((float)c1 / 10000.0),
-				       ((float)c2 / 10000.0), &ge, &oe);
+	r = AdcBt6_CalibrateThermistor(((float)c1 / SENTRIUS_MGMT_CALIBRATION_SCALER),
+				       ((float)c2 / SENTRIUS_MGMT_CALIBRATION_SCALER), &ge, &oe);
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
@@ -371,7 +544,7 @@ int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
 {
-	int r = -EPERM;
+	int r = MGMT_ERR_EINVAL;
 	int t = 0;
 	long long unsigned int epoch = ULLONG_MAX;
 
@@ -417,7 +590,9 @@ int Sentrius_mgmt_LoadParameterFile(struct mgmt_ctxt *ctxt)
 	int r = -EPERM;
 
 	/* The input file is an optional parameter. */
-	strncpy(paramString, "/ext/params.txt", sizeof(paramString));
+	strncpy(paramString,
+		SENTRIUS_MGMT_PARAMETER_FILE_PATH,
+		sizeof(paramString));
 
 	struct cbor_attr_t params_attr[] = { { .attribute = "p1",
 					       .type = CborAttrTextStringType,
@@ -446,7 +621,9 @@ int Sentrius_mgmt_DumpParameterFile(struct mgmt_ctxt *ctxt)
 	char *fstr = NULL;
 
 	/* The output file is an optional parameter. */
-	strncpy(paramString, "/ext/dump.txt", sizeof(paramString));
+	strncpy(paramString,
+		SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
+		sizeof(paramString));
 
 	struct cbor_attr_t params_attr[] = {
 		{ .attribute = "p1",
@@ -527,7 +704,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 			      struct cbor_attr_t *attrs)
 {
-	int status = -1;
+	int status = -EINVAL;
 
 	switch (dataType) {
 	case CborAttrIntegerType:
@@ -562,4 +739,68 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		break;
 	}
 	return (status);
+}
+
+
+/**@brief Configures the passed attrs structure for reading back the passed
+ *        CBOR element type.
+ *
+ * @param [in]cborType - The element type.
+ * @param [out]attrs - This attributes structure to configure.
+ * @retval A Zephyr error code, 0 for success.
+ */
+static int FloatParameterExternalValueType(CborType cborType,
+						struct cbor_attr_t *attrs,
+						floatContainer_t *floatContainer)
+{
+	int result = 0;
+
+	switch (cborType) {
+                case(CborHalfFloatType):
+			attrs->addr.halffloat = &floatContainer->halfFloatValue;
+			attrs->type = CborAttrHalfFloatType;
+		break;
+                case(CborFloatType):
+			/* This will already be configured */
+		break;
+                case(CborDoubleType):
+			attrs->addr.real = &floatContainer->doubleValue;
+			attrs->type = CborAttrDoubleType;
+		break;
+                default:
+			result = -EINVAL;
+	}
+	return (result);
+}
+
+/**@brief Converts external data to the required internal format.
+ *
+ * @param [in]externalFormat - The external data format.
+ * @param [in]internalFormat - The internal data format.
+ * @retval A Zephyr error code, 0 for success.
+ */
+static int FloatParameterExternalToInternal(CborType externalFormat,
+					AttrType_t internalFormat,
+					struct cbor_attr_t *attrs,
+					floatContainer_t *floatContainer,
+					float *outData)
+{
+	int result = 0;
+
+	switch (externalFormat) {
+                case(CborHalfFloatType):
+			*outData = HalfToFloat(floatContainer->halfFloatValue);
+			attrs->addr.fval = outData;
+		break;
+                case(CborFloatType):
+			/* This will already be configured */
+		break;
+                case(CborDoubleType):
+			*outData = ((float)(floatContainer->doubleValue));
+                        attrs->addr.fval = outData;
+		break;
+                default:
+			result = -EINVAL;
+	}
+	return (result);
 }

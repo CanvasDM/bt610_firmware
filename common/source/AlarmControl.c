@@ -87,7 +87,6 @@ int HighTempAlarmCheck(size_t channel)
 	}
 	return r;
 }
-
 int LowTempAlarmCheck(size_t channel)
 {
 	float lowTempAlarm1 = 0;
@@ -127,7 +126,6 @@ int LowTempAlarmCheck(size_t channel)
 	}
 	return r;
 }
-
 int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 {
 	float threshold = 0;
@@ -187,7 +185,6 @@ int HighAnalogAlarmCheck(size_t channel)
 	}
 	return r;
 }
-
 int LowAnalogAlarmCheck(size_t channel)
 {
 	float lowAnalogAlarm1 = 0;
