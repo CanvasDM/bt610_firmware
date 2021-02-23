@@ -83,7 +83,6 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static int BluetoothInit(void);
 static int UpdateName(void);
-static void AdvertisementAtrributeControl(void);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -284,27 +283,13 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();
 			break;
-		case ATTR_INDEX_advertisingDuration:
-			//();
-			break;
-		case ATTR_INDEX_advertiseBegin:
-			AdvertisementAtrributeControl();
-			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
 			updateData = true;
-			break;
-		case ATTR_INDEX_advertisingInterval:
-			Advertisement_IntervalUpdate();
 			break;
 		case ATTR_INDEX_advertisingDuration:
 			/*Todo: Change to match updates BT510 made*/
 			break;
-		case ATTR_INDEX_networkId:
-		case ATTR_INDEX_configVersion:
-			updateData = true;
-			break;
-
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -368,19 +353,4 @@ static int UpdateName(void)
 	}
 	return r;
 }
-/* The attribute parameter can control when advertisments start and stop
- * without having to press a button.
- */
-static void AdvertisementAtrributeControl(void)
-{
-	uint8_t avertControl;
 
-	Attribute_Get(ATTR_INDEX_advertiseBegin, &avertControl,
-		      sizeof(avertControl));
-
-	if (avertControl == 1) {
-		Advertisement_Start();
-	} else {
-		Advertisement_End();
-	}
-}

@@ -235,10 +235,7 @@ int AttributePrepare_temperatureResult4(void)
 {
 	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE);
 }
-int AttributePrepare_tamperSwitchStatus(void)
-{
-	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
-}
+
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -483,49 +480,6 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
-	return DISPATCH_OK;
-}
-
-	if (sensorTaskObject.localActiveMode == true) {
-		uint32_t intervalSeconds = 0;
-		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_temperatureSenseInterval);
-		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.temperatureReadTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
-	}
-	return DISPATCH_OK;
-}
-static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					     FwkMsg_t *pMsg)
-{
-	ARG_UNUSED(pMsg);
-	ARG_UNUSED(pMsgRxer);
-	uint8_t index = 0;
-	uint8_t r;
-	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
-		r = Analog(index, ADC_PWR_SEQ_SINGLE);
-		if (r == 0) {
-			HighAnalogAlarmCheck(index);
-			LowAnalogAlarmCheck(index);
-			DeltaAnalogAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfAnalogDifference[index]);
-			//AggregationHandler(index);
-		}
-	}
-
-	if (sensorTaskObject.localActiveMode == true) {
-		uint32_t intervalSeconds = 0;
-		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_analogSenseInterval);
-		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.analogeReadTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
-	}
 	return DISPATCH_OK;
 }
 static void SensorConfigChange(void)
