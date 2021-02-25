@@ -30,6 +30,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "AnalogInput.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -47,18 +48,14 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define SENSOR_TASK_QUEUE_DEPTH 8
 #endif
 
+#define BATTERY_BAD_VOLTAGE (3000)
+
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(spi1), okay)
 #define SPI_DEV_NAME DT_LABEL(DT_NODELABEL(spi1))
 #else
 #error "Please set the correct spi device"
 #endif
-enum { 
-	THERM_CH_1 = 0, 
-	THERM_CH_2, 
-	THERM_CH_3, 
-	THERM_CH_4, 
-	TOTAL_THERM_CH 
-};
+enum { THERM_CH_1 = 0, THERM_CH_2, THERM_CH_3, THERM_CH_4, TOTAL_THERM_CH };
 
 enum {
 	ANALOG_CH_1 = 0,
@@ -166,6 +163,7 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); // 0 for one shot
 	sensorTaskObject.msgTask.rxer.pQueue = &sensorTaskQueue;
 
+	sensorTaskObject.localActiveMode = 0;
 	memset(sensorTaskObject.previousTemp, 0, TOTAL_THERM_CH);
 	memset(sensorTaskObject.magnitudeOfTempDifference, 0, TOTAL_THERM_CH);
 	memset(sensorTaskObject.previousAnalogValue, 0, TOTAL_ANALOG_CH);
@@ -192,6 +190,17 @@ int AttributePrepare_batteryVoltageMv(void)
 
 	if (r >= 0) {
 		r = Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
+		if (mv > BATTERY_BAD_VOLTAGE) {
+			//event_manager_add_sensor_event(
+			//	SENSOR_EVENT_BATTERY_GOOD,
+			//	SensorEventData_t * pSensorEventData);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
+		} else {
+			//	event_manager_add_sensor_event(
+			//		SENSOR_EVENT_BATTERY_BAD,
+			//		SensorEventData_t * pSensorEventData);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
+		}
 	}
 	return r;
 }
@@ -236,7 +245,6 @@ int AttributePrepare_temperatureResult4(void)
 	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE);
 }
 
-
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -271,7 +279,6 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
-	//if (activeMode) {
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
 	for (i = 0; i < pAttrMsg->count; i++) {
@@ -321,7 +328,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_AggregationCount:
 			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 			//			      FWK_ID_SENSOR_TASK,
-			//			      FMC_ENTER_ACTIVE_MODE);					  
+			//			      FMC_ENTER_ACTIVE_MODE);
 			break;
 
 		default:
@@ -387,8 +394,7 @@ static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
 	AttributePrepare_batteryVoltageMv();
-	/*Generate Battery Event Message*/
-	/*TODO: ADD FUNCTION*/
+
 	if (sensorTaskObject.localActiveMode == true) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
@@ -472,10 +478,18 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
 		      sizeof(activeModeStatus));
-	if(activeModeStatus == 0)
-	{
+
+	if (activeModeStatus == 0) {
 		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+		sensorTaskObject.localActiveMode = true;
+		Flags_Set(FLAG_ACTIVE_MODE, 1);
 	}
+	else
+	{
+		sensorTaskObject.localActiveMode = false;
+		Flags_Set(FLAG_ACTIVE_MODE, 0);
+	}
+	
 	/*Todo: send messages to begin periodic measurments.*/
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
@@ -584,10 +598,8 @@ static void UpdateDin1(void)
 
 	if (v >= 0) {
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 0, v);
+		Flags_Set(FLAG_DIGITAL_IN1_STATE, v);
 	}
-
-	/* todo: refactor for 1/2?; check alarm; update alarm */
-	/* maybe having two attributes is better */
 }
 
 static void UpdateDin2(void)
@@ -596,6 +608,7 @@ static void UpdateDin2(void)
 
 	if (v >= 0) {
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
+		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
 }
 
@@ -605,9 +618,9 @@ static void UpdateMagnet(void)
 
 	if (v >= 0) {
 		v = Attribute_SetUint32(ATTR_INDEX_magnetState, v);
+		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
 
-	/* todo: set flag or deprecate flag bits for bt6 */
 }
 static void InitializeIntervalTimers(void)
 {

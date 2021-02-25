@@ -71,7 +71,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 99
+#define ATTR_TABLE_SIZE 100
 
 /* pyend */
 
@@ -208,6 +208,7 @@ typedef enum
 #define ATTR_INDEX_shOffset                              96
 #define ATTR_INDEX_analogSenseInterval                   97
 #define ATTR_INDEX_tamperSwitchStatus                    98
+#define ATTR_INDEX_connectionTimeoutSec                  99
 /* pyend */
 /* clang-format on */
 

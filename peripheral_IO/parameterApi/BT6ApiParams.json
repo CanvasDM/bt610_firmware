@@ -2488,6 +2488,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "1",
+              "x-broadcast": true,
               "x-writeable": true,
               "x-readable": true,
               "x-savable": false
@@ -2638,6 +2639,24 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-readable": true
+            }
+          },
+          {
+            "name": "connectionTimeoutSec",
+            "summary": "How long is the device connected to the app in seconds",
+            "required": true,
+            "x-id": 99,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 255.0,
+              "x-ctype": "uint8_t",
+              "x-default": "30",
+              "x-example": "60",
+              "x-broadcast": true,
+              "x-writeable": true,
               "x-readable": true
             }
           }

@@ -33,6 +33,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "laird_bluetooth.h"
 #include "Attribute.h"
 #include "qrtc.h"
+#include "Flags.h"
 
 #include "ControlTask.h"
 
@@ -173,6 +174,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	mcumgr_wrapper_register_subsystems();
 
+	Flags_Init();
 	UserInterfaceTask_Initialize();
 	BleTask_Initialize();
 	SensorTask_Initialize();

@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "laird_bluetooth.h"
 #include "Attribute.h"
 #include "Advertisement.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -168,7 +169,7 @@ int Advertisement_Update(void)
 
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
-	ad.flags = 0;
+	ad.flags = Flags_Get();
 
 	ad.recordType = 0;
 	ad.id = 0;

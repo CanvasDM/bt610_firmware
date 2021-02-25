@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(AlarmControl, LOG_LEVEL_DBG);
 #include "Attribute.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -54,6 +55,7 @@ int HighTempAlarmCheck(size_t channel)
 	float highTempAlarm2 = 0;
 	float currentTemp = 0;
 	int r = -EPERM;
+	uint8_t flagTempBit = 0;
 
 	Attribute_GetFloat(&highTempAlarm1,
 			   ATTR_INDEX_highTemp1Thresh1 + channel);
@@ -62,6 +64,9 @@ int HighTempAlarmCheck(size_t channel)
 	r = Attribute_GetFloat(&currentTemp,
 			       ATTR_INDEX_temperatureResult1 + channel);
 	if (r == 0) {
+		flagTempBit = (TEMP_ALARM_MASK * channel) - channel +
+			      FLAG_TEMP_HIGH_START_BIT;
+
 		if (currentTemp >= highTempAlarm1) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
 					 currentTemp, highTempAlarm1);*/
@@ -71,7 +76,7 @@ int HighTempAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
 					    highTemp1Bit, 1);
 
-			/*todo:Flags_Set(FLAG_HIGH_TEMP_ALARM, 1);*/
+			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 
 		} else if (currentTemp >= highTempAlarm2) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
@@ -82,7 +87,7 @@ int HighTempAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
 					    highTemp2Bit, 1);
 
-			/*todo:Flags_Set*/
+			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 2);
 		}
 	}
 	return r;
@@ -93,6 +98,7 @@ int LowTempAlarmCheck(size_t channel)
 	float lowTempAlarm2 = 0;
 	float currentTemp = 0;
 	int r = -EPERM;
+	uint8_t flagTempBit = 0;
 
 	Attribute_GetFloat(&lowTempAlarm1,
 			   ATTR_INDEX_lowTemp1Thresh1 + channel);
@@ -101,6 +107,9 @@ int LowTempAlarmCheck(size_t channel)
 	r = Attribute_GetFloat(&currentTemp,
 			       ATTR_INDEX_temperatureResult1 + channel);
 	if (r == 0) {
+		flagTempBit = (TEMP_ALARM_MASK * channel) - channel +
+			      FLAG_TEMP_LOW_START_BIT;
+
 		if (currentTemp <= lowTempAlarm1) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
 					 currentTemp, lowTempAlarm1);*/
@@ -110,7 +119,7 @@ int LowTempAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
 					    lowTemp1Bit, 1);
 
-			/*todo:Flags_Set(FLAG_HIGH_TEMP_ALARM, 1);*/
+			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 
 		} else if (currentTemp <= lowTempAlarm2) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
@@ -121,7 +130,7 @@ int LowTempAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
 					    lowTemp2Bit, 1);
 
-			/*todo:Flags_Set*/
+			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 2);
 		}
 	}
 	return r;
@@ -129,8 +138,10 @@ int LowTempAlarmCheck(size_t channel)
 int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 {
 	float threshold = 0;
+	uint8_t flagTempBit = 0;
 	Attribute_GetFloat(&threshold, ATTR_INDEX_temp1DeltaThresh + channel);
 
+	flagTempBit = channel + FLAG_TEMP_DELTA_START_BIT;
 	if (tempDifference > threshold) {
 		/*AlarmTypeHandler(SENSOR_EVENT_ALARM_DELTA_TEMP,
 				 pObj->currentTemp, threshold);*/
@@ -139,7 +150,8 @@ int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 			DELTA_THRESH + (NUMBER_ALARM_TYPES * channel);
 
 		Attribute_SetMask32(ATTR_INDEX_temperatureAlarms, deltaBit, 1);
-		/*todo:Flags_Set(FLAG_DELTA_TEMP_ALARM, 1);*/
+
+		Flags_Set(DELTA_ALARM_MASK, flagTempBit, 1);
 	} else {
 		/*todo: Flags_Set*/
 	}
@@ -152,6 +164,7 @@ int HighAnalogAlarmCheck(size_t channel)
 	float highAnalogAlarm2 = 0;
 	float currentAnalogValue = 0;
 	int r = -EPERM;
+	uint8_t flagAnalogBit = 0;
 
 	Attribute_GetFloat(&highAnalogAlarm1,
 			   ATTR_INDEX_highAnalog1Thresh1 + channel);
@@ -160,6 +173,8 @@ int HighAnalogAlarmCheck(size_t channel)
 	r = Attribute_GetFloat(&currentAnalogValue,
 			       ATTR_INDEX_analogInput1 + channel);
 	if (r == 0) {
+		flagAnalogBit = (ANALOG_ALARM_MASK * channel) - channel +
+			      FLAG_ANALOG_HIGH_START_BIT;
 		if (currentAnalogValue >= highAnalogAlarm1) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
 					 currentAnalog, highAnalogAlarm1);*/
@@ -169,7 +184,7 @@ int HighAnalogAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 					    highAnalog1Bit, 1);
 
-			/*todo: Flags_Set(FLAG_HIGH_TEMP_ALARM, 1);*/
+			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 
 		} else if (currentAnalogValue >= highAnalogAlarm2) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
@@ -180,7 +195,7 @@ int HighAnalogAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 					    highAnalog2Bit, 1);
 
-			/*todo:Flags_Set*/
+			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 2);
 		}
 	}
 	return r;
@@ -191,6 +206,7 @@ int LowAnalogAlarmCheck(size_t channel)
 	float lowAnalogAlarm2 = 0;
 	float currentAnalogValue = 0;
 	int r = -EPERM;
+	uint8_t flagAnalogBit = 0;
 
 	Attribute_GetFloat(&lowAnalogAlarm1,
 			   ATTR_INDEX_lowAnalog1Thresh1 + channel);
@@ -199,6 +215,8 @@ int LowAnalogAlarmCheck(size_t channel)
 	r = Attribute_GetFloat(&currentAnalogValue,
 			       ATTR_INDEX_analogInput1 + channel);
 	if (r == 0) {
+		flagAnalogBit = (ANALOG_ALARM_MASK * channel) - channel +
+				FLAG_ANALOG_LOW_START_BIT;
 		if (currentAnalogValue <= lowAnalogAlarm1) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
 					 currentAnalog, lowAnalogAlarm1);*/
@@ -208,7 +226,7 @@ int LowAnalogAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 					    lowAnalog1Bit, 1);
 
-			/*todo:Flags_Set(FLAG_HIGH_TEMP_ALARM, 1);*/
+			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 
 		} else if (currentAnalogValue <= lowAnalogAlarm2) {
 			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
@@ -219,7 +237,7 @@ int LowAnalogAlarmCheck(size_t channel)
 			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 					    lowAnalog2Bit, 1);
 
-			/* todo: Flags_Set function*/
+			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 2);
 		}
 	}
 	return r;
@@ -228,8 +246,10 @@ int LowAnalogAlarmCheck(size_t channel)
 int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 {
 	float threshold = 0;
+	uint8_t flagAnalogBit = 0;
 	Attribute_GetFloat(&threshold, ATTR_INDEX_analog1DeltaThresh + channel);
 
+	flagAnalogBit = channel + FLAG_ANALOG_DELTA_START_BIT;
 	if (analogDifference > threshold) {
 		/*AlarmTypeHandler(SENSOR_EVENT_ALARM_DELTA_ANALOG,
 				 pObj->currentAnalog, threshold);*/
@@ -238,7 +258,7 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 			DELTA_THRESH + (NUMBER_ALARM_TYPES * channel);
 
 		Attribute_SetMask32(ATTR_INDEX_analogAlarms, deltaBit, 1);
-		/*todo:Flags_Set(FLAG_DELTA_ANALOG_ALARM, 1);*/
+		Flags_Set(DELTA_ALARM_MASK, flagAnalogBit, 1);
 	} else {
 		/*todo:Flags_Set*/
 	}
