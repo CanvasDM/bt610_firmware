@@ -46,7 +46,7 @@ void Flags_Set(uint32_t Mask, uint32_t Position, uint32_t Value)
 		SetFlag(FLAG_ANY_ALARM, 1);
 	}
 	k_mutex_unlock(&flags_mutex);
-	// The flags are used in the advertisment and shadowed in the attribute table.
+	/* The flags are used in the advertisment and shadowed in the attribute table.*/
 	Attribute_SetUint32(ATTR_INDEX_flags, flags.data);
 }
 

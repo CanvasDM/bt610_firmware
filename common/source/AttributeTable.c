@@ -109,7 +109,7 @@ typedef struct RwAttributesTag {
 	uint8_t analogInput2Type;
 	uint8_t analogInput3Type;
 	uint8_t analogInput4Type;
-	uint32_t flags;
+	uint16_t flags;
 	uint32_t qrtcLastSet;
 	float shOffset;
 	uint32_t analogSenseInterval;
@@ -221,7 +221,7 @@ typedef struct RoAttributesTag {
 	float analogInput3;
 	float analogInput4;
 	uint32_t analogAlarms;
-	uint32_t flags;
+	uint16_t flags;
 	uint8_t magnetState;
 	char paramPath[8 + 1];
 	uint32_t batteryAge;
@@ -259,7 +259,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.21",
+	.apiVersion = "1.23",
 	.qrtc = 0,
 	.tamperSwitchStatus = 0,
 	.connectionTimeoutSec = 30
@@ -391,7 +391,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [86 ] = { RW_ATTRX(analogInput2Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [88 ] = { RW_ATTRX(analogInput4Type)              , u8 , y, y, y, n, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
-    [89 ] = { RO_ATTRX(flags)                         , u32, n, y, y, n, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [89 ] = { RO_ATTRX(flags)                         , u16, n, y, y, n, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
     [90 ] = { RO_ATTRX(magnetState)                   , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [91 ] = { RO_ATTRS(paramPath)                     , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [92 ] = { RO_ATTRX(batteryAge)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },

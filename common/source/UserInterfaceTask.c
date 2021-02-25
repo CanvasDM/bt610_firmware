@@ -326,6 +326,7 @@ static void TamperSwitchStatus(void)
 {
 	int v = BSP_PinGet(SW2_PIN);
 	if (v >= 0) {
+
 		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 	}

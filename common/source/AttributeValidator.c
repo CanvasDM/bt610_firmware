@@ -71,7 +71,8 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	uint32_t value = *(uint32_t *)pValue;
+	uint32_t value;// = *(uint32_t *)pValue;
+	memcpy(&value, pValue, sizeof(value));
 
 	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
 	    (pEntry->min.ux == pEntry->max.ux)) {

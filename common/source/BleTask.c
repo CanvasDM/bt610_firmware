@@ -285,7 +285,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
-		case ATTR_INDEX_flags:
+			//case ATTR_INDEX_flags:
 			updateData = true;
 			break;
 		case ATTR_INDEX_advertisingDuration:
@@ -354,4 +354,3 @@ static int UpdateName(void)
 	}
 	return r;
 }
-
