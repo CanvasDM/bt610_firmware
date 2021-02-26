@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.23",
+    "version": "1.25",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -779,6 +779,7 @@
               "x-ctype": "string",
               "x-default": "BT610",
               "x-example": "BT610",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -800,6 +801,7 @@
               "x-ctype": "string",
               "x-default": "NA",
               "x-example": "myRoom",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -820,6 +822,7 @@
               "x-ctype": "uint16_t",
               "x-default": "1000",
               "x-example": "1000",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -841,6 +844,7 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "15000",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -862,6 +866,7 @@
               "x-ctype": "uint32_t",
               "x-default": "123456",
               "x-example": "987654",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -883,6 +888,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -903,6 +909,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "60",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -923,6 +930,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "60",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -943,6 +951,7 @@
               "x-ctype": "uint8_t",
               "x-default": "1",
               "x-example": "5",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -963,6 +972,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -984,6 +994,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1003,6 +1014,7 @@
               "x-ctype": "string",
               "x-default": "0.0.0",
               "x-example": "1.0.0",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1019,6 +1031,7 @@
               "maximumlength": 8,
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1035,6 +1048,7 @@
               "x-ctype": "string",
               "x-default": "0",
               "x-example": "010203040506",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1049,6 +1063,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1067,6 +1082,7 @@
               "x-ctype": "string",
               "x-default": "0.0",
               "x-example": "0.0",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1081,6 +1097,7 @@
               "x-ctype": "int64_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -1099,6 +1116,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1120,6 +1138,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1141,6 +1160,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1162,6 +1182,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1182,6 +1203,7 @@
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "255",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1203,6 +1225,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1224,6 +1247,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1245,6 +1269,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1264,6 +1289,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1283,6 +1309,7 @@
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "255",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1302,6 +1329,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1321,6 +1349,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1340,6 +1369,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1359,6 +1389,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1378,6 +1409,7 @@
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "255",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1399,6 +1431,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1418,6 +1451,7 @@
               "x-ctype": "float",
               "x-default": "127",
               "x-example": "120",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1437,6 +1471,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1456,6 +1491,7 @@
               "x-ctype": "float",
               "x-default": "-127",
               "x-example": "-40",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1475,6 +1511,7 @@
               "x-ctype": "float",
               "x-default": "-1",
               "x-example": "255",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1494,6 +1531,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1513,6 +1551,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1532,6 +1571,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1551,6 +1591,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1570,6 +1611,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1589,6 +1631,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1608,6 +1651,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1627,6 +1671,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1646,6 +1691,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1665,6 +1711,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1684,6 +1731,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1703,6 +1751,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1722,6 +1771,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1741,6 +1791,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1760,6 +1811,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1779,6 +1831,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1798,6 +1851,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1817,6 +1871,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1836,6 +1891,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1855,6 +1911,7 @@
               "x-ctype": "float",
               "x-default": "4095",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1876,6 +1933,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1897,6 +1955,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -1917,6 +1976,7 @@
               "x-ctype": "int8_t",
               "x-default": "0",
               "x-example": "8",
+              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1938,6 +1998,7 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "100",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1960,6 +2021,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "10",
+              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -1982,6 +2044,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "2",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2004,6 +2067,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "3",
+              "x-lockable": false,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2023,6 +2087,7 @@
               "x-ctype": "float",
               "x-default": "0.0",
               "x-example": "0.998",
+              "x-lockable": true,
               "x-readable": true
             }
           },
@@ -2039,6 +2104,7 @@
               "x-ctype": "float",
               "x-default": "0.0",
               "x-example": "-12.2",
+              "x-lockable": true,
               "x-readable": true
             }
           },
@@ -2055,6 +2121,7 @@
               "x-ctype": "float",
               "x-default": "0.001132",
               "x-example": "0.001132",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2073,6 +2140,7 @@
               "x-ctype": "float",
               "x-default": "0.0002338",
               "x-example": "0.0002338",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2093,6 +2161,7 @@
               "x-ctype": "float",
               "x-default": "8.780e-8",
               "x-example": "8.780e-8",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2111,6 +2180,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2129,6 +2199,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2146,6 +2217,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2163,6 +2235,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2180,6 +2253,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2197,6 +2271,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-writeable": true,
               "x-readable": true,
               "x-savable": false
@@ -2218,6 +2293,7 @@
               "x-ctype": "uint16_t",
               "x-default": "0",
               "x-example": "3000",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2235,6 +2311,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-readable": true
             }
           },
@@ -2252,6 +2329,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": true,
               "x-writeable": true,
               "x-readable": true,
               "x-savable": false
@@ -2270,6 +2348,7 @@
               "x-ctype": "uint8_t",
               "x-default": "131",
               "x-example": "128",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2291,6 +2370,7 @@
               "x-ctype": "uint8_t",
               "x-default": "131",
               "x-example": "0",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2310,6 +2390,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2327,6 +2408,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2344,6 +2426,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2361,6 +2444,7 @@
               "x-ctype": "float",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true,
               "x-prepare": true
             }
@@ -2378,6 +2462,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-writeable": true,
               "x-readable": true,
               "x-savable": false
@@ -2399,6 +2484,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2422,6 +2508,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2444,6 +2531,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2466,6 +2554,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2484,10 +2573,11 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 65535.0,
-              "x-ctype": "uint16_t",
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": false,
               "x-broadcast": true,
               "x-writeable": true,
               "x-readable": true,
@@ -2509,6 +2599,7 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "1",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -2525,6 +2616,7 @@
               "x-ctype": "string",
               "x-default": "/ext",
               "x-example": "/lfs",
+              "x-lockable": false,
               "x-savable": false,
               "x-readable": true
             }
@@ -2540,6 +2632,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -2553,8 +2646,9 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.23",
+              "x-default": "1.25",
               "x-example": "123.456.789",
+              "x-lockable": false,
               "x-readable": true,
               "x-review": "the default value for this should be generated by python script"
             }
@@ -2570,6 +2664,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-readable": true
             }
           },
@@ -2584,6 +2679,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "0",
+              "x-lockable": false,
               "x-savable": true,
               "x-readable": true
             }
@@ -2601,6 +2697,7 @@
               "x-ctype": "float",
               "x-default": "273.15",
               "x-example": "273.15",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2621,6 +2718,7 @@
               "x-ctype": "uint32_t",
               "x-default": "0",
               "x-example": "60",
+              "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -2639,7 +2737,10 @@
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
-              "x-readable": true
+              "x-lockable": false,
+              "x-readable": true,
+              "x-savable": false,
+              "x-broadcast": true
             }
           },
           {
@@ -2655,9 +2756,31 @@
               "x-ctype": "uint8_t",
               "x-default": "30",
               "x-example": "60",
+              "x-lockable": true,
               "x-broadcast": true,
               "x-writeable": true,
               "x-readable": true
+            }
+          },
+          {
+            "name": "settingsPasscode",
+            "summary": "Six digit numeric passcode to unlock device settings.",
+            "required": true,
+            "x-id": 100,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 6,
+              "maximumlength": 6,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "uint32_t",
+              "x-default": "123456",
+              "x-example": "987654",
+              "x-backup": true,
+              "x-lockable": true,
+              "x-broadcast": true,
+              "x-writeable": true
             }
           }
         ]

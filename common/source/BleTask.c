@@ -80,6 +80,8 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
+static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
 static int UpdateName(void);
@@ -122,6 +124,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
+	case FMC_SENSOR_EVENT:                return BleSensorMsgHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */
@@ -300,6 +303,17 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	if (updateData == true) {
 		Advertisement_Update();
 	}
+	return DISPATCH_OK;
+}
+static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg)
+{
+
+
+	uint8_t activeMode = 0;
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+
+
 	return DISPATCH_OK;
 }
 

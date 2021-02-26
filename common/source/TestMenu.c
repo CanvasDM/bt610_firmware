@@ -23,7 +23,7 @@ LOG_MODULE_REGISTER(TestMenu);
 
 #include "AdcBt6.h"
 #include "BspSupport.h"
-
+#include "Advertisement.h"
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -223,6 +223,16 @@ static int cal(const struct shell *shell, size_t argc, char **argv)
 
 	return 0;
 }
+static int event(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	int enentID = atoi(argv[1]);
+	TestEventMsg(enentID);
+	shell_print(shell, "Event: %d", enentID);
+	Advertisement_Update();
+
+	return 0;
+}
 
 /******************************************************************************/
 /* SHELL Service                                                              */
@@ -257,6 +267,9 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 	SHELL_CMD(configure, NULL,
 		  "Set <number of samples> <delay between samples (ms)>",
 		  configure),
+	SHELL_CMD(event, NULL,
+		  "Trigger a event 0-35 to the device",
+		  event),	  
 
 	SHELL_SUBCMD_SET_END);
 

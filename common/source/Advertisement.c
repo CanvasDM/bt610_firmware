@@ -34,12 +34,18 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
+typedef struct
+{
+  SensorEvent_t event;
+  uint32_t id;
 
+} SensorMsg_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static LczSensorAdEvent_t ad;
 static LczSensorRspWithHeader_t rsp;
+static SensorMsg_t current;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -144,6 +150,7 @@ int Advertisement_Init(void)
 	r = bt_conn_auth_cb_register(&auth_callback);
 
 	SetPasskey();
+	memset(&current,0, sizeof(SensorMsg_t));
 
 	return r;
 }
@@ -171,10 +178,10 @@ int Advertisement_Update(void)
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
 
-	ad.recordType = 0;
-	ad.id = 0;
-	ad.epoch = 0;
-	ad.data = 0;
+	ad.recordType = current.event.type;
+	ad.id = current.id;
+	ad.epoch = current.event.timestamp;
+	ad.data = current.event.data.u32;
 
 	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
 		      sizeof(configVersion));
@@ -228,6 +235,26 @@ void SetPasskey(void)
 
 	bt_passkey_set(BT_PASSKEY_INVALID);
 	bt_passkey_set(key);
+}
+void TestEventMsg(uint16_t event)
+{
+	static uint32_t idTest = 0;
+	uint32_t timeStamp = 0;
+	uint32_t dataValue = 0;
+
+
+	current.id = idTest;
+	idTest = idTest + 1;
+	current.event.type = event;
+
+	Attribute_Get(ATTR_INDEX_qrtc, &timeStamp,
+		      sizeof(timeStamp));
+	Attribute_Get(ATTR_INDEX_batteryAge, &dataValue,
+		      sizeof(dataValue));
+
+	current.event.timestamp = timeStamp;
+
+	current.event.data.u32 = dataValue;
 }
 
 /******************************************************************************/

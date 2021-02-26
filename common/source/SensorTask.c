@@ -325,6 +325,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
+		case ATTR_INDEX_tamperSwitchStatus:
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+						      FWK_ID_SENSOR_TASK,
+						      FMC_TAMPER);
 		case ATTR_INDEX_AggregationCount:
 			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 			//			      FWK_ID_SENSOR_TASK,
@@ -483,13 +487,11 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 		sensorTaskObject.localActiveMode = true;
 		Flags_Set(FLAG_ACTIVE_MODE, 1);
-	}
-	else
-	{
+	} else {
 		sensorTaskObject.localActiveMode = false;
 		Flags_Set(FLAG_ACTIVE_MODE, 0);
 	}
-	
+
 	/*Todo: send messages to begin periodic measurments.*/
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
@@ -620,7 +622,6 @@ static void UpdateMagnet(void)
 		v = Attribute_SetUint32(ATTR_INDEX_magnetState, v);
 		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
-
 }
 static void InitializeIntervalTimers(void)
 {

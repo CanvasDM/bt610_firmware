@@ -163,7 +163,7 @@ static const struct button_cfg BUTTON_CFG[] = {
 	BUTTON_CFG(1, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
 #endif
 #if DT_HAS_BUTTON_NODE(2)
-	BUTTON_CFG(2, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_FALLING),
+	BUTTON_CFG(2, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
 #endif
 #if DT_HAS_BUTTON_NODE(3)
 	BUTTON_CFG(3, GPIO_INPUT, GPIO_INT_EDGE_BOTH),
@@ -280,6 +280,8 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
 #endif
+	/*Check the current state of the tamper switch*/
+	//TamperSwitchStatus();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -318,16 +320,13 @@ static int InitializeButtons(void)
 		LOG_ERR("Configuration failed for %s", BUTTON_CFG[i].label);
 	}
 
-	/*Check the current state of the tamper switch*/
-	TamperSwitchStatus();
 	return r;
 }
 static void TamperSwitchStatus(void)
 {
 	int v = BSP_PinGet(SW2_PIN);
 	if (v >= 0) {
-
-		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, v);
+		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 	}
 }
@@ -370,8 +369,16 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 2 (Tamper)");
-	lcz_led_blink(RED_LED, &TAMPER_PATTERN);
-	TamperSwitchStatus();
+
+	int v = BSP_PinGet(SW2_PIN);
+	if (v >= 0) {
+		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
+		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
+		if (v == 1) {
+			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+		}
+	}
+	//TamperSwitchStatus();
 	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
 }
