@@ -280,6 +280,3 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 		FRAMEWORK_MSG_SEND(pMsg);
 	}
 }*/
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/

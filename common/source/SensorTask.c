@@ -31,6 +31,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "AlarmControl.h"
 #include "SensorTask.h"
 #include "Flags.h"
+#include "AggregationCount.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -55,16 +56,6 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #else
 #error "Please set the correct spi device"
 #endif
-enum { THERM_CH_1 = 0, THERM_CH_2, THERM_CH_3, THERM_CH_4, TOTAL_THERM_CH };
-
-enum {
-	ANALOG_CH_1 = 0,
-	ANALOG_CH_2,
-	ANALOG_CH_3,
-	ANALOG_CH_4,
-	TOTAL_ANALOG_CH
-};
-
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
 	uint8_t localActiveMode;
@@ -426,7 +417,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfTempDifference[index]);
-			//AggregationHandler(index);
+			AggregationTempHandler(index);
 		}
 	}
 
@@ -457,7 +448,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfAnalogDifference[index]);
-			//AggregationHandler(index);
+			AggregationAnalogHandler(index);
 		}
 	}
 
@@ -685,8 +676,6 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 			result - sensorTaskObject.previousAnalogValue[channel]);
 		sensorTaskObject.previousAnalogValue[channel] = result;
 	}
-
-	/* todo: alarm handler */
 
 	return r;
 }

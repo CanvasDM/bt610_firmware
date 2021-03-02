@@ -24,6 +24,7 @@ include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
     ${CMAKE_SOURCE_DIR}/../common/source/Advertisement.c
+    ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
     ${CMAKE_SOURCE_DIR}/../common/source/AlarmControl.c
     ${CMAKE_SOURCE_DIR}/../common/source/AttributeTable.c
     ${CMAKE_SOURCE_DIR}/../common/source/Attribute.c

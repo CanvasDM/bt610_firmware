@@ -1,20 +1,18 @@
 /**
- * @file SensorTask.h
+ * @file AggregationCount.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __SENSOR_TASK_H__
-#define __SENSOR_TASK_H__
+#ifndef __AGGREGATION_COUNT_H__
+#define __AGGREGATION_COUNT_H__
 
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
-#include <zephyr/types.h>
-#include <stddef.h>
-#include <drivers/spi.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,23 +20,7 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-//typedef enum {
 
-//} sensorType_t;
-enum { 
-    THERM_CH_1 = 0, 
-    THERM_CH_2,
-    THERM_CH_3, 
-    THERM_CH_4, 
-    TOTAL_THERM_CH };
-
-enum {
-	ANALOG_CH_1 = 0,
-	ANALOG_CH_2,
-	ANALOG_CH_3,
-	ANALOG_CH_4,
-	TOTAL_ANALOG_CH
-};
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -47,12 +29,16 @@ enum {
 /* Global Function Prototypes                                                 */
 /******************************************************************************/
 /**
- * @brief The setup of the thread parameters
+ * @brief Check the Thermistor temperture against the two high thresholds
+ *
+ * @param channel This is the thermistor channel
+ *
+ * @retval negative error code, 0 on success
  */
-void SensorTask_Initialize(void);
-
+int AggregationTempHandler(size_t channel);
+int AggregationAnalogHandler(size_t channel);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SENSOR_TASK_H__ */
+#endif /* __AGGREGATION_COUNT_H__ */
