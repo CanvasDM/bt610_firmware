@@ -23,6 +23,8 @@
 #include "Sentrius_mgmt.h"
 #include "HalfFloatDecoder.h"
 #include "CBORSupport.h"
+#include "lcz_sensor_event.h"
+#include "lcz_event_manager.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -144,7 +146,15 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	[SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
          .mh_write = Sentrius_mgmt_DumpParameterFile,
 		 .mh_read = Sentrius_mgmt_DumpParameterFile,
-    }
+    },
+	[SENTRIUS_MGMT_ID_PREPARE_LOG] = {
+         .mh_write = Sentrius_mgmt_PrepareLog,
+		 .mh_read = Sentrius_mgmt_PrepareLog
+    },
+	[SENTRIUS_MGMT_ID_ACK_LOG] = {
+         .mh_write = Sentrius_mgmt_AckLog,
+		 .mh_read = Sentrius_mgmt_AckLog,
+    },
     /* pyend */
 };
 
@@ -655,6 +665,44 @@ int Sentrius_mgmt_DumpParameterFile(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_PrepareLog(struct mgmt_ctxt *ctxt){
+
+	uint8_t f[LCZ_EVENT_MANAGER_FILENAME_SIZE];
+	int r = MGMT_ERR_EINVAL;
+
+	/* Check if we can prepare the log file OK */
+	if (lcz_event_manager_prepare_log_file(f)){
+	
+		/* If not, blank the file path */
+		f[0] = 0;
+	}
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result of log prepare */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Add file path */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "f");
+	err |= cbor_encode_text_string(&ctxt->encoder, f, strlen(f));
+	/* Exit with result */
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_AckLog(struct mgmt_ctxt *ctxt){
+
+	int r = MGMT_ERR_EINVAL;
+
+	r = lcz_event_manager_delete_log_file();
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result of log delete */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
