@@ -253,8 +253,17 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
+	uint8_t codedPhySelected = 0;
 
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	//if (codedPhySelected == 1) {
+	//	Advertisement_ExtendedStart();
+	//} else {
 	Advertisement_Start();
+	//}
+
 	return DISPATCH_OK;
 }
 static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -262,8 +271,17 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
+	uint8_t codedPhySelected = 0;
 
-	Advertisement_End();
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	if (codedPhySelected == 1) {
+		Advertisement_ExtendedEnd();
+	} else {
+		Advertisement_End();
+	}
+
 	return DISPATCH_OK;
 }
 
@@ -308,11 +326,8 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg)
 {
-
-
 	uint8_t activeMode = 0;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-
 
 	return DISPATCH_OK;
 }
