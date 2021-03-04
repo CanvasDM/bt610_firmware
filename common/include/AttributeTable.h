@@ -253,6 +253,7 @@ int AttributePrepare_temperatureResult2(void);
 int AttributePrepare_temperatureResult3(void);
 int AttributePrepare_temperatureResult4(void);
 int AttributePrepare_batteryVoltageMv(void);
+int AttributePrepare_digitalInput(void);
 int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
 int AttributePrepare_analogInput3(void);

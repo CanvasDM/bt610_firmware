@@ -99,13 +99,11 @@ static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				     FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalIn1ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				     FwkMsg_t *pMsg);
-static DispatchResult_t
-SensorTaskDigitalIn2ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-				     FwkMsg_t *pMsg);
+
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
 static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -116,13 +114,14 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
-
+static void LoadSensorConfiguration(void);
 static void SensorConfigChange(void);
 static void SensorOutput1Control();
 static void SensorOutput2Control();
 
 static void UpdateDin1(void);
 static void UpdateDin2(void);
+static gpio_flags_t GetEdgeType(digitalAlarm_t alarm);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
 
@@ -146,9 +145,8 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
 	case FMC_ATTR_CHANGED:        return SensorTaskAttributeChangedMsgHandler;
-	case FMC_DIGITAL_IN:          return SensorTaskDigitalInputMsgHandler;
-	case FMC_DIGITAL_IN1_CONFIG:  return SensorTaskDigitalIn1ConfigMsgHandler;
-	case FMC_DIGITAL_IN2_CONFIG:  return SensorTaskDigitalIn2ConfigMsgHandler;
+	case FMC_DIGITAL_IN:          return SensorTaskDigitalInAlarmMsgHandler;
+	case FMC_DIGITAL_IN_CONFIG:   return SensorTaskDigitalInConfigMsgHandler;
 	case FMC_MAGNET_STATE:        return MagnetStateMsgHandler;
 	case FMC_READ_BATTERY:        return ReadBatteryMsgHandler;
 	case FMC_TEMPERATURE_MEASURE: return MeasureTemperatureMsgHandler;
@@ -256,6 +254,12 @@ int AttributePrepare_temperatureResult4(void)
 {
 	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE);
 }
+int AttributePrepare_digitalInput(void)
+{
+	UpdateDin1();
+	UpdateDin2();
+	return 0;
+}
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -270,17 +274,13 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		LOG_ERR("BT6 ADC module init error: %d", r);
 	}
 
-	/* todo: Enable Din1 and Din2 based on configuration. */
-	BSP_PinSet(DIN1_ENABLE_PIN, 1);
-	BSP_PinSet(DIN2_ENABLE_PIN, 1);
+	LoadSensorConfiguration();
 
 	SensorOutput1Control();
 	SensorOutput2Control();
 
 	AttributePrepare_batteryVoltageMv();
 	InitializeIntervalTimers();
-	UpdateDin1();
-	UpdateDin2();
 	UpdateMagnet();
 
 	while (true) {
@@ -312,14 +312,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 						      FMC_ANALOG_MEASURE);
 			break;
 		case ATTR_INDEX_digitalInput1Config:
-			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-						   FMC_DIGITAL_IN1_CONFIG);
-			break;
 		case ATTR_INDEX_digitalInput2Config:
 			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-						   FMC_DIGITAL_IN2_CONFIG);
+						   FMC_DIGITAL_IN_CONFIG);
 			break;
-
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
@@ -360,7 +356,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
@@ -368,9 +364,13 @@ SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
+		/*Alarm from interrupt*/
+		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 0, 1);
+
 	} else if ((pSensorMsg->pin == DIN2_MCU_PIN) &&
 		   (sensorTaskObject.digitalIn2Enabled == 1)) {
 		UpdateDin2();
+		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 1, 1);
 	}
 
 	return DISPATCH_OK;
@@ -379,28 +379,43 @@ static DispatchResult_t
 SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	uint8_t input1Config = 0;
+	uint8_t input2Config = 0;
+	gpio_flags_t edgeTypeDin1;
+	gpio_flags_t edgeTypeDin2;
 
+	/*Digital Input 1*/
 	Attribute_Get(ATTR_INDEX_digitalInput1Config, &input1Config,
 		      sizeof(input1Config));
 	sensorTaskObject.input1Alarm = input1Config & DIGITAL_IN_ALARM_MASK;
 	input1Config = (input1Config & DIGITAL_IN_ENABLE_MASK);
 	input1Config = input1Config >> DIGITAL_IN_BIT_SHIFT;
 	sensorTaskObject.digitalIn1Enabled = input1Config;
+	edgeTypeDin1 = GetEdgeType(sensorTaskObject.input1Alarm);
+		if (sensorTaskObject.digitalIn1Enabled == 1) {
+		BSP_ConfigureDigitalInputs(DIN1_MCU_PIN, GPIO_INPUT, edgeTypeDin1);
+		BSP_PinSet(DIN1_ENABLE_PIN, 1);
+	} else {
+		BSP_ConfigureDigitalInputs(DIN1_MCU_PIN, GPIO_DISCONNECTED,
+					   edgeTypeDin1);
+		BSP_PinSet(DIN1_ENABLE_PIN, 0);
+	}
 
-	return DISPATCH_OK;
-}
-static DispatchResult_t
-SensorTaskDigitalIn2ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	uint8_t input2Config = 0;
-
-	Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
+/*Digital Input 2*/
+			  Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
 		      sizeof(input2Config));
-	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
+			  	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
 	input2Config = (input2Config & DIGITAL_IN_ENABLE_MASK);
 	input2Config = input2Config >> DIGITAL_IN_BIT_SHIFT;
-	sensorTaskObject.digitalIn2Enabled = input2Config;
-
+	sensorTaskObject.digitalIn2Enabled = input2Config;	
+	edgeTypeDin2 = GetEdgeType(sensorTaskObject.input2Alarm);
+		if (sensorTaskObject.digitalIn2Enabled == 1) {
+		BSP_ConfigureDigitalInputs(DIN2_MCU_PIN, GPIO_INPUT, edgeTypeDin2);
+		BSP_PinSet(DIN2_ENABLE_PIN, 1);
+	} else {
+		BSP_ConfigureDigitalInputs(DIN2_MCU_PIN, GPIO_DISCONNECTED,
+					   edgeTypeDin2);
+		BSP_PinSet(DIN2_ENABLE_PIN, 0);
+	}
 
 
 	return DISPATCH_OK;
@@ -521,6 +536,11 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FMC_BLE_START_ADVERTISING);
 	return DISPATCH_OK;
 }
+static void LoadSensorConfiguration(void)
+{
+	//SensorConfigChange();
+	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
+}
 static void SensorConfigChange(void)
 {
 	uint32_t configurationType;
@@ -636,6 +656,29 @@ static void UpdateDin2(void)
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
 		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
+}
+
+static gpio_flags_t GetEdgeType(digitalAlarm_t alarm)
+{
+	gpio_flags_t edgeType = GPIO_INT_DISABLE;
+	switch (alarm) {
+	case NO_ALARM:
+		edgeType = GPIO_INT_DISABLE;
+		break;
+	case FALLING_EDGE_ALARM:
+		edgeType = GPIO_INT_EDGE_FALLING;
+		break;
+	case RISING_EDGE_ALARM:
+		edgeType = GPIO_INT_EDGE_RISING;
+		break;
+	case BOTH_EDGE_ALARM:
+		edgeType = GPIO_INT_EDGE_BOTH;
+		break;
+	default:
+		edgeType = GPIO_INT_DISABLE;
+		break;
+	}
+	return edgeType;
 }
 
 static void UpdateMagnet(void)

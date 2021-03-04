@@ -184,8 +184,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.thermistorConfig = 0,
 	.temperatureAlarms = 0,
 	.digitalAlarms = 0,
-	.digitalInput1Config = 131,
-	.digitalInput2Config = 131,
+	.digitalInput1Config = 0,
+	.digitalInput2Config = 0,
 	.analogAlarms = 0,
 	.analogInput1Type = 0,
 	.analogInput2Type = 0,
@@ -262,7 +262,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.25",
+	.apiVersion = "1.26",
 	.qrtc = 0,
 	.tamperSwitchStatus = 0,
 	.connectionTimeoutSec = 30,
@@ -382,7 +382,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [73 ] = { RO_ATTRX(temperatureResult4)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult4       , .min.fx = -175.0    , .max.fx = 175.0      },
     [74 ] = { RO_ATTRX(temperatureAlarms)             , u32, n, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [75 ] = { RO_ATTRX(batteryVoltageMv)              , u16, n, n, y, n, n, n, AttributeValidator_uint16   , AttributePrepare_batteryVoltageMv         , .min.ux = 0.0       , .max.ux = 3800.0     },
-    [76 ] = { RO_ATTRX(digitalInput)                  , u8 , n, n, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
+    [76 ] = { RO_ATTRX(digitalInput)                  , u8 , n, n, y, y, n, n, AttributeValidator_uint8    , AttributePrepare_digitalInput             , .min.ux = 0.0       , .max.ux = 3.0        },
     [77 ] = { RO_ATTRX(digitalAlarms)                 , u32, n, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
     [78 ] = { RW_ATTRX(digitalInput1Config)           , u8 , y, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [79 ] = { RW_ATTRX(digitalInput2Config)           , u8 , y, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
@@ -504,6 +504,11 @@ __weak int AttributePrepare_temperatureResult4(void)
 }
 
 __weak int AttributePrepare_batteryVoltageMv(void)
+{
+	return 0;
+}
+
+__weak int AttributePrepare_digitalInput(void)
 {
 	return 0;
 }
