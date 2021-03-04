@@ -241,7 +241,7 @@ int Advertisement_End(void)
 int Advertisement_ExtendedEnd(void)
 {
 	int r = 0;
-	r = bt_le_ext_adv_stop(adv);
+	//r = bt_le_ext_adv_stop(adv);
 	LOG_INF("Advertising end (%d)", r);
 	advertising = false;
 
@@ -279,9 +279,9 @@ int Advertisement_ExtendedStart(void)
 	uint32_t advertDuration = 0;
 
 	if (!advertising) {
-		r = bt_le_ext_adv_start(adv, &bt_extParam);
+		//r = bt_le_ext_adv_start(adv, &bt_extParam);
 		advertising = (r == 0);
-		LOG_INF("Advertising start (%d)", r);
+		LOG_INF("ExtendedAdvert start (%d)", r);
 	}
 
 	Attribute_Get(ATTR_INDEX_advertisingDuration, &advertDuration,
@@ -325,21 +325,21 @@ void TestEventMsg(uint16_t event)
 /******************************************************************************/
 void createAdvertisingCoded(void)
 {
-	int err;
+	int err = 0;
 	struct bt_le_adv_param param = BT_LE_ADV_PARAM_INIT(
 		BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV |
 			BT_LE_ADV_OPT_CODED,
 		BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL);
 
-	err = bt_le_ext_adv_create(&param, NULL, &adv);
+	//err = bt_le_ext_adv_create(&param, NULL, &adv);
 	if (err) {
 		LOG_WRN("Failed to create advertiser set (%d)\n", err);
 	}
 
 	LOG_INF("Created adv: %p\n", adv);
 
-	err = bt_le_ext_adv_set_data(adv, bt_extAd, ARRAY_SIZE(bt_extAd), NULL,
-				     0);
+	//err = bt_le_ext_adv_set_data(adv, bt_extAd, ARRAY_SIZE(bt_extAd), NULL,
+	//			     0);
 	if (err) {
 		LOG_WRN("Failed to set advertising data (%d)\n", err);
 	}
