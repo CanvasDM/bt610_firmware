@@ -30,6 +30,8 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "AnalogInput.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"
+#include "Flags.h"
+#include "AggregationCount.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -47,26 +49,32 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define SENSOR_TASK_QUEUE_DEPTH 8
 #endif
 
+#define BATTERY_BAD_VOLTAGE (3000)
+#define DIGITAL_IN_ALARM_MASK (0x03)
+#define DIGITAL_IN_ENABLE_MASK (0x80)
+#define DIGITAL_IN_BIT_SHIFT (7)
+
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(spi1), okay)
 #define SPI_DEV_NAME DT_LABEL(DT_NODELABEL(spi1))
 #else
 #error "Please set the correct spi device"
 #endif
-enum { THERM_CH_1 = 0, THERM_CH_2, THERM_CH_3, THERM_CH_4, TOTAL_THERM_CH };
-enum {
-	ANALOG_CH_1 = 0,
-	ANALOG_CH_2,
-	ANALOG_CH_3,
-	ANALOG_CH_4,
-	TOTAL_ANALOG_CH
-};
-
+typedef enum {
+	NO_ALARM = 0,
+	FALLING_EDGE_ALARM,
+	RISING_EDGE_ALARM,
+	BOTH_EDGE_ALARM
+} digitalAlarm_t;
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
 	uint8_t localActiveMode;
+	uint8_t digitalIn1Enabled;
+	uint8_t digitalIn2Enabled;
+	digitalAlarm_t input1Alarm;
+	digitalAlarm_t input2Alarm;
 	struct k_timer *batteryTimer;
 	struct k_timer *temperatureReadTimer;
-	struct k_timer *analogeReadTimer;
+	struct k_timer *analogReadTimer;
 	float previousTemp[TOTAL_THERM_CH];
 	float magnitudeOfTempDifference[TOTAL_THERM_CH];
 	float previousAnalogValue[TOTAL_ANALOG_CH];
@@ -93,8 +101,11 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t
 SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-				      FwkMsg_t *pMsg);
+SensorTaskDigitalIn1ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+				     FwkMsg_t *pMsg);
+static DispatchResult_t
+SensorTaskDigitalIn2ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+				     FwkMsg_t *pMsg);
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
 static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -103,6 +114,8 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						     FwkMsg_t *pMsg);
 static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
+static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg);
 
 static void SensorConfigChange(void);
 static void SensorOutput1Control();
@@ -113,8 +126,12 @@ static void UpdateDin2(void);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
 
-static int Analog(size_t channel, AdcPwrSequence_t power);
-static int Thermistor(size_t channel, AdcPwrSequence_t power);
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
+static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
+
+static void batteryTimerCallbackIsr(struct k_timer *timer_id);
+static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
+static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
@@ -130,11 +147,13 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
 	case FMC_ATTR_CHANGED:        return SensorTaskAttributeChangedMsgHandler;
 	case FMC_DIGITAL_IN:          return SensorTaskDigitalInputMsgHandler;
-	case FMC_DIGITAL_IN_ALARM:    return SensorTaskDigitalInAlarmSetMsgHandler;
+	case FMC_DIGITAL_IN1_CONFIG:  return SensorTaskDigitalIn1ConfigMsgHandler;
+	case FMC_DIGITAL_IN2_CONFIG:  return SensorTaskDigitalIn2ConfigMsgHandler;
 	case FMC_MAGNET_STATE:        return MagnetStateMsgHandler;
 	case FMC_READ_BATTERY:        return ReadBatteryMsgHandler;
 	case FMC_TEMPERATURE_MEASURE: return MeasureTemperatureMsgHandler;
-	case FMC_ANALOG_MEASURE:      return AnalogReadMsgHandler;	
+	case FMC_ANALOG_MEASURE:      return AnalogReadMsgHandler;
+	case FMC_ENTER_ACTIVE_MODE:   return EnterActiveModeMsgHandler;	
 	default:                      return NULL;
 	}
 	/* clang-format on */
@@ -152,6 +171,11 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); // 0 for one shot
 	sensorTaskObject.msgTask.rxer.pQueue = &sensorTaskQueue;
 
+	sensorTaskObject.localActiveMode = 0;
+	sensorTaskObject.digitalIn1Enabled = NO_ALARM;
+	sensorTaskObject.digitalIn2Enabled = NO_ALARM;
+	sensorTaskObject.input1Alarm = 0;
+	sensorTaskObject.input2Alarm = 0;
 	memset(sensorTaskObject.previousTemp, 0, TOTAL_THERM_CH);
 	memset(sensorTaskObject.magnitudeOfTempDifference, 0, TOTAL_THERM_CH);
 	memset(sensorTaskObject.previousAnalogValue, 0, TOTAL_ANALOG_CH);
@@ -178,52 +202,59 @@ int AttributePrepare_batteryVoltageMv(void)
 
 	if (r >= 0) {
 		r = Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
+		if (mv > BATTERY_BAD_VOLTAGE) {
+			//event_manager_add_sensor_event(
+			//	SENSOR_EVENT_BATTERY_GOOD,
+			//	SensorEventData_t * pSensorEventData);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
+		} else {
+			//	event_manager_add_sensor_event(
+			//		SENSOR_EVENT_BATTERY_BAD,
+			//		SensorEventData_t * pSensorEventData);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
+		}
 	}
 	return r;
 }
 
 int AttributePrepare_analogInput1(void)
 {
-	return Analog(0, ADC_PWR_SEQ_SINGLE);
+	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput2(void)
 {
-	return Analog(1, ADC_PWR_SEQ_SINGLE);
+	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput3(void)
 {
-	return Analog(2, ADC_PWR_SEQ_SINGLE);
+	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_analogInput4(void)
 {
-	return Analog(3, ADC_PWR_SEQ_SINGLE);
+	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_temperatureResult1(void)
 {
-	return Thermistor(0, ADC_PWR_SEQ_SINGLE);
+	return MeasureThermistor(THERM_CH_1, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_temperatureResult2(void)
 {
-	return Thermistor(1, ADC_PWR_SEQ_SINGLE);
+	return MeasureThermistor(THERM_CH_2, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_temperatureResult3(void)
 {
-	return Thermistor(2, ADC_PWR_SEQ_SINGLE);
+	return MeasureThermistor(THERM_CH_3, ADC_PWR_SEQ_SINGLE);
 }
 
 int AttributePrepare_temperatureResult4(void)
 {
-	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
-}
-int AttributePrepare_tamperSwitchStatus(void)
-{
-	return Thermistor(3, ADC_PWR_SEQ_SINGLE);
+	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE);
 }
 
 /******************************************************************************/
@@ -260,7 +291,6 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static DispatchResult_t
 SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
-	//if (activeMode) {
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
 	for (i = 0; i < pAttrMsg->count; i++) {
@@ -281,12 +311,15 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ANALOG_MEASURE);
 			break;
+		case ATTR_INDEX_digitalInput1Config:
+			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
+						   FMC_DIGITAL_IN1_CONFIG);
+			break;
+		case ATTR_INDEX_digitalInput2Config:
+			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
+						   FMC_DIGITAL_IN2_CONFIG);
+			break;
 
-			//		case ATTR_INDEX_digitalInput1:
-			//		case ATTR_INDEX_digitalInput2:
-			//			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
-			//						   FMC_DIGITAL_IN_ALARM);
-			//			break;
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
@@ -304,7 +337,17 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			SensorOutput2Control();
 			break;
 		case ATTR_INDEX_activeMode:
-			// It isn't expected that host will write this.
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+						      FWK_ID_SENSOR_TASK,
+						      FMC_ENTER_ACTIVE_MODE);
+		case ATTR_INDEX_tamperSwitchStatus:
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+						      FWK_ID_SENSOR_TASK,
+						      FMC_TAMPER);
+		case ATTR_INDEX_AggregationCount:
+			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+			//			      FWK_ID_SENSOR_TASK,
+			//			      FMC_ENTER_ACTIVE_MODE);
 			break;
 
 		default:
@@ -322,35 +365,43 @@ SensorTaskDigitalInputMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsgRxer);
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
 
-	if (pSensorMsg->pin == DIN1_MCU_PIN) {
+	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
+	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
-	} else if (pSensorMsg->pin == DIN2_MCU_PIN) {
+	} else if ((pSensorMsg->pin == DIN2_MCU_PIN) &&
+		   (sensorTaskObject.digitalIn2Enabled == 1)) {
 		UpdateDin2();
 	}
 
 	return DISPATCH_OK;
 }
 static DispatchResult_t
-SensorTaskDigitalInAlarmSetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-				      FwkMsg_t *pMsg)
+SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
-	uint8_t input1TriggerLevel;
-	uint8_t input2TriggerLevel;
-	//Attribute_Get(ATTR_INDEX_digitalInput1, &input1TriggerLevel,
-	//	      sizeof(uint8_t));
-	//Attribute_Get(ATTR_INDEX_digitalInput2, &input2TriggerLevel,
-	//	      sizeof(uint8_t));
+	uint8_t input1Config = 0;
 
-	if (input1TriggerLevel == 0) {
-		/*Set alarm when input is low*/
-	} else {
-		/*Set alarm when input is High*/
-	}
-	if (input2TriggerLevel == 0) {
-		/*Set alarm when input is low*/
-	} else {
-		/*Set alarm when input is High*/
-	}
+	Attribute_Get(ATTR_INDEX_digitalInput1Config, &input1Config,
+		      sizeof(input1Config));
+	sensorTaskObject.input1Alarm = input1Config & DIGITAL_IN_ALARM_MASK;
+	input1Config = (input1Config & DIGITAL_IN_ENABLE_MASK);
+	input1Config = input1Config >> DIGITAL_IN_BIT_SHIFT;
+	sensorTaskObject.digitalIn1Enabled = input1Config;
+
+	return DISPATCH_OK;
+}
+static DispatchResult_t
+SensorTaskDigitalIn2ConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
+{
+	uint8_t input2Config = 0;
+
+	Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
+		      sizeof(input2Config));
+	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
+	input2Config = (input2Config & DIGITAL_IN_ENABLE_MASK);
+	input2Config = input2Config >> DIGITAL_IN_BIT_SHIFT;
+	sensorTaskObject.digitalIn2Enabled = input2Config;
+
+
 
 	return DISPATCH_OK;
 }
@@ -370,8 +421,7 @@ static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
 	AttributePrepare_batteryVoltageMv();
-	/*Generate Battery Event Message*/
-	/*TODO: ADD FUNCTION*/
+
 	if (sensorTaskObject.localActiveMode == true) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
@@ -391,7 +441,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t index = 0;
 	uint8_t r;
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
-		r = Thermistor(index, ADC_PWR_SEQ_SINGLE);
+		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
 		if (r == 0) {
 			HighTempAlarmCheck(index);
 			LowTempAlarmCheck(index);
@@ -399,7 +449,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfTempDifference[index]);
-			//AggregationHandler(index);
+			AggregationTempHandler(index);
 		}
 	}
 
@@ -422,7 +472,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t index = 0;
 	uint8_t r;
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
-		r = Analog(index, ADC_PWR_SEQ_SINGLE);
+		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE);
 		if (r == 0) {
 			HighAnalogAlarmCheck(index);
 			LowAnalogAlarmCheck(index);
@@ -430,7 +480,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfAnalogDifference[index]);
-			//AggregationHandler(index);
+			AggregationAnalogHandler(index);
 		}
 	}
 
@@ -439,10 +489,36 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_analogSenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.analogeReadTimer,
+			k_timer_start(sensorTaskObject.analogReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 		}
 	}
+	return DISPATCH_OK;
+}
+
+static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsg);
+	ARG_UNUSED(pMsgRxer);
+	uint8_t activeModeStatus = 0;
+
+	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+		      sizeof(activeModeStatus));
+
+	if (activeModeStatus == 0) {
+		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+		sensorTaskObject.localActiveMode = true;
+		Flags_Set(FLAG_ACTIVE_MODE, 1);
+	} else {
+		sensorTaskObject.localActiveMode = false;
+		Flags_Set(FLAG_ACTIVE_MODE, 0);
+	}
+
+	/*Todo: send messages to begin periodic measurments.*/
+
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
+				      FMC_BLE_START_ADVERTISING);
 	return DISPATCH_OK;
 }
 static void SensorConfigChange(void)
@@ -543,14 +619,13 @@ static void SensorOutput2Control()
 }
 static void UpdateDin1(void)
 {
+	/*Check if the input is enabled first*/
 	int v = BSP_PinGet(DIN1_MCU_PIN);
 
 	if (v >= 0) {
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 0, v);
+		Flags_Set(FLAG_DIGITAL_IN1_STATE, v);
 	}
-
-	/* todo: refactor for 1/2?; check alarm; update alarm */
-	/* maybe having two attributes is better */
 }
 
 static void UpdateDin2(void)
@@ -559,6 +634,7 @@ static void UpdateDin2(void)
 
 	if (v >= 0) {
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
+		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
 }
 
@@ -568,9 +644,8 @@ static void UpdateMagnet(void)
 
 	if (v >= 0) {
 		v = Attribute_SetUint32(ATTR_INDEX_magnetState, v);
+		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
-
-	/* todo: set flag or deprecate flag bits for bt6 */
 }
 static void InitializeIntervalTimers(void)
 {
@@ -578,11 +653,11 @@ static void InitializeIntervalTimers(void)
 		     NULL);
 	k_timer_init(sensorTaskObject.temperatureReadTimer,
 		     temperatureReadTimerCallbackIsr, NULL);
-	k_timer_init(sensorTaskObject.analogeReadTimer,
+	k_timer_init(sensorTaskObject.analogReadTimer,
 		     analogReadTimerCallbackIsr, NULL);
 }
 
-static int Analog(size_t channel, AdcPwrSequence_t power)
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 {
 	int r = -EPERM;
 	float result = 0.0;
@@ -635,12 +710,10 @@ static int Analog(size_t channel, AdcPwrSequence_t power)
 		sensorTaskObject.previousAnalogValue[channel] = result;
 	}
 
-	/* todo: alarm handler */
-
 	return r;
 }
 
-static int Thermistor(size_t channel, AdcPwrSequence_t power)
+static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 {
 	int r = -EPERM;
 	float result = 0.0;

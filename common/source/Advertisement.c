@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "laird_bluetooth.h"
 #include "Attribute.h"
 #include "Advertisement.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -33,15 +34,19 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
-#define PASSKEY_LENGTH (6 + 1)
+typedef struct {
+	SensorEvent_t event;
+	uint32_t id;
 
+} SensorMsg_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static LczSensorAdEvent_t ad;
+static LczSensorAdExt_t ext;
 static LczSensorRspWithHeader_t rsp;
-static uint8_t pairCheck;
-static uint8_t passCheck;
+static struct bt_le_ext_adv *adv;
+static SensorMsg_t current;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -51,18 +56,25 @@ enum {
 	/**< Number of microseconds in 10 milliseconds. */
 	UNIT_10_MS = 10000
 };
-
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
 static bool advertising;
 static struct bt_le_adv_param bt_param =
 	BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
 			     NULL);
+
+static struct bt_le_ext_adv_start_param bt_extParam = { .timeout = 0,
+							.num_events = 0 };
 #endif
 
 static struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &ad, sizeof(ad))
+};
+
+static struct bt_data bt_extAd[] = {
+	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+	BT_DATA(BT_DATA_MANUFACTURER_DATA, &ext, sizeof(ext))
 };
 
 /* When using BT_LE_ADV_OPT_USE_NAME, device name is added to scan response
@@ -78,22 +90,12 @@ static struct k_timer advertisementDurationTimer;
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
+static void createAdvertisingCoded(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
-
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthPasskeyEntryCb(struct bt_conn *conn);
 static void AuthCancelCb(struct bt_conn *conn);
-static void AuthPairingConfirmCb(struct bt_conn *conn);
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded);
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason);
 
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
-
-static void SetPasskey(void);
-
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -115,9 +117,6 @@ int Advertisement_Init(void)
 	bt_addr_le_to_str(&addr, addr_str, sizeof(addr_str));
 	LOG_INF("Bluetooth Address: %s count: %d status: %d",
 		log_strdup(addr_str), count, r);
-
-	k_timer_init(&advertisementDurationTimer, DurationTimerCallbackIsr,
-		     NULL);
 
 	/* remove ':' from default format */
 	size_t i;
@@ -149,21 +148,29 @@ int Advertisement_Init(void)
 	rsp.rsp.configVersion = 0;
 	rsp.rsp.hardwareVersion = 0;
 
+	ext.ad = ad;
+	ext.rsp.productId = rsp.rsp.productId;
+	ext.rsp.firmwareVersionMajor = rsp.rsp.firmwareVersionMajor;
+	ext.rsp.firmwareVersionMinor = rsp.rsp.firmwareVersionMinor;
+	ext.rsp.firmwareVersionPatch = rsp.rsp.firmwareVersionPatch;
+	ext.rsp.firmwareType = rsp.rsp.firmwareType;
+	ext.rsp.configVersion = rsp.rsp.configVersion;
+	ext.rsp.hardwareVersion = rsp.rsp.hardwareVersion;
+
 	connection_callbacks.disconnected = adv_disconnected;
 	bt_conn_cb_register(&connection_callbacks);
 
 	const struct bt_conn_auth_cb auth_callback = {
-		.passkey_display = AuthPasskeyDisplayCb,
-		.passkey_entry = AuthPasskeyEntryCb,
-		.passkey_confirm = AuthPasskeyConfirmCb,
 		.cancel = AuthCancelCb,
-		.pairing_confirm = AuthPairingConfirmCb,
-		.pairing_complete = AuthPairingCompleteCb,
-		.pairing_failed = AuthPairingFailedCb
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
+	createAdvertisingCoded();
 	SetPasskey();
+	memset(&current, 0, sizeof(SensorMsg_t));
+
+	k_timer_init(&advertisementDurationTimer, DurationTimerCallbackIsr,
+		     NULL);
 
 	return r;
 }
@@ -186,22 +193,36 @@ int Advertisement_Update(void)
 {
 	uint16_t networkId = 0;
 	uint8_t configVersion = 0;
+	uint8_t codedPhySelected = 0;
+	int r = 0;
 
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
-	ad.flags = 0;
+	ad.flags = Flags_Get();
 
-	ad.recordType = 0;
-	ad.id = 0;
-	ad.epoch = 0;
-	ad.data = 0;
+	ad.recordType = current.event.type;
+	ad.id = current.id;
+	ad.epoch = current.event.timestamp;
+	ad.data = current.event.data.u32;
 
 	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
 		      sizeof(configVersion));
 	rsp.rsp.configVersion = configVersion;
 
-	int r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-				      ARRAY_SIZE(bt_rsp));
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	if (codedPhySelected == 1) {
+		ext.ad = ad;
+		ext.rsp.configVersion = rsp.rsp.configVersion;
+
+		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+					  ARRAY_SIZE(bt_rsp));
+	} else {
+		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+					  ARRAY_SIZE(bt_rsp));
+	}
+
 	if (r < 0) {
 		LOG_INF("Failed to update advertising data (%d)", r);
 	}
@@ -217,6 +238,15 @@ int Advertisement_End(void)
 
 	return r;
 }
+int Advertisement_ExtendedEnd(void)
+{
+	int r = 0;
+	//r = bt_le_ext_adv_stop(adv);
+	LOG_INF("Advertising end (%d)", r);
+	advertising = false;
+
+	return r;
+}
 int Advertisement_Start(void)
 {
 	int r = 0;
@@ -227,6 +257,7 @@ int Advertisement_Start(void)
 	if (!advertising) {
 		r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
 				    ARRAY_SIZE(bt_rsp));
+
 		advertising = (r == 0);
 		LOG_INF("Advertising start (%d)", r);
 	}
@@ -240,24 +271,79 @@ int Advertisement_Start(void)
 #endif
 	return r;
 }
+int Advertisement_ExtendedStart(void)
+{
+	int r = 0;
+
+#ifndef CONFIG_ADVERTISEMENT_DISABLE
+	uint32_t advertDuration = 0;
+
+	if (!advertising) {
+		//r = bt_le_ext_adv_start(adv, &bt_extParam);
+		advertising = (r == 0);
+		LOG_INF("ExtendedAdvert start (%d)", r);
+	}
+
+	Attribute_Get(ATTR_INDEX_advertisingDuration, &advertDuration,
+		      sizeof(advertDuration));
+	if ((advertDuration != 0) && (advertDuration > bt_param.interval_max)) {
+		k_timer_start(&advertisementDurationTimer,
+			      K_MSEC(advertDuration), K_NO_WAIT);
+	}
+#endif
+	return r;
+}
+void SetPasskey(void)
+{
+	static uint32_t key = 0;
+
+	Attribute_Get(ATTR_INDEX_passkey, &key, sizeof(key));
+
+	bt_passkey_set(BT_PASSKEY_INVALID);
+	bt_passkey_set(key);
+}
+void TestEventMsg(uint16_t event)
+{
+	static uint32_t idTest = 0;
+	uint32_t timeStamp = 0;
+	uint32_t dataValue = 0;
+
+	current.id = idTest;
+	idTest = idTest + 1;
+	current.event.type = event;
+
+	Attribute_Get(ATTR_INDEX_qrtc, &timeStamp, sizeof(timeStamp));
+	Attribute_Get(ATTR_INDEX_batteryAge, &dataValue, sizeof(dataValue));
+
+	current.event.timestamp = timeStamp;
+
+	current.event.data.u32 = dataValue;
+}
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-static void SetPasskey(void)
+void createAdvertisingCoded(void)
 {
-	char passkeyString[PASSKEY_LENGTH];
-	uint32_t key = 0;
-	memset(passkeyString, 0, sizeof(passkeyString));
+	int err = 0;
+	struct bt_le_adv_param param = BT_LE_ADV_PARAM_INIT(
+		BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV |
+			BT_LE_ADV_OPT_CODED,
+		BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL);
 
-	Attribute_GetString(passkeyString, ATTR_INDEX_passkey,
-			    sizeof(passkeyString));
+	//err = bt_le_ext_adv_create(&param, NULL, &adv);
+	if (err) {
+		LOG_WRN("Failed to create advertiser set (%d)\n", err);
+	}
 
-	key = atoi(passkeyString);
-	bt_passkey_set(BT_PASSKEY_INVALID);
-	bt_passkey_set(key);
+	LOG_INF("Created adv: %p\n", adv);
+
+	//err = bt_le_ext_adv_set_data(adv, bt_extAd, ARRAY_SIZE(bt_extAd), NULL,
+	//			     0);
+	if (err) {
+		LOG_WRN("Failed to set advertising data (%d)\n", err);
+	}
 }
-
 static char *ble_addr(struct bt_conn *conn)
 {
 	static char addr[BT_ADDR_LE_STR_LEN];
@@ -265,18 +351,6 @@ static char *ble_addr(struct bt_conn *conn)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
 	return addr;
-}
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
-{
-	char addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
-	LOG_INF("Passkey for %s: %06u\n", log_strdup(addr), passkey);
-}
-static void AuthPasskeyEntryCb(struct bt_conn *conn)
-{
-	LOG_DBG("Not expected for peripheral");
 }
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
@@ -288,34 +362,7 @@ static void AuthCancelCb(struct bt_conn *conn)
 
 	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
 }
-void AuthPairingConfirmCb(struct bt_conn *conn)
-{
-	char *addr = ble_addr(conn);
 
-	pairCheck = 1;
-
-	bt_conn_auth_pairing_confirm(conn);
-	LOG_INF("Pairing confirmed: %s", log_strdup(addr));
-}
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
-{
-	char *addr = ble_addr(conn);
-
-	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
-}
-
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey)
-{
-	passCheck = 1;
-}
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason)
-{
-	LOG_DBG(".");
-	///if (conn == st.conn) {
-	//		st.paired = false;
-	//}
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/

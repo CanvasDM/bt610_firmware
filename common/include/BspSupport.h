@@ -14,6 +14,7 @@
 /******************************************************************************/
 #include <zephyr/types.h>
 #include <stddef.h>
+#include <drivers/gpio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,10 +70,7 @@ int BSP_PinSet(uint8_t pin, int value);
 int BSP_PinToggle(uint8_t pin);
 int BSP_PinGet(uint8_t pin);
 void BSP_DigitalPinsStatus(void);
-
-/*** Used in hardware test ****/
-void InitializeDigitalPinsNoPull(void);
-void InitializeDigitalPinsPull(void);
+void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t edge);
 
 #ifdef __cplusplus
 }

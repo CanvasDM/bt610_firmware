@@ -40,8 +40,6 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins);
 
-static void ConfigureInputs(void);
-static void InitDigitalInputInterrupt(void);
 static void ConfigureOutputs(void);
 static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
 
@@ -59,9 +57,6 @@ void BSP_Init(void)
 	if (!port1) {
 		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
-
-	ConfigureInputs();
-	InitDigitalInputInterrupt();
 	ConfigureOutputs();
 }
 
@@ -125,92 +120,35 @@ int BSP_PinGet(uint8_t pin)
 		return gpio_pin_get(port0, GPIO_PIN_MAP(pin));
 	}
 }
-
-/* todo: I think this should be refactored to call the interrupt handler because it duplicates code*/
-
-void BSP_DigitalPinsStatus(void)
-{
-	/*Check the current state of the connected pin*/
-	uint8_t din1Status = gpio_pin_get(port0, GPIO_PIN_MAP(DIN1_MCU_PIN));
-	uint8_t din2Status = gpio_pin_get(port1, GPIO_PIN_MAP(DIN2_MCU_PIN));
-	SendDigitalInputStatus(DIN1_MCU_PIN, din1Status);
-	SendDigitalInputStatus(DIN2_MCU_PIN, din2Status);
-
-}
-
-void InitializeDigitalPinsPull(void)
+void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t edge)
 {
 	/* DIN1 */
-	gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-			   (GPIO_INPUT | GPIO_PULL_UP));
-	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-				     GPIO_INT_EDGE_BOTH);
+	if (pin == DIN1_MCU_PIN) {
+		gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+				   GPIO_INPUT);
+		gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+					     (edge));
 
-	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
-	gpio_add_callback(port0, &digitalIn1_cb_data);
-
+		gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
+				   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
+		gpio_add_callback(port0, &digitalIn1_cb_data);
+	}
 	/* DIN2 */
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
-			   (GPIO_INPUT | GPIO_PULL_UP));
-	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
-				     GPIO_INT_EDGE_BOTH);
+	else if (pin == DIN2_MCU_PIN) {
+		gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+				   GPIO_INPUT);
+		gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
+					     (edge));
 
-	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
-	gpio_add_callback(port1, &digitalIn2_cb_data);
+		gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
+				   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
+		gpio_add_callback(port1, &digitalIn2_cb_data);
+	}
 }
 
-void InitializeDigitalPinsNoPull(void)
-{
-	/* DIN1 */
-	gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
-	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-				     GPIO_INT_EDGE_BOTH);
-
-	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
-	gpio_add_callback(port0, &digitalIn1_cb_data);
-
-	/* DIN2 */
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
-	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
-				     GPIO_INT_EDGE_BOTH);
-
-	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
-	gpio_add_callback(port1, &digitalIn2_cb_data);
-}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-static void ConfigureInputs(void)
-{
-	/* Port0 */
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
-	/* Port1 */
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
-}
-static void InitDigitalInputInterrupt(void)
-{
-	/* DIN1 */
-	gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN), GPIO_INPUT);
-	gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-				     (GPIO_INT_EDGE_BOTH));
-
-	gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
-	gpio_add_callback(port0, &digitalIn1_cb_data);
-
-	/* DIN2 */
-	gpio_pin_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN), GPIO_INPUT);
-	gpio_pin_interrupt_configure(port1, GPIO_PIN_MAP(DIN2_MCU_PIN),
-				     (GPIO_INT_EDGE_BOTH));
-
-	gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
-			   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
-	gpio_add_callback(port1, &digitalIn2_cb_data);
-}
 static void ConfigureOutputs(void)
 {
 	/* Port0 */
@@ -244,7 +182,6 @@ static void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 		pMsgSend->pin = pin;
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
-
 }
 
 /******************************************************************************/
@@ -258,7 +195,6 @@ static void DigitalIn1HandlerIsr(const struct device *port,
 
 	LOG_DBG("Digital pin%d is %u", DIN1_MCU_PIN, pinStatus);
 	SendDigitalInputStatus(DIN1_MCU_PIN, pinStatus);
-
 }
 
 static void DigitalIn2HandlerIsr(const struct device *port,
