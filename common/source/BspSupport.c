@@ -120,15 +120,18 @@ int BSP_PinGet(uint8_t pin)
 		return gpio_pin_get(port0, GPIO_PIN_MAP(pin));
 	}
 }
-void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t edge)
+void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
+				gpio_flags_t edge)
 {
+	int r = 0;
 	/* DIN1 */
 	if (pin == DIN1_MCU_PIN) {
-		gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-				   GPIO_INPUT);
-		gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
-					     (edge));
-
+		r = gpio_pin_configure(port0, GPIO_PIN_MAP(DIN1_MCU_PIN),
+				       enable);
+		LOG_INF("DIN 1 config (%d)", r);
+		r = gpio_pin_interrupt_configure(
+			port0, GPIO_PIN_MAP(DIN1_MCU_PIN), (edge));
+		LOG_INF("DIN 1 interrupt (%d)", r);
 		gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
 				   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
 		gpio_add_callback(port0, &digitalIn1_cb_data);

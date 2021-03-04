@@ -70,7 +70,7 @@ int BSP_PinSet(uint8_t pin, int value);
 int BSP_PinToggle(uint8_t pin);
 int BSP_PinGet(uint8_t pin);
 void BSP_DigitalPinsStatus(void);
-void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t edge);
+void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable, gpio_flags_t edge);
 
 #ifdef __cplusplus
 }
