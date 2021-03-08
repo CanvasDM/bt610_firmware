@@ -127,6 +127,8 @@ class attributes:
             return "i32"
         elif itype == "uint8_t":
             return "u8 "
+        elif itype == "bool":
+            return "u8 "    
         elif itype == "uint16_t":
             return "u16"
         elif itype == "uint32_t":

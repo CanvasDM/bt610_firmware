@@ -85,11 +85,15 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static int BluetoothInit(void);
 static int UpdateName(void);
+static void ConnectionTimerStart(void);
+static void ConnectionTimerRestart(void);
+static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
+static struct k_timer connectionTimer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -220,6 +224,9 @@ static int BluetoothInit(void)
 
 	} while (0);
 
+	k_timer_init(&connectionTimer,ConnectionTimerCallbackIsr,
+		     NULL);
+
 	uint8_t activeMode = 0;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
 
@@ -304,6 +311,9 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();
 			break;
+		case ATTR_INDEX_connectionTimeoutSec:
+			ConnectionTimerRestart();
+			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
 			//case ATTR_INDEX_flags:
@@ -354,6 +364,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
+
+		ConnectionTimerStart();
 	}
 }
 
@@ -382,4 +394,30 @@ static int UpdateName(void)
 		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
 	}
 	return r;
+}
+
+static void ConnectionTimerStart(void)
+{
+	uint32_t timeoutSeconds = 0;
+
+	Attribute_Get(ATTR_INDEX_connectionTimeoutSec, &timeoutSeconds,
+		      sizeof(timeoutSeconds));
+
+	if (timeoutSeconds != 0) {
+		k_timer_start(&connectionTimer,
+			      K_SECONDS(timeoutSeconds), K_NO_WAIT);
+	}
+}
+static void ConnectionTimerRestart(void)
+{
+	ConnectionTimerStart();
+}
+/******************************************************************************/
+/* Interrupt Service Routines                                                 */
+/******************************************************************************/
+static void ConnectionTimerCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+	//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+	//			      FMC_BLE_END_ADVERTISING);
 }
