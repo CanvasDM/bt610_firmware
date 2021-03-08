@@ -904,7 +904,11 @@ static bool isWritable(attr_idx_t Index)
 
 	if (p->writable) {
 		if (p->lockable) {
+			/*This is controled on the app side for the time being
+			Leave this code here in case it changes **
 			r = unlocked;
+			*/
+			r = true;
 		} else {
 			r = true;
 		}
