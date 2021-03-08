@@ -113,6 +113,7 @@ typedef struct RwAttributesTag {
 	uint32_t qrtcLastSet;
 	float shOffset;
 	uint32_t analogSenseInterval;
+	uint8_t tamperSwitchStatus;
 	uint8_t connectionTimeoutSec;
 	uint32_t settingsPasscode;
 	float therm1CoefficientA;
@@ -208,6 +209,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.qrtcLastSet = 0,
 	.shOffset = 273.15,
 	.analogSenseInterval = 0,
+	.tamperSwitchStatus = 0,
 	.connectionTimeoutSec = 30,
 	.settingsPasscode = 123456,
 	.therm1CoefficientA = 0.001132,
@@ -255,7 +257,6 @@ typedef struct RoAttributesTag {
 	uint32_t batteryAge;
 	char apiVersion[11 + 1];
 	uint32_t qrtc;
-	uint8_t tamperSwitchStatus;
 	uint8_t connectionTimeoutSec;
 	uint32_t settingsPasscode;
 	/* pyend */
@@ -290,7 +291,6 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.batteryAge = 0,
 	.apiVersion = "1.28",
 	.qrtc = 0,
-	.tamperSwitchStatus = 0,
 	.connectionTimeoutSec = 30,
 	.settingsPasscode = 123456
 	/* pyend */
@@ -430,7 +430,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [95 ] = { RW_ATTRX(qrtcLastSet)                   , u32, y, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [96 ] = { RW_ATTRX(shOffset)                      , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [97 ] = { RW_ATTRX(analogSenseInterval)           , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
-    [98 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [98 ] = { RW_ATTRX(tamperSwitchStatus)            , u8 , y, n, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [99 ] = { RO_ATTRX(connectionTimeoutSec)          , u8 , n, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
     [100] = { RO_ATTRX(settingsPasscode)              , u32, n, y, n, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [101] = { RW_ATTRX(therm1CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },

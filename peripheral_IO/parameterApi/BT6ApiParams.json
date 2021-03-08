@@ -2743,7 +2743,7 @@
               "x-example": "0",
               "x-lockable": false,
               "x-readable": true,
-              "x-savable": false,
+              "x-savable": true,
               "x-broadcast": true
             }
           },
