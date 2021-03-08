@@ -344,7 +344,8 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			//			      FWK_ID_SENSOR_TASK,
 			//			      FMC_ENTER_ACTIVE_MODE);
 			break;
-
+		case ATTR_INDEX_settingsPasscode:
+			//SensorOutput1Control();
 		default:
 			// don't do anything - this is a broadcast
 			break;
