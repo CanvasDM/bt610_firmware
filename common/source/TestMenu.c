@@ -129,7 +129,8 @@ static int temp(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	int rc = sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
+	int rc =
+		0; //sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
 	return rc;
 }
 

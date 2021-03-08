@@ -80,15 +80,20 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
+static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
 static int UpdateName(void);
-static void AdvertisementAtrributeControl(void);
+static void ConnectionTimerStart(void);
+static void ConnectionTimerRestart(void);
+static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
+static struct k_timer connectionTimer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -123,6 +128,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
+	case FMC_SENSOR_EVENT:                return BleSensorMsgHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */
@@ -218,6 +224,16 @@ static int BluetoothInit(void)
 
 	} while (0);
 
+	k_timer_init(&connectionTimer,ConnectionTimerCallbackIsr,
+		     NULL);
+
+	uint8_t activeMode = 0;
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+
+	if (activeMode == true) {
+		Advertisement_Start();
+	}
+
 	return r;
 }
 
@@ -244,8 +260,17 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
+	uint8_t codedPhySelected = 0;
 
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	//if (codedPhySelected == 1) {
+	//	Advertisement_ExtendedStart();
+	//} else {
 	Advertisement_Start();
+	//}
+
 	return DISPATCH_OK;
 }
 static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -253,8 +278,17 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
+	uint8_t codedPhySelected = 0;
 
-	Advertisement_End();
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	if (codedPhySelected == 1) {
+		Advertisement_ExtendedEnd();
+	} else {
+		Advertisement_End();
+	}
+
 	return DISPATCH_OK;
 }
 
@@ -267,6 +301,9 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t updateData = false;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
+		case ATTR_INDEX_passkey:
+			SetPasskey();
+			break;
 		case ATTR_INDEX_sensorName:
 			UpdateName();
 			updateData = true;
@@ -274,17 +311,17 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();
 			break;
-		case ATTR_INDEX_advertisingDuration:
-			//();
-			break;
-		case ATTR_INDEX_advertiseBegin:
-			AdvertisementAtrributeControl();
+		case ATTR_INDEX_connectionTimeoutSec:
+			ConnectionTimerRestart();
 			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
+			//case ATTR_INDEX_flags:
 			updateData = true;
 			break;
-
+		case ATTR_INDEX_advertisingDuration:
+			/*Todo: Change to match updates BT510 made*/
+			break;
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -294,6 +331,14 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	if (updateData == true) {
 		Advertisement_Update();
 	}
+	return DISPATCH_OK;
+}
+static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg)
+{
+	uint8_t activeMode = 0;
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+
 	return DISPATCH_OK;
 }
 
@@ -319,6 +364,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
+
+		ConnectionTimerStart();
 	}
 }
 
@@ -348,19 +395,29 @@ static int UpdateName(void)
 	}
 	return r;
 }
-/* The attribute parameter can control when advertisments start and stop
- * without having to press a button.
- */
-static void AdvertisementAtrributeControl(void)
+
+static void ConnectionTimerStart(void)
 {
-	uint8_t avertControl;
+	uint32_t timeoutSeconds = 0;
 
-	Attribute_Get(ATTR_INDEX_advertiseBegin, &avertControl,
-		      sizeof(avertControl));
+	Attribute_Get(ATTR_INDEX_connectionTimeoutSec, &timeoutSeconds,
+		      sizeof(timeoutSeconds));
 
-	if (avertControl == 1) {
-		Advertisement_Start();
-	} else {
-		Advertisement_End();
+	if (timeoutSeconds != 0) {
+		k_timer_start(&connectionTimer,
+			      K_SECONDS(timeoutSeconds), K_NO_WAIT);
 	}
+}
+static void ConnectionTimerRestart(void)
+{
+	ConnectionTimerStart();
+}
+/******************************************************************************/
+/* Interrupt Service Routines                                                 */
+/******************************************************************************/
+static void ConnectionTimerCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+	//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+	//			      FMC_BLE_END_ADVERTISING);
 }

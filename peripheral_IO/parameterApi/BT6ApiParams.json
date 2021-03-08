@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.26",
+    "version": "1.28",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -885,7 +885,7 @@
               "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "x-ctype": "bool",
               "x-default": "0",
               "x-example": "0",
               "x-lockable": true,
@@ -1952,7 +1952,7 @@
               "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 1.0,
-              "x-ctype": "uint8_t",
+              "x-ctype": "bool",
               "x-default": "0",
               "x-example": "0",
               "x-lockable": true,
@@ -2030,7 +2030,7 @@
           },
           {
             "name": "configType",
-            "summary": "0 = Not Configured\n1 = Analog Voltage\n2 = Digital\n3 = Temperature\n4 = Current\n5 = UltraSonic/Pressure\n6 = SPI/I2C",
+            "summary": "0 = Not Configured\n1 = Analog\n2 = Digital\n3 = Temperature\n4 = Current\n5 = UltraSonic/Pressure\n6 = SPI/I2C",
             "description": "Writing this will cause other attributes to be set with the correct value.",
             "required": true,
             "x-id": 62,
@@ -2085,7 +2085,7 @@
               "minimum": -5.0,
               "maximum": 3.4e+38,
               "x-ctype": "float",
-              "x-default": "0.0",
+              "x-default": "1.0",
               "x-example": "0.998",
               "x-lockable": true,
               "x-readable": true
@@ -2102,15 +2102,15 @@
               "minimum": -16.0,
               "maximum": 3.4e+38,
               "x-ctype": "float",
-              "x-default": "0.0",
+              "x-default": "1.0",
               "x-example": "-12.2",
               "x-lockable": true,
               "x-readable": true
             }
           },
           {
-            "name": "coefficientA",
-            "summary": "Steinhart-Hart Temperature Equation coefficient A",
+            "name": "oldCoefficientA",
+            "summary": "This is not used",
             "required": true,
             "x-id": 66,
             "x-groupid": 65,
@@ -2124,12 +2124,13 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true
+              "x-readable": true,
+              "x-deprecated": true
             }
           },
           {
-            "name": "coefficientB",
-            "summary": "Steinhart-Hart Temperature Equation coefficient B",
+            "name": "oldCoefficientB",
+            "summary": "This is not used",
             "required": true,
             "x-id": 67,
             "x-groupid": 65,
@@ -2143,12 +2144,13 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true
+              "x-readable": true,
+              "x-deprecated": true
             }
           },
           {
-            "name": "coefficientC",
-            "summary": "Steinhart-Hart Temperature Equation  coefficient C",
+            "name": "oldCoefficientC",
+            "summary": "This is not used",
             "required": true,
             "x-id": 68,
             "x-groupid": 65,
@@ -2164,7 +2166,8 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true
+              "x-readable": true,
+              "x-deprecated": true
             }
           },
           {
@@ -2647,7 +2650,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.26",
+              "x-default": "1.28",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -2782,6 +2785,263 @@
               "x-lockable": true,
               "x-broadcast": true,
               "x-writeable": true
+            }
+          },
+          {
+            "name": "therm1CoefficientA",
+            "summary": "Steinhart-Hart Temperature Equation coefficient A",
+            "required": true,
+            "x-id": 101,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.001132",
+              "x-example": "0.001132",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm2CoefficientA",
+            "summary": "Steinhart-Hart Temperature Equation coefficient B",
+            "required": true,
+            "x-id": 102,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.0002338",
+              "x-example": "0.0002338",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm3CoefficientA",
+            "summary": "Steinhart-Hart Temperature Equation  coefficient C",
+            "required": true,
+            "x-id": 103,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "8.780e-8",
+              "x-example": "8.780e-8",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm4CoefficientA",
+            "summary": "Steinhart-Hart Temperature Equation coefficient A",
+            "required": true,
+            "x-id": 104,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.001132",
+              "x-example": "0.001132",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm1CoefficientB",
+            "summary": "Steinhart-Hart Temperature Equation coefficient B",
+            "required": true,
+            "x-id": 105,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.0002338",
+              "x-example": "0.0002338",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm2CoefficientB",
+            "summary": "Steinhart-Hart Temperature Equation  coefficient C",
+            "required": true,
+            "x-id": 106,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "8.780e-8",
+              "x-example": "8.780e-8",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm3CoefficientB",
+            "summary": "Steinhart-Hart Temperature Equation coefficient A",
+            "required": true,
+            "x-id": 107,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.001132",
+              "x-example": "0.001132",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm4CoefficientB",
+            "summary": "Steinhart-Hart Temperature Equation coefficient B",
+            "required": true,
+            "x-id": 108,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.0002338",
+              "x-example": "0.0002338",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm1CoefficientC",
+            "summary": "Steinhart-Hart Temperature Equation  coefficient C",
+            "required": true,
+            "x-id": 109,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "8.780e-8",
+              "x-example": "8.780e-8",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm2CoefficientC",
+            "summary": "Steinhart-Hart Temperature Equation coefficient A",
+            "required": true,
+            "x-id": 110,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.001132",
+              "x-example": "0.001132",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm3CoefficientC",
+            "summary": "Steinhart-Hart Temperature Equation coefficient B",
+            "required": true,
+            "x-id": 111,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "0.0002338",
+              "x-example": "0.0002338",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "therm4CoefficientC",
+            "summary": "Steinhart-Hart Temperature Equation  coefficient C",
+            "required": true,
+            "x-id": 112,
+            "x-groupid": 65,
+            "schema": {
+              "type": "number",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 1.2e-38,
+              "maximum": 3.4e+38,
+              "x-ctype": "float",
+              "x-default": "8.780e-8",
+              "x-example": "8.780e-8",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "dataloggingEnable",
+            "summary": "0 = disable, 1 = enable ",
+            "required": true,
+            "x-id": 113,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 1,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true
             }
           }
         ]

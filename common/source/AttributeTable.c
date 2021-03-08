@@ -43,7 +43,7 @@ typedef struct RwAttributesTag {
 	uint16_t advertisingInterval;
 	uint16_t advertisingDuration;
 	uint32_t passkey;
-	uint8_t lock;
+	bool lock;
 	uint32_t batterySenseInterval;
 	uint32_t temperatureSenseInterval;
 	uint8_t AggregationCount;
@@ -90,15 +90,15 @@ typedef struct RwAttributesTag {
 	float lowAnalog4Thresh2;
 	float analog4DeltaThresh;
 	uint8_t activeMode;
-	uint8_t useCodedPhy;
+	bool useCodedPhy;
 	int8_t txPower;
 	uint16_t networkId;
 	uint8_t configVersion;
 	uint8_t configType;
 	uint8_t hardwareMinorVersion;
-	float coefficientA;
-	float coefficientB;
-	float coefficientC;
+	float oldCoefficientA;
+	float oldCoefficientB;
+	float oldCoefficientC;
 	uint8_t thermistorConfig;
 	uint32_t temperatureAlarms;
 	uint32_t digitalAlarms;
@@ -115,6 +115,19 @@ typedef struct RwAttributesTag {
 	uint32_t analogSenseInterval;
 	uint8_t connectionTimeoutSec;
 	uint32_t settingsPasscode;
+	float therm1CoefficientA;
+	float therm2CoefficientA;
+	float therm3CoefficientA;
+	float therm4CoefficientA;
+	float therm1CoefficientB;
+	float therm2CoefficientB;
+	float therm3CoefficientB;
+	float therm4CoefficientB;
+	float therm1CoefficientC;
+	float therm2CoefficientC;
+	float therm3CoefficientC;
+	float therm4CoefficientC;
+	bool dataloggingEnable;
 	/* pyend */
 } RwAttribute_t;
 
@@ -178,9 +191,9 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.configVersion = 0,
 	.configType = 0,
 	.hardwareMinorVersion = 0,
-	.coefficientA = 0.001132,
-	.coefficientB = 0.0002338,
-	.coefficientC = 8.780e-8,
+	.oldCoefficientA = 0.001132,
+	.oldCoefficientB = 0.0002338,
+	.oldCoefficientC = 8.780e-8,
 	.thermistorConfig = 0,
 	.temperatureAlarms = 0,
 	.digitalAlarms = 0,
@@ -196,7 +209,20 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.shOffset = 273.15,
 	.analogSenseInterval = 0,
 	.connectionTimeoutSec = 30,
-	.settingsPasscode = 123456
+	.settingsPasscode = 123456,
+	.therm1CoefficientA = 0.001132,
+	.therm2CoefficientA = 0.0002338,
+	.therm3CoefficientA = 8.780e-8,
+	.therm4CoefficientA = 0.001132,
+	.therm1CoefficientB = 0.0002338,
+	.therm2CoefficientB = 8.780e-8,
+	.therm3CoefficientB = 0.001132,
+	.therm4CoefficientB = 0.0002338,
+	.therm1CoefficientC = 8.780e-8,
+	.therm2CoefficientC = 0.001132,
+	.therm3CoefficientC = 0.0002338,
+	.therm4CoefficientC = 8.780e-8,
+	.dataloggingEnable = 0
 	/* pyend */
 };
 
@@ -243,8 +269,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.resetCount = 0,
 	.bootloaderVersion = "0.0",
 	.upTime = 0,
-	.ge = 0.0,
-	.oe = 0.0,
+	.ge = 1.0,
+	.oe = 1.0,
 	.temperatureResult1 = 0,
 	.temperatureResult2 = 0,
 	.temperatureResult3 = 0,
@@ -262,7 +288,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.26",
+	.apiVersion = "1.28",
 	.qrtc = 0,
 	.tamperSwitchStatus = 0,
 	.connectionTimeoutSec = 30,
@@ -311,7 +337,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 20.0      , .max.ux = 10000.0    },
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
     [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
-    [5  ] = { RW_ATTRX(lock)                          , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [5  ] = { RW_ATTRX(lock)                          , u8 , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [8  ] = { RW_ATTRX(AggregationCount)              , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
@@ -364,7 +390,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [55 ] = { RW_ATTRX(lowAnalog4Thresh2)             , f  , y, y, y, y, y, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 4096.0     },
     [56 ] = { RW_ATTRX(analog4DeltaThresh)            , f  , y, y, y, y, y, n, AttributeValidator_float    , NULL                                      , .min.fx = 0.0       , .max.fx = 4096.0     },
     [57 ] = { RW_ATTRX(activeMode)                    , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [58 ] = { RW_ATTRX(useCodedPhy)                   , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [58 ] = { RW_ATTRX(useCodedPhy)                   , u8 , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [59 ] = { RW_ATTRX(txPower)                       , i8 , y, y, y, n, y, n, AttributeValidator_int8     , NULL                                      , .min.sx = -40.0     , .max.sx = 8.0        },
     [60 ] = { RW_ATTRX(networkId)                     , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
     [61 ] = { RW_ATTRX(configVersion)                 , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
@@ -372,9 +398,9 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [63 ] = { RW_ATTRX(hardwareMinorVersion)          , u8 , y, y, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 9.0        },
     [64 ] = { RO_ATTRX(ge)                            , f  , n, n, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = -5.0      , .max.fx = 3.4e+38    },
     [65 ] = { RO_ATTRX(oe)                            , f  , n, n, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = -16.0     , .max.fx = 3.4e+38    },
-    [66 ] = { RW_ATTRX(coefficientA)                  , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
-    [67 ] = { RW_ATTRX(coefficientB)                  , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
-    [68 ] = { RW_ATTRX(coefficientC)                  , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [66 ] = { RW_ATTRX(oldCoefficientA)               , f  , y, y, y, y, n, y, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [67 ] = { RW_ATTRX(oldCoefficientB)               , f  , y, y, y, y, n, y, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [68 ] = { RW_ATTRX(oldCoefficientC)               , f  , y, y, y, y, n, y, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [69 ] = { RW_ATTRX(thermistorConfig)              , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 15.0       },
     [70 ] = { RO_ATTRX(temperatureResult1)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult1       , .min.fx = -175.0    , .max.fx = 175.0      },
     [71 ] = { RO_ATTRX(temperatureResult2)            , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_temperatureResult2       , .min.fx = -175.0    , .max.fx = 175.0      },
@@ -406,7 +432,20 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [97 ] = { RW_ATTRX(analogSenseInterval)           , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [98 ] = { RO_ATTRX(tamperSwitchStatus)            , u8 , n, n, y, n, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [99 ] = { RO_ATTRX(connectionTimeoutSec)          , u8 , n, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
-    [100] = { RO_ATTRX(settingsPasscode)              , u32, n, y, n, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        }
+    [100] = { RO_ATTRX(settingsPasscode)              , u32, n, y, n, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [101] = { RW_ATTRX(therm1CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [102] = { RW_ATTRX(therm2CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [103] = { RW_ATTRX(therm3CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [104] = { RW_ATTRX(therm4CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [105] = { RW_ATTRX(therm1CoefficientB)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [106] = { RW_ATTRX(therm2CoefficientB)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [107] = { RW_ATTRX(therm3CoefficientB)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [108] = { RW_ATTRX(therm4CoefficientB)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [109] = { RW_ATTRX(therm1CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [110] = { RW_ATTRX(therm2CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [111] = { RW_ATTRX(therm3CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [112] = { RW_ATTRX(therm4CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [113] = { RW_ATTRX(dataloggingEnable)             , u8 , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          }
     /* pyend */
 };
 /* clang-format on */

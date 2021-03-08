@@ -399,15 +399,18 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw)
 	return result;
 }
 
-float AdcBt6_ConvertThermToTemperature(int32_t raw)
+float AdcBt6_ConvertThermToTemperature(int32_t raw, size_t channel)
 {
 	float calibrated = AdcBt6_ApplyThermistorCalibration(raw);
+	uint16_t coefficientA = ATTR_INDEX_therm1CoefficientA + channel;
+	uint16_t coefficientB = ATTR_INDEX_therm1CoefficientB + channel;
+	uint16_t coefficientC = ATTR_INDEX_therm1CoefficientC + channel;
 	return Steinhart_Hart(calibrated,
-			      Attribute_AltGetFloat(ATTR_INDEX_coefficientA,
+			      Attribute_AltGetFloat(coefficientA,
 						    THERMISTOR_S_H_A),
-			      Attribute_AltGetFloat(ATTR_INDEX_coefficientB,
+			      Attribute_AltGetFloat(coefficientB,
 						    THERMISTOR_S_H_B),
-			      Attribute_AltGetFloat(ATTR_INDEX_coefficientC,
+			      Attribute_AltGetFloat(coefficientC,
 						    THERMISTOR_S_H_C)) -
 	       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
 				     THERMISTOR_S_H_OFFSET);

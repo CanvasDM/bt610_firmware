@@ -71,7 +71,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 100
+#define ATTR_TABLE_SIZE 114
 
 /* pyend */
 
@@ -175,9 +175,9 @@ typedef enum
 #define ATTR_INDEX_hardwareMinorVersion                  63
 #define ATTR_INDEX_ge                                    64
 #define ATTR_INDEX_oe                                    65
-#define ATTR_INDEX_coefficientA                          66
-#define ATTR_INDEX_coefficientB                          67
-#define ATTR_INDEX_coefficientC                          68
+#define ATTR_INDEX_oldCoefficientA                       66
+#define ATTR_INDEX_oldCoefficientB                       67
+#define ATTR_INDEX_oldCoefficientC                       68
 #define ATTR_INDEX_thermistorConfig                      69
 #define ATTR_INDEX_temperatureResult1                    70
 #define ATTR_INDEX_temperatureResult2                    71
@@ -207,8 +207,22 @@ typedef enum
 #define ATTR_INDEX_qrtcLastSet                           95
 #define ATTR_INDEX_shOffset                              96
 #define ATTR_INDEX_analogSenseInterval                   97
-#define ATTR_INDEX_advertiseBegin                        98
-#define ATTR_INDEX_tamperSwitchStatus                    99
+#define ATTR_INDEX_tamperSwitchStatus                    98
+#define ATTR_INDEX_connectionTimeoutSec                  99
+#define ATTR_INDEX_settingsPasscode                      100
+#define ATTR_INDEX_therm1CoefficientA                    101
+#define ATTR_INDEX_therm2CoefficientA                    102
+#define ATTR_INDEX_therm3CoefficientA                    103
+#define ATTR_INDEX_therm4CoefficientA                    104
+#define ATTR_INDEX_therm1CoefficientB                    105
+#define ATTR_INDEX_therm2CoefficientB                    106
+#define ATTR_INDEX_therm3CoefficientB                    107
+#define ATTR_INDEX_therm4CoefficientB                    108
+#define ATTR_INDEX_therm1CoefficientC                    109
+#define ATTR_INDEX_therm2CoefficientC                    110
+#define ATTR_INDEX_therm3CoefficientC                    111
+#define ATTR_INDEX_therm4CoefficientC                    112
+#define ATTR_INDEX_dataloggingEnable                     113
 /* pyend */
 /* clang-format on */
 
@@ -229,6 +243,8 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
 int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
+int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite);				  
 int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
 int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,

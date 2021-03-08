@@ -101,8 +101,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t
 SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t
-SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-				     FwkMsg_t *pMsg);
+SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
@@ -391,8 +390,9 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	input1Config = input1Config >> DIGITAL_IN_BIT_SHIFT;
 	sensorTaskObject.digitalIn1Enabled = input1Config;
 	edgeTypeDin1 = GetEdgeType(sensorTaskObject.input1Alarm);
-		if (sensorTaskObject.digitalIn1Enabled == 1) {
-		BSP_ConfigureDigitalInputs(DIN1_MCU_PIN, GPIO_INPUT, edgeTypeDin1);
+	if (sensorTaskObject.digitalIn1Enabled == 1) {
+		BSP_ConfigureDigitalInputs(DIN1_MCU_PIN, GPIO_INPUT,
+					   edgeTypeDin1);
 		BSP_PinSet(DIN1_ENABLE_PIN, 1);
 	} else {
 		BSP_ConfigureDigitalInputs(DIN1_MCU_PIN, GPIO_DISCONNECTED,
@@ -400,23 +400,23 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		BSP_PinSet(DIN1_ENABLE_PIN, 0);
 	}
 
-/*Digital Input 2*/
-			  Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
+	/*Digital Input 2*/
+	Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
 		      sizeof(input2Config));
-			  	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
+	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
 	input2Config = (input2Config & DIGITAL_IN_ENABLE_MASK);
 	input2Config = input2Config >> DIGITAL_IN_BIT_SHIFT;
-	sensorTaskObject.digitalIn2Enabled = input2Config;	
+	sensorTaskObject.digitalIn2Enabled = input2Config;
 	edgeTypeDin2 = GetEdgeType(sensorTaskObject.input2Alarm);
-		if (sensorTaskObject.digitalIn2Enabled == 1) {
-		BSP_ConfigureDigitalInputs(DIN2_MCU_PIN, GPIO_INPUT, edgeTypeDin2);
+	if (sensorTaskObject.digitalIn2Enabled == 1) {
+		BSP_ConfigureDigitalInputs(DIN2_MCU_PIN, GPIO_INPUT,
+					   edgeTypeDin2);
 		BSP_PinSet(DIN2_ENABLE_PIN, 1);
 	} else {
 		BSP_ConfigureDigitalInputs(DIN2_MCU_PIN, GPIO_DISCONNECTED,
 					   edgeTypeDin2);
 		BSP_PinSet(DIN2_ENABLE_PIN, 0);
 	}
-
 
 	return DISPATCH_OK;
 }
@@ -581,6 +581,13 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		/*Enable the digital inputs*/
+		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
+				    (DIGITAL_IN_ENABLE_MASK |
+				     DIGITAL_IN_ALARM_MASK));
+		Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
+				    (DIGITAL_IN_ENABLE_MASK |
+				     DIGITAL_IN_ALARM_MASK));
 		break;
 	case CONFIG_TEMPERATURE:
 		/*Enable all the thermistors*/
@@ -769,7 +776,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 	if (config & BIT(channel)) {
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_THERMISTOR, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertThermToTemperature(raw);
+			result = AdcBt6_ConvertThermToTemperature(raw, channel);
 
 			sensorTaskObject.magnitudeOfTempDifference[channel] =
 				abs(result -
