@@ -82,11 +82,14 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg);
+static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
 static int UpdateName(void);
 static void ConnectionTimerStart(void);
 static void ConnectionTimerRestart(void);
+static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
@@ -129,6 +132,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
 	case FMC_SENSOR_EVENT:                return BleSensorMsgHandler;
+	case FMC_BLE_END_CONNECTION:          return ConnectionTimeoutHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */
@@ -224,8 +228,7 @@ static int BluetoothInit(void)
 
 	} while (0);
 
-	k_timer_init(&connectionTimer,ConnectionTimerCallbackIsr,
-		     NULL);
+	k_timer_init(&connectionTimer, ConnectionTimerCallbackIsr, NULL);
 
 	uint8_t activeMode = 0;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
@@ -342,6 +345,14 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
+static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg)
+{
+	RequestDisconnect(bto.conn);
+
+	return DISPATCH_OK;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -404,13 +415,25 @@ static void ConnectionTimerStart(void)
 		      sizeof(timeoutSeconds));
 
 	if (timeoutSeconds != 0) {
-		k_timer_start(&connectionTimer,
-			      K_SECONDS(timeoutSeconds), K_NO_WAIT);
+		k_timer_start(&connectionTimer, K_SECONDS(timeoutSeconds),
+			      K_NO_WAIT);
 	}
 }
 static void ConnectionTimerRestart(void)
 {
 	ConnectionTimerStart();
+}
+static void RequestDisconnect(struct bt_conn *ConnectionHandle)
+{
+	int r = 0;
+	if (ConnectionHandle != NULL) {
+		r = bt_conn_disconnect(ConnectionHandle,
+				       BT_HCI_ERR_REMOTE_USER_TERM_CONN);
+
+		if (r < 0) {
+			LOG_ERR("dissconnect error: %d", r);
+		}
+	}
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
@@ -418,6 +441,6 @@ static void ConnectionTimerRestart(void)
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
-	//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-	//			      FMC_BLE_END_ADVERTISING);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+				      FMC_BLE_END_CONNECTION);
 }

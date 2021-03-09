@@ -40,7 +40,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #endif
 
 #ifndef USER_IF_TASK_STACK_DEPTH
-#define USER_IF_TASK_STACK_DEPTH 1024
+#define USER_IF_TASK_STACK_DEPTH 2048
 #endif
 
 #ifndef USER_IF_TASK_QUEUE_DEPTH
@@ -281,7 +281,7 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
 #endif
 	/*Check the current state of the tamper switch*/
-	//TamperSwitchStatus();
+	TamperSwitchStatus();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -324,10 +324,19 @@ static int InitializeButtons(void)
 }
 static void TamperSwitchStatus(void)
 {
+
 	int v = BSP_PinGet(SW2_PIN);
 	if (v >= 0) {
 		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
+		if (v == 1) {
+			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+		}
+		else
+		{
+			red_led_off();
+		}
+		
 	}
 }
 
@@ -370,15 +379,7 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 2 (Tamper)");
 
-	int v = BSP_PinGet(SW2_PIN);
-	if (v >= 0) {
-		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
-		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
-		if (v == 1) {
-			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
-		}
-	}
-	//TamperSwitchStatus();
+	TamperSwitchStatus();
 	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
 }
