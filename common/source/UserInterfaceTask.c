@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include "lcz_pwm_led.h"
 #include "Attribute.h"
 #include "BspSupport.h"
+#include "Flags.h"
 
 #include "UserInterfaceTask.h"
 
@@ -39,7 +40,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #endif
 
 #ifndef USER_IF_TASK_STACK_DEPTH
-#define USER_IF_TASK_STACK_DEPTH 1024
+#define USER_IF_TASK_STACK_DEPTH 2048
 #endif
 
 #ifndef USER_IF_TASK_QUEUE_DEPTH
@@ -162,7 +163,7 @@ static const struct button_cfg BUTTON_CFG[] = {
 	BUTTON_CFG(1, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
 #endif
 #if DT_HAS_BUTTON_NODE(2)
-	BUTTON_CFG(2, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_FALLING),
+	BUTTON_CFG(2, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
 #endif
 #if DT_HAS_BUTTON_NODE(3)
 	BUTTON_CFG(3, GPIO_INPUT, GPIO_INT_EDGE_BOTH),
@@ -279,6 +280,8 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
 #endif
+	/*Check the current state of the tamper switch*/
+	TamperSwitchStatus();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -317,15 +320,23 @@ static int InitializeButtons(void)
 		LOG_ERR("Configuration failed for %s", BUTTON_CFG[i].label);
 	}
 
-	/*Check the current state of the tamper switch*/
-	TamperSwitchStatus();
 	return r;
 }
 static void TamperSwitchStatus(void)
 {
+
 	int v = BSP_PinGet(SW2_PIN);
 	if (v >= 0) {
-		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, v);
+		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
+		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
+		if (v == 1) {
+			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+		}
+		else
+		{
+			red_led_off();
+		}
+		
 	}
 }
 
@@ -367,7 +378,7 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 2 (Tamper)");
-	lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+
 	TamperSwitchStatus();
 	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
@@ -396,9 +407,8 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	lcz_led_blink(GREEN_LED, &EXIT_SHELF_MODE_PATTERN);
-	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
-				      FMC_BLE_START_ADVERTISING);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
+				      FMC_ENTER_ACTIVE_MODE);
 	return DISPATCH_OK;
 }
 

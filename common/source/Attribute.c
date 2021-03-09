@@ -899,8 +899,11 @@ static bool isReadable(attr_idx_t Index)
 static bool isWritable(attr_idx_t Index)
 {
 	bool r = false;
-	bool unlocked = ((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
 	AttributeEntry_t *p = &attrTable[Index];
+	/*
+	bool unlocked = ((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
+	*/
+	
 
 	if (p->writable) {
 		if (p->lockable) {
