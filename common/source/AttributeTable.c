@@ -210,7 +210,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.shOffset = 273.15,
 	.analogSenseInterval = 0,
 	.tamperSwitchStatus = 0,
-	.connectionTimeoutSec = 30,
+	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
 	.therm1CoefficientA = 0.001132,
 	.therm2CoefficientA = 0.0002338,
@@ -289,9 +289,9 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.28",
+	.apiVersion = "1.29",
 	.qrtc = 0,
-	.connectionTimeoutSec = 30,
+	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456
 	/* pyend */
 };
