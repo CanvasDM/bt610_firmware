@@ -32,7 +32,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "file_system_utilities.h"
 #include "laird_bluetooth.h"
 #include "Attribute.h"
-#include "qrtc.h"
+#include "lcz_qrtc.h"
 #include "Flags.h"
 
 #include "ControlTask.h"
@@ -195,9 +195,11 @@ static void RebootHandler(void)
 	Attribute_SetString(ATTR_INDEX_firmwareVersion, VERSION_STRING,
 			    strlen(VERSION_STRING));
 
-	uint32_t reason = nrf_power_resetreas_get(NRF_POWER);
-	const char *s = lbt_get_nrf52_reset_reason_string(reason);
-	nrf_power_resetreas_clear(NRF_POWER, reason);
+	uint32_t reset_reason = lbt_get_and_clear_nrf52_reset_reason_register();
+	const char *s =
+		lbt_get_nrf52_reset_reason_string_from_register(reset_reason);
+	LOG_WRN("reset reason: %s (%08X)", s, reset_reason);
+
 	Attribute_SetString(ATTR_INDEX_resetReason, s, strlen(s));
 
 	uint32_t count = 0;
@@ -212,7 +214,7 @@ static void RebootHandler(void)
 	if (valid) {
 		LOG_INF("Battery age: %u", pnird->battery_age);
 		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
-		Qrtc_SetEpoch(pnird->qrtc);
+		lcz_qrtc_set_epoch(pnird->qrtc);
 	} else {
 		LOG_WRN("No init ram data is not valid");
 		pnird->battery_age = 0;
@@ -237,7 +239,7 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	/* Read value from system because it should have less error
 	 * than seconds maintained by this function. */
-	pnird->qrtc = Qrtc_GetEpoch();
+	pnird->qrtc = lcz_qrtc_get_epoch();
 	Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
 
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);

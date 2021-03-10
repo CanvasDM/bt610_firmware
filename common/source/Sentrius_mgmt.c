@@ -18,7 +18,7 @@
 #include "Attribute.h"
 #include "UserInterfaceTask.h"
 #include "AdcBt6.h"
-#include "qrtc.h"
+#include "lcz_qrtc.h"
 #include "file_system_utilities.h"
 #include "Sentrius_mgmt.h"
 #include "HalfFloatDecoder.h"
@@ -562,7 +562,7 @@ int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
 
 	if (epoch < UINT32_MAX) {
 		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, epoch);
-		t = Qrtc_SetEpoch(epoch);
+		t = lcz_qrtc_set_epoch(epoch);
 	}
 
 	CborError err = 0;
@@ -576,7 +576,7 @@ int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_GetRtc(struct mgmt_ctxt *ctxt)
 {
-	int t = Qrtc_GetEpoch();
+	int t = lcz_qrtc_get_epoch();
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");

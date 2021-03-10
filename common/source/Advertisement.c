@@ -203,7 +203,7 @@ int Advertisement_Update(void)
 	ad.recordType = current.event.type;
 	ad.id = current.id;
 	ad.epoch = current.event.timestamp;
-	ad.data = current.event.data.u32;
+	ad.data = current.event.data;
 
 	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
 		      sizeof(configVersion));
