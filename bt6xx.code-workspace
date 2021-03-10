@@ -55,7 +55,8 @@
 			"xhash": "c",
 			"xtree": "c",
 			"cctype": "cpp",
-			"*.inc": "c"
+			"*.inc": "c",
+			"file_system_utilities.h": "c"
 		}
 	}
 }

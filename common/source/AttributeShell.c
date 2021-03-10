@@ -19,7 +19,7 @@
 #include "Attribute.h"
 #include "FrameworkIncludes.h"
 #include "file_system_utilities.h"
-#include "qrtc.h"
+#include "lcz_qrtc.h"
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -263,7 +263,7 @@ static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv)
 
 	if ((argc == 2) && (argv[1] != NULL)) {
 		qrtc = MAX((int)strtol(argv[1], NULL, 0), 0);
-		result = Qrtc_SetEpoch(qrtc);
+		result = lcz_qrtc_set_epoch(qrtc);
 		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, qrtc);
 		if (qrtc != result || r < 0) {
 			shell_error(shell, "Unable to set qrtc");
