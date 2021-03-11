@@ -30,6 +30,7 @@ enum FwkIdEnum {
 	FWK_ID_SENSOR_TASK,
 	FWK_ID_USER_IF_TASK,
 	FWK_ID_BLE_TASK,
+	FWK_ID_EVENT_TASK,
 	/* Reserved for framework (DO NOT DELETE, and it must be LAST) */
 	__FRAMEWORK_MAX_MSG_RECEIVERS
 };

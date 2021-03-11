@@ -31,6 +31,8 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "AlarmControl.h"
 #include "SensorTask.h"
 #include "Flags.h"
+#include "lcz_sensor_event.h"
+#include "lcz_event_manager.h"
 #include "AggregationCount.h"
 
 /******************************************************************************/
@@ -59,12 +61,14 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #else
 #error "Please set the correct spi device"
 #endif
+
 typedef enum {
 	NO_ALARM = 0,
 	FALLING_EDGE_ALARM,
 	RISING_EDGE_ALARM,
 	BOTH_EDGE_ALARM
 } digitalAlarm_t;
+
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
 	uint8_t localActiveMode;
@@ -126,6 +130,7 @@ static void InitializeIntervalTimers(void);
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
 static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
+static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
@@ -347,7 +352,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 		}
 	}
-	//}
 
 	return DISPATCH_OK;
 }
@@ -356,6 +360,8 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	DigitalInMsg_t *pSensorMsg = (DigitalInMsg_t *)pMsg;
+	SensorEventData_t eventAlarm;
+	uint32_t digitalAlarm = 0;
 
 	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
@@ -368,6 +374,10 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		UpdateDin2();
 		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 1, 1);
 	}
+	Attribute_Get(ATTR_INDEX_digitalAlarms, &digitalAlarm,
+		      sizeof(digitalAlarm));
+	eventAlarm.u32 = digitalAlarm;
+	SendEvent(SENSOR_EVENT_DIGITAL_ALARM, eventAlarm);		   
 
 	return DISPATCH_OK;
 }
@@ -791,6 +801,20 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 	}
 
 	return r;
+}
+static void SendEvent(SensorEventType_t type, SensorEventData_t data)
+{
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_EVENT_TRIGGER;
+		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
+		pMsgSend->header.rxId = FWK_ID_EVENT_TASK;
+		pMsgSend->eventType = type;
+		pMsgSend->eventData = data;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}
 }
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

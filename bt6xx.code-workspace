@@ -56,7 +56,12 @@
 			"xtree": "c",
 			"cctype": "cpp",
 			"*.inc": "c",
-			"file_system_utilities.h": "c"
+			"file_system_utilities.h": "c",
+			"attribute.h": "c",
+			"istream": "c",
+			"ostream": "c",
+			"string": "c",
+			"string_view": "c"
 		}
 	}
 }

@@ -24,20 +24,22 @@ include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
     ${CMAKE_SOURCE_DIR}/../common/source/Advertisement.c
+    ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
     ${CMAKE_SOURCE_DIR}/../common/source/AlarmControl.c
     ${CMAKE_SOURCE_DIR}/../common/source/AttributeTable.c
     ${CMAKE_SOURCE_DIR}/../common/source/Attribute.c
     ${CMAKE_SOURCE_DIR}/../common/source/AttributeValidator.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
+    ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
+    ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
+    ${CMAKE_SOURCE_DIR}/../common/source/Flags.c
+    ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
-    ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
-    ${CMAKE_SOURCE_DIR}/../common/source/EventLog.c
-    ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
-    ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
+    ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c       
 )
 
 if(CONFIG_TEST_MENU)
