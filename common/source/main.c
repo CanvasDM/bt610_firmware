@@ -23,7 +23,7 @@ static int disable_ds_1(const struct device *dev)
 {
 	ARG_UNUSED(dev);
 
-	sys_pm_ctrl_disable_state(SYS_POWER_STATE_DEEP_SLEEP_1);
+	//sys_pm_ctrl_disable_state(SYS_POWER_STATE_DEEP_SLEEP_1);
 	return 0;
 }
 SYS_INIT(disable_ds_1, PRE_KERNEL_2, 0);

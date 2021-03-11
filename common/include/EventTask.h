@@ -1,5 +1,5 @@
 /**
- * @file EventLog.h
+ * @file EventTask.h
  * @brief
  *
  * Copyright (c) 2020 Laird Connectivity
@@ -38,8 +38,9 @@ extern "C" {
  *
  * @retval
  */
-int EventLog_Initialize(void);
-int EventLog_Append(void);
+void EventTask_Initialize(void);
+
+void GetCurrentEvent(uint32_t *id, SensorEvent_t *event);
 int EventLog_Prepare(void);
 int EventLog_Ack(void);
 

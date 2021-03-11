@@ -341,6 +341,10 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	uint8_t activeMode = 0;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+	if (activeMode)
+    {
+		Advertisement_Update();
+	}
 
 	return DISPATCH_OK;
 }

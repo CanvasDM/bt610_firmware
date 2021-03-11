@@ -33,7 +33,7 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
-    ${CMAKE_SOURCE_DIR}/../common/source/EventLog.c
+    ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/Flags.c
     ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c

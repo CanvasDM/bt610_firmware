@@ -34,6 +34,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "Attribute.h"
 #include "lcz_qrtc.h"
 #include "Flags.h"
+#include "EventTask.h"
 
 #include "ControlTask.h"
 
@@ -178,6 +179,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	UserInterfaceTask_Initialize();
 	BleTask_Initialize();
 	SensorTask_Initialize();
+	EventTask_Initialize();
 
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();

@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "laird_bluetooth.h"
 #include "Attribute.h"
 #include "Advertisement.h"
+#include "EventTask.h"
 #include "Flags.h"
 
 /******************************************************************************/
@@ -58,6 +59,12 @@ enum {
 };
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
 static bool advertising;
+static const struct bt_data AD[] = {
+	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+	BT_DATA_BYTES(BT_DATA_UUID128_ALL, 0x36, 0xa3, 0x4d, 0x40, 0xb6, 0x70,
+		      0x69, 0xa6, 0xb1, 0x4e, 0x84, 0x9e, 0x60, 0x7c, 0x78,
+		      0x43),
+};
 static struct bt_le_adv_param bt_param =
 	BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
@@ -91,6 +98,7 @@ static struct k_timer advertisementDurationTimer;
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void createAdvertisingCoded(void);
+static SensorMsg_t CurrentEvent(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthCancelCb(struct bt_conn *conn);
@@ -199,6 +207,7 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
+	GetCurrentEvent(&current.id, &current.event);
 
 	ad.recordType = current.event.type;
 	ad.id = current.id;
@@ -255,8 +264,10 @@ int Advertisement_Start(void)
 	uint32_t advertDuration = 0;
 
 	if (!advertising) {
-		r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-				    ARRAY_SIZE(bt_rsp));
+		r = bt_le_ext_adv_start(
+			adv,
+			NULL); //bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+			//	    ARRAY_SIZE(bt_rsp));
 
 		advertising = (r == 0);
 		LOG_INF("Advertising start (%d)", r);
@@ -279,7 +290,7 @@ int Advertisement_ExtendedStart(void)
 	uint32_t advertDuration = 0;
 
 	if (!advertising) {
-		//r = bt_le_ext_adv_start(adv, &bt_extParam);
+		r = bt_le_ext_adv_start(adv, NULL);
 		advertising = (r == 0);
 		LOG_INF("ExtendedAdvert start (%d)", r);
 	}
@@ -326,24 +337,24 @@ void TestEventMsg(uint16_t event)
 void createAdvertisingCoded(void)
 {
 	int err = 0;
-	struct bt_le_adv_param param = BT_LE_ADV_PARAM_INIT(
-		BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV |
-			BT_LE_ADV_OPT_CODED,
-		BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL);
+	struct bt_le_adv_param param =
+		BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE,
+				     BT_GAP_ADV_FAST_INT_MIN_1,
+				     BT_GAP_ADV_FAST_INT_MIN_2, NULL);
 
-	//err = bt_le_ext_adv_create(&param, NULL, &adv);
+	err = bt_le_ext_adv_create(&param, NULL, &adv);
 	if (err) {
 		LOG_WRN("Failed to create advertiser set (%d)\n", err);
 	}
 
 	LOG_INF("Created adv: %p\n", adv);
 
-	//err = bt_le_ext_adv_set_data(adv, bt_extAd, ARRAY_SIZE(bt_extAd), NULL,
-	//			     0);
+	err = bt_le_ext_adv_set_data(adv, AD, ARRAY_SIZE(AD), NULL, 0);
 	if (err) {
 		LOG_WRN("Failed to set advertising data (%d)\n", err);
 	}
 }
+
 static char *ble_addr(struct bt_conn *conn)
 {
 	static char addr[BT_ADDR_LE_STR_LEN];

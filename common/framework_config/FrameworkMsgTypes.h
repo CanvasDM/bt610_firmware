@@ -17,6 +17,7 @@ extern "C" {
 /* Includes                                                                   */
 /******************************************************************************/
 #include "Framework.h"
+#include "lcz_sensor_event.h"
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
@@ -36,6 +37,12 @@ typedef struct {
 	int status;
 	uint16_t pin;
 } DigitalInMsg_t;
+
+typedef struct {
+	FwkMsgHeader_t header;
+	SensorEventType_t eventType;
+	SensorEventData_t eventData;
+} EventLogMsg_t;
 
 #ifdef __cplusplus
 }
