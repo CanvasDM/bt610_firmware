@@ -63,7 +63,6 @@ K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH,
 /******************************************************************************/
 static void EventTaskThread(void *, void *, void *);
 static uint32_t GetAdvertEventId(void);
-static void SetAdvertEventId(uint32_t id);
 static uint32_t GetEventTimestamp(uint32_t id);
 static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
@@ -108,44 +107,35 @@ void EventTask_Initialize(void)
 	eventTaskObject.advertisingEvent = 0;
 }
 
-void GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
+void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
 {
 	uint16_t eventCount = 0;
 	uint16_t eventIndex = 0;
 	SensorEvent_t *readEvent;
-	uint32_t advertId = eventTaskObject.advertisingEvent;
 
-	//*id = GetAdvertEventId();	
-	memcpy(id, &advertId, sizeof(uint32_t));
-	//event->timestamp = GetEventTimestamp(*id);
-	event->timestamp = eventTaskObject.timeStampBuffer[eventTaskObject.advertisingEvent];
-	readEvent = lcz_event_manager_get_next_event(event->timestamp, &eventCount, eventIndex);
-
-	
-	/*if(currentEvent.event == NULL)
-	{
-		LOG_WRN("Failed to set advertising event\n");
-	}*/
-		LOG_INF("Id: %d", id);
-		LOG_INF("adId: %d", advertId);
-		LOG_INF("Type: %d", readEvent->type);
-		LOG_INF("INTERNTime: %d", eventTaskObject.timeStampBuffer[eventTaskObject.advertisingEvent]);
-		LOG_INF("eventTime: %d", event->timestamp);
-		LOG_INF("readTime: %d", readEvent->timestamp);
-		memcpy(event, readEvent, sizeof(SensorEvent_t));
+	*id = GetAdvertEventId();
+	event->timestamp = GetEventTimestamp(*id);
+	readEvent = lcz_event_manager_get_next_event(event->timestamp,
+						     &eventCount, eventIndex);
+	memcpy(event, readEvent, sizeof(SensorEvent_t));
 }
 
-int EventLog_Prepare(void)
+uint32_t EventTask_RemainingEvents(void)
 {
-	// determine how many logs there are
-	// increment active log index
-	return -1;
+	uint32_t numberEvents;
+	if (eventTaskObject.advertisingEvent < eventTaskObject.eventID) {
+		numberEvents = eventTaskObject.eventID -
+			       eventTaskObject.advertisingEvent;
+	} else {
+		numberEvents = 0;
+	}
+
+	return (numberEvents);
 }
 
-int EventLog_Ack(void)
+void EventTask_IncrementEventId(void)
 {
-	// delete log
-	return -1;
+	eventTaskObject.advertisingEvent = eventTaskObject.advertisingEvent + 1;
 }
 
 /******************************************************************************/
@@ -163,10 +153,6 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static uint32_t GetAdvertEventId(void)
 {
 	return eventTaskObject.advertisingEvent;
-}
-static void SetAdvertEventId(uint32_t id)
-{
-	eventTaskObject.advertisingEvent = id;
 }
 static uint32_t GetEventTimestamp(uint32_t id)
 {
@@ -187,7 +173,6 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
 		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
 						   &pEventMsg->eventData);
-    LOG_INF("IN Time: %d", eventTaskObject.timeStampBuffer[eventTaskObject.eventID]);						   
 
 	eventTaskObject.eventID = eventTaskObject.eventID + 1;
 

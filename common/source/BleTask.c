@@ -68,6 +68,7 @@ typedef struct BleTaskTag {
 	bt_addr_le_t bdAddr;
 	struct bt_conn *conn;
 	bool lfs_mounted;
+	uint32_t durationTimeMs;
 } BleTaskObj_t;
 
 /******************************************************************************/
@@ -97,12 +98,14 @@ static void ConnectionTimerStart(void);
 static void ConnectionTimerRestart(void);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
+static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
 static struct k_timer connectionTimer;
+static struct k_timer durationTimer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -156,6 +159,7 @@ void BleTask_Initialize(void)
 	bto.msgTask.timerPeriodTicks = K_MSEC(0); /* 0 for one shot */
 	bto.msgTask.rxer.pQueue = &bleTaskQueue;
 
+	bto.durationTimeMs = 0;
 	Framework_RegisterTask(&bto.msgTask);
 
 	bto.msgTask.pTid =
@@ -235,6 +239,7 @@ static int BluetoothInit(void)
 	} while (0);
 
 	k_timer_init(&connectionTimer, ConnectionTimerCallbackIsr, NULL);
+	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
 
 	uint8_t activeMode = 0;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
@@ -328,9 +333,6 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			//case ATTR_INDEX_flags:
 			updateData = true;
 			break;
-		case ATTR_INDEX_advertisingDuration:
-			/*Todo: Change to match updates BT510 made*/
-			break;
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -338,7 +340,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	}
 
 	if (updateData == true) {
-		Advertisement_Update();
+		//Advertisement_Update();
 	}
 	return DISPATCH_OK;
 }
@@ -346,17 +348,28 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg)
 {
 	uint8_t activeMode = 0;
-	static SensorMsg_t current;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if (activeMode)
-    {
-		//Advertisement_Update();
-		GetCurrentEvent(&current.id, &current.event);
-		LOG_INF("Id: %d", current.id);
-		LOG_INF("Type: %d", current.event.type);
-		LOG_INF("Time: %d", current.event.timestamp);
+	if ((activeMode) && (EventTask_RemainingEvents() > 0)) {
+		/*if the durration timer is not already running start it*/
+		volatile uint32_t timerLeft = k_timer_remaining_get(&durationTimer);
+		if (timerLeft == 0) {
 
+			
+			Advertisement_Update();
 
+			uint32_t timeMilliSeconds = 0;
+
+			Attribute_Get(ATTR_INDEX_advertisingDuration,
+				      &timeMilliSeconds,
+				      sizeof(timeMilliSeconds));
+
+			if (timeMilliSeconds != 0) {
+				k_timer_start(&durationTimer,
+					      K_MSEC(timeMilliSeconds),
+					      K_NO_WAIT);						  
+			}
+
+		}
 	}
 
 	return DISPATCH_OK;
@@ -394,6 +407,10 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_DBG("Setting security status: %d", r);
 
 		ConnectionTimerStart();
+
+		/*Pause the duration timer if it is running*/
+		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
+
 	}
 }
 
@@ -406,6 +423,14 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bt_conn_unref(conn);
 	bto.conn = NULL;
 	Advertisement_Start();
+
+	/*restart the duration timer*/
+	if(bto.durationTimeMs > 0)
+	{
+		k_timer_start(&durationTimer,
+					      K_MSEC(bto.durationTimeMs),
+					      K_NO_WAIT);
+	}
 }
 
 /* Update name in Bluetooth stack.  Zephyr will handle updating name in
@@ -460,4 +485,13 @@ static void ConnectionTimerCallbackIsr(struct k_timer *timer_id)
 	UNUSED_PARAMETER(timer_id);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_END_CONNECTION);
+}
+static void DurationTimerCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+
+	EventTask_IncrementEventId();
+	
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+				      FMC_SENSOR_EVENT);
 }

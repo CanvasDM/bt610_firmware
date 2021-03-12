@@ -28,6 +28,7 @@ LOG_MODULE_REGISTER(TestMenu);
 
 #include "AdcBt6.h"
 #include "BspSupport.h"
+#include "EventTask.h"
 
 
 #include "FrameworkIncludes.h"
@@ -285,7 +286,7 @@ static int getEvent(const struct shell *shell, size_t argc, char **argv)
 	uint16_t count;
 	uint32_t id;
 
-	GetCurrentEvent(&id, &sensorEvent);
+	EventTask_GetCurrentEvent(&id, sensorEvent);
 
 
 

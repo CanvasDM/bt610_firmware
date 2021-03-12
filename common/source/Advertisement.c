@@ -98,12 +98,9 @@ static struct k_timer advertisementDurationTimer;
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void createAdvertisingCoded(void);
-static SensorMsg_t CurrentEvent(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthCancelCb(struct bt_conn *conn);
-
-static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -176,10 +173,6 @@ int Advertisement_Init(void)
 	//createAdvertisingCoded();
 	SetPasskey();
 	memset(&current, 0, sizeof(SensorMsg_t));
-
-	k_timer_init(&advertisementDurationTimer, DurationTimerCallbackIsr,
-		     NULL);
-
 	return r;
 }
 
@@ -207,7 +200,7 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
-	GetCurrentEvent(&current.id, &current.event);
+	EventTask_GetCurrentEvent(&current.id, &current.event);
 
 	ad.recordType = current.event.type;
 	ad.id = current.id;
@@ -370,14 +363,4 @@ static void AuthCancelCb(struct bt_conn *conn)
 	char *addr = ble_addr(conn);
 
 	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
-}
-
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/
-static void DurationTimerCallbackIsr(struct k_timer *timer_id)
-{
-	UNUSED_PARAMETER(timer_id);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-				      FMC_BLE_END_ADVERTISING);
 }
