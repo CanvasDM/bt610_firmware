@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(AlarmControl, LOG_LEVEL_DBG);
 #include "Attribute.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"
+#include "EventTask.h"
 #include "Flags.h"
 
 /******************************************************************************/
@@ -40,8 +41,7 @@ typedef enum {
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
-/*static void AlarmTypeHandler(SensorEventType_t alarmType, float temperature,
-			     float alarmThreshold);*/
+static void AlarmTypeHandler(SensorEventType_t alarmType);
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -78,8 +78,7 @@ int HighTempAlarmCheck(size_t channel)
 			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 
 		} else if (currentTemp >= highTempAlarm2) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
-					 currentTemp, highTempAlarm2);*/
+			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 			uint8_t highTemp2Bit =
 				HIGH_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
@@ -263,20 +262,34 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-/*static void AlarmTypeHandler(SensorEventType_t alarmType, float temperature,
-			     float alarmThreshold)
+static void AlarmTypeHandler(SensorEventType_t alarmType)
 {
-	LOG_DBG("Alarm %s at %d", GetSensorEventTypeString(alarmType),
-		alarmThreshold);
+	SensorEventData_t eventAlarm;
+	LOG_DBG("Alarm type %d", alarmType);
 
-	SensorMsg_t *pMsg = (SensorMsg_t *)BufferPool_Take(sizeof(SensorMsg_t));
-	if (pMsg != NULL) {
-		pMsg->header.msgCode = MSG_CODE_SENSOR;
-		pMsg->header.txId = FRAMEWORK_SENSOR_TASK_ID;
-		pMsg->header.rxId = FRAMEWORK_SENSOR_LOG_TASK_ID;
-		pMsg->event.timestamp = Rtc_SysTimeGetSeconds();
-		pMsg->event.data.temperatureCc = temperature;
-		pMsg->event.type = alarmType;
-		FRAMEWORK_MSG_SEND(pMsg);
+	if (alarmType == SENSOR_EVENT_TEMPERATURE_ALARM) {
+		uint32_t tempAlarm = 0;
+		Attribute_Get(ATTR_INDEX_temperatureAlarms, &tempAlarm,
+			      sizeof(tempAlarm));
+
+		eventAlarm.u32 = tempAlarm;
+	} else if (alarmType == SENSOR_EVENT_ANALOG_ALARM) {
+		uint32_t analogAlarm = 0;
+		Attribute_Get(ATTR_INDEX_analogAlarms, &analogAlarm,
+			      sizeof(analogAlarm));
+
+		eventAlarm.u32 = analogAlarm;
 	}
-}*/
+
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_EVENT_TRIGGER;
+		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
+		pMsgSend->header.rxId = FWK_ID_EVENT_TASK;
+		pMsgSend->eventType = alarmType;
+		pMsgSend->eventData = eventAlarm;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}
+}

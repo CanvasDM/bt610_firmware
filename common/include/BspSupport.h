@@ -71,7 +71,7 @@ int BSP_PinToggle(uint8_t pin);
 int BSP_PinGet(uint8_t pin);
 void BSP_DigitalPinsStatus(void);
 void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable, gpio_flags_t edge);
-
+void SendDigitalInputStatus(uint16_t pin, uint8_t status);
 #ifdef __cplusplus
 }
 #endif

@@ -173,7 +173,7 @@ int Advertisement_Init(void)
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
-	createAdvertisingCoded();
+	//createAdvertisingCoded();
 	SetPasskey();
 	memset(&current, 0, sizeof(SensorMsg_t));
 
@@ -264,10 +264,8 @@ int Advertisement_Start(void)
 	uint32_t advertDuration = 0;
 
 	if (!advertising) {
-		r = bt_le_ext_adv_start(
-			adv,
-			NULL); //bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-			//	    ARRAY_SIZE(bt_rsp));
+		r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+				    ARRAY_SIZE(bt_rsp));
 
 		advertising = (r == 0);
 		LOG_INF("Advertising start (%d)", r);

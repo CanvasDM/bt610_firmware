@@ -11,6 +11,11 @@
 #define LOG_LEVEL LOG_LEVEL_DBG
 LOG_MODULE_REGISTER(TestMenu);
 
+#include "lcz_sensor_event.h"
+#include "lcz_event_manager.h"
+#include "EventTask.h"
+#include "BspSupport.h"
+
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
@@ -23,7 +28,11 @@ LOG_MODULE_REGISTER(TestMenu);
 
 #include "AdcBt6.h"
 #include "BspSupport.h"
-#include "Advertisement.h"
+
+
+#include "FrameworkIncludes.h"
+
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -129,8 +138,7 @@ static int temp(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	int rc =
-		0; //sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
+	int rc = sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
 	return rc;
 }
 
@@ -224,14 +232,100 @@ static int cal(const struct shell *shell, size_t argc, char **argv)
 
 	return 0;
 }
-static int event(const struct shell *shell, size_t argc, char **argv)
+
+static int advertise(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int enentID = atoi(argv[1]);
-	TestEventMsg(enentID);
-	shell_print(shell, "Event: %d", enentID);
-	Advertisement_Update();
+	ARG_UNUSED(argv);
 
+	shell_print(shell, "Starting advertising . . .\n");
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+						      FWK_ID_USER_IF_TASK,
+						      FMC_EXIT_SHELF_MODE);
+	return 0;
+}
+
+uint8_t data = 1;
+
+static int addEvent(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	shell_print(shell, "Adding an event . . .\n");
+
+	SensorEventData_t sensorEventData;
+
+	sensorEventData.u32 = data;
+
+	
+
+	SendDigitalInputStatus(1, 1);
+
+
+	//lcz_event_manager_add_sensor_event(data,
+	//				&sensorEventData);
+	//data++;
+	
+
+
+	return 0;
+}
+
+static int getEvent(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	shell_print(shell, "Getting an event . . .\n");
+
+	int timestamp = atoi(argv[1]);
+
+	SensorEvent_t *sensorEvent;
+	uint16_t count;
+	uint32_t id;
+
+	GetCurrentEvent(&id, &sensorEvent);
+
+
+
+	
+	//sensorEvent = lcz_event_manager_get_next_event(timestamp,
+	//					&count, 0);
+
+	if (sensorEvent == NULL){
+		shell_print(shell, "There is no event at that timestamp . . .\n");
+	}
+	else{
+		shell_print(shell, "Found %d events at that timestamp, with index 0 value %d . . .\n",
+				count,sensorEvent->data.u32);
+	}
+	return 0;
+}
+
+static int i2cpull(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	shell_print(shell, "Getting an event . . .\n");
+
+	int state = atoi(argv[1]);
+
+	if (state){
+	
+		shell_print(shell, "Enabling I2C pullups . . .\n");
+		NRF_P0->PIN_CNF[26] &= ~0xC;
+		NRF_P0->PIN_CNF[26] |= 0xC;
+		NRF_P0->PIN_CNF[27] &= ~0xC;
+		NRF_P0->PIN_CNF[27] |= 0xC;
+	}
+	else{
+
+		shell_print(shell, "Disabling I2C pullups . . .\n");
+		NRF_P0->PIN_CNF[26] &= ~0xC;
+		NRF_P0->PIN_CNF[27] &= ~0xC;
+	}
 	return 0;
 }
 
@@ -259,8 +353,6 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 	SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DigitalOutputToggle),
 	SHELL_CMD(dinEnable, NULL, "Set DIN1_EN and DIN2_EN value",
 		  digitalEnable),
-	SHELL_CMD(thermEnable, NULL, "Set THERM_EN value",
-		  thermEnable),	  
 	SHELL_CMD(cal, NULL,
 		  "Calibrate Thermistor <c1 float> <c2 float>\n"
 		  "Example: test cal 220.7351 3.98e3",
@@ -268,9 +360,10 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 	SHELL_CMD(configure, NULL,
 		  "Set <number of samples> <delay between samples (ms)>",
 		  configure),
-	SHELL_CMD(event, NULL,
-		  "Trigger a event 0-35 to the device",
-		  event),	  
+	SHELL_CMD(advertise, NULL, "Advertises . . .",advertise),
+	SHELL_CMD(addevent, NULL, "Adds an event . . .",addEvent),
+	SHELL_CMD(getevent, NULL, "Adds an event . . .",getEvent),
+	SHELL_CMD(i2cpull, NULL, "Configures I2C pullups . . .",i2cpull),
 
 	SHELL_SUBCMD_SET_END);
 

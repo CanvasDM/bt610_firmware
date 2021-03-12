@@ -36,12 +36,18 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "lcz_params.h"
 #include "Attribute.h"
 #include "BleTask.h"
+#include "EventTask.h"
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
 K_MUTEX_DEFINE(mount_mutex);
 
+typedef struct {
+	SensorEvent_t event;
+	uint32_t id;
+
+} SensorMsg_t;
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
@@ -340,10 +346,17 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					    FwkMsg_t *pMsg)
 {
 	uint8_t activeMode = 0;
+	static SensorMsg_t current;
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
 	if (activeMode)
     {
-		Advertisement_Update();
+		//Advertisement_Update();
+		GetCurrentEvent(&current.id, &current.event);
+		LOG_INF("Id: %d", current.id);
+		LOG_INF("Type: %d", current.event.type);
+		LOG_INF("Time: %d", current.event.timestamp);
+
+
 	}
 
 	return DISPATCH_OK;

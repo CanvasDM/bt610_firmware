@@ -121,11 +121,18 @@ void GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
 	event->timestamp = eventTaskObject.timeStampBuffer[eventTaskObject.advertisingEvent];
 	readEvent = lcz_event_manager_get_next_event(event->timestamp, &eventCount, eventIndex);
 
-	memcpy(event, readEvent, sizeof(SensorEvent_t));
+	
 	/*if(currentEvent.event == NULL)
 	{
 		LOG_WRN("Failed to set advertising event\n");
 	}*/
+		LOG_INF("Id: %d", id);
+		LOG_INF("adId: %d", advertId);
+		LOG_INF("Type: %d", readEvent->type);
+		LOG_INF("INTERNTime: %d", eventTaskObject.timeStampBuffer[eventTaskObject.advertisingEvent]);
+		LOG_INF("eventTime: %d", event->timestamp);
+		LOG_INF("readTime: %d", readEvent->timestamp);
+		memcpy(event, readEvent, sizeof(SensorEvent_t));
 }
 
 int EventLog_Prepare(void)
@@ -180,6 +187,7 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
 		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
 						   &pEventMsg->eventData);
+    LOG_INF("IN Time: %d", eventTaskObject.timeStampBuffer[eventTaskObject.eventID]);						   
 
 	eventTaskObject.eventID = eventTaskObject.eventID + 1;
 

@@ -200,6 +200,7 @@ int AttributePrepare_batteryVoltageMv(void)
 {
 	int16_t raw = 0;
 	int32_t mv = 0;
+	SensorEventData_t eventAlarm;
 	int r = AdcBt6_ReadBatteryMv(&raw, &mv);
 
 	if (r >= 0) {
@@ -208,11 +209,11 @@ int AttributePrepare_batteryVoltageMv(void)
 			//event_manager_add_sensor_event(
 			//	SENSOR_EVENT_BATTERY_GOOD,
 			//	SensorEventData_t * pSensorEventData);
+			
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
 		} else {
-			//	event_manager_add_sensor_event(
-			//		SENSOR_EVENT_BATTERY_BAD,
-			//		SensorEventData_t * pSensorEventData);
+			eventAlarm.s32 = mv;
+			SendEvent(SENSOR_EVENT_BATTERY_BAD, eventAlarm);
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
 		}
 	}
