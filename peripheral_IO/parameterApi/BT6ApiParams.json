@@ -912,6 +912,7 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
+              "x-broadcast": true,
               "x-readable": true
             }
           },
@@ -933,6 +934,7 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
+              "x-broadcast": true,
               "x-readable": true
             }
           },
@@ -2725,6 +2727,7 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
+              "x-broadcast": true,
               "x-readable": true
             }
           },

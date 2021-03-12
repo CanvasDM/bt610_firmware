@@ -206,9 +206,8 @@ int AttributePrepare_batteryVoltageMv(void)
 	if (r >= 0) {
 		r = Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
 		if (mv > BATTERY_BAD_VOLTAGE) {
-			//event_manager_add_sensor_event(
-			//	SENSOR_EVENT_BATTERY_GOOD,
-			//	SensorEventData_t * pSensorEventData);
+			eventAlarm.s32 = mv;
+			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
 			
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
 		} else {
@@ -341,11 +340,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
-		case ATTR_INDEX_AggregationCount:
-			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-			//			      FWK_ID_SENSOR_TASK,
-			//			      FMC_ENTER_ACTIVE_MODE);
-			break;
 		case ATTR_INDEX_settingsPasscode:
 			//SensorOutput1Control();
 		default:
