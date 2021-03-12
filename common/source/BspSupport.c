@@ -41,7 +41,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 gpio_port_pins_t pins);
 
 static void ConfigureOutputs(void);
-static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
+//static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -172,7 +172,7 @@ static void ConfigureOutputs(void)
 	gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN),
 			   GPIO_OUTPUT_LOW);
 }
-static void SendDigitalInputStatus(uint16_t pin, uint8_t status)
+void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 {
 	DigitalInMsg_t *pMsgSend =
 		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));
