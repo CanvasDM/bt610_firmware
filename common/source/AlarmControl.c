@@ -67,8 +67,7 @@ int HighTempAlarmCheck(size_t channel)
 		flagTempBit = FLAG_TEMP_ALARM_START_BIT + channel;
 
 		if (currentTemp >= highTempAlarm1) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
-					 currentTemp, highTempAlarm1);*/
+			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 			uint8_t highTemp1Bit =
 				HIGH_THRESH_1 + (NUMBER_ALARM_TYPES * channel);
 
@@ -108,8 +107,7 @@ int LowTempAlarmCheck(size_t channel)
 		flagTempBit = FLAG_TEMP_ALARM_START_BIT + channel;
 
 		if (currentTemp <= lowTempAlarm1) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
-					 currentTemp, lowTempAlarm1);*/
+			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 			uint8_t lowTemp1Bit =
 				LOW_THRESH_1 + (NUMBER_ALARM_TYPES * channel);
 
@@ -119,8 +117,7 @@ int LowTempAlarmCheck(size_t channel)
 			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 
 		} else if (currentTemp <= lowTempAlarm2) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
-					 currentTemp, lowTempAlarm2);*/
+			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 			uint8_t lowTemp2Bit =
 				LOW_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
@@ -140,8 +137,7 @@ int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 
 	flagTempBit = FLAG_TEMP_ALARM_START_BIT + channel;
 	if (tempDifference > threshold) {
-		/*AlarmTypeHandler(SENSOR_EVENT_ALARM_DELTA_TEMP,
-				 pObj->currentTemp, threshold);*/
+		AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 
 		uint8_t deltaBit =
 			DELTA_THRESH + (NUMBER_ALARM_TYPES * channel);
@@ -172,8 +168,7 @@ int HighAnalogAlarmCheck(size_t channel)
 	if (r == 0) {
 		flagAnalogBit = FLAG_ANALOG_ALARM_START_BIT + channel;
 		if (currentAnalogValue >= highAnalogAlarm1) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
-					 currentAnalog, highAnalogAlarm1);*/
+			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 			uint8_t highAnalog1Bit =
 				HIGH_THRESH_1 + (NUMBER_ALARM_TYPES * channel);
 
@@ -183,8 +178,7 @@ int HighAnalogAlarmCheck(size_t channel)
 			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 
 		} else if (currentAnalogValue >= highAnalogAlarm2) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
-					 currentAnalog, highAnalogAlarm2);*/
+			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 			uint8_t highAnalog2Bit =
 				HIGH_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
@@ -213,8 +207,7 @@ int LowAnalogAlarmCheck(size_t channel)
 	if (r == 0) {
 		flagAnalogBit = FLAG_ANALOG_ALARM_START_BIT + channel;
 		if (currentAnalogValue <= lowAnalogAlarm1) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_1,
-					 currentAnalog, lowAnalogAlarm1);*/
+			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 			uint8_t lowAnalog1Bit =
 				LOW_THRESH_1 + (NUMBER_ALARM_TYPES * channel);
 
@@ -224,8 +217,7 @@ int LowAnalogAlarmCheck(size_t channel)
 			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 
 		} else if (currentAnalogValue <= lowAnalogAlarm2) {
-			/*AlarmTypeHandler(SENSOR_EVENT_ALARM_HIGH_TEMP_2,
-					 currentAnalog, lowAnalogAlarm2);*/
+			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 			uint8_t lowAnalog2Bit =
 				LOW_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
@@ -246,8 +238,7 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 
 	flagAnalogBit = FLAG_ANALOG_ALARM_START_BIT + channel;
 	if (analogDifference > threshold) {
-		/*AlarmTypeHandler(SENSOR_EVENT_ALARM_DELTA_ANALOG,
-				 pObj->currentAnalog, threshold);*/
+		AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
 		uint8_t deltaBit =
 			DELTA_THRESH + (NUMBER_ALARM_TYPES * channel);
