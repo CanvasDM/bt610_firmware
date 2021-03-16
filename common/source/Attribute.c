@@ -173,7 +173,7 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	memset(pValue, 0, ValueLength);
-	size_t size = MIN(attrTable[Index].size, ValueLength);
+	size_t size;
 	int r = -EPERM;
 
 	if (isValid(Index)) {
@@ -181,6 +181,7 @@ int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 			r = PrepareForRead(Index);
 			if (r >= 0) {
 				TAKE_MUTEX(attr_mutex);
+				size = MIN(attrTable[Index].size, ValueLength);
 				memcpy(pValue, attrTable[Index].pData, size);
 				r = size;
 				GIVE_MUTEX(attr_mutex);
@@ -305,13 +306,16 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
 	int r = -EPERM;
+	AttrType_t type = attrTable[Index].type;
 
 	if (isValid(Index)) {
-		if (attrTable[Index].type == ATTR_TYPE_U32) {
+		if (type == ATTR_TYPE_U32 || type == ATTR_TYPE_U16 ||
+		    type == ATTR_TYPE_U8) {
 			r = PrepareForRead(Index);
 			if (r >= 0) {
 				TAKE_MUTEX(attr_mutex);
-				*pValue = *((uint32_t *)attrTable[Index].pData);
+				memcpy(pValue, attrTable[Index].pData,
+				       attrTable[Index].size);
 				r = 0;
 				GIVE_MUTEX(attr_mutex);
 			}
@@ -324,13 +328,28 @@ int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
 	int r = -EPERM;
+	void *pData = attrTable[Index].pData;
+	AttrType_t type = attrTable[Index].type;
 
 	if (isValid(Index)) {
-		if (attrTable[Index].type == ATTR_TYPE_S32) {
+		if (type == ATTR_TYPE_S32 || type == ATTR_TYPE_S16 ||
+		    type == ATTR_TYPE_S8) {
 			r = PrepareForRead(Index);
 			if (r >= 0) {
 				TAKE_MUTEX(attr_mutex);
-				*pValue = *((int32_t *)attrTable[Index].pData);
+				/* sign extend */
+				switch (attrTable[Index].size) {
+				case 1:
+					*pValue = (int32_t)(*((int8_t *)pData));
+					break;
+				case 2:
+					*pValue =
+						(int32_t)(*((int16_t *)pData));
+					break;
+				default:
+					*pValue = *(int32_t *)pData;
+					break;
+				}
 				r = 0;
 				GIVE_MUTEX(attr_mutex);
 			}
@@ -361,35 +380,32 @@ int Attribute_GetFloat(float *pValue, attr_idx_t Index)
 uint32_t Attribute_AltGetUint32(attr_idx_t Index, uint32_t Default)
 {
 	uint32_t v = Default;
-	if (isValid(Index)) {
-		TAKE_MUTEX(attr_mutex);
-		v = 0;
-		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
-		GIVE_MUTEX(attr_mutex);
+	int r = Attribute_GetUint32(&v, Index);
+
+	if (r != 0) {
+		v = Default;
 	}
 	return v;
 }
 
 int32_t Attribute_AltGetSigned32(attr_idx_t Index, int32_t Default)
 {
-	int32_t v = Default;
-	if (isValid(Index)) {
-		TAKE_MUTEX(attr_mutex);
-		v = 0;
-		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
-		GIVE_MUTEX(attr_mutex);
+	int32_t v;
+	int r = Attribute_GetSigned32(&v, Index);
+
+	if (r != 0) {
+		v = Default;
 	}
 	return v;
 }
 
 float Attribute_AltGetFloat(attr_idx_t Index, float Default)
 {
-	float v = Default;
-	if (isValid(Index)) {
-		TAKE_MUTEX(attr_mutex);
-		v = 0.0;
-		memcpy(&v, attrTable[Index].pData, attrTable[Index].size);
-		GIVE_MUTEX(attr_mutex);
+	float v;
+	int r = Attribute_GetFloat(&v, Index);
+
+	if (r != 0) {
+		v = Default;
 	}
 	return v;
 }
