@@ -26,6 +26,7 @@ typedef size_t attr_idx_t;
 
 typedef enum {
 	ATTR_TYPE_UNKNOWN = 0,
+	ATTR_TYPE_BOOL,
 	ATTR_TYPE_U8,
 	ATTR_TYPE_U16,
 	ATTR_TYPE_U32,
@@ -71,7 +72,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 114
+#define ATTR_TABLE_SIZE 115
 
 /* pyend */
 
@@ -118,8 +119,8 @@ typedef enum
 #define ATTR_INDEX_batterySenseInterval                  6
 #define ATTR_INDEX_temperatureSenseInterval              7
 #define ATTR_INDEX_AggregationCount                      8
-#define ATTR_INDEX_digitalOutput1Enable                  9
-#define ATTR_INDEX_digitalOutput2Enable                  10
+#define ATTR_INDEX_digitalOutput1State                   9
+#define ATTR_INDEX_digitalOutput2State                   10
 #define ATTR_INDEX_firmwareVersion                       11
 #define ATTR_INDEX_resetReason                           12
 #define ATTR_INDEX_bluetoothAddress                      13
@@ -223,6 +224,7 @@ typedef enum
 #define ATTR_INDEX_therm3CoefficientC                    111
 #define ATTR_INDEX_therm4CoefficientC                    112
 #define ATTR_INDEX_dataloggingEnable                     113
+#define ATTR_INDEX_factoryResetEnable                    114
 /* pyend */
 /* clang-format on */
 
