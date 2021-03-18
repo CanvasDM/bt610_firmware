@@ -280,6 +280,9 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	LOG_WRN("Factory Reset");
 	Attribute_FactoryReset();
+	/*Need reset to init all the values*/
+    FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
+				      FMC_SOFTWARE_RESET);
 	return DISPATCH_OK;
 }
 
