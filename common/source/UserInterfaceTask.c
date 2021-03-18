@@ -429,10 +429,10 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	uint32_t factoryResetEnabled = 0;
+	uint8_t factoryResetEnabled = 0;
 	DispatchResult_t result;
-	Attribute_GetUint32(&factoryResetEnabled,
-			    ATTR_INDEX_factoryResetEnable);
+	Attribute_Get(ATTR_INDEX_factoryResetEnable, &factoryResetEnabled,
+			    sizeof(factoryResetEnabled));
 	if (factoryResetEnabled == 1) {
 		/* yellow */
 		lcz_led_blink(GREEN_LED, &FACTORY_RESET_PATTERN);
