@@ -330,10 +330,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			SensorConfigChange();
 			break;
 
-		case ATTR_INDEX_digitalOutput1Enable:
+		case ATTR_INDEX_digitalOutput1State:
 			SensorOutput1Control();
 			break;
-		case ATTR_INDEX_digitalOutput2Enable:
+		case ATTR_INDEX_digitalOutput2State:
 			SensorOutput2Control();
 			break;
 		case ATTR_INDEX_activeMode:
@@ -631,7 +631,7 @@ static void SensorConfigChange(void)
 static void SensorOutput1Control()
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput1Enable, &outputStatus,
+	Attribute_Get(ATTR_INDEX_digitalOutput1State, &outputStatus,
 		      sizeof(outputStatus));
 
 	/*Need to inverse the status logic to control the FET*/
@@ -640,7 +640,7 @@ static void SensorOutput1Control()
 static void SensorOutput2Control()
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput2Enable, &outputStatus,
+	Attribute_Get(ATTR_INDEX_digitalOutput2State, &outputStatus,
 		      sizeof(outputStatus));
 
 	/*Need to inverse the status logic to control the FET*/

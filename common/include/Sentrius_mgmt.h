@@ -36,6 +36,8 @@ mgmt_handler_fn Sentrius_mgmt_SetRtc;
 mgmt_handler_fn Sentrius_mgmt_GetRtc;
 mgmt_handler_fn Sentrius_mgmt_LoadParameterFile;
 mgmt_handler_fn Sentrius_mgmt_DumpParameterFile;
+mgmt_handler_fn Sentrius_mgmt_PrepareLog;
+mgmt_handler_fn Sentrius_mgmt_AckLog;
 /* pyend */
 
 /**
@@ -57,6 +59,8 @@ mgmt_handler_fn Sentrius_mgmt_DumpParameterFile;
 #define SENTRIUS_MGMT_ID_GET_RTC                               8
 #define SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE                   9
 #define SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE                   10
+#define SENTRIUS_MGMT_ID_PREPARE_LOG                           11
+#define SENTRIUS_MGMT_ID_ACK_LOG                               12
 /* pyend */
 /* clang-format on */
 
