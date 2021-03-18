@@ -167,6 +167,7 @@ static struct mgmt_group sentrius_mgmt_group = {
 /* These are placeholders for data read from CBOR messages */
 static long long unsigned int paramUint;
 static long long int paramIint;
+static bool paramBool;
 static char paramString[ATTR_MAX_STR_SIZE];
 static float paramFloat;
 
@@ -715,6 +716,11 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	attrs->nodefault = true;
 
 	switch (parameterType) {
+	case ATTR_TYPE_BOOL:
+		paramIint = UCHAR_MAX;
+		attrs->type = CborAttrBooleanType;
+		attrs->addr.boolean = &paramBool;
+		break;	
 	case ATTR_TYPE_S8:
 	case ATTR_TYPE_S16:
 	case ATTR_TYPE_S32:

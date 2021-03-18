@@ -103,6 +103,7 @@ static void UserIfTaskThread(void *, void *, void *);
 
 static int InitializeButtons(void);
 static void TamperSwitchStatus(void);
+static void SendUIEvent(SensorEventType_t type, SensorEventData_t data);
 
 static void Button1HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins);
@@ -324,22 +325,35 @@ static int InitializeButtons(void)
 }
 static void TamperSwitchStatus(void)
 {
-
 	int v = BSP_PinGet(SW2_PIN);
 	if (v >= 0) {
 		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
+			SensorEventData_t eventTamper;
 			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
-		}
-		else
-		{
+			/*Send Event Message*/
+			eventTamper.u16 = v;
+			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
+		} else {
 			red_led_off();
 		}
-		
 	}
 }
+static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
+{
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
 
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_EVENT_TRIGGER;
+		pMsgSend->header.txId = FWK_ID_USER_IF_TASK;
+		pMsgSend->header.rxId = FWK_ID_EVENT_TASK;
+		pMsgSend->eventType = type;
+		pMsgSend->eventData = data;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}
+}
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
 static void green_led_on(void)
 {
@@ -380,7 +394,6 @@ static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	LOG_DBG("Button 2 (Tamper)");
 
 	TamperSwitchStatus();
-	/*TODO: Send Event Message*/
 	return DISPATCH_OK;
 }
 
@@ -416,12 +429,24 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	/* yellow */
-	lcz_led_blink(GREEN_LED, &FACTORY_RESET_PATTERN);
-	lcz_led_blink(RED_LED, &FACTORY_RESET_PATTERN);
-	/* Forward to control task (instead of broadcasting from ISR) */
-	FRAMEWORK_MSG_SEND_TO(FWK_ID_CONTROL_TASK, pMsg);
-	return DISPATCH_DO_NOT_FREE;
+	uint32_t factoryResetEnabled = 0;
+	DispatchResult_t result;
+	Attribute_GetUint32(&factoryResetEnabled,
+			    ATTR_INDEX_factoryResetEnable);
+	if (factoryResetEnabled == 1) {
+		/* yellow */
+		lcz_led_blink(GREEN_LED, &FACTORY_RESET_PATTERN);
+		lcz_led_blink(RED_LED, &FACTORY_RESET_PATTERN);
+		/* Forward to control task (instead of broadcasting from ISR) */
+		FRAMEWORK_MSG_SEND_TO(FWK_ID_CONTROL_TASK, pMsg);
+		result = DISPATCH_DO_NOT_FREE;
+	} else {
+		/* red, do not perform reset */
+		lcz_led_blink(RED_LED, &FACTORY_RESET_PATTERN);
+		result = DISPATCH_OK;
+	}
+
+	return result;
 }
 
 /******************************************************************************/
