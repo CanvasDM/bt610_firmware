@@ -189,6 +189,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	int32_t intData;
 	uint32_t uintData;
 	float floatData;
+	bool boolData;
 	char bufferData[ATTR_MAX_STR_SIZE];
 	int getResult = -1;
 	struct cbor_attr_t params_value[
@@ -239,6 +240,12 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;
+	case CborAttrBooleanType:
+		getResult = 
+			Attribute_Get(paramID, &boolData, sizeof(boolData));
+		err |= cbor_encode_boolean(&ctxt->encoder, boolData);
+		break;
+
 	default:
 		/* No other types are supported */
 		return MGMT_ERR_EINVAL;
@@ -787,6 +794,11 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 	case CborAttrFloatType:
 		status = Attribute_Set(id, Attribute_GetType(id),
 				       attrs->addr.fval, sizeof(float));
+		break;
+
+	case CborAttrBooleanType:
+		status = Attribute_Set(id, Attribute_GetType(id),
+				       attrs->addr.boolean, sizeof(bool));
 		break;
 
 	default:
