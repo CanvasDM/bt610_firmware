@@ -229,7 +229,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.therm3CoefficientC = 8.780e-8,
 	.therm4CoefficientC = 8.780e-8,
 	.dataloggingEnable = 0,
-	.factoryResetEnable = 0
+	.factoryResetEnable = 1
 	/* pyend */
 };
 
@@ -274,7 +274,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.bootloaderVersion = "0.0",
 	.upTime = 0,
 	.ge = 1.0,
-	.oe = 1.0,
+	.oe = 0.0,
 	.temperatureResult1 = 0,
 	.temperatureResult2 = 0,
 	.temperatureResult3 = 0,
@@ -292,7 +292,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.31",
+	.apiVersion = "1.32",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456
