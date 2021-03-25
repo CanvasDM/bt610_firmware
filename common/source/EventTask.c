@@ -19,6 +19,7 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #include "FrameworkIncludes.h"
 #include "EventTask.h"
 #include "Flags.h"
+#include "Attribute.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 
@@ -167,17 +168,23 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
+	bool dataEnable;
 
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 
-	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
-		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
-						   &pEventMsg->eventData);
+	/*Check if datalogging needs to be done or not*/
+	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataEnable,
+		      sizeof(dataEnable));
+	if (dataEnable == true) {
+		eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
+			lcz_event_manager_add_sensor_event(
+				pEventMsg->eventType, &pEventMsg->eventData);
 
-	eventTaskObject.eventID = eventTaskObject.eventID + 1;
+		eventTaskObject.eventID = eventTaskObject.eventID + 1;
 
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
-				      FMC_SENSOR_EVENT);
+		FRAMEWORK_MSG_CREATE_AND_SEND(
+			FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK, FMC_SENSOR_EVENT);
+	}
 
 	return DISPATCH_OK;
 }

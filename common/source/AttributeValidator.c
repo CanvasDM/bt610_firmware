@@ -250,6 +250,117 @@ int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 	}
 	return r;
 }
+/**
+ * @brief Control Point Validators
+ * Don't check if value is the same because this is a control point.
+ */
+int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	uint32_t value = *(uint32_t *)pValue;
+
+	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
+	    (pEntry->min.ux == pEntry->max.ux)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((uint32_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
+
+int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	uint32_t value = (uint32_t)(*(uint16_t *)pValue);
+
+	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
+	    (pEntry->min.ux == pEntry->max.ux)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((uint16_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
+
+int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			   bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	uint32_t value = (uint32_t)(*(uint8_t *)pValue);
+
+	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
+	    (pEntry->min.ux == pEntry->max.ux)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((uint8_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
+
+int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			     bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	int32_t value = *(int32_t *)pValue;
+
+	if (((value >= pEntry->min.sx) && (value <= pEntry->max.sx)) ||
+	    (pEntry->min.sx == pEntry->max.sx)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((int32_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
+
+int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			     bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	int32_t value = (int32_t)(*(int16_t *)pValue);
+
+	if (((value >= pEntry->min.sx) && (value <= pEntry->max.sx)) ||
+	    (pEntry->min.sx == pEntry->max.sx)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((int16_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
+
+int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite)
+{
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	int32_t value = (int32_t)(*(int8_t *)pValue);
+
+	if (((value >= pEntry->min.sx) && (value <= pEntry->max.sx)) ||
+	    (pEntry->min.sx == pEntry->max.sx)) {
+		if (DoWrite) {
+			pEntry->modified = true;
+			*((int8_t *)pEntry->pData) = value;
+		}
+		r = 0;
+	}
+	return r;
+}
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */

@@ -263,6 +263,19 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 			   size_t Length, bool DoWrite);
 
+int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			   bool DoWrite);
+int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			     bool DoWrite);			   
+int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			     bool DoWrite);			   
+int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
 int AttributePrepare_temperatureResult1(void);

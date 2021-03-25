@@ -208,7 +208,7 @@ int AttributePrepare_batteryVoltageMv(void)
 		if (mv > BATTERY_BAD_VOLTAGE) {
 			eventAlarm.s32 = mv;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
-			
+
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
 		} else {
 			eventAlarm.s32 = mv;
@@ -341,7 +341,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
 		case ATTR_INDEX_settingsPasscode:
-			//SensorOutput1Control();
 		default:
 			// don't do anything - this is a broadcast
 			break;
@@ -372,7 +371,7 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	Attribute_Get(ATTR_INDEX_digitalAlarms, &digitalAlarm,
 		      sizeof(digitalAlarm));
 	eventAlarm.u32 = digitalAlarm;
-	SendEvent(SENSOR_EVENT_DIGITAL_ALARM, eventAlarm);		   
+	SendEvent(SENSOR_EVENT_DIGITAL_ALARM, eventAlarm);
 
 	return DISPATCH_OK;
 }
@@ -540,7 +539,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 }
 static void LoadSensorConfiguration(void)
 {
-	//SensorConfigChange();
+	SensorConfigChange();
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 static void SensorConfigChange(void)
@@ -634,8 +633,7 @@ static void SensorOutput1Control()
 	Attribute_Get(ATTR_INDEX_digitalOutput1State, &outputStatus,
 		      sizeof(outputStatus));
 
-	/*Need to inverse the status logic to control the FET*/
-	BSP_PinSet(DO1_PIN, !(outputStatus));
+	BSP_PinSet(DO1_PIN, (outputStatus));
 }
 static void SensorOutput2Control()
 {
@@ -643,8 +641,7 @@ static void SensorOutput2Control()
 	Attribute_Get(ATTR_INDEX_digitalOutput2State, &outputStatus,
 		      sizeof(outputStatus));
 
-	/*Need to inverse the status logic to control the FET*/
-	BSP_PinSet(DO2_PIN, !(outputStatus));
+	BSP_PinSet(DO2_PIN, (outputStatus));
 }
 static void UpdateDin1(void)
 {
