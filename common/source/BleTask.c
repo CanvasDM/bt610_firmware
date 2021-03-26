@@ -351,10 +351,9 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
 	if ((activeMode) && (EventTask_RemainingEvents() > 0)) {
 		/*if the durration timer is not already running start it*/
-		volatile uint32_t timerLeft = k_timer_remaining_get(&durationTimer);
+		volatile uint32_t timerLeft =
+			k_timer_remaining_get(&durationTimer);
 		if (timerLeft == 0) {
-
-			
 			Advertisement_Update();
 
 			uint32_t timeMilliSeconds = 0;
@@ -366,9 +365,8 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			if (timeMilliSeconds != 0) {
 				k_timer_start(&durationTimer,
 					      K_MSEC(timeMilliSeconds),
-					      K_NO_WAIT);						  
+					      K_NO_WAIT);
 			}
-
 		}
 	}
 
@@ -401,7 +399,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bto.conn = bt_conn_ref(conn);
 
 		/* stop advertising so another central cannot connect */
-		//Advertisement_End();
+		Advertisement_End();
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
@@ -410,7 +408,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		/*Pause the duration timer if it is running*/
 		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
-
 	}
 }
 
@@ -425,11 +422,9 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	Advertisement_Start();
 
 	/*restart the duration timer*/
-	if(bto.durationTimeMs > 0)
-	{
-		k_timer_start(&durationTimer,
-					      K_MSEC(bto.durationTimeMs),
-					      K_NO_WAIT);
+	if (bto.durationTimeMs > 0) {
+		k_timer_start(&durationTimer, K_MSEC(bto.durationTimeMs),
+			      K_NO_WAIT);
 	}
 }
 
@@ -491,7 +486,7 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 	UNUSED_PARAMETER(timer_id);
 
 	EventTask_IncrementEventId();
-	
+
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_EVENT);
 }

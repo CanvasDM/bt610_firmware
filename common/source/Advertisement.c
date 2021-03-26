@@ -164,7 +164,7 @@ int Advertisement_Init(void)
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
-	createAdvertisingCoded();
+	//createAdvertisingCoded();
 	SetPasskey();
 	memset(&current, 0, sizeof(SensorMsg_t));
 	return r;
@@ -215,9 +215,9 @@ int Advertisement_Update(void)
 		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
 					  ARRAY_SIZE(bt_rsp));
 	} else {
-		//r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-		//			  ARRAY_SIZE(bt_rsp));
-		if (advertising == true) {
+		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+					  ARRAY_SIZE(bt_rsp));
+		/*if (advertising == true) {
 			r = Advertisement_End();
 			if (r == 0) {
 				r = bt_le_ext_adv_set_data(adv, bt_ad,
@@ -231,8 +231,8 @@ int Advertisement_Update(void)
 			r = bt_le_ext_adv_set_data(adv, bt_ad,
 						   ARRAY_SIZE(bt_ad), bt_rsp,
 						   ARRAY_SIZE(bt_rsp));
-			LOG_INF("update advertising data (%d)", r);
-		}
+			LOG_INF("update advertising data (%d)", r);			   
+		}*/
 	}
 
 	if (r < 0) {
@@ -244,8 +244,8 @@ int Advertisement_Update(void)
 int Advertisement_End(void)
 {
 	int r = 0;
-	//r = bt_le_adv_stop();
-	r = bt_le_ext_adv_stop(adv);
+	r = bt_le_adv_stop();
+	//r = bt_le_ext_adv_stop(adv);
 	LOG_INF("Advertising end (%d)", r);
 	advertising = false;
 
@@ -266,9 +266,9 @@ int Advertisement_Start(void)
 
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
 	if (!advertising) {
-		//r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-		//		    ARRAY_SIZE(bt_rsp));
-		r = bt_le_ext_adv_start(adv, NULL);
+		r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
+				    ARRAY_SIZE(bt_rsp));
+		//r = bt_le_ext_adv_start(adv, NULL);
 		advertising = (r == 0);
 		LOG_INF("Advertising start (%d)", r);
 	}
