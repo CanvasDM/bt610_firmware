@@ -63,9 +63,6 @@ static struct bt_le_adv_param bt_param =
 	BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
 			     NULL);
-
-static struct bt_le_ext_adv_start_param bt_extParam = { .timeout = 0,
-							.num_events = 0 };
 #endif
 
 static struct bt_data bt_ad[] = {
@@ -86,6 +83,10 @@ static struct bt_data bt_rsp[] = {
 };
 
 static struct bt_conn_cb connection_callbacks;
+
+//const struct bt_le_ext_adv_cb extend_callback = {
+//		.sent = extSentCb,
+//	};
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -230,6 +231,7 @@ int Advertisement_Update(void)
 			r = bt_le_ext_adv_set_data(adv, bt_ad,
 						   ARRAY_SIZE(bt_ad), bt_rsp,
 						   ARRAY_SIZE(bt_rsp));
+			LOG_INF("update advertising data (%d)", r);
 		}
 	}
 
@@ -322,11 +324,6 @@ void TestEventMsg(uint16_t event)
 void createAdvertisingCoded(void)
 {
 	int err = 0;
-	struct bt_le_adv_param param =
-		BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE,
-				     BT_GAP_ADV_FAST_INT_MIN_1,
-				     BT_GAP_ADV_FAST_INT_MIN_2, NULL);
-
 	err = bt_le_ext_adv_create(&bt_param, NULL, &adv);
 	if (err) {
 		LOG_WRN("Failed to create advertiser set (%d)\n", err);
