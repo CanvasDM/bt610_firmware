@@ -401,7 +401,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bto.conn = bt_conn_ref(conn);
 
 		/* stop advertising so another central cannot connect */
-		bt_le_adv_stop();
+		//Advertisement_End();
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
@@ -420,7 +420,7 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
 		lbt_get_hci_err_string(reason));
-	bt_conn_unref(conn);
+	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
 	Advertisement_Start();
 
