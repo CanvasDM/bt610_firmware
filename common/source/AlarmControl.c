@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(AlarmControl, LOG_LEVEL_DBG);
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
-#include "laird_bluetooth.h"
+#include "lcz_bluetooth.h"
 #include "Attribute.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"

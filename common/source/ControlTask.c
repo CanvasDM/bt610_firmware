@@ -30,7 +30,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "mcumgr_wrapper.h"
 #include "lcz_no_init_ram_var.h"
 #include "file_system_utilities.h"
-#include "laird_bluetooth.h"
+#include "lcz_bluetooth.h"
 #include "Attribute.h"
 #include "lcz_qrtc.h"
 #include "Flags.h"

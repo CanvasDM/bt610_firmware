@@ -147,6 +147,7 @@ static float Steinhart_Hart(float calibrated, float a, float b, float c);
 int AdcBt6_Init(void)
 {
 	int status = 0;
+	ssize_t readReturn;
 	adcObj.calibrate = true;
 	adcObj.dev = device_get_binding(ADC_DEVICE_NAME);
 
@@ -165,10 +166,21 @@ int AdcBt6_Init(void)
 
 	/* Calibration is independent of parameters/attributes module. */
 	/* todo: should these be shadowed in external flash ? */
-	lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
+	readReturn = lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
+	if (readReturn == 0) {
+		Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
+	} else {
+		/* No calibration value saved, use default */
+		Attribute_GetFloat(&adcObj.ge, ATTR_INDEX_ge);
+	}
+
 	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
-	Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
-	Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
+	if (readReturn == 0) {
+		Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
+	} else {
+		/* No calibration value saved, use default */
+		Attribute_GetFloat(&adcObj.oe, ATTR_INDEX_oe);
+	}
 
 	return status;
 }
@@ -405,13 +417,11 @@ float AdcBt6_ConvertThermToTemperature(int32_t raw, size_t channel)
 	uint16_t coefficientA = ATTR_INDEX_therm1CoefficientA + channel;
 	uint16_t coefficientB = ATTR_INDEX_therm1CoefficientB + channel;
 	uint16_t coefficientC = ATTR_INDEX_therm1CoefficientC + channel;
-	return Steinhart_Hart(calibrated,
-			      Attribute_AltGetFloat(coefficientA,
-						    THERMISTOR_S_H_A),
-			      Attribute_AltGetFloat(coefficientB,
-						    THERMISTOR_S_H_B),
-			      Attribute_AltGetFloat(coefficientC,
-						    THERMISTOR_S_H_C)) -
+	return Steinhart_Hart(
+		       calibrated,
+		       Attribute_AltGetFloat(coefficientA, THERMISTOR_S_H_A),
+		       Attribute_AltGetFloat(coefficientB, THERMISTOR_S_H_B),
+		       Attribute_AltGetFloat(coefficientC, THERMISTOR_S_H_C)) -
 	       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
 				     THERMISTOR_S_H_OFFSET);
 }
