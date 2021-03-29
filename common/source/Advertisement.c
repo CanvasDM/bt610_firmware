@@ -20,7 +20,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
-#include "laird_bluetooth.h"
+#include "lcz_bluetooth.h"
 #include "Attribute.h"
 #include "Advertisement.h"
 #include "EventTask.h"

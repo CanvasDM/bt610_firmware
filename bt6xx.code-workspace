@@ -64,7 +64,9 @@
 			"string_view": "c",
 			"thread": "c",
 			"chrono": "c",
-			"ratio": "c"
+			"ratio": "c",
+			"lcz_bluetooth.h": "c",
+			"version.h": "c"
 		}
 	}
 }
