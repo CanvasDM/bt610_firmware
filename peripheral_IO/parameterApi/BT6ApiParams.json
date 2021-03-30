@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.32",
+    "version": "1.33",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -451,7 +451,7 @@
     },
     {
       "name": "SetRtc",
-      "summary": "Set the RTC",
+      "summary": "Set the RTC in UTC",
       "description": "Time in seconds.  Reference is often Jan 1, 1970",
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
@@ -1523,7 +1523,7 @@
           },
           {
             "name": "highAnalog1Thresh1",
-            "summary": "High Analog Alarm Threshold 1",
+            "summary": "High Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 37,
             "x-groupid": 65,
@@ -1543,7 +1543,7 @@
           },
           {
             "name": "highAnalog1Thresh2",
-            "summary": "High Analog Alarm Threshold 2",
+            "summary": "High Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 38,
             "x-groupid": 65,
@@ -1563,7 +1563,7 @@
           },
           {
             "name": "lowAnalog1Thresh1",
-            "summary": "Low Analog Alarm Threshold 1",
+            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 39,
             "x-groupid": 65,
@@ -1583,7 +1583,7 @@
           },
           {
             "name": "lowAnalog1Thresh2",
-            "summary": "Low Analog Alarm Threshold 2",
+            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 40,
             "x-groupid": 65,
@@ -1603,7 +1603,7 @@
           },
           {
             "name": "analog1DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold",
+            "summary": "Delta Analog Alarm Threshold. Units will either be in mV or mA",
             "required": true,
             "x-id": 41,
             "x-groupid": 65,
@@ -1623,7 +1623,7 @@
           },
           {
             "name": "highAnalog2Thresh1",
-            "summary": "High Analog Alarm Threshold 1",
+            "summary": "High Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 42,
             "x-groupid": 65,
@@ -1643,7 +1643,7 @@
           },
           {
             "name": "highAnalog2Thresh2",
-            "summary": "High Analog Alarm Threshold 2",
+            "summary": "High Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 43,
             "x-groupid": 65,
@@ -1663,7 +1663,7 @@
           },
           {
             "name": "lowAnalog2Thresh1",
-            "summary": "Low Analog Alarm Threshold 1",
+            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 44,
             "x-groupid": 65,
@@ -1683,7 +1683,7 @@
           },
           {
             "name": "lowAnalog2Thresh2",
-            "summary": "Low Analog Alarm Threshold 2",
+            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 45,
             "x-groupid": 65,
@@ -1703,7 +1703,7 @@
           },
           {
             "name": "analog2DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold",
+            "summary": "Delta Analog Alarm Threshold. Units will either be in mV or mA",
             "required": true,
             "x-id": 46,
             "x-groupid": 65,
@@ -1723,7 +1723,7 @@
           },
           {
             "name": "highAnalog3Thresh1",
-            "summary": "High Analog Alarm Threshold 1",
+            "summary": "High Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 47,
             "x-groupid": 65,
@@ -1743,7 +1743,7 @@
           },
           {
             "name": "highAnalog3Thresh2",
-            "summary": "High Analog Alarm Threshold 2",
+            "summary": "High Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 48,
             "x-groupid": 65,
@@ -1763,7 +1763,7 @@
           },
           {
             "name": "lowAnalog3Thresh1",
-            "summary": "Low Analog Alarm Threshold 1",
+            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 49,
             "x-groupid": 65,
@@ -1783,7 +1783,7 @@
           },
           {
             "name": "lowAnalog3Thresh2",
-            "summary": "Low Analog Alarm Threshold 2",
+            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 50,
             "x-groupid": 65,
@@ -1803,7 +1803,7 @@
           },
           {
             "name": "analog3DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold",
+            "summary": "Delta Analog Alarm Threshold. Units will either be in mV or mA",
             "required": true,
             "x-id": 51,
             "x-groupid": 65,
@@ -1823,7 +1823,7 @@
           },
           {
             "name": "highAnalog4Thresh1",
-            "summary": "High Analog Alarm Threshold 1",
+            "summary": "High Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 52,
             "x-groupid": 65,
@@ -1843,7 +1843,7 @@
           },
           {
             "name": "highAnalog4Thresh2",
-            "summary": "High Analog Alarm Threshold 2",
+            "summary": "High Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 53,
             "x-groupid": 65,
@@ -1863,7 +1863,7 @@
           },
           {
             "name": "lowAnalog4Thresh1",
-            "summary": "Low Analog Alarm Threshold 1",
+            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV or mA",
             "required": true,
             "x-id": 54,
             "x-groupid": 65,
@@ -1883,7 +1883,7 @@
           },
           {
             "name": "lowAnalog4Thresh2",
-            "summary": "Low Analog Alarm Threshold 2",
+            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV or mA",
             "required": true,
             "x-id": 55,
             "x-groupid": 65,
@@ -1903,7 +1903,7 @@
           },
           {
             "name": "analog4DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold",
+            "summary": "Delta Analog Alarm Threshold. Units will either be in mV or mA",
             "required": true,
             "x-id": 56,
             "x-groupid": 65,
@@ -2267,6 +2267,7 @@
           {
             "name": "temperatureAlarms",
             "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65535 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
             "x-id": 74,
             "x-groupid": 65,
@@ -2386,7 +2387,7 @@
           },
           {
             "name": "analogInput1",
-            "summary": "Unit depends on Analog Input Configuration Type",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
             "required": true,
             "x-id": 80,
             "x-groupid": 65,
@@ -2404,7 +2405,7 @@
           },
           {
             "name": "analogInput2",
-            "summary": "Unit depends on Analog Input Configuration Type",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
             "required": true,
             "x-id": 81,
             "x-groupid": 65,
@@ -2422,7 +2423,7 @@
           },
           {
             "name": "analogInput3",
-            "summary": "Unit depends on Analog Input Configuration Type",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
             "required": true,
             "x-id": 82,
             "x-groupid": 65,
@@ -2440,7 +2441,7 @@
           },
           {
             "name": "analogInput4",
-            "summary": "Unit depends on Analog Input Configuration Type",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
             "required": true,
             "x-id": 83,
             "x-groupid": 65,
@@ -2459,6 +2460,7 @@
           {
             "name": "analogAlarms",
             "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65535 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
             "x-id": 84,
             "x-groupid": 65,
@@ -2653,7 +2655,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.32",
+              "x-default": "1.33",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,

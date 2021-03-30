@@ -399,7 +399,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bto.conn = bt_conn_ref(conn);
 
 		/* stop advertising so another central cannot connect */
-		Advertisement_End();
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+					      FMC_BLE_END_ADVERTISING);
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
@@ -419,7 +420,9 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 		lbt_get_hci_err_string(reason));
 	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
-	Advertisement_Start();
+	/*Start the advertisment again*/
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+				      FMC_BLE_START_ADVERTISING);
 
 	/*restart the duration timer*/
 	if (bto.durationTimeMs > 0) {

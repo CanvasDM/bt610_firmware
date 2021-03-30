@@ -711,6 +711,7 @@ void Show(attr_idx_t Index)
 	case ATTR_TYPE_U8:
 	case ATTR_TYPE_U16:
 	case ATTR_TYPE_U32:
+	case ATTR_TYPE_BOOL:
 		memcpy(&u, p->pData, p->size);
 		LOG_DBG(CONFIG_ATTR_SHOW_FMT "%u", Index, p->name, u);
 		break;
@@ -919,7 +920,6 @@ static bool isWritable(attr_idx_t Index)
 	/*
 	bool unlocked = ((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
 	*/
-	
 
 	if (p->writable) {
 		if (p->lockable) {

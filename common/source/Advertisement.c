@@ -38,7 +38,6 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 typedef struct {
 	SensorEvent_t event;
 	uint32_t id;
-
 } SensorMsg_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -47,7 +46,9 @@ static LczSensorAdEvent_t ad;
 static LczSensorAdExt_t ext;
 static LczSensorRspWithHeader_t rsp;
 static struct bt_le_ext_adv *adv;
+static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
+static bool extendPhyEnbled = false;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -63,6 +64,10 @@ static struct bt_le_adv_param bt_param =
 	BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
 			     NULL);
+static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
+	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME |
+		BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
+	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
 #endif
 
 static struct bt_data bt_ad[] = {
@@ -91,10 +96,11 @@ static struct bt_conn_cb connection_callbacks;
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static void createAdvertisingCoded(void);
+static void CreateAdvertisingParm(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthCancelCb(struct bt_conn *conn);
+static bool CodedEnableCheck(void);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -164,7 +170,7 @@ int Advertisement_Init(void)
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
-	//createAdvertisingCoded();
+	CreateAdvertisingParm();
 	SetPasskey();
 	memset(&current, 0, sizeof(SensorMsg_t));
 	return r;
@@ -208,31 +214,30 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
 		      sizeof(codedPhySelected));
 
-	if (codedPhySelected == 1) {
-		ext.ad = ad;
-		ext.rsp.configVersion = rsp.rsp.configVersion;
-
-		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-					  ARRAY_SIZE(bt_rsp));
-	} else {
-		r = bt_le_adv_update_data(bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-					  ARRAY_SIZE(bt_rsp));
-		/*if (advertising == true) {
-			r = Advertisement_End();
-			if (r == 0) {
+	if (advertising == true) {
+		r = Advertisement_End();
+		if (r == 0) {
+			if (extendPhyEnbled == true) {
+				ext.ad = ad;
+				ext.rsp.configVersion = rsp.rsp.configVersion;
+				r = bt_le_ext_adv_set_data(extendedAdv,
+							   bt_extAd,
+							   ARRAY_SIZE(bt_extAd),
+							   NULL, 0);
+			} else {
 				r = bt_le_ext_adv_set_data(adv, bt_ad,
 							   ARRAY_SIZE(bt_ad),
 							   bt_rsp,
 							   ARRAY_SIZE(bt_rsp));
-				LOG_INF("update advertising data (%d)", r);
 			}
-			r = Advertisement_Start();
-		} else {
-			r = bt_le_ext_adv_set_data(adv, bt_ad,
-						   ARRAY_SIZE(bt_ad), bt_rsp,
-						   ARRAY_SIZE(bt_rsp));
-			LOG_INF("update advertising data (%d)", r);			   
-		}*/
+
+			LOG_INF("update advertising data (%d)", r);
+		}
+		r = Advertisement_Start();
+	} else {
+		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
+					   bt_rsp, ARRAY_SIZE(bt_rsp));
+		LOG_INF("update advertising data (%d)", r);
 	}
 
 	if (r < 0) {
@@ -244,31 +249,36 @@ int Advertisement_Update(void)
 int Advertisement_End(void)
 {
 	int r = 0;
-	r = bt_le_adv_stop();
-	//r = bt_le_ext_adv_stop(adv);
+	extendPhyEnbled if (CodedEnableCheck() == true)
+	{
+		r = bt_le_ext_adv_stop(extendedAdv);
+	}
+	else
+	{
+		r = bt_le_ext_adv_stop(adv);
+	}
+
 	LOG_INF("Advertising end (%d)", r);
 	advertising = false;
 
 	return r;
 }
-int Advertisement_ExtendedEnd(void)
-{
-	int r = 0;
-	//r = bt_le_ext_adv_stop(adv);
-	LOG_INF("Advertising end (%d)", r);
-	advertising = false;
 
-	return r;
-}
 int Advertisement_Start(void)
 {
 	int r = 0;
 
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
 	if (!advertising) {
-		r = bt_le_adv_start(&bt_param, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-				    ARRAY_SIZE(bt_rsp));
-		//r = bt_le_ext_adv_start(adv, NULL);
+		extendPhyEnbled if (CodedEnableCheck() == true)
+		{
+			r = bt_le_ext_adv_start(extendedAdv, NULL);
+		}
+		else
+		{
+			r = bt_le_ext_adv_start(adv, NULL);
+		}
+
 		advertising = (r == 0);
 		LOG_INF("Advertising start (%d)", r);
 	}
@@ -276,7 +286,8 @@ int Advertisement_Start(void)
 #endif
 	return r;
 }
-int Advertisement_ExtendedStart(void)
+
+int Advertisement_ExtendedSet(bool enable)
 {
 	int r = 0;
 
@@ -321,20 +332,29 @@ void TestEventMsg(uint16_t event)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-void createAdvertisingCoded(void)
+void CreateAdvertisingParm(void)
 {
 	int err = 0;
-	err = bt_le_ext_adv_create(&bt_param, NULL, &adv);
-	if (err) {
-		LOG_WRN("Failed to create advertiser set (%d)\n", err);
-	}
-
-	LOG_INF("Created adv: %p\n", adv);
-
-	err = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad), bt_rsp,
-				     ARRAY_SIZE(bt_rsp));
-	if (err) {
-		LOG_WRN("Failed to set advertising data (%d)\n", err);
+	if (CodedEnableCheck() == true) {
+		err = bt_le_ext_adv_create(&bt_extendParam, NULL, &extendedAdv);
+		if (err) {
+			LOG_WRN("Failed to create advertiser set (%d)\n", err);
+		}
+		err = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
+					     ARRAY_SIZE(bt_extAd), NULL, 0);
+		if (err) {
+			LOG_WRN("Failed to set advertising data (%d)\n", err);
+		}
+	} else {
+		err = bt_le_ext_adv_create(&bt_param, NULL, &adv);
+		if (err) {
+			LOG_WRN("Failed to create advertiser set (%d)\n", err);
+		}
+		err = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
+					     bt_rsp, ARRAY_SIZE(bt_rsp));
+		if (err) {
+			LOG_WRN("Failed to set advertising data (%d)\n", err);
+		}
 	}
 }
 
@@ -355,4 +375,14 @@ static void AuthCancelCb(struct bt_conn *conn)
 	char *addr = ble_addr(conn);
 
 	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
+}
+
+static bool CodedEnableCheck(void)
+{
+	bool codedPhySelected;
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+	extendPhyEnbled = codedPhySelected;
+
+	return (codedPhySelected);
 }
