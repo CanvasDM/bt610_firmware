@@ -1961,6 +1961,7 @@
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
+              "x-broadcast": true,
               "x-readable": true
             }
           },
@@ -2737,6 +2738,7 @@
           {
             "name": "tamperSwitchStatus",
             "summary": "Returns the current state of the tamper switch",
+            "description": "True = Tamper switch active (not pressed) \nFalse = Tamper switch inactive (pressed).",
             "required": true,
             "x-id": 98,
             "x-groupid": 65,
@@ -2761,7 +2763,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": 0.0,
+              "minimum": 10.0,
               "maximum": 255.0,
               "x-ctype": "uint8_t",
               "x-default": "60",
@@ -2791,7 +2793,8 @@
               "x-backup": true,
               "x-lockable": true,
               "x-broadcast": true,
-              "x-writeable": true
+              "x-writeable": true,
+              "x-readable": true
             }
           },
           {

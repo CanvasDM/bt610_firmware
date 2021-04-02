@@ -333,6 +333,12 @@ int Attribute_SetQuiet(attr_idx_t Index, bool Value);
  * @param negative error code, number of parameters on success
  */
 int Attribute_Load(const char *abs_path);
+/**
+ * @brief Retrive the current status of the coded enable parameter
+ *
+ * @retval true = coded enabled, false = disabled
+ */
+bool Attribute_CodedEnableCheck(void);
 
 #ifdef __cplusplus
 }

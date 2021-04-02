@@ -53,7 +53,8 @@ int AggregationTempHandler(size_t channel)
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
-	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount, sizeof(aggCount));
+	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
+			  sizeof(aggCount));
 	r = Attribute_GetFloat(&currentTemp,
 			       ATTR_INDEX_temperatureResult1 + channel);
 	if (r == 0) {
@@ -66,11 +67,15 @@ int AggregationTempHandler(size_t channel)
 					currentAggregationNumber + 1;
 			}
 			if (currentAggregationNumber == aggCount) {
-				EventTypeHandler((SENSOR_EVENT_TEMPERATURE_1 + channel), currentTemp);
+				EventTypeHandler(
+					(SENSOR_EVENT_TEMPERATURE_1 + channel),
+					currentTemp);
+				/*TODO: Need to send out past temp value*/
 			}
 		} else {
 			/*Send to event LOG */
-			EventTypeHandler((SENSOR_EVENT_TEMPERATURE_1 + channel), currentTemp);
+			EventTypeHandler((SENSOR_EVENT_TEMPERATURE_1 + channel),
+					 currentTemp);
 		}
 	}
 	return r;
@@ -83,7 +88,8 @@ int AggregationAnalogHandler(size_t channel)
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
-	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount, sizeof(aggCount));
+	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
+			  sizeof(aggCount));
 	r = Attribute_GetFloat(&currentAnalogValue,
 			       ATTR_INDEX_analogInput1 + channel);
 	if (r == 0) {
@@ -127,32 +133,31 @@ static void EventTypeHandler(SensorEventType_t eventType, float data)
 		pMsgSend->eventData = eventData;
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
-
 }
 static void AnalogConfigType(size_t channel, float analogValue)
 {
 	AnalogInput_t configType;
 	SensorEventType_t eventType;
-	Attribute_Get((ATTR_INDEX_analogInput1Type + channel), &configType, sizeof(uint8_t));
+	Attribute_Get((ATTR_INDEX_analogInput1Type + channel), &configType,
+		      sizeof(uint8_t));
 
-	switch(configType)
-	{
-		case ANALOG_INPUT_VOLTAGE:
-			eventType = SENSOR_EVENT_VOLTAGE_1 + channel;
-			break;
-		case ANALOG_INPUT_CURRENT:
-			eventType = SENSOR_EVENT_CURRENT_1 + channel;
-			break;
-		case ANALOG_INPUT_PRESSURE:
-			eventType = SENSOR_EVENT_PRESSURE_1 + channel;
-			break;
-		case ANALOG_INPUT_ULTRASONIC:
-			eventType = SENSOR_EVENT_ULTRASONIC_1;
-			break;
-		default:
-			/*should not get here but just in case still return something*/
-			eventType = SENSOR_EVENT_VOLTAGE_1;
-			break;
+	switch (configType) {
+	case ANALOG_INPUT_VOLTAGE:
+		eventType = SENSOR_EVENT_VOLTAGE_1 + channel;
+		break;
+	case ANALOG_INPUT_CURRENT:
+		eventType = SENSOR_EVENT_CURRENT_1 + channel;
+		break;
+	case ANALOG_INPUT_PRESSURE:
+		eventType = SENSOR_EVENT_PRESSURE_1 + channel;
+		break;
+	case ANALOG_INPUT_ULTRASONIC:
+		eventType = SENSOR_EVENT_ULTRASONIC_1;
+		break;
+	default:
+		/*should not get here but just in case still return something*/
+		eventType = SENSOR_EVENT_VOLTAGE_1;
+		break;
 	}
 	EventTypeHandler(eventType, analogValue);
 }

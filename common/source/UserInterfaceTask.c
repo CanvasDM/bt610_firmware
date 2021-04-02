@@ -24,7 +24,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include "Attribute.h"
 #include "BspSupport.h"
 #include "Flags.h"
-
+#include "Advertisement.h"
 #include "UserInterfaceTask.h"
 
 /******************************************************************************/
@@ -502,6 +502,7 @@ static void Button3HandlerIsr(const struct device *dev,
 		LOG_DBG("Rising amr");
 		if (ValidExitShelfModeDuration(k_uptime_delta(&amrEventTime))) {
 			code = FMC_EXIT_SHELF_MODE;
+			Advertisement_ExtendedSet(false);
 		}
 	} else {
 		LOG_DBG("Falling amr");
