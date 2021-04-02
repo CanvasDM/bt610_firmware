@@ -585,7 +585,13 @@ int Attribute_Load(const char *abs_path)
 
 	return r;
 }
-
+bool Attribute_CodedEnableCheck(void)
+{
+	bool codedPhySelected;
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+	return (codedPhySelected);
+}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/

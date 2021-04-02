@@ -279,11 +279,9 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
 		      sizeof(codedPhySelected));
 
-	//if (codedPhySelected == 1) {
-	//	Advertisement_ExtendedStart();
-	//} else {
+	/*If the magnet activated the advertisment send non coded PHY message*/
+
 	Advertisement_Start();
-	//}
 
 	return DISPATCH_OK;
 }
@@ -292,16 +290,8 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
-	uint8_t codedPhySelected = 0;
 
-	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
-		      sizeof(codedPhySelected));
-
-	if (codedPhySelected == 1) {
-		Advertisement_ExtendedEnd();
-	} else {
-		Advertisement_End();
-	}
+	Advertisement_End();
 
 	return DISPATCH_OK;
 }
@@ -333,6 +323,8 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			//case ATTR_INDEX_flags:
 			updateData = true;
 			break;
+		case ATTR_INDEX_useCodedPhy:
+			Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -415,12 +407,17 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
+
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
 		lbt_get_hci_err_string(reason));
 	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
+
 	/*Start the advertisment again*/
+	if (Attribute_CodedEnableCheck() == true) {
+		Advertisement_ExtendedSet(true);
+	}
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
 

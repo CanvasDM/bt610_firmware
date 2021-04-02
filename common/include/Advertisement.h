@@ -38,9 +38,8 @@ extern "C" {
  */
 int Advertisement_Init(void);
 int Advertisement_End(void);
-int Advertisement_ExtendedEnd(void);
 int Advertisement_Start(void);
-int Advertisement_ExtendedStart(void);
+void Advertisement_ExtendedSet(bool status);
 int Advertisement_Update(void);
 int Advertisement_IntervalUpdate(void);
 void SetPasskey(void);
