@@ -127,6 +127,9 @@ static void UpdateDin2(void);
 static gpio_flags_t GetEdgeType(digitalAlarm_t alarm);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
+static void StartAnalogInterval(void);
+static void StartTempertureInterval(void);
+static void StartBatteryInterval(void);
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
 static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
@@ -326,7 +329,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_analogInput4Type:
 			break;
 		case ATTR_INDEX_configType:
-			//FRAMEWORK_MSG_CREATE_AND_BROADCAST(FWK_ID_SENSOR_TASK, FMC_SENSOR_CONFIG_CHANGE);
 			SensorConfigChange();
 			break;
 
@@ -437,16 +439,8 @@ static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
 	AttributePrepare_batteryVoltageMv();
+	StartBatteryInterval();
 
-	if (sensorTaskObject.localActiveMode == true) {
-		uint32_t intervalSeconds = 0;
-		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_batterySenseInterval);
-		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.batteryTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
-	}
 	return DISPATCH_OK;
 }
 static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -468,16 +462,8 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			AggregationTempHandler(index);
 		}
 	}
+	StartTempertureInterval();
 
-	if (sensorTaskObject.localActiveMode == true) {
-		uint32_t intervalSeconds = 0;
-		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_temperatureSenseInterval);
-		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.temperatureReadTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
-	}
 	return DISPATCH_OK;
 }
 static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -499,16 +485,8 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			AggregationAnalogHandler(index);
 		}
 	}
+	StartAnalogInterval();
 
-	if (sensorTaskObject.localActiveMode == true) {
-		uint32_t intervalSeconds = 0;
-		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_analogSenseInterval);
-		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.analogReadTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
-	}
 	return DISPATCH_OK;
 }
 
@@ -698,12 +676,75 @@ static void UpdateMagnet(void)
 }
 static void InitializeIntervalTimers(void)
 {
+	/*Battery Interval timer*/
 	k_timer_init(sensorTaskObject.batteryTimer, batteryTimerCallbackIsr,
 		     NULL);
+	StartBatteryInterval();
+
+	/*Temperture Interval timer*/
 	k_timer_init(sensorTaskObject.temperatureReadTimer,
 		     temperatureReadTimerCallbackIsr, NULL);
+	StartTempertureInterval();
+
+	/*Analog Interval timer*/
 	k_timer_init(sensorTaskObject.analogReadTimer,
 		     analogReadTimerCallbackIsr, NULL);
+	StartAnalogInterval();
+}
+static void StartAnalogInterval(void)
+{
+	uint8_t analog1ConfigEnable;
+	uint8_t analog2ConfigEnable;
+	uint8_t analog3ConfigEnable;
+	uint8_t analog4ConfigEnable;
+	Attribute_Get(ATTR_INDEX_analogInput1Type, &analog1ConfigEnable,
+		      sizeof(analog1ConfigEnable));
+	Attribute_Get(ATTR_INDEX_analogInput2Type, &analog2ConfigEnable,
+		      sizeof(analog2ConfigEnable));
+	Attribute_Get(ATTR_INDEX_analogInput3Type, &analog3ConfigEnable,
+		      sizeof(analog3ConfigEnable));
+	Attribute_Get(ATTR_INDEX_analogInput4Type, &analog4ConfigEnable,
+		      sizeof(analog4ConfigEnable));
+
+	if ((sensorTaskObject.localActiveMode == true) &&
+	    ((analog1ConfigEnable > 0) || (analog2ConfigEnable > 0) ||
+	     (analog3ConfigEnable > 0) || (analog4ConfigEnable > 0))) {
+		uint32_t intervalSeconds = 0;
+		Attribute_GetUint32(&intervalSeconds,
+				    ATTR_INDEX_analogSenseInterval);
+		if (intervalSeconds != 0) {
+			k_timer_start(sensorTaskObject.analogReadTimer,
+				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+		}
+	}
+}
+static void StartTempertureInterval(void)
+{
+	uint8_t thermConfigEnable;
+	Attribute_Get(ATTR_INDEX_thermistorConfig, &thermConfigEnable,
+		      sizeof(thermConfigEnable));
+	if ((sensorTaskObject.localActiveMode == true) &&
+	    (thermConfigEnable > 0)) {
+		uint32_t intervalSeconds = 0;
+		Attribute_GetUint32(&intervalSeconds,
+				    ATTR_INDEX_temperatureSenseInterval);
+		if (intervalSeconds != 0) {
+			k_timer_start(sensorTaskObject.temperatureReadTimer,
+				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+		}
+	}
+}
+static void StartBatteryInterval(void)
+{
+	if (sensorTaskObject.localActiveMode == true) {
+		uint32_t intervalSeconds = 0;
+		Attribute_GetUint32(&intervalSeconds,
+				    ATTR_INDEX_batterySenseInterval);
+		if (intervalSeconds != 0) {
+			k_timer_start(sensorTaskObject.batteryTimer,
+				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+		}
+	}
 }
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
