@@ -66,7 +66,7 @@ static struct bt_le_adv_param bt_param =
 			     NULL);
 static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
 	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
-	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
+	BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL);
 #endif
 
 static struct bt_data bt_ad[] = {
@@ -77,6 +77,12 @@ static struct bt_data bt_ad[] = {
 static struct bt_data bt_extAd[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &ext, sizeof(ext))
+};
+static const struct bt_data testAD[] = {
+	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+	BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0x0d, 0x18, 0x0f, 0x18, 0x0a, 0x18,
+		      0x99, 0x98, 0x97, 0x96, 0x95, 0x94, 0x93, 0x92, 0x91,
+		      0x90, 0x89, 0x88, 0x87, 0x86, 0x85, 0x84, 0x83, 0x82),
 };
 
 /* When using BT_LE_ADV_OPT_USE_NAME, device name is added to scan response
@@ -212,12 +218,13 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
 		      sizeof(codedPhySelected));
 
+	ext.ad = ad;
+	ext.rsp.configVersion = rsp.rsp.configVersion;
+
 	if (advertising == true) {
 		r = Advertisement_End();
 		if (r == 0) {
-			if (extendPhyEnbled == true) {
-				ext.ad = ad;
-				ext.rsp.configVersion = rsp.rsp.configVersion;
+				if (extendPhyEnbled == true) {
 				r = bt_le_ext_adv_set_data(extendedAdv,
 							   bt_extAd,
 							   ARRAY_SIZE(bt_extAd),
@@ -233,8 +240,16 @@ int Advertisement_Update(void)
 		}
 		r = Advertisement_Start();
 	} else {
-		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
-					   bt_rsp, ARRAY_SIZE(bt_rsp));
+			if (extendPhyEnbled == true) {
+			r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
+						   ARRAY_SIZE(bt_extAd), NULL,
+						   0);
+		} else {
+			r = bt_le_ext_adv_set_data(adv, bt_ad,
+						   ARRAY_SIZE(bt_ad), bt_rsp,
+						   ARRAY_SIZE(bt_rsp));
+		}
+
 		LOG_INF("update advertising data (%d)", r);
 	}
 
@@ -368,8 +383,8 @@ void CreateAdvertisingExtendedParm(void)
 	if (err) {
 		LOG_WRN("Failed to create advertiser set (%d)\n", err);
 	}
-	err = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
-				     ARRAY_SIZE(bt_extAd), NULL, 0);
+	err = bt_le_ext_adv_set_data(extendedAdv, bt_extAd, ARRAY_SIZE(bt_extAd),
+				     NULL, 0);
 	if (err) {
 		LOG_WRN("Failed to set advertising data (%d)\n", err);
 	}

@@ -31,13 +31,14 @@ mgmt_handler_fn Sentrius_mgmt_SetParameter;
 mgmt_handler_fn Sentrius_mgmt_RevEcho;
 mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor;
 mgmt_handler_fn Sentrius_mgmt_TestLed;
-mgmt_handler_fn Sentrius_mgmt_CalibrateThermistorVersion2;
-mgmt_handler_fn Sentrius_mgmt_SetRtc;
-mgmt_handler_fn Sentrius_mgmt_GetRtc;
-mgmt_handler_fn Sentrius_mgmt_LoadParameterFile;
-mgmt_handler_fn Sentrius_mgmt_DumpParameterFile;
-mgmt_handler_fn Sentrius_mgmt_PrepareLog;
-mgmt_handler_fn Sentrius_mgmt_AckLog;
+mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor_Version2;
+mgmt_handler_fn Sentrius_mgmt_Set_Rtc;
+mgmt_handler_fn Sentrius_mgmt_Get_Rtc;
+mgmt_handler_fn Sentrius_mgmt_Load_Parameter_File;
+mgmt_handler_fn Sentrius_mgmt_Dump_Parameter_File;
+mgmt_handler_fn Sentrius_mgmt_Prepare_Log;
+mgmt_handler_fn Sentrius_mgmt_Ack_Log;
+mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
 /* pyend */
 
 /**
@@ -61,6 +62,7 @@ mgmt_handler_fn Sentrius_mgmt_AckLog;
 #define SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE                   10
 #define SENTRIUS_MGMT_ID_PREPARE_LOG                           11
 #define SENTRIUS_MGMT_ID_ACK_LOG                               12
+#define SENTRIUS_MGMT_ID_FACTORY_RESET                         13
 /* pyend */
 /* clang-format on */
 
