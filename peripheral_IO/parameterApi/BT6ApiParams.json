@@ -187,61 +187,6 @@
       }
     },
     {
-      "name": "Echo",
-      "summary": "Echo string",
-      "description": "Built-in SMP echo command",
-      "x-jsonmsgtype": "Request",
-      "x-interfaceserial": true,
-      "x-interfaceble": true,
-      "x-id": 0,
-      "x-groupid": 0,
-      "tags": [
-        {
-          "name": 0
-        }
-      ],
-      "params": [
-        {
-          "name": "d",
-          "summary": "Value",
-          "description": "Value",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "minimumlength": 0,
-            "maximumlength": 0,
-            "minimum": 0.0,
-            "maximum": 0.0,
-            "x-ctype": "string",
-            "x-sequencenumber": 1,
-            "x-default": null,
-            "x-example": "hello world"
-          }
-        }
-      ],
-      "result": {
-        "name": "EchoResult",
-        "schema": {
-          "items": [
-            {
-              "name": "r1",
-              "summary": "Value",
-              "description": "Value",
-              "type": "string",
-              "minimumlength": 0,
-              "maximumlength": 0,
-              "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "string",
-              "x-sequencenumber": 1,
-              "x-default": null,
-              "x-example": "1"
-            }
-          ]
-        }
-      }
-    },
-    {
       "name": "CalibrateThermistor",
       "summary": "Tell BT6xx to run thermistor calibration using provided calibration parameters",
       "description": "BT6xx will save results",
@@ -284,87 +229,6 @@
             "x-sequencenumber": 2,
             "x-default": "3.98e3",
             "x-example": "3.98e3"
-          }
-        }
-      ],
-      "result": {
-        "name": "CalibrateThermistorResult",
-        "schema": {
-          "items": [
-            {
-              "name": "r",
-              "type": "integer",
-              "summary": "Result",
-              "description": "negative error code, 0 on success",
-              "x-ctype": "int32_t",
-              "x-example": "0",
-              "x-sequencenumber": 1
-            },
-            {
-              "name": "ge",
-              "type": "number",
-              "summary": "Gain Error",
-              "description": "This is applied to all thermistor readings",
-              "x-ctype": "float",
-              "x-example": "0.998",
-              "x-sequencenumber": 2
-            },
-            {
-              "name": "oe",
-              "type": "number",
-              "summary": "Offset Error",
-              "description": "This is applied to all thermistor readings",
-              "x-ctype": "float",
-              "x-example": "-12.8",
-              "x-sequencenumber": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "CalibrateThermistorVersion2",
-      "summary": "",
-      "description": "Uses uint32_t for input parameters",
-      "x-jsonmsgtype": "Request",
-      "x-interfaceserial": true,
-      "x-interfaceble": true,
-      "x-id": 6,
-      "x-groupid": 65,
-      "tags": [
-        {
-          "name": 65
-        }
-      ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Calibration factor x10000",
-          "required": true,
-          "schema": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 0.0,
-            "x-ctype": "uint32_t",
-            "x-sequencenumber": 1,
-            "x-default": "2207351",
-            "x-example": "2207351"
-          }
-        },
-        {
-          "name": "p2",
-          "summary": "Parameter 2",
-          "description": "Calibration factor x10000",
-          "required": true,
-          "schema": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 0.0,
-            "x-ctype": "uint32_t",
-            "x-sequencenumber": 2,
-            "x-default": "39800000",
-            "x-example": "39800000"
           }
         }
       ],
@@ -450,7 +314,88 @@
       }
     },
     {
-      "name": "SetRtc",
+      "name": "CalibrateThermistor_Version2",
+      "summary": "",
+      "description": "Uses uint32_t for input parameters",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 6,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Calibration factor x10000",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 1,
+            "x-default": "2207351",
+            "x-example": "2207351"
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "Parameter 2",
+          "description": "Calibration factor x10000",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 2,
+            "x-default": "39800000",
+            "x-example": "39800000"
+          }
+        }
+      ],
+      "result": {
+        "name": "CalibrateThermistorResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "ge",
+              "type": "number",
+              "summary": "Gain Error",
+              "description": "This is applied to all thermistor readings",
+              "x-ctype": "float",
+              "x-example": "0.998",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "oe",
+              "type": "number",
+              "summary": "Offset Error",
+              "description": "This is applied to all thermistor readings",
+              "x-ctype": "float",
+              "x-example": "-12.8",
+              "x-sequencenumber": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Set_Rtc",
       "summary": "Set the RTC in UTC",
       "description": "Time in seconds.  Reference is often Jan 1, 1970",
       "x-jsonmsgtype": "Request",
@@ -505,7 +450,7 @@
       }
     },
     {
-      "name": "GetRtc",
+      "name": "Get_Rtc",
       "summary": "Get the current RTC value",
       "description": "Time in seconds.  Default reference is Jan 1, 1970",
       "x-jsonmsgtype": "Request",
@@ -551,7 +496,7 @@
       }
     },
     {
-      "name": "Load",
+      "name": "Load_Parameter_File",
       "summary": "Load parameters from a file",
       "description": "Used in conjunction with file system commands",
       "x-jsonmsgtype": "Request",
@@ -597,7 +542,7 @@
       }
     },
     {
-      "name": "Dump",
+      "name": "Dump_Parameter_File",
       "summary": "Dump chosen parameters to a file",
       "description": "Used in conjunction with file system commands",
       "x-jsonmsgtype": "Request",
@@ -643,7 +588,7 @@
       }
     },
     {
-      "name": "PrepareLog",
+      "name": "Prepare_Log",
       "summary": "Prepare logs for reading",
       "description": "Used in conjunction with file system commands to read logs",
       "x-jsonmsgtype": "Request",
@@ -707,7 +652,7 @@
       }
     },
     {
-      "name": "AckLog",
+      "name": "Ack_Log",
       "summary": "Acknowledge reception of log",
       "description": "Allows log to be freed",
       "x-jsonmsgtype": "Request",
@@ -746,6 +691,52 @@
               "description": "negative error code, 0 on success",
               "x-example": "0",
               "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Factory_Reset",
+      "summary": "This will force a factory reset of the device.",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 13,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Turn on the factory reset",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "bool",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "FactoryResetResult",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "x-example": "0",
+              "x-ctype": "bool",
               "x-sequencenumber": 1
             }
           ]
@@ -929,8 +920,8 @@
               "minimum": 0.0,
               "maximum": 86400.0,
               "x-ctype": "uint32_t",
-              "x-default": "0",
-              "x-example": "60",
+              "x-default": "60",
+              "x-example": "10",
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,
@@ -2726,8 +2717,8 @@
               "minimum": 0.0,
               "maximum": 86400.0,
               "x-ctype": "uint32_t",
-              "x-default": "0",
-              "x-example": "60",
+              "x-default": "60",
+              "x-example": "10",
               "x-lockable": true,
               "x-savable": true,
               "x-writeable": true,

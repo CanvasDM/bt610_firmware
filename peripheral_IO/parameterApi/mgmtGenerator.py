@@ -377,18 +377,13 @@ class attributes:
             name = self.functionNames[i]
             result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " + "{" + "\n"
             struct.append(result)
-            if "_SET" in result:
+            if "_ECHO" in result:
+                result = f"         {self.handlerFunctionName[i]}, {self.handlerFunctionName[i]}\n"
+                struct.append(result)
+            else:
                 result = f"         .mh_write = {self.handlerFunctionName[i]}," + "\n"
                 struct.append(result)
-                result = "         .mh_read = NULL,\n"
-                struct.append(result)
-            elif "_GET" in result:
                 result = f"         .mh_read = {self.handlerFunctionName[i]}," + "\n"
-                struct.append(result)
-                result = f"         .mh_write = NULL,\n"
-                struct.append(result)
-            elif "_ECHO" in result:
-                result = f"         {self.handlerFunctionName[i]}, {self.handlerFunctionName[i]}\n"
                 struct.append(result)
 
             result = "    }," + "\n"

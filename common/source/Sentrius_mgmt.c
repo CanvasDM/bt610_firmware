@@ -11,6 +11,8 @@
 /* Includes                                                                   */
 /******************************************************************************/
 #include <zephyr.h>
+#include <power/reboot.h>
+#include <logging/log_ctrl.h>
 #include <limits.h>
 #include <string.h>
 #include "cborattr/cborattr.h"
@@ -108,52 +110,56 @@ static int FloatParameterExternalToInternal(CborType externalFormat,
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
     /* pystart - mgmt handlers */
     [SENTRIUS_MGMT_ID_GETPARAMETER] = {
-         .mh_read = Sentrius_mgmt_GetParameter,
          .mh_write = Sentrius_mgmt_GetParameter,
+         .mh_read = Sentrius_mgmt_GetParameter,
     },
     [SENTRIUS_MGMT_ID_SETPARAMETER] = {
          .mh_write = Sentrius_mgmt_SetParameter,
          .mh_read = Sentrius_mgmt_SetParameter,
     },
-    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
-		.mh_write = Sentrius_mgmt_CalibrateThermistor,
-		.mh_read = Sentrius_mgmt_CalibrateThermistor
-    },
-    [SENTRIUS_MGMT_ID_TESTLED] = {
-		.mh_write = Sentrius_mgmt_TestLed,
-		.mh_read = Sentrius_mgmt_TestLed
-    },
     [SENTRIUS_MGMT_ID_REVECHO] = {
          .mh_write = Sentrius_mgmt_RevEcho,
-		 .mh_read = Sentrius_mgmt_RevEcho
+         .mh_read = Sentrius_mgmt_RevEcho,
     },
-	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
-         .mh_write = Sentrius_mgmt_CalibrateThermistorVersion2,
-		 .mh_read = Sentrius_mgmt_CalibrateThermistorVersion2
+    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
+         .mh_write = Sentrius_mgmt_CalibrateThermistor,
+         .mh_read = Sentrius_mgmt_CalibrateThermistor,
     },
-	[SENTRIUS_MGMT_ID_SET_RTC] = {
-         .mh_write = Sentrius_mgmt_SetRtc,
-		 .mh_read = Sentrius_mgmt_SetRtc
+    [SENTRIUS_MGMT_ID_TESTLED] = {
+         .mh_write = Sentrius_mgmt_TestLed,
+         .mh_read = Sentrius_mgmt_TestLed,
     },
-	[SENTRIUS_MGMT_ID_GET_RTC] = {
-         .mh_write = Sentrius_mgmt_GetRtc,
-		 .mh_read = Sentrius_mgmt_GetRtc
+    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
+         .mh_write = Sentrius_mgmt_CalibrateThermistor_Version2,
+         .mh_read = Sentrius_mgmt_CalibrateThermistor_Version2,
     },
-	[SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
-         .mh_write = Sentrius_mgmt_LoadParameterFile,
-		 .mh_read = Sentrius_mgmt_LoadParameterFile
+    [SENTRIUS_MGMT_ID_SET_RTC] = {
+         .mh_write = Sentrius_mgmt_Set_Rtc,
+         .mh_read = Sentrius_mgmt_Set_Rtc,
     },
-	[SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
-         .mh_write = Sentrius_mgmt_DumpParameterFile,
-		 .mh_read = Sentrius_mgmt_DumpParameterFile,
+    [SENTRIUS_MGMT_ID_GET_RTC] = {
+         .mh_write = Sentrius_mgmt_Get_Rtc,
+         .mh_read = Sentrius_mgmt_Get_Rtc,
     },
-	[SENTRIUS_MGMT_ID_PREPARE_LOG] = {
-         .mh_write = Sentrius_mgmt_PrepareLog,
-		 .mh_read = Sentrius_mgmt_PrepareLog
+    [SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
+         .mh_write = Sentrius_mgmt_Load_Parameter_File,
+         .mh_read = Sentrius_mgmt_Load_Parameter_File,
     },
-	[SENTRIUS_MGMT_ID_ACK_LOG] = {
-         .mh_write = Sentrius_mgmt_AckLog,
-		 .mh_read = Sentrius_mgmt_AckLog,
+    [SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
+         .mh_write = Sentrius_mgmt_Dump_Parameter_File,
+         .mh_read = Sentrius_mgmt_Dump_Parameter_File,
+    },
+    [SENTRIUS_MGMT_ID_PREPARE_LOG] = {
+         .mh_write = Sentrius_mgmt_Prepare_Log,
+         .mh_read = Sentrius_mgmt_Prepare_Log,
+    },
+    [SENTRIUS_MGMT_ID_ACK_LOG] = {
+         .mh_write = Sentrius_mgmt_Ack_Log,
+         .mh_read = Sentrius_mgmt_Ack_Log,
+    },
+    [SENTRIUS_MGMT_ID_FACTORY_RESET] = {
+         .mh_write = Sentrius_mgmt_Factory_Reset,
+         .mh_read = Sentrius_mgmt_Factory_Reset,
     },
     /* pyend */
 };
@@ -502,7 +508,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 	long long unsigned int c1 = 0;
@@ -541,7 +547,7 @@ int Sentrius_mgmt_CalibrateThermistorVersion2(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 {
 	int r = MGMT_ERR_EINVAL;
 	int t = 0;
@@ -573,7 +579,7 @@ int Sentrius_mgmt_SetRtc(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_GetRtc(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
 {
 	int t = lcz_qrtc_get_epoch();
 
@@ -584,7 +590,7 @@ int Sentrius_mgmt_GetRtc(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_LoadParameterFile(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 {
 	int r = -EPERM;
 
@@ -612,7 +618,7 @@ int Sentrius_mgmt_LoadParameterFile(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_DumpParameterFile(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 {
 	int r = -EPERM;
 	long long unsigned int type = ULLONG_MAX;
@@ -655,7 +661,7 @@ int Sentrius_mgmt_DumpParameterFile(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_PrepareLog(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 {
 	uint8_t f[LCZ_EVENT_MANAGER_FILENAME_SIZE];
 	int r = MGMT_ERR_EINVAL;
@@ -677,11 +683,30 @@ int Sentrius_mgmt_PrepareLog(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
-int Sentrius_mgmt_AckLog(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
 {
 	int r = MGMT_ERR_EINVAL;
 
 	r = lcz_event_manager_delete_log_file();
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result of log delete */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
+{
+	int r = MGMT_ERR_EINVAL;
+
+	r = Attribute_FactoryReset();
+	log_panic();
+	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
+
+	k_sleep(K_SECONDS(5));
+	sys_reboot(SYS_REBOOT_WARM);
 
 	/* Cbor encode result */
 	CborError err = 0;
