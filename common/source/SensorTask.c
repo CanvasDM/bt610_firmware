@@ -128,9 +128,7 @@ static gpio_flags_t GetEdgeType(digitalAlarm_t alarm);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
 static void StartAnalogInterval(void);
-static void StopAnalogInterval(void);
 static void StartTempertureInterval(void);
-static void StopTempertureInterval(void);
 static void StartBatteryInterval(void);
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
@@ -537,37 +535,36 @@ static void SensorConfigChange(void)
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		StopAnalogInterval();
 		break;
 	case CONFIG_ANALOG_INPUT:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		/*Configure all analogs to voltage*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_INPUT);
-		StartAnalogInterval();
+		
 		break;
 	case CONFIG_DIGITAL:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		StopAnalogInterval();
+		
 		/*Enable the digital inputs*/
 		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
 				    (DIGITAL_IN_ENABLE_MASK |
@@ -587,13 +584,13 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		StopAnalogInterval();			
+					
 		break;
 	case CONFIG_ANALOG_CURRENT:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		/*Configure all analogs to current*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_AC_CURRENT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
@@ -604,19 +601,19 @@ static void SensorConfigChange(void)
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		break;
 	case CONFIG_SPI_I2C:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StopTempertureInterval();
+					
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		StopAnalogInterval();
+		
 		break;
 	default:
 		/*Set to undefined*/
@@ -737,10 +734,7 @@ static void StartAnalogInterval(void)
 		}
 	}
 }
-static void StopAnalogInterval(void)
-{
-	k_timer_stop(sensorTaskObject.analogReadTimer);
-}
+
 static void StartTempertureInterval(void)
 {
 	uint8_t thermConfigEnable;
@@ -757,10 +751,7 @@ static void StartTempertureInterval(void)
 		}
 	}
 }
-static void StopTempertureInterval(void)
-{
-	k_timer_stop(sensorTaskObject.temperatureReadTimer);
-}
+
 static void StartBatteryInterval(void)
 {
 	if (sensorTaskObject.localActiveMode == true) {
