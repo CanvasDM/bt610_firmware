@@ -66,7 +66,7 @@ static struct bt_le_adv_param bt_param =
 			     NULL);
 static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
 	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
-	BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL);
+	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
 #endif
 
 static struct bt_data bt_ad[] = {
