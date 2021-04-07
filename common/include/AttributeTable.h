@@ -288,6 +288,7 @@ int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
 int AttributePrepare_analogInput3(void);
 int AttributePrepare_analogInput4(void);
+int AttributePrepare_upTime(void);
 /* pyend */
 
 #ifdef __cplusplus

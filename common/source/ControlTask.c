@@ -235,10 +235,6 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
 
-	/* One reason for this being milliseconds is to test the int64 type. */
-	int64_t uptimeMs = k_uptime_get();
-	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
-
 	/* Any benefit of a writable battery age isn't worth the complexity. */
 	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
 	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
@@ -308,4 +304,11 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 		LOG_ERR("\r\n!-----> Assertion <-----! %s:%d\r\n", file, line);
 		__NOP();
 	}
+}
+
+int AttributePrepare_upTime(void)
+{
+	int64_t uptimeMs = k_uptime_get();
+	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
+	return 0;
 }
