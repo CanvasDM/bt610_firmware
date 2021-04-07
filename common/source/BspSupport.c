@@ -23,12 +23,22 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 #include "BspSupport.h"
 
 /******************************************************************************/
+/* Local Constant, Macro and Type Definitions                                 */
+/******************************************************************************/
+#define BSP_SUPPORT_SHELL_STARTUP_DELAY_MS 10000
+#define BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS 250
+
+/******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static const struct device *port0;
 static const struct device *port1;
 static struct gpio_callback digitalIn1_cb_data;
 static struct gpio_callback digitalIn2_cb_data;
+static struct gpio_callback uart0cts_cb_data;
+/* Delayed work queue item used to hold off on shutting the UART */
+/* down to avoid interfering with shell startup */
+struct k_delayed_work uart0ShutoffDelayedWork;
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -39,9 +49,16 @@ static void DigitalIn1HandlerIsr(const struct device *port,
 static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins);
+static void UART0CTSHandlerIsr(const struct device *port,
+				struct gpio_callback *cb,
+				gpio_port_pins_t pins);
 
 static void ConfigureOutputs(void);
 //static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
+
+static void UART0InitialiseSWFlowControl(void);
+static void UART0SetStatus(bool isStartup);
+static void UART0WorkqHandler(struct k_work *item);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -58,6 +75,7 @@ void BSP_Init(void)
 		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
 	ConfigureOutputs();
+	UART0InitialiseSWFlowControl();
 }
 
 int BSP_PinSet(uint8_t pin, int value)
@@ -187,6 +205,56 @@ void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 	}
 }
 
+/** @brief Initialises UART0's software flow control.
+ *
+ *  NOTE - This relies on the UART CTS & RTS pins being decoupled
+ *         from the UART using property delete operations in an
+ *         overlay. It will not work if the pins are not decoupled
+ *         due to them being under control of the UART.
+ */
+static void UART0InitialiseSWFlowControl(void)
+{
+	/* If logging is enabled, don't enable flow control and */
+	/* keep the UART enabled permanently */
+#if !CONFIG_LOG
+
+	int r = 0;
+
+	/* RTS line as output and set low */
+	/* This will permanently signal to clients data can be sent */
+	r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
+			       GPIO_OUTPUT_LOW);
+
+	/* CTS line as an input pulled up high */
+	if (!r){
+
+		r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_CTS_PIN),
+					GPIO_INPUT | GPIO_INT_DISABLE |
+					GPIO_PULL_UP);
+	}
+
+	/* When this gets pulled down, it indicates a client is connected */
+	/* and the UART needing to be enabled. When pulled up, the client */
+	/* is disconnected and the UART switched off. */
+	if (!r){
+
+		r = gpio_pin_interrupt_configure(port0, 
+						GPIO_PIN_MAP(UART_0_CTS_PIN),
+						GPIO_INT_EDGE_BOTH);
+	}
+
+	if (!r){
+
+		gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
+				   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
+
+		gpio_add_callback(port0, &uart0cts_cb_data);
+
+		UART0SetStatus(true);
+	}
+#endif
+}
+
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -208,4 +276,104 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 
 	LOG_DBG("Digital pin%d is %u", DIN2_MCU_PIN, pinStatus);
 	SendDigitalInputStatus(DIN2_MCU_PIN, pinStatus);
+}
+
+/** @brief IRQ handler for changes to UART 0's CTS line. Used to switch the
+ *         UART on and off dependent upon the state of the CTS line.
+ *
+ *  @param [in]port - The port instance where the IRQ occurred.
+ *  @param [in]cb - IRQ callback data.
+ *  @param [in]pins - Pin status associated with the IRQ.
+ */
+static void UART0CTSHandlerIsr(const struct device *port,
+				 struct gpio_callback *cb,
+				 gpio_port_pins_t pins)
+{
+	/* Update the UART status depending upon the CTS line state */
+	UART0SetStatus(false);
+}
+
+/** @brief Enables or disables UART 0 depending upon the state of the CTS pin.
+ *
+ *  @param [in]isStartup - Passed as true during the initial call to the
+ *                         function. It was found during testing that if the
+ *                         UART was shut off before the Shell had output its
+ *                         prompt to the terminal, that it would not restart
+ *                         again upon restarting the UART.
+ *
+ *                         This parameter is used to trigger an initial delay
+ *                         before shutting the UART off to allow the Shell to
+ *                         finish its initialisation.
+ *
+ *                         Successive calls to this function pass this
+ *                         parameter as false such that no delay is incurred
+ *                         for successive calls.
+ */
+static void UART0SetStatus(bool isStartup)
+{
+	const struct device *uart_dev;
+	int rc = -EINVAL;
+
+	/* Get the port pin status */
+	int pinStatus = gpio_pin_get(port0, GPIO_PIN_MAP(UART_0_CTS_PIN));
+	/* And details of the UART */
+	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
+
+	if (uart_dev){
+	
+		if (pinStatus){
+			/* If high, a client has been disconnected and */
+			/* the UART needs to be shut off. */
+			if (isStartup){
+				/* If we're starting up, we need to allow the */
+				/* shell to finish starting up. If we don't   */
+				/* do this, we won't be able to reconnect at  */
+				/* a later stage.                             */
+				k_delayed_work_init(&uart0ShutoffDelayedWork,
+							UART0WorkqHandler);
+				k_delayed_work_submit(&uart0ShutoffDelayedWork,
+					K_MSEC(BSP_SUPPORT_SHELL_STARTUP_DELAY_MS));
+			}
+			else{
+				/* If we've already started up, a client has */
+				/* disconnected so we can safely disconnect  */
+				/* the UART with a reduced delay             */
+				k_delayed_work_init(&uart0ShutoffDelayedWork,
+							UART0WorkqHandler);
+				k_delayed_work_submit(&uart0ShutoffDelayedWork,
+					K_MSEC(BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS));
+			}
+		}
+		else{
+			/* If low, a client is connected so enable the UART */
+			rc = device_set_power_state(uart_dev,
+							DEVICE_PM_ACTIVE_STATE,
+							NULL,
+							NULL);
+		}
+	}
+}
+
+/** @brief System work queue handler for initial shut off of the UART. Refer to
+ *         the UART0SetStatus header for further details.
+ *
+ *  @param [in]item - Unused pointer to the work item.
+ */
+static void UART0WorkqHandler(struct k_work *item){
+
+	const struct device *uart_dev;
+
+	/* Get details for UART 0 */
+	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
+
+	/* And shut it off */
+	if (uart_dev){
+
+		/* Ignoring the return code here - if it's non-zero */
+		/* the UART is already off.                         */
+		(void)device_set_power_state(uart_dev,
+						DEVICE_PM_OFF_STATE,
+						NULL,
+						NULL);
+	}
 }

@@ -702,7 +702,7 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	int r = MGMT_ERR_EINVAL;
 
 	r = Attribute_FactoryReset();
-	log_panic();
+	LOG_PANIC();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
 
 	k_sleep(K_SECONDS(5));
