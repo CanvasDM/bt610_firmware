@@ -178,12 +178,16 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	mcumgr_wrapper_register_subsystems();
 
 	Flags_Init();
-		
+
 	UserInterfaceTask_Initialize();
+
 	BleTask_Initialize();
+
 	SensorTask_Initialize();
-	EventTask_Initialize();
+
 	lcz_event_manager_initialise();
+
+	EventTask_Initialize();
 
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();
