@@ -351,7 +351,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [13 ] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [14 ] = { RO_ATTRX(resetCount)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [15 ] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
-    [16 ] = { RO_ATTRX(upTime)                        , i64, n, n, y, n, n, n, AttributeValidator_int64    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [16 ] = { RO_ATTRX(upTime)                        , i64, n, n, y, n, n, n, AttributeValidator_int64    , AttributePrepare_upTime                   , .min.ux = 0.0       , .max.ux = 0.0        },
     [17 ] = { RW_ATTRX(highTemp1Thresh1)              , f  , y, y, y, y, y, n, AttributeValidator_float    , NULL                                      , .min.fx = -128.0    , .max.fx = 127.0      },
     [18 ] = { RW_ATTRX(highTemp1Thresh2)              , f  , y, y, y, y, y, n, AttributeValidator_float    , NULL                                      , .min.fx = -128.0    , .max.fx = 127.0      },
     [19 ] = { RW_ATTRX(lowTemp1Thresh1)               , f  , y, y, y, y, y, n, AttributeValidator_float    , NULL                                      , .min.fx = -128.0    , .max.fx = 127.0      },
@@ -576,4 +576,8 @@ __weak int AttributePrepare_analogInput4(void)
 	return 0;
 }
 
+__weak int AttributePrepare_upTime(void)
+{
+	return 0;
+}
 /* pyend */
