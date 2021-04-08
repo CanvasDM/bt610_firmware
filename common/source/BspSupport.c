@@ -8,6 +8,7 @@
  */
 
 #include <logging/log.h>
+#include <logging/log_ctrl.h>
 #define LOG_LEVEL
 LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 
@@ -25,7 +26,9 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
+/* Number of ms waited to shut UART 0 down at start up */
 #define BSP_SUPPORT_SHELL_STARTUP_DELAY_MS 10000
+/* Number of ms waited to shut UART 0 down at run time */
 #define BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS 250
 
 /******************************************************************************/
@@ -37,8 +40,11 @@ static struct gpio_callback digitalIn1_cb_data;
 static struct gpio_callback digitalIn2_cb_data;
 static struct gpio_callback uart0cts_cb_data;
 /* Delayed work queue item used to hold off on shutting the UART */
-/* down to avoid interfering with shell startup */
-struct k_delayed_work uart0ShutoffDelayedWork;
+/* down to avoid interfering with shell startup                  */
+static struct k_delayed_work uart0_shut_off_delayed_work;
+/* This is a copy of the context taken from the shell uart before */
+/* it gets switched off.                                          */
+void *uart0_ctx = NULL;
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -59,6 +65,14 @@ static void ConfigureOutputs(void);
 static void UART0InitialiseSWFlowControl(void);
 static void UART0SetStatus(bool isStartup);
 static void UART0WorkqHandler(struct k_work *item);
+#ifdef CONFIG_LOG
+static void UART0LoggingDisable(void);
+static void UART0LoggingEnable(void);
+static const struct log_backend *UART0FindBackend(void);
+#else
+#define UART0LoggingDisable()
+#define UART0LoggingEnable()
+#endif
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -214,10 +228,6 @@ void SendDigitalInputStatus(uint16_t pin, uint8_t status)
  */
 static void UART0InitialiseSWFlowControl(void)
 {
-	/* If logging is enabled, don't enable flow control and */
-	/* keep the UART enabled permanently */
-#if !CONFIG_LOG
-
 	int r = 0;
 
 	/* RTS line as output and set low */
@@ -245,14 +255,19 @@ static void UART0InitialiseSWFlowControl(void)
 
 	if (!r){
 
+		/* Set up the callback called when the CTS changes   */
 		gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
 				   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
 
 		gpio_add_callback(port0, &uart0cts_cb_data);
 
+		/* Set up the delayed work structure used to disable */
+		/* the UART                                          */
+		k_delayed_work_init(&uart0_shut_off_delayed_work,
+							UART0WorkqHandler);
+
 		UART0SetStatus(true);
 	}
-#endif
 }
 
 /******************************************************************************/
@@ -320,36 +335,43 @@ static void UART0SetStatus(bool isStartup)
 	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
 
 	if (uart_dev){
-	
+
+		/* If high, a client has been disconnected and the    */
+		/* UART needs to be shut off.                         */
 		if (pinStatus){
-			/* If high, a client has been disconnected and */
-			/* the UART needs to be shut off. */
+			/* If we're starting up, we need to allow the */
+			/* shell to finish starting up. If we don't   */
+			/* do this, we won't be able to reconnect at  */
+			/* a later stage.                             */
 			if (isStartup){
-				/* If we're starting up, we need to allow the */
-				/* shell to finish starting up. If we don't   */
-				/* do this, we won't be able to reconnect at  */
-				/* a later stage.                             */
-				k_delayed_work_init(&uart0ShutoffDelayedWork,
-							UART0WorkqHandler);
-				k_delayed_work_submit(&uart0ShutoffDelayedWork,
+
+				k_delayed_work_submit(&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_STARTUP_DELAY_MS));
 			}
 			else{
 				/* If we've already started up, a client has */
 				/* disconnected so we can safely disconnect  */
 				/* the UART with a reduced delay             */
-				k_delayed_work_init(&uart0ShutoffDelayedWork,
-							UART0WorkqHandler);
-				k_delayed_work_submit(&uart0ShutoffDelayedWork,
+				k_delayed_work_submit(&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS));
 			}
 		}
 		else{
-			/* If low, a client is connected so enable the UART */
-			rc = device_set_power_state(uart_dev,
+			/* Don't do anything if we're starting up. If so, */
+			/* the UART is already enabled and the context    */
+			/* pointer will be NULL. We need to go through    */
+			/* procedure to get a copy of the context data.   */
+			if (!isStartup){
+
+				/* If low, a client is connected so       */
+				/* enable the UART                        */
+				rc = device_set_power_state(uart_dev,
 							DEVICE_PM_ACTIVE_STATE,
 							NULL,
 							NULL);
+				/* Safe to resume logging now */
+				UART0LoggingEnable();
+			}
 		}
 	}
 }
@@ -362,6 +384,9 @@ static void UART0SetStatus(bool isStartup)
 static void UART0WorkqHandler(struct k_work *item){
 
 	const struct device *uart_dev;
+
+	/* Shut off logging if it's enabled */
+	UART0LoggingDisable();
 
 	/* Get details for UART 0 */
 	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
@@ -377,3 +402,68 @@ static void UART0WorkqHandler(struct k_work *item){
 						NULL);
 	}
 }
+
+#ifdef CONFIG_LOG
+/** @brief Disables the logging subsystem backend UART.
+ *
+ */
+static void UART0LoggingDisable(void)
+{
+	const struct log_backend *uart0_backend;
+
+	uart0_backend = UART0FindBackend();
+	if (uart0_backend != NULL){
+		/* Store the context before disabling */
+		uart0_ctx = uart0_backend->cb->ctx;
+		/* Then disable it */
+		log_backend_disable(uart0_backend);
+	}
+}
+
+/** @brief Enables the logging subsystem backend UART.
+ *
+ */
+static void UART0LoggingEnable(void)
+{
+	const struct log_backend *uart0_backend;
+
+	uart0_backend = UART0FindBackend();
+	if (uart0_backend != NULL){
+		log_backend_enable(uart0_backend,
+					uart0_ctx,
+					CONFIG_LOG_MAX_LEVEL);
+	}
+}
+
+/** @brief Finds the logging subsystem backend pointer for UART0.
+ *
+ *  @returns A pointer to the UART0 backend, NULL if not found.
+ */
+static const struct log_backend *UART0FindBackend(void)
+{
+	const struct log_backend *backend;
+	const struct log_backend *uart0_backend = NULL;
+	uint32_t backend_idx;
+	bool null_backend_found = false;
+
+	for (backend_idx = 0;
+		(uart0_backend == NULL)&&
+		(null_backend_found == false);
+			backend_idx++){
+		/* Get the next backend */
+		backend = log_backend_get(backend_idx);
+		/* If it's NULL, stop here */
+		if (backend != NULL){
+			/* Is it UART0? */
+			if (!strcmp(backend->name,"shell_uart_backend")){
+				/* Found it */
+				uart0_backend = backend;
+			}
+		}
+		else{
+			null_backend_found = true;
+		}
+	}
+	return(uart0_backend);
+}
+#endif
