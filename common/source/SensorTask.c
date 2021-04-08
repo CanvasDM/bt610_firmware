@@ -71,7 +71,6 @@ typedef enum {
 
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
-	uint8_t localActiveMode;
 	uint8_t digitalIn1Enabled;
 	uint8_t digitalIn2Enabled;
 	digitalAlarm_t input1Alarm;
@@ -176,7 +175,6 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); // 0 for one shot
 	sensorTaskObject.msgTask.rxer.pQueue = &sensorTaskQueue;
 
-	sensorTaskObject.localActiveMode = 0;
 	sensorTaskObject.digitalIn1Enabled = NO_ALARM;
 	sensorTaskObject.digitalIn2Enabled = NO_ALARM;
 	sensorTaskObject.input1Alarm = 0;
@@ -502,14 +500,10 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	if (activeModeStatus == 0) {
 		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
-		sensorTaskObject.localActiveMode = true;
 		Flags_Set(FLAG_ACTIVE_MODE, 1);
 	} else {
-		sensorTaskObject.localActiveMode = false;
 		Flags_Set(FLAG_ACTIVE_MODE, 0);
 	}
-
-	/*Todo: send messages to begin periodic measurments.*/
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
@@ -535,7 +529,7 @@ static void SensorConfigChange(void)
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
@@ -546,25 +540,25 @@ static void SensorConfigChange(void)
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		/*Configure all analogs to voltage*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_INPUT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_INPUT);
-		
+
 		break;
 	case CONFIG_DIGITAL:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		
+
 		/*Enable the digital inputs*/
 		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
 				    (DIGITAL_IN_ENABLE_MASK |
@@ -578,19 +572,19 @@ static void SensorConfigChange(void)
 		thermistorsConfig = 0x0F;
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					StartTempertureInterval();
+		StartTempertureInterval();
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-					
+
 		break;
 	case CONFIG_ANALOG_CURRENT:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		/*Configure all analogs to current*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_AC_CURRENT);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
@@ -601,19 +595,19 @@ static void SensorConfigChange(void)
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		break;
 	case CONFIG_SPI_I2C:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-					
+
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
-		
+
 		break;
 	default:
 		/*Set to undefined*/
@@ -713,6 +707,11 @@ static void StartAnalogInterval(void)
 	uint8_t analog2ConfigEnable;
 	uint8_t analog3ConfigEnable;
 	uint8_t analog4ConfigEnable;
+	uint8_t activeModeStatus = 0;
+
+	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+		      sizeof(activeModeStatus));
+
 	Attribute_Get(ATTR_INDEX_analogInput1Type, &analog1ConfigEnable,
 		      sizeof(analog1ConfigEnable));
 	Attribute_Get(ATTR_INDEX_analogInput2Type, &analog2ConfigEnable,
@@ -722,7 +721,7 @@ static void StartAnalogInterval(void)
 	Attribute_Get(ATTR_INDEX_analogInput4Type, &analog4ConfigEnable,
 		      sizeof(analog4ConfigEnable));
 
-	if ((sensorTaskObject.localActiveMode == true) &&
+	if ((activeModeStatus == true) &&
 	    ((analog1ConfigEnable > 0) || (analog2ConfigEnable > 0) ||
 	     (analog3ConfigEnable > 0) || (analog4ConfigEnable > 0))) {
 		uint32_t intervalSeconds = 0;
@@ -738,10 +737,14 @@ static void StartAnalogInterval(void)
 static void StartTempertureInterval(void)
 {
 	uint8_t thermConfigEnable;
+	uint8_t activeModeStatus = 0;
+
+	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+		      sizeof(activeModeStatus));
 	Attribute_Get(ATTR_INDEX_thermistorConfig, &thermConfigEnable,
 		      sizeof(thermConfigEnable));
-	if ((sensorTaskObject.localActiveMode == true) &&
-	    (thermConfigEnable > 0)) {
+
+	if ((activeModeStatus == true) && (thermConfigEnable > 0)) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
@@ -754,7 +757,12 @@ static void StartTempertureInterval(void)
 
 static void StartBatteryInterval(void)
 {
-	if (sensorTaskObject.localActiveMode == true) {
+	uint8_t activeModeStatus = 0;
+
+	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+		      sizeof(activeModeStatus));
+
+	if (activeModeStatus == true) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_batterySenseInterval);
