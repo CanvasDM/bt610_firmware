@@ -292,7 +292,7 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 
-	log_panic();
+	LOG_PANIC();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
 	LOG_ERR("Software Reset in ~5 seconds");
 	k_sleep(K_SECONDS(5));
