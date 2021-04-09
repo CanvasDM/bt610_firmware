@@ -56,8 +56,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins);
 static void UART0CTSHandlerIsr(const struct device *port,
-				struct gpio_callback *cb,
-				gpio_port_pins_t pins);
+			       struct gpio_callback *cb, gpio_port_pins_t pins);
 
 static void ConfigureOutputs(void);
 //static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
@@ -89,7 +88,7 @@ void BSP_Init(void)
 		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
 	ConfigureOutputs();
-	//UART0InitialiseSWFlowControl();
+	UART0InitialiseSWFlowControl();
 }
 
 int BSP_PinSet(uint8_t pin, int value)
@@ -236,25 +235,22 @@ static void UART0InitialiseSWFlowControl(void)
 			       GPIO_OUTPUT_LOW);
 
 	/* CTS line as an input pulled up high */
-	if (!r){
-
+	if (!r) {
 		r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_CTS_PIN),
-					GPIO_INPUT | GPIO_INT_DISABLE |
-					GPIO_PULL_UP);
+				       GPIO_INPUT | GPIO_INT_DISABLE |
+					       GPIO_PULL_UP);
 	}
 
 	/* When this gets pulled down, it indicates a client is connected */
 	/* and the UART needing to be enabled. When pulled up, the client */
 	/* is disconnected and the UART switched off. */
-	if (!r){
-
-		r = gpio_pin_interrupt_configure(port0, 
-						GPIO_PIN_MAP(UART_0_CTS_PIN),
-						GPIO_INT_EDGE_BOTH);
+	if (!r) {
+		r = gpio_pin_interrupt_configure(port0,
+						 GPIO_PIN_MAP(UART_0_CTS_PIN),
+						 GPIO_INT_EDGE_BOTH);
 	}
 
-	if (!r){
-
+	if (!r) {
 		/* Set up the callback called when the CTS changes   */
 		gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
 				   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
@@ -264,7 +260,7 @@ static void UART0InitialiseSWFlowControl(void)
 		/* Set up the delayed work structure used to disable */
 		/* the UART                                          */
 		k_delayed_work_init(&uart0_shut_off_delayed_work,
-							UART0WorkqHandler);
+				    UART0WorkqHandler);
 
 		UART0SetStatus(true);
 	}
@@ -301,8 +297,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
  *  @param [in]pins - Pin status associated with the IRQ.
  */
 static void UART0CTSHandlerIsr(const struct device *port,
-				 struct gpio_callback *cb,
-				 gpio_port_pins_t pins)
+			       struct gpio_callback *cb, gpio_port_pins_t pins)
 {
 	/* Update the UART status depending upon the CTS line state */
 	UART0SetStatus(false);
@@ -334,41 +329,37 @@ static void UART0SetStatus(bool isStartup)
 	/* And details of the UART */
 	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
 
-	if (uart_dev){
-
+	if (uart_dev) {
 		/* If high, a client has been disconnected and the    */
 		/* UART needs to be shut off.                         */
-		if (pinStatus){
+		if (pinStatus) {
 			/* If we're starting up, we need to allow the */
 			/* shell to finish starting up. If we don't   */
 			/* do this, we won't be able to reconnect at  */
 			/* a later stage.                             */
-			if (isStartup){
-
-				k_delayed_work_submit(&uart0_shut_off_delayed_work,
+			if (isStartup) {
+				k_delayed_work_submit(
+					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_STARTUP_DELAY_MS));
-			}
-			else{
+			} else {
 				/* If we've already started up, a client has */
 				/* disconnected so we can safely disconnect  */
 				/* the UART with a reduced delay             */
-				k_delayed_work_submit(&uart0_shut_off_delayed_work,
+				k_delayed_work_submit(
+					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS));
 			}
-		}
-		else{
+		} else {
 			/* Don't do anything if we're starting up. If so, */
 			/* the UART is already enabled and the context    */
 			/* pointer will be NULL. We need to go through    */
 			/* procedure to get a copy of the context data.   */
-			if (!isStartup){
-
+			if (!isStartup) {
 				/* If low, a client is connected so       */
 				/* enable the UART                        */
-				rc = device_set_power_state(uart_dev,
-							DEVICE_PM_ACTIVE_STATE,
-							NULL,
-							NULL);
+				rc = device_set_power_state(
+					uart_dev, DEVICE_PM_ACTIVE_STATE, NULL,
+					NULL);
 				/* Safe to resume logging now */
 				UART0LoggingEnable();
 			}
@@ -381,8 +372,8 @@ static void UART0SetStatus(bool isStartup)
  *
  *  @param [in]item - Unused pointer to the work item.
  */
-static void UART0WorkqHandler(struct k_work *item){
-
+static void UART0WorkqHandler(struct k_work *item)
+{
 	const struct device *uart_dev;
 
 	/* Shut off logging if it's enabled */
@@ -392,14 +383,11 @@ static void UART0WorkqHandler(struct k_work *item){
 	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
 
 	/* And shut it off */
-	if (uart_dev){
-
+	if (uart_dev) {
 		/* Ignoring the return code here - if it's non-zero */
 		/* the UART is already off.                         */
-		(void)device_set_power_state(uart_dev,
-						DEVICE_PM_OFF_STATE,
-						NULL,
-						NULL);
+		(void)device_set_power_state(uart_dev, DEVICE_PM_OFF_STATE,
+					     NULL, NULL);
 	}
 }
 
@@ -412,7 +400,7 @@ static void UART0LoggingDisable(void)
 	const struct log_backend *uart0_backend;
 
 	uart0_backend = UART0FindBackend();
-	if (uart0_backend != NULL){
+	if (uart0_backend != NULL) {
 		/* Store the context before disabling */
 		uart0_ctx = uart0_backend->cb->ctx;
 		/* Then disable it */
@@ -428,10 +416,9 @@ static void UART0LoggingEnable(void)
 	const struct log_backend *uart0_backend;
 
 	uart0_backend = UART0FindBackend();
-	if (uart0_backend != NULL){
-		log_backend_enable(uart0_backend,
-					uart0_ctx,
-					CONFIG_LOG_MAX_LEVEL);
+	if (uart0_backend != NULL) {
+		log_backend_enable(uart0_backend, uart0_ctx,
+				   CONFIG_LOG_MAX_LEVEL);
 	}
 }
 
@@ -447,23 +434,21 @@ static const struct log_backend *UART0FindBackend(void)
 	bool null_backend_found = false;
 
 	for (backend_idx = 0;
-		(uart0_backend == NULL)&&
-		(null_backend_found == false);
-			backend_idx++){
+	     (uart0_backend == NULL) && (null_backend_found == false);
+	     backend_idx++) {
 		/* Get the next backend */
 		backend = log_backend_get(backend_idx);
 		/* If it's NULL, stop here */
-		if (backend != NULL){
+		if (backend != NULL) {
 			/* Is it UART0? */
-			if (!strcmp(backend->name,"shell_uart_backend")){
+			if (!strcmp(backend->name, "shell_uart_backend")) {
 				/* Found it */
 				uart0_backend = backend;
 			}
-		}
-		else{
+		} else {
 			null_backend_found = true;
 		}
 	}
-	return(uart0_backend);
+	return (uart0_backend);
 }
 #endif

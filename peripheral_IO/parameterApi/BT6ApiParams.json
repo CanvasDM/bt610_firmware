@@ -952,7 +952,7 @@
           },
           {
             "name": "digitalOutput1State",
-            "summary": "0 = off, 1 - on",
+            "summary": "false = off, true - on",
             "required": true,
             "x-id": 9,
             "x-groupid": 65,
@@ -974,7 +974,7 @@
           },
           {
             "name": "digitalOutput2State",
-            "summary": "0 = off, 1 - on",
+            "summary": "false = off, true - on",
             "required": true,
             "x-id": 10,
             "x-groupid": 65,
@@ -1112,7 +1112,6 @@
               "x-default": "127",
               "x-example": "100",
               "x-lockable": true,
-              "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
@@ -1948,7 +1947,7 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "bool",
-              "x-default": "0",
+              "x-default": "1",
               "x-example": "0",
               "x-lockable": true,
               "x-savable": true,
