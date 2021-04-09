@@ -292,7 +292,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.33",
+	.apiVersion = "1.35",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456
@@ -339,7 +339,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [1  ] = { RW_ATTRS(sensorLocation)                , s  , y, y, y, y, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 20.0      , .max.ux = 10000.0    },
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
-    [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
     [5  ] = { RW_ATTRX(lock)                          , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
@@ -526,6 +526,11 @@ bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 #endif
 
 /* pystart - prepare for read weak implementations */
+__weak int AttributePrepare_upTime(void)
+{
+	return 0;
+}
+
 __weak int AttributePrepare_temperatureResult1(void)
 {
 	return 0;
@@ -576,8 +581,4 @@ __weak int AttributePrepare_analogInput4(void)
 	return 0;
 }
 
-__weak int AttributePrepare_upTime(void)
-{
-	return 0;
-}
 /* pyend */
