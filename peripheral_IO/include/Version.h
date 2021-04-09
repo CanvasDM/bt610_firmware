@@ -17,8 +17,8 @@ extern "C" {
 /* Application Firmware Version                                               */
 /******************************************************************************/
 #define VERSION_MAJOR 1
-#define VERSION_MINOR 3
-#define VERSION_PATCH 98
+#define VERSION_MINOR 4
+#define VERSION_PATCH 32
 #define VERSION_STRING                                                         \
 	STRINGIFY(VERSION_MAJOR)                                               \
 	"." STRINGIFY(VERSION_MINOR) "." STRINGIFY(VERSION_PATCH)
