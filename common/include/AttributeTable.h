@@ -278,6 +278,7 @@ int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue, size_t Lengt
 
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
+int AttributePrepare_upTime(void);
 int AttributePrepare_temperatureResult1(void);
 int AttributePrepare_temperatureResult2(void);
 int AttributePrepare_temperatureResult3(void);
@@ -288,7 +289,6 @@ int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
 int AttributePrepare_analogInput3(void);
 int AttributePrepare_analogInput4(void);
-int AttributePrepare_upTime(void);
 /* pyend */
 
 #ifdef __cplusplus

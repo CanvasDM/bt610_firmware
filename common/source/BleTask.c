@@ -454,6 +454,8 @@ static void ConnectionTimerStart(void)
 	if (timeoutSeconds != 0) {
 		k_timer_start(&connectionTimer, K_SECONDS(timeoutSeconds),
 			      K_NO_WAIT);
+	} else if (timeoutSeconds == 0) {
+		k_timer_stop(&connectionTimer);
 	}
 }
 static void ConnectionTimerRestart(void)
