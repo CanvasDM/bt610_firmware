@@ -324,7 +324,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			updateData = true;
 			break;
 		case ATTR_INDEX_useCodedPhy:
-			//Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
+			Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -416,9 +416,9 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bto.conn = NULL;
 
 	/*Start the advertisment again*/
-	//if (Attribute_CodedEnableCheck() == true) {
-	//	Advertisement_ExtendedSet(true);
-	//}
+	if (Attribute_CodedEnableCheck() == true) {
+		Advertisement_ExtendedSet(true);
+	}
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
 
