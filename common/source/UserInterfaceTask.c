@@ -422,6 +422,7 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	lcz_led_blink(GREEN_LED, &EXIT_SHELF_MODE_PATTERN);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
+	//Advertisement_ExtendedSet(false);				  
 	return DISPATCH_OK;
 }
 
@@ -502,7 +503,6 @@ static void Button3HandlerIsr(const struct device *dev,
 		LOG_DBG("Rising amr");
 		if (ValidExitShelfModeDuration(k_uptime_delta(&amrEventTime))) {
 			code = FMC_EXIT_SHELF_MODE;
-			Advertisement_ExtendedSet(false);
 		}
 	} else {
 		LOG_DBG("Falling amr");

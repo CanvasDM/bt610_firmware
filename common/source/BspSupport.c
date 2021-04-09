@@ -89,7 +89,7 @@ void BSP_Init(void)
 		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
 	ConfigureOutputs();
-	UART0InitialiseSWFlowControl();
+	//UART0InitialiseSWFlowControl();
 }
 
 int BSP_PinSet(uint8_t pin, int value)

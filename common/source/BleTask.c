@@ -324,7 +324,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			updateData = true;
 			break;
 		case ATTR_INDEX_useCodedPhy:
-			Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
+			//Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -391,8 +391,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bto.conn = bt_conn_ref(conn);
 
 		/* stop advertising so another central cannot connect */
-		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-					      FMC_BLE_END_ADVERTISING);
+		//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+		//			      FMC_BLE_END_ADVERTISING);
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
@@ -401,6 +401,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		/*Pause the duration timer if it is running*/
 		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
+		k_timer_stop(&durationTimer);
 	}
 }
 
@@ -415,9 +416,9 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bto.conn = NULL;
 
 	/*Start the advertisment again*/
-	if (Attribute_CodedEnableCheck() == true) {
-		Advertisement_ExtendedSet(true);
-	}
+	//if (Attribute_CodedEnableCheck() == true) {
+	//	Advertisement_ExtendedSet(true);
+	//}
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
 
