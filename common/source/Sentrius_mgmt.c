@@ -86,6 +86,7 @@ typedef union _floatContainer_t {
 	uint16_t halfFloatValue;
 	float floatValue;
 	double doubleValue;
+	long long int integerValue;
 } floatContainer_t;
 
 static CborAttrType ParameterValueType(attr_idx_t paramID,
@@ -824,6 +825,10 @@ static int FloatParameterExternalValueType(CborType cborType,
 	int result = 0;
 
 	switch (cborType) {
+	case (CborIntegerType):
+		attrs->addr.integer = &floatContainer->integerValue;
+		attrs->type = CborAttrIntegerType;
+		break;
 	case (CborHalfFloatType):
 		attrs->addr.halffloat = &floatContainer->halfFloatValue;
 		attrs->type = CborAttrHalfFloatType;
@@ -856,6 +861,10 @@ static int FloatParameterExternalToInternal(CborType externalFormat,
 	int result = 0;
 
 	switch (externalFormat) {
+	case (CborIntegerType):
+		*outData = ((float)(floatContainer->integerValue));
+		attrs->addr.fval = outData;
+		break;
 	case (CborHalfFloatType):
 		*outData = HalfToFloat(floatContainer->halfFloatValue);
 		attrs->addr.fval = outData;
