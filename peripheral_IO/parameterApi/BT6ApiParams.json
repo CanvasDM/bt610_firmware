@@ -1947,7 +1947,7 @@
               "minimum": 0.0,
               "maximum": 1.0,
               "x-ctype": "bool",
-              "x-default": "1",
+              "x-default": "0",
               "x-example": "0",
               "x-lockable": true,
               "x-savable": true,
