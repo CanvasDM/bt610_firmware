@@ -49,6 +49,8 @@ static struct bt_le_ext_adv *adv;
 static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
+static uint8_t pairCheck = 0;
+static uint8_t passCheck = 0;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -94,7 +96,14 @@ static struct bt_conn_cb connection_callbacks;
 static void CreateAdvertisingParm(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
+static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
+static void AuthPasskeyEntryCb(struct bt_conn *conn);
 static void AuthCancelCb(struct bt_conn *conn);
+static void AuthPairingConfirmCb(struct bt_conn *conn);
+static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded);
+static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey);
+static void AuthPairingFailedCb(struct bt_conn *conn,
+				enum bt_security_err reason);
 static void CreateAdvertisingExtendedParm(void);
 static void CreateAdvertisingStandardParm(void);
 /******************************************************************************/
@@ -163,7 +172,13 @@ int Advertisement_Init(void)
 	bt_conn_cb_register(&connection_callbacks);
 
 	const struct bt_conn_auth_cb auth_callback = {
+		.passkey_display = AuthPasskeyDisplayCb,
+		.passkey_entry = AuthPasskeyEntryCb,
+		.passkey_confirm = AuthPasskeyConfirmCb,
 		.cancel = AuthCancelCb,
+		.pairing_confirm = AuthPairingConfirmCb,
+		.pairing_complete = AuthPairingCompleteCb,
+		.pairing_failed = AuthPairingFailedCb
 	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
@@ -363,11 +378,58 @@ static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
 }
+static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
+{
+	char addr[BT_ADDR_LE_STR_LEN];
+
+	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+
+	LOG_INF("Passkey for %s: %06u\n", log_strdup(addr), passkey);
+}
+static void AuthPasskeyEntryCb(struct bt_conn *conn)
+{
+	LOG_DBG("..");
+	/*const unsigned int PIN = SENSOR_PIN_DEFAULT;
+	if (conn == st.conn) {
+		__ASSERT_EVAL((void)bt_conn_auth_passkey_entry(conn, PIN),
+			      int result =
+				      bt_conn_auth_passkey_entry(conn, PIN),
+			      result == BT_SUCCESS, "Passkey entry failed");
+	}*/
+}
 static void AuthCancelCb(struct bt_conn *conn)
 {
 	char *addr = ble_addr(conn);
 
 	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
+}
+void AuthPairingConfirmCb(struct bt_conn *conn)
+{
+	char *addr = ble_addr(conn);
+
+	pairCheck = 1;
+
+	bt_conn_auth_pairing_confirm(conn);
+	LOG_INF("Pairing confirmed: %s", log_strdup(addr));
+}
+static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
+{
+	char *addr = ble_addr(conn);
+
+	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
+}
+
+static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey)
+{
+	passCheck = 1;
+}
+static void AuthPairingFailedCb(struct bt_conn *conn,
+				enum bt_security_err reason)
+{
+	LOG_DBG(".");
+	///if (conn == st.conn) {
+	//		st.paired = false;
+	//}
 }
 void CreateAdvertisingExtendedParm(void)
 {
