@@ -62,6 +62,7 @@ typedef struct {
 #ifndef BLE_TASK_QUEUE_DEPTH
 #define BLE_TASK_QUEUE_DEPTH 8
 #endif
+#define BOOTUP_ADVERTISMENT_TIME_MS (15000)
 
 typedef struct BleTaskTag {
 	FwkMsgTask_t msgTask;
@@ -99,6 +100,7 @@ static void ConnectionTimerRestart(void);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
+static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -106,6 +108,7 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static BleTaskObj_t bto;
 static struct k_timer connectionTimer;
 static struct k_timer durationTimer;
+static struct k_timer bootAdvertTimer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -238,16 +241,6 @@ static int BluetoothInit(void)
 
 	} while (0);
 
-	k_timer_init(&connectionTimer, ConnectionTimerCallbackIsr, NULL);
-	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
-
-	uint8_t activeMode = 0;
-	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-
-	if (activeMode == true) {
-		Advertisement_Start();
-	}
-
 	return r;
 }
 
@@ -255,10 +248,24 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	int r;
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
+	uint8_t activeMode = 0;
 
+	k_timer_init(&connectionTimer, ConnectionTimerCallbackIsr, NULL);
+	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
+	k_timer_init(&bootAdvertTimer, BootAdvertTimerCallbackIsr, NULL);
 	r = BluetoothInit();
 	while (r != 0) {
 		k_sleep(K_SECONDS(1));
+	}
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+
+	if (activeMode == false) {
+		Advertisement_ExtendedSet(false);
+		k_timer_start(&bootAdvertTimer,
+			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
+
+	} else {
+		Advertisement_Start();
 	}
 
 	while (true) {
@@ -390,10 +397,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
 
-		/* stop advertising so another central cannot connect */
-		//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-		//			      FMC_BLE_END_ADVERTISING);
-
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
 
@@ -492,4 +495,16 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_EVENT);
+}
+static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+	uint8_t activeMode = 0;
+
+	/*If active mode hasn't been turned on at this point turn off the adverisments*/
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+	if (activeMode == false) {
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+					      FMC_BLE_END_ADVERTISING);
+	}
 }
