@@ -391,8 +391,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		bto.conn = bt_conn_ref(conn);
 
 		/* stop advertising so another central cannot connect */
-		//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-		//			      FMC_BLE_END_ADVERTISING);
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+					      FMC_BLE_END_ADVERTISING);
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L3);
 		LOG_DBG("Setting security status: %d", r);
