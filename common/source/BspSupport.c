@@ -72,6 +72,7 @@ static const struct log_backend *UART0FindBackend(void);
 #define UART0LoggingDisable()
 #define UART0LoggingEnable()
 #endif
+static void UART1Initialise(void);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -89,6 +90,7 @@ void BSP_Init(void)
 	}
 	ConfigureOutputs();
 	UART0InitialiseSWFlowControl();
+	UART1Initialise();
 }
 
 int BSP_PinSet(uint8_t pin, int value)
@@ -452,3 +454,26 @@ static const struct log_backend *UART0FindBackend(void)
 	return (uart0_backend);
 }
 #endif
+
+/** @brief Disables UART1 for this revision - note in successive releases this
+ *         will need to be updated depending upon the functionality required.
+ *         Added here to tidy up after MCU Boot.
+ */
+static void UART1Initialise(void)
+{
+	const struct device *uart_dev;
+
+	/* Get details for UART 1 */
+	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart1)));
+
+	/* And shut it off */
+	if (uart_dev){
+
+		/* Ignoring the return code here - if it's non-zero */
+		/* the UART is already off.                         */
+		(void)device_set_power_state(uart_dev,
+						DEVICE_PM_OFF_STATE,
+						NULL,
+						NULL);
+	}
+}
