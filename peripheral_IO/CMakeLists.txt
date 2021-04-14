@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.13.1)
 
+add_definitions(-DFLOAT_SUPPORT=1)
+
 # Re-direct the directory where the 'boards' directory is found from
 # $ZEPHYR_BASE to this directory (don't overlay our boards onto Zephyr tree).
 get_filename_component(BOARD_DIR
