@@ -70,6 +70,7 @@ typedef struct BleTaskTag {
 	struct bt_conn *conn;
 	bool lfs_mounted;
 	uint32_t durationTimeMs;
+	bool activeModeStatus;
 } BleTaskObj_t;
 
 /******************************************************************************/
@@ -163,6 +164,7 @@ void BleTask_Initialize(void)
 	bto.msgTask.rxer.pQueue = &bleTaskQueue;
 
 	bto.durationTimeMs = 0;
+	bto.activeModeStatus = false;
 	Framework_RegisterTask(&bto.msgTask);
 
 	bto.msgTask.pTid =
@@ -325,6 +327,10 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_connectionTimeoutSec:
 			ConnectionTimerRestart();
 			break;
+		case ATTR_INDEX_activeMode:
+		Attribute_Get(ATTR_INDEX_activeMode, &bto.activeModeStatus,
+		      sizeof(bto.activeModeStatus));
+		break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
 			//case ATTR_INDEX_flags:
@@ -502,8 +508,7 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 	uint8_t activeMode = 0;
 
 	/*If active mode hasn't been turned on at this point turn off the adverisments*/
-	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if (activeMode == false) {
+	if (bto.activeModeStatus == false) {
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 					      FMC_BLE_END_ADVERTISING);
 	}

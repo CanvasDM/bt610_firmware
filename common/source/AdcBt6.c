@@ -67,7 +67,7 @@ const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
 #define V_5_ENABLE_DELAY_MS 3
 #define B_PLUS_ENABLE_DELAY_MS 1
 #define ULTRASONIC_DELAY_MS 400 /* 2 measurements */
-#define PRESSURE_DELAY_MS 5
+#define PRESSURE_DELAY_MS 100
 
 /* Constants for converting ADC counts to voltage */
 #define ANALOG_VOLTAGE_CONVERSION_FACTOR 281.2

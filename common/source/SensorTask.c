@@ -512,6 +512,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static void LoadSensorConfiguration(void)
 {
 	SensorConfigChange();
+
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 static void SensorConfigChange(void)

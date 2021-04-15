@@ -200,6 +200,31 @@ int Advertisement_IntervalUpdate(void)
 	bt_param.interval_max = advetInterval + BT_GAP_ADV_FAST_INT_MAX_1;
 	bt_param.interval_min = advetInterval;
 
+	bt_extendParam.interval_max = bt_param.interval_max;
+	bt_extendParam.interval_min = bt_param.interval_min;
+
+	if (advertising == true) {
+		r = Advertisement_End();
+		if (r == 0) {
+			if (extendPhyEnbled == true) {
+				r = bt_le_ext_adv_update_param(extendedAdv, &bt_extendParam);
+			} else {
+				r = bt_le_ext_adv_update_param(adv, &bt_param);
+			}
+
+			LOG_INF("update interval (%d)", r);
+		}
+		r = Advertisement_Start();
+	} else {
+		if (extendPhyEnbled == true) {
+			r = bt_le_ext_adv_update_param(extendedAdv, &bt_extendParam);
+		} else {
+			r = bt_le_ext_adv_update_param(adv, &bt_param);
+		}
+
+		LOG_INF("update interval (%d)", r);
+	}
+
 	return r;
 }
 int Advertisement_Update(void)
@@ -389,13 +414,6 @@ static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 static void AuthPasskeyEntryCb(struct bt_conn *conn)
 {
 	LOG_DBG("..");
-	/*const unsigned int PIN = SENSOR_PIN_DEFAULT;
-	if (conn == st.conn) {
-		__ASSERT_EVAL((void)bt_conn_auth_passkey_entry(conn, PIN),
-			      int result =
-				      bt_conn_auth_passkey_entry(conn, PIN),
-			      result == BT_SUCCESS, "Passkey entry failed");
-	}*/
 }
 static void AuthCancelCb(struct bt_conn *conn)
 {
@@ -427,9 +445,6 @@ static void AuthPairingFailedCb(struct bt_conn *conn,
 				enum bt_security_err reason)
 {
 	LOG_DBG(".");
-	///if (conn == st.conn) {
-	//		st.paired = false;
-	//}
 }
 void CreateAdvertisingExtendedParm(void)
 {
