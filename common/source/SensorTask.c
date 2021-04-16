@@ -125,6 +125,7 @@ static void SensorOutput2Control(void);
 
 static void UpdateDin1(void);
 static void UpdateDin2(void);
+static void DisableDigitalIO(void);
 static gpio_flags_t GetEdgeType(digitalAlarm_t alarm);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
@@ -515,7 +516,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static void LoadSensorConfiguration(void)
 {
 	SensorConfigChange();
-	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+	//Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 
@@ -545,6 +546,9 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+
+		/*Disable Digital*/
+		DisableDigitalIO();
 		break;
 	case CONFIG_ANALOG_INPUT:
 		/*Disable all the thermistors*/
@@ -556,6 +560,9 @@ static void SensorConfigChange(void)
 		//Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_VOLTAGE);
 		//Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_VOLTAGE);
 		//Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_VOLTAGE);
+
+		/*Disable Digital*/
+		DisableDigitalIO();
 
 		break;
 	case CONFIG_DIGITAL:
@@ -590,6 +597,9 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
 		StartTempertureInterval();
 
+		/*Disable Digital*/
+		DisableDigitalIO();
+
 		break;
 	case CONFIG_ANALOG_AC_CURRENT:
 		/*Disable all the thermistors*/
@@ -601,11 +611,17 @@ static void SensorConfigChange(void)
 		//Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
 		//Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_AC_CURRENT);
 		//Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_AC_CURRENT);
+
+		/*Disable Digital*/
+		DisableDigitalIO();
 		break;
 	case CONFIG_ULTRASONIC_PRESSURE:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
+
+		/*Disable Digital*/
+		DisableDigitalIO();
 
 		break;
 	case CONFIG_SPI_I2C:
@@ -618,6 +634,9 @@ static void SensorConfigChange(void)
 		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+
+		/*Disable Digital*/
+		DisableDigitalIO();
 
 		break;
 	default:
@@ -661,6 +680,18 @@ static void UpdateDin2(void)
 		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
 		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
+}
+static void DisableDigitalIO(void)
+{
+	/*Disable the digital inputs*/
+	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
+			    (!DIGITAL_IN_ENABLE_MASK | DIGITAL_IN_ALARM_MASK));
+	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
+			    (!DIGITAL_IN_ENABLE_MASK | DIGITAL_IN_ALARM_MASK));
+
+	/*Disable the digital outputs*/
+	BSP_PinSet(DO1_PIN, (0));
+	BSP_PinSet(DO2_PIN, (0));
 }
 
 static gpio_flags_t GetEdgeType(digitalAlarm_t alarm)
