@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.36",
+    "version": "1.37",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -2473,7 +2473,7 @@
           {
             "name": "analogInput1Type",
             "summary": "Analog Input Channel 1 configuration",
-            "description": "Enumeration:\n 0 = Unused\n 1 = Voltage (0V - 10V DC)\n 2 = Current (4mA - 20mA)\n 3 = Pressure\n 4 = Ultrasonic\nIf changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.",
+            "description": "Enumeration:\n 0 = Unused\n 1 = Voltage (0V - 10V DC)\n 2 = Current (4mA - 20mA)\n 3 = Pressure\n 4 = Ultrasonic\n 5 = ACCurrent20A\n 6 = ACCurrent150A\n 7 = ACCurrent500A\nIf changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.",
             "required": true,
             "x-id": 85,
             "x-groupid": 65,
@@ -2648,7 +2648,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.36",
+              "x-default": "1.37",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -2749,13 +2749,13 @@
           },
           {
             "name": "connectionTimeoutSec",
-            "summary": "How long is the device connected to the app in seconds",
+            "summary": "How long is the device connected to the app in seconds \nSetting to 0 will disable",
             "required": true,
             "x-id": 99,
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": 10.0,
+              "minimum": 0.0,
               "maximum": 255.0,
               "x-ctype": "uint8_t",
               "x-default": "60",

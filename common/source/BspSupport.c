@@ -475,5 +475,6 @@ static void UART1Initialise(void)
 						DEVICE_PM_OFF_STATE,
 						NULL,
 						NULL);
+			
 	}
 }
