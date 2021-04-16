@@ -75,9 +75,7 @@ typedef struct SensorTaskTag {
 	uint8_t digitalIn2Enabled;
 	digitalAlarm_t input1Alarm;
 	digitalAlarm_t input2Alarm;
-	struct k_timer *batteryTimer;
-	struct k_timer *temperatureReadTimer;
-	struct k_timer *analogReadTimer;
+
 	float previousTemp[TOTAL_THERM_CH];
 	float magnitudeOfTempDifference[TOTAL_THERM_CH];
 	float previousAnalogValue[TOTAL_ANALOG_CH];
@@ -88,6 +86,9 @@ typedef struct SensorTaskTag {
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static SensorTaskObj_t sensorTaskObject;
+static struct k_timer batteryTimer;
+static struct k_timer temperatureReadTimer;
+static struct k_timer analogReadTimer;
 
 K_THREAD_STACK_DEFINE(sensorTaskStack, SENSOR_TASK_STACK_DEPTH);
 
@@ -117,9 +118,10 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 static void LoadSensorConfiguration(void);
+static void SensorConfigureAnalog(void);
 static void SensorConfigChange(void);
-static void SensorOutput1Control();
-static void SensorOutput2Control();
+static void SensorOutput1Control(void);
+static void SensorOutput2Control(void);
 
 static void UpdateDin1(void);
 static void UpdateDin2(void);
@@ -325,6 +327,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
 		case ATTR_INDEX_analogInput4Type:
+			StartAnalogInterval();
 			break;
 		case ATTR_INDEX_configType:
 			SensorConfigChange();
@@ -515,6 +518,13 @@ static void LoadSensorConfiguration(void)
 
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
+
+static void SensorConfigureAnalog(void)
+{
+/*todo: for the AC current*/
+	
+}
+
 static void SensorConfigChange(void)
 {
 	uint32_t configurationType;
@@ -532,10 +542,10 @@ static void SensorConfigChange(void)
 				    thermistorsConfig);
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
 		break;
 	case CONFIG_ANALOG_INPUT:
 		/*Disable all the thermistors*/
@@ -543,10 +553,10 @@ static void SensorConfigChange(void)
 				    thermistorsConfig);
 
 		/*Configure all analogs to voltage*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_INPUT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_INPUT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_INPUT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_INPUT);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_VOLTAGE);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_VOLTAGE);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_VOLTAGE);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_VOLTAGE);
 
 		break;
 	case CONFIG_DIGITAL:
@@ -555,10 +565,10 @@ static void SensorConfigChange(void)
 				    thermistorsConfig);
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
 
 		/*Enable the digital inputs*/
 		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
@@ -573,24 +583,25 @@ static void SensorConfigChange(void)
 		thermistorsConfig = 0x0F;
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-		StartTempertureInterval();
+		
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+		StartTempertureInterval();
 
 		break;
-	case CONFIG_ANALOG_CURRENT:
+	case CONFIG_ANALOG_AC_CURRENT:
 		/*Disable all the thermistors*/
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
 
 		/*Configure all analogs to current*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_AC_CURRENT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_AC_CURRENT);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_AC_CURRENT);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_AC_CURRENT);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_AC_CURRENT);
+		//Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_AC_CURRENT);
 		break;
 	case CONFIG_ULTRASONIC_PRESSURE:
 		/*Disable all the thermistors*/
@@ -604,10 +615,10 @@ static void SensorConfigChange(void)
 				    thermistorsConfig);
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4, analog4Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
 
 		break;
 	default:
@@ -616,7 +627,7 @@ static void SensorConfigChange(void)
 		break;
 	}
 }
-static void SensorOutput1Control()
+static void SensorOutput1Control(void)
 {
 	uint8_t outputStatus = 0;
 	Attribute_Get(ATTR_INDEX_digitalOutput1State, &outputStatus,
@@ -624,7 +635,7 @@ static void SensorOutput1Control()
 
 	BSP_PinSet(DO1_PIN, (outputStatus));
 }
-static void SensorOutput2Control()
+static void SensorOutput2Control(void)
 {
 	uint8_t outputStatus = 0;
 	Attribute_Get(ATTR_INDEX_digitalOutput2State, &outputStatus,
@@ -688,17 +699,17 @@ static void UpdateMagnet(void)
 static void InitializeIntervalTimers(void)
 {
 	/*Battery Interval timer*/
-	k_timer_init(sensorTaskObject.batteryTimer, batteryTimerCallbackIsr,
+	k_timer_init(&batteryTimer, batteryTimerCallbackIsr,
 		     NULL);
 	StartBatteryInterval();
 
 	/*Temperture Interval timer*/
-	k_timer_init(sensorTaskObject.temperatureReadTimer,
+	k_timer_init(&temperatureReadTimer,
 		     temperatureReadTimerCallbackIsr, NULL);
 	StartTempertureInterval();
 
 	/*Analog Interval timer*/
-	k_timer_init(sensorTaskObject.analogReadTimer,
+	k_timer_init(&analogReadTimer,
 		     analogReadTimerCallbackIsr, NULL);
 	StartAnalogInterval();
 }
@@ -729,7 +740,7 @@ static void StartAnalogInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_analogSenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.analogReadTimer,
+			k_timer_start(&analogReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 		}
 	}
@@ -750,9 +761,10 @@ static void StartTempertureInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.temperatureReadTimer,
+			k_timer_start(&temperatureReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 		}
+		
 	}
 }
 
@@ -768,7 +780,7 @@ static void StartBatteryInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_batterySenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(sensorTaskObject.batteryTimer,
+			k_timer_start(&batteryTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 		}
 	}

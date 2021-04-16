@@ -505,7 +505,6 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
-	uint8_t activeMode = 0;
 
 	/*If active mode hasn't been turned on at this point turn off the adverisments*/
 	if (bto.activeModeStatus == false) {
