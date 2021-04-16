@@ -190,7 +190,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.lowAnalog4Thresh2 = 4095,
 	.analog4DeltaThresh = 4095,
 	.activeMode = 0,
-	.useCodedPhy = 0,
+	.useCodedPhy = 1,
 	.txPower = 0,
 	.networkId = 0,
 	.configVersion = 0,
@@ -249,12 +249,10 @@ typedef struct RoAttributesTag {
 	uint32_t temperatureAlarms;
 	uint16_t batteryVoltageMv;
 	uint8_t digitalInput;
-	uint8_t digitalAlarms;
 	float analogInput1;
 	float analogInput2;
 	float analogInput3;
 	float analogInput4;
-	uint32_t analogAlarms;
 	uint32_t flags;
 	bool magnetState;
 	char paramPath[8 + 1];
@@ -282,17 +280,15 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.temperatureAlarms = 0,
 	.batteryVoltageMv = 0,
 	.digitalInput = 0,
-	.digitalAlarms = 0,
 	.analogInput1 = 0,
 	.analogInput2 = 0,
 	.analogInput3 = 0,
 	.analogInput4 = 0,
-	.analogAlarms = 0,
 	.flags = 0,
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.37",
+	.apiVersion = "1.38",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456
@@ -412,14 +408,14 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [74 ] = { RO_ATTRX(temperatureAlarms)             , u32, n, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
     [75 ] = { RO_ATTRX(batteryVoltageMv)              , u16, n, n, y, n, n, n, AttributeValidator_uint16   , AttributePrepare_batteryVoltageMv         , .min.ux = 0.0       , .max.ux = 3800.0     },
     [76 ] = { RO_ATTRX(digitalInput)                  , u8 , n, n, y, y, n, n, AttributeValidator_uint8    , AttributePrepare_digitalInput             , .min.ux = 0.0       , .max.ux = 3.0        },
-    [77 ] = { RO_ATTRX(digitalAlarms)                 , u8 , n, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
+    [77 ] = { RW_ATTRX(digitalAlarms)                 , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
     [78 ] = { RW_ATTRX(digitalInput1Config)           , u8 , y, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 131.0      },
     [79 ] = { RW_ATTRX(digitalInput2Config)           , u8 , y, y, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 131.0      },
     [80 ] = { RO_ATTRX(analogInput1)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput1             , .min.fx = 0.0       , .max.fx = 4095.0     },
     [81 ] = { RO_ATTRX(analogInput2)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput2             , .min.fx = 0.0       , .max.fx = 4095.0     },
     [82 ] = { RO_ATTRX(analogInput3)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput3             , .min.fx = 0.0       , .max.fx = 4095.0     },
     [83 ] = { RO_ATTRX(analogInput4)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput4             , .min.fx = 0.0       , .max.fx = 4095.0     },
-    [84 ] = { RO_ATTRX(analogAlarms)                  , u32, n, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
+    [84 ] = { RW_ATTRX(analogAlarms)                  , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
     [85 ] = { RW_ATTRX(analogInput1Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [86 ] = { RW_ATTRX(analogInput2Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
     [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
