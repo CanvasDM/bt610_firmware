@@ -515,14 +515,13 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static void LoadSensorConfiguration(void)
 {
 	SensorConfigChange();
-
+	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 
 static void SensorConfigureAnalog(void)
 {
-/*todo: for the AC current*/
-	
+	/*todo: for the AC current*/
 }
 
 static void SensorConfigChange(void)
@@ -583,7 +582,7 @@ static void SensorConfigChange(void)
 		thermistorsConfig = 0x0F;
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 				    thermistorsConfig);
-		
+
 		/*Disable all analogs*/
 		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
 		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
@@ -699,18 +698,16 @@ static void UpdateMagnet(void)
 static void InitializeIntervalTimers(void)
 {
 	/*Battery Interval timer*/
-	k_timer_init(&batteryTimer, batteryTimerCallbackIsr,
-		     NULL);
+	k_timer_init(&batteryTimer, batteryTimerCallbackIsr, NULL);
 	StartBatteryInterval();
 
 	/*Temperture Interval timer*/
-	k_timer_init(&temperatureReadTimer,
-		     temperatureReadTimerCallbackIsr, NULL);
+	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
+		     NULL);
 	StartTempertureInterval();
 
 	/*Analog Interval timer*/
-	k_timer_init(&analogReadTimer,
-		     analogReadTimerCallbackIsr, NULL);
+	k_timer_init(&analogReadTimer, analogReadTimerCallbackIsr, NULL);
 	StartAnalogInterval();
 }
 static void StartAnalogInterval(void)
@@ -764,7 +761,6 @@ static void StartTempertureInterval(void)
 			k_timer_start(&temperatureReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 		}
-		
 	}
 }
 
@@ -780,8 +776,8 @@ static void StartBatteryInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_batterySenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(&batteryTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+			k_timer_start(&batteryTimer, K_SECONDS(intervalSeconds),
+				      K_NO_WAIT);
 		}
 	}
 }
