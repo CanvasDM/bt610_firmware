@@ -253,8 +253,9 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 		break;
 
 	default:
-		/* No other types are supported */
-		return MGMT_ERR_EINVAL;
+		/* For unrecognised types, we return an error code and value */
+		getResult = -EINVAL;
+		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
 	}
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
@@ -380,9 +381,19 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 		}
 	}
 
-	/* Now write the parameter value */
-	setResult = SaveParameterValue((attr_idx_t)paramID, parameterDataType,
-				       params_value);
+	/* Is this a known attribute? */
+	if (Attribute_GetType(paramID) == ATTR_TYPE_UNKNOWN){
+
+		/* No, so don't write anything and exit with an error code */
+		setResult = -EINVAL;
+	}
+	else{
+
+		/* OK to write the parameter value */
+		setResult = SaveParameterValue((attr_idx_t)paramID,
+						parameterDataType,
+						params_value);
+	}
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
