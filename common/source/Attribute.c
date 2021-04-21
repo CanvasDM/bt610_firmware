@@ -501,7 +501,10 @@ int Attribute_ShowAll(void)
 
 int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 {
-	int r = -EPERM;
+	int r = 0;
+	/* When successful, this is the number of parameters added to the
+	   dump file
+	*/
 	int count = 0;
 	bool (*dumpable)(attr_idx_t) = isDumpRw;
 	attr_idx_t i;
@@ -518,35 +521,51 @@ int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 		break;
 	}
 
-	TAKE_MUTEX(attr_mutex);
+	/* Update all parameters that need to be prepared before reserving
+	   the mutex - we want to avoid stacking up reservations of it,
+	   and if an attribute value changes after this, it will still be
+	   up to date
+	*/
+	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+		if (dumpable(i)) {
+			(void)PrepareForRead(i);
+		}
+	}
+	/* Only proceed if prepares were executed OK */
+	if (r == 0){
 
-	do {
-		for (i = 0; i < ATTR_TABLE_SIZE; i++) {
-			if (dumpable(i)) {
-				r = lcz_params_generate_file(
-					i, ConvertParameterType(i),
-					attrTable[i].pData,
-					GetParameterLength(i), fstr);
-				if (r < 0) {
-					LOG_ERR("Error converting attribute table into file");
-					break;
-				} else {
-					count += 1;
+		TAKE_MUTEX(attr_mutex);
+
+		do {
+			for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+				if (dumpable(i)) {
+					r = lcz_params_generate_file(
+						i, ConvertParameterType(i),
+						attrTable[i].pData,
+						GetParameterLength(i), fstr);
+					if (r < 0) {
+						break;
+					} else {
+						count += 1;
+					}
 				}
 			}
-		}
-		BREAK_ON_ERROR(r);
+			/* Don't validate the file if any attribute errors
+			   occurred. Break here to jump out the while(0) 
+			   loop
+			*/
+			BREAK_ON_ERROR(r);
 
-		r = lcz_params_validate_file(*fstr, strlen(*fstr));
+			r = lcz_params_validate_file(*fstr, strlen(*fstr));
 
-	} while (0);
+		} while (0);
 
-	GIVE_MUTEX(attr_mutex);
-
-	if (r < 0) {
-		k_free(fstr);
+		GIVE_MUTEX(attr_mutex);
 	}
-
+	if (r < 0){
+		k_free(fstr);
+		LOG_ERR("Error converting attribute table into file");	
+	}
 	return (r < 0) ? r : count;
 }
 
