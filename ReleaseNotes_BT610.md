@@ -19,7 +19,7 @@ This project makes use of the following third-party components:
 
 # Firmware Versions
 
-# Application Version 1.9.3 (April 16, 2021)
+# Application Version 1.11.1 (April 21, 2021)
 
 
 ### Summary
@@ -42,6 +42,7 @@ The hardware is R2.0
 -18814 BT610 Stops Advertising 
 -18806 BT610 will indicate the RX ring buffer is full 
 -18728 Missing scan response 
+-18826 ASSERTION FAIL in /zephyr/subsys/bluetooth/controller/ll_sw/nordic/lll/lll_adv_aux.c:367 
 
 ### Resource Documents
 
