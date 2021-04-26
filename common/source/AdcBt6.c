@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #include "BspSupport.h"
 #include "laird_utility_macros.h"
 #include "file_system_utilities.h"
-#include "lcz_params.h"
+#include "lcz_param_file.h"
 #include "Attribute.h"
 #include "AnalogInput.h"
 #include "AdcBt6.h"
@@ -166,7 +166,7 @@ int AdcBt6_Init(void)
 
 	/* Calibration is independent of parameters/attributes module. */
 	/* todo: should these be shadowed in external flash ? */
-	readReturn = lcz_params_read("ge", &adcObj.ge, sizeof(adcObj.ge));
+	readReturn = lcz_param_file_read("ge", &adcObj.ge, sizeof(adcObj.ge));
 	if (readReturn == 0) {
 		Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
 	} else {
@@ -174,7 +174,7 @@ int AdcBt6_Init(void)
 		Attribute_GetFloat(&adcObj.ge, ATTR_INDEX_ge);
 	}
 
-	lcz_params_read("oe", &adcObj.oe, sizeof(adcObj.oe));
+	lcz_param_file_read("oe", &adcObj.oe, sizeof(adcObj.oe));
 	if (readReturn == 0) {
 		Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
 	} else {
@@ -296,8 +296,8 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 		snprintf(str, sizeof(str), THERM_CAL_FMT_STR, c1, c2, *ge, *oe);
 		fsu_append(CONFIG_FSU_MOUNT_POINT, "thermistor_cal.txt", str,
 			   strlen(str));
-		lcz_params_write("ge", &adcObj.ge, sizeof(adcObj.ge));
-		lcz_params_write("oe", &adcObj.oe, sizeof(adcObj.oe));
+		lcz_param_file_write("ge", &adcObj.ge, sizeof(adcObj.ge));
+		lcz_param_file_write("oe", &adcObj.oe, sizeof(adcObj.oe));
 		Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
 		Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
 	} else {

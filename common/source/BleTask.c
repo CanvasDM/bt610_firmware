@@ -33,7 +33,6 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "FrameworkIncludes.h"
 #include "lcz_bluetooth.h"
 #include "Advertisement.h"
-#include "lcz_params.h"
 #include "Attribute.h"
 #include "BleTask.h"
 #include "EventTask.h"
