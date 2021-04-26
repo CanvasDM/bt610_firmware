@@ -677,9 +677,10 @@ int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 {
 	uint8_t f[LCZ_EVENT_MANAGER_FILENAME_SIZE];
 	int r = MGMT_ERR_EINVAL;
+	uint32_t s = 0;
 
 	/* Check if we can prepare the log file OK */
-	if (lcz_event_manager_prepare_log_file(f)) {
+	if (lcz_event_manager_prepare_log_file(f,&s)) {
 		/* If not, blank the file path */
 		f[0] = 0;
 	}
@@ -688,6 +689,9 @@ int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 	/* Add result of log prepare */
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Add the file size */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "s");
+	err |= cbor_encode_int(&ctxt->encoder, s);
 	/* Add file path */
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "f");
 	err |= cbor_encode_text_string(&ctxt->encoder, f, strlen(f));

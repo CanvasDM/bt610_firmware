@@ -261,6 +261,7 @@ typedef struct RoAttributesTag {
 	uint32_t qrtc;
 	uint8_t connectionTimeoutSec;
 	uint32_t settingsPasscode;
+	uint8_t logFileStatus;
 	/* pyend */
 } RoAttribute_t;
 
@@ -288,10 +289,11 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.38",
+	.apiVersion = "1.39",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
-	.settingsPasscode = 123456
+	.settingsPasscode = 123456,
+	.logFileStatus = 0,
 	/* pyend */
 };
 
@@ -445,7 +447,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [111] = { RW_ATTRX(therm3CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [112] = { RW_ATTRX(therm4CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [113] = { RW_ATTRX(dataloggingEnable)             , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
-    [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          }
+    [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          },
     /* pyend */
 };
 /* clang-format on */
@@ -577,4 +580,8 @@ __weak int AttributePrepare_analogInput4(void)
 	return 0;
 }
 
+__weak int AttributePrepare_logFileStatus(void)
+{
+	return 0;
+}
 /* pyend */

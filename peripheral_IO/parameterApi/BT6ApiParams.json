@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.38",
+    "version": "1.39",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -2648,7 +2648,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.38",
+              "x-default": "1.39",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3065,6 +3065,28 @@
               "x-savable": true,
               "x-writeable": true,
               "x-readable": true
+            }
+          },
+          {
+            "name": "logFileStatus",
+            "summary": "0 = waiting for prepare command, 1 = preparing, 2 - ready, 3 - failed",
+            "required": true,
+            "x-id": 115,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 3,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": false,
+              "x-readable": true,
+              "x-prepare": true
             }
           }
         ]

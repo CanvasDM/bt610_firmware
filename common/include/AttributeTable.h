@@ -72,7 +72,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 115
+#define ATTR_TABLE_SIZE 116
 
 /* pyend */
 
@@ -228,6 +228,7 @@ typedef enum
 #define ATTR_INDEX_therm4CoefficientC                    112
 #define ATTR_INDEX_dataloggingEnable                     113
 #define ATTR_INDEX_factoryResetEnable                    114
+#define ATTR_INDEX_logFileStatus                         115
 /* pyend */
 /* clang-format on */
 
@@ -292,6 +293,7 @@ int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
 int AttributePrepare_analogInput3(void);
 int AttributePrepare_analogInput4(void);
+int AttributePrepare_logFileStatus(void);
 /* pyend */
 
 #ifdef __cplusplus
