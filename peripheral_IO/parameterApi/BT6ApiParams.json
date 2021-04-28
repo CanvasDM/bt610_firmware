@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.39",
+    "version": "1.40",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -738,6 +738,122 @@
               "x-example": "0",
               "x-ctype": "bool",
               "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare_Test_Log",
+      "summary": "Prepare test logs for reading",
+      "description": "Used in conjunction with file system commands to read logs",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-id": 18,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Start timestamp",
+          "description": "The timestamp from which to start test log data.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 1
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "Update rate",
+          "description": "The interval between events.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 2
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "Event type",
+          "description": "The event type to set for test log data.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 3
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "Event count",
+          "description": "The number of events to add to the test log file.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 4
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "Event data type",
+          "description": "The data type to use for the event, 0 = bool, 1 = U32, 2 = Float.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 5
+          }
+        }
+      ],
+      "result": {
+        "name": "Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, number of log files to read on success",
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "s",
+              "type": "integer",
+              "summary": "The size of the log file to read",
+              "description": "the size of the log file",
+              "x-example": "4096",
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "n",
+              "type": "string",
+              "summary": "Name",
+              "description": "The absolute path name of the log on the file system",
+              "x-example": "4096",
+              "x-ctype": "string",
+              "x-sequencenumber": 3
             }
           ]
         }
@@ -2648,7 +2764,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.39",
+              "x-default": "1.40",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,

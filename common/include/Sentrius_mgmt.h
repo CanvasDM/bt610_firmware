@@ -39,6 +39,7 @@ mgmt_handler_fn Sentrius_mgmt_Dump_Parameter_File;
 mgmt_handler_fn Sentrius_mgmt_Prepare_Log;
 mgmt_handler_fn Sentrius_mgmt_Ack_Log;
 mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
+mgmt_handler_fn Sentrius_mgmt_Prepare_Test_Log;
 /* pyend */
 
 /**
@@ -47,6 +48,9 @@ mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
  * @note location zero isn't used because API generator doesn't
  * support multiple commands with the same id (even though their
  * group number is different).
+ *
+ * NOTE - IDs 14 through 17 are reserved for use by the MG100.
+ *
  */
 /* clang-format off */
 /* pystart - mgmt function indices */
@@ -63,6 +67,7 @@ mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
 #define SENTRIUS_MGMT_ID_PREPARE_LOG                           11
 #define SENTRIUS_MGMT_ID_ACK_LOG                               12
 #define SENTRIUS_MGMT_ID_FACTORY_RESET                         13
+#define SENTRIUS_MGMT_ID_PREPARE_TEST_LOG                      18
 /* pyend */
 /* clang-format on */
 
