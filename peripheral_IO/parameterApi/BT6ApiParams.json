@@ -2,11 +2,211 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.42",
+    "version": "1.43",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
   "methods": [
+    {
+      "name": "FileDownload",
+      "summary": "File Download",
+      "description": "Request to download file from Zephyr file system.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "Read",
+      "x-id": 0,
+      "x-groupid": 8,
+      "tags": [
+        {
+          "name": 8
+        }
+      ],
+      "params": [
+        {
+          "name": "off",
+          "summary": "file offset",
+          "description": "Offset where to start file access",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 1,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+          "name": "name",
+          "summary": "file name",
+          "description": "Full filename to access",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 0,
+            "maximumlength": 64,
+            "x-ctype": "string",
+            "x-sequencenumber": 2,
+            "x-default": 0,
+            "x-example": "/ext/file.txt"
+          }
+        }
+      ],
+      "result": {
+        "name": "FileDownloadResponse",
+        "schema": {
+          "items": [
+            {
+              "name": "off",
+              "type": "integer",
+              "summary": "File offset",
+              "description": "The updated file offset following read",
+              "required": true,
+              "x-ctype": "uint64_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "data",
+              "type": "array",
+              "summary": "data",
+              "description": "data",
+              "required": true,
+              "x-ctype": "array<byte>",
+              "x-example": "{0x01 0x02 0x03 0x04 0x05}",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "rc",
+              "type": "integer",
+              "summary": "reason code",
+              "description": "Result of the read operation",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 3
+            },
+            {
+              "name": "len",
+              "type": "integer",
+              "summary": "length",
+              "description": "The total file length, only returned when the requested offset is 0.",
+              "required": false,
+              "x-ctype": "uint64_t",
+              "x-example": "100",
+              "x-sequencenumber": 4
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "FileUpload",
+      "summary": "File Upload",
+      "description": "Request to upload file to Zephyr file system.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "Write",
+      "x-id": 0,
+      "x-groupid": 8,
+      "tags": [
+        {
+          "name": 8
+        }
+      ],
+      "params": [
+        {
+          "name": "off",
+          "summary": "File Offset",
+          "description": "Offset where to start file access",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 1,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+          "name": "data",
+          "summary": "file data",
+          "description": "The data to write.",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "x-ctype": "array<byte>",
+            "x-sequencenumber": 2,
+            "x-default": "",
+            "x-example": "{0x01 0x02 0x03 0x04 0x05}"
+          }
+        },
+        {
+          "name": "len",
+          "summary": "Data length",
+          "description": "Number of bytes being uploaded",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 3,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+            "name": "name",
+            "summary": "File name",
+            "description": "Full file name to access",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minimumlength": 1,
+              "maximumlength": 64,
+              "x-ctype": "string",
+              "x-sequencenumber": 4,
+              "x-default": 0,
+              "x-example": "/ext/file.txt"
+          }
+        }
+      ],
+      "result": {
+        "name": "FileUploadResponse",
+        "schema": {
+          "items": [
+            {
+              "name": "rc",
+              "type": "integer",
+              "summary": "response code",
+              "description": "Response code for the upload operation",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "off",
+              "type": "integer",
+              "summary": "offset",
+              "description": "Updated file offset",
+              "required": true,
+              "x-ctype": "uint64_t",
+              "x-example": "0",
+              "x-sequencenumber": 2
+            }
+          ]
+        }
+      }
+    },
     {
       "name": "GetParameter",
       "summary": "Get Parameter",
@@ -2745,7 +2945,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.42",
+              "x-default": "1.43",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
