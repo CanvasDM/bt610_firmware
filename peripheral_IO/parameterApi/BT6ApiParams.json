@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.41",
+    "version": "1.42",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -48,6 +48,7 @@
               "name": "r1",
               "summary": "Value",
               "description": "Value",
+              "required": true,
               "type": "string",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -120,6 +121,7 @@
               "name": "r1",
               "summary": "Result",
               "description": "",
+              "required": true,
               "type": "integer",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -175,6 +177,7 @@
               "name": "r1",
               "summary": "Value",
               "description": "Value",
+              "required": true,
               "type": "string",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -245,6 +248,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-ctype": "int32_t",
               "x-example": "0",
               "x-sequencenumber": 1
@@ -254,6 +258,7 @@
               "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "0.998",
               "x-sequencenumber": 2
@@ -263,6 +268,7 @@
               "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "-12.8",
               "x-sequencenumber": 3
@@ -310,6 +316,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -374,6 +381,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-ctype": "int32_t",
               "x-example": "0",
               "x-sequencenumber": 1
@@ -383,6 +391,7 @@
               "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "0.998",
               "x-sequencenumber": 2
@@ -392,6 +401,7 @@
               "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "-12.8",
               "x-sequencenumber": 3
@@ -439,6 +449,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -448,6 +459,7 @@
               "type": "integer",
               "summary": "Epoch Time",
               "description": "Time in seconds",
+              "required": true,
               "x-example": "0",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 2
@@ -471,21 +483,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Dummy Parameter required for test tool",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint32_t",
-            "x-default": "1000",
-            "x-example": "1000",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Rtc",
         "schema": {
@@ -495,6 +493,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "Time in seconds",
+              "required": true,
               "x-example": "0",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 1
@@ -542,6 +541,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -589,6 +589,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, length of file in bytes on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -612,21 +613,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Read Mode",
-          "description": "0 = First-In First-Out",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint8_t",
-            "x-default": "0",
-            "x-example": "0",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Result",
         "schema": {
@@ -636,6 +623,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, number of log files to read on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -645,6 +633,7 @@
               "type": "integer",
               "summary": "The size of the log file to read",
               "description": "the size of the log file",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 2
@@ -654,6 +643,7 @@
               "type": "string",
               "summary": "Name",
               "description": "The absolute path name of the log on the file system",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "string",
               "x-sequencenumber": 3
@@ -677,21 +667,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Dummy parameter for test tool",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint8_t",
-            "x-default": "0",
-            "x-example": "0",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Result",
         "schema": {
@@ -701,6 +677,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -724,21 +701,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Turn on the factory reset",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "bool",
-            "x-default": "0",
-            "x-example": "1",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "FactoryResetResult",
         "schema": {
@@ -748,6 +711,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "bool",
               "x-sequencenumber": 1
@@ -776,7 +740,7 @@
           "name": "p1",
           "summary": "Start timestamp",
           "description": "The timestamp from which to start test log data.",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "integer",
             "x-ctype": "uint32_t",
@@ -789,7 +753,7 @@
           "name": "p2",
           "summary": "Update rate",
           "description": "The interval between events.",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "integer",
             "x-ctype": "uint32_t",
@@ -802,7 +766,7 @@
           "name": "p3",
           "summary": "Event type",
           "description": "The event type to set for test log data.",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "integer",
             "x-ctype": "uint8_t",
@@ -815,7 +779,7 @@
           "name": "p4",
           "summary": "Event count",
           "description": "The number of events to add to the test log file.",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "integer",
             "x-ctype": "uint32_t",
@@ -828,7 +792,7 @@
           "name": "p5",
           "summary": "Event data type",
           "description": "The data type to use for the event, 0 = bool, 1 = U32, 2 = Float.",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "integer",
             "x-ctype": "uint8_t",
@@ -847,6 +811,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, number of log files to read on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -856,6 +821,7 @@
               "type": "integer",
               "summary": "The size of the log file to read",
               "description": "the size of the log file",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 2
@@ -865,6 +831,7 @@
               "type": "string",
               "summary": "Name",
               "description": "The absolute path name of the log on the file system",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "string",
               "x-sequencenumber": 3
@@ -2778,7 +2745,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.41",
+              "x-default": "1.42",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
