@@ -152,7 +152,7 @@ static const lcz_led_configuration_t LED_CONFIGURATION[] = {
 	{ RED_LED, red_led_on, red_led_off }
 };
 #else
-/* todo: retest */
+
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
 	{ GREEN_LED, LED2_DEV, LED2, LED_ACTIVE_HIGH },
 	{ RED_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH }
