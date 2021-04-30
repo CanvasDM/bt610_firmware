@@ -313,6 +313,11 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 int AttributePrepare_upTime(void)
 {
 	int64_t uptimeMs = k_uptime_get();
-	Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs);
-	return 0;
+	return(Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
+}
+
+int AttributePrepare_logFileStatus(void)
+{
+	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
+	return(Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
 }

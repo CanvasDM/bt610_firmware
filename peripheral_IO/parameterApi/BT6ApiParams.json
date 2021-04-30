@@ -2,11 +2,211 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.40",
+    "version": "1.44",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
   "methods": [
+    {
+      "name": "FileDownload",
+      "summary": "File Download",
+      "description": "Request to download file from Zephyr file system.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "Read",
+      "x-id": 0,
+      "x-groupid": 8,
+      "tags": [
+        {
+          "name": 8
+        }
+      ],
+      "params": [
+        {
+          "name": "off",
+          "summary": "file offset",
+          "description": "Offset where to start file access",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 1,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+          "name": "name",
+          "summary": "file name",
+          "description": "Full filename to access",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 0,
+            "maximumlength": 64,
+            "x-ctype": "string",
+            "x-sequencenumber": 2,
+            "x-default": 0,
+            "x-example": "/ext/file.txt"
+          }
+        }
+      ],
+      "result": {
+        "name": "FileDownloadResponse",
+        "schema": {
+          "items": [
+            {
+              "name": "off",
+              "type": "integer",
+              "summary": "File offset",
+              "description": "The updated file offset following read",
+              "required": true,
+              "x-ctype": "uint64_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "data",
+              "type": "array",
+              "summary": "data",
+              "description": "data",
+              "required": true,
+              "x-ctype": "array<byte>",
+              "x-example": "{0x01 0x02 0x03 0x04 0x05}",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "rc",
+              "type": "integer",
+              "summary": "reason code",
+              "description": "Result of the read operation",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 3
+            },
+            {
+              "name": "len",
+              "type": "integer",
+              "summary": "length",
+              "description": "The total file length, only returned when the requested offset is 0.",
+              "required": false,
+              "x-ctype": "uint64_t",
+              "x-example": "100",
+              "x-sequencenumber": 4
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "FileUpload",
+      "summary": "File Upload",
+      "description": "Request to upload file to Zephyr file system.",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "Write",
+      "x-id": 0,
+      "x-groupid": 8,
+      "tags": [
+        {
+          "name": 8
+        }
+      ],
+      "params": [
+        {
+          "name": "off",
+          "summary": "File Offset",
+          "description": "Offset where to start file access",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 1,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+          "name": "data",
+          "summary": "file data",
+          "description": "The data to write.",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "x-ctype": "array<byte>",
+            "x-sequencenumber": 2,
+            "x-default": "",
+            "x-example": "{0x01 0x02 0x03 0x04 0x05}"
+          }
+        },
+        {
+          "name": "len",
+          "summary": "Data length",
+          "description": "Number of bytes being uploaded",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0,
+            "x-ctype": "uint64_t",
+            "x-sequencenumber": 3,
+            "x-default": 0,
+            "x-example": 0
+          }
+        },
+        {
+          "name": "name",
+          "summary": "File name",
+          "description": "Full file name to access",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 1,
+            "maximumlength": 64,
+            "x-ctype": "string",
+            "x-sequencenumber": 4,
+            "x-default": 0,
+            "x-example": "/ext/file.txt"
+          }
+        }
+      ],
+      "result": {
+        "name": "FileUploadResponse",
+        "schema": {
+          "items": [
+            {
+              "name": "rc",
+              "type": "integer",
+              "summary": "response code",
+              "description": "Response code for the upload operation",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "off",
+              "type": "integer",
+              "summary": "offset",
+              "description": "Updated file offset",
+              "required": true,
+              "x-ctype": "uint64_t",
+              "x-example": "0",
+              "x-sequencenumber": 2
+            }
+          ]
+        }
+      }
+    },
     {
       "name": "GetParameter",
       "summary": "Get Parameter",
@@ -14,6 +214,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 1,
       "tags": [
         {
@@ -47,6 +248,7 @@
               "name": "r1",
               "summary": "Value",
               "description": "Value",
+              "required": true,
               "type": "string",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -68,6 +270,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 2,
       "tags": [
         {
@@ -118,6 +321,7 @@
               "name": "r1",
               "summary": "Result",
               "description": "",
+              "required": true,
               "type": "integer",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -139,6 +343,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 3,
       "tags": [
         {
@@ -172,6 +377,7 @@
               "name": "r1",
               "summary": "Value",
               "description": "Value",
+              "required": true,
               "type": "string",
               "minimumlength": 0,
               "maximumlength": 0,
@@ -193,6 +399,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 4,
       "x-groupid": 65,
       "tags": [
@@ -241,6 +448,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-ctype": "int32_t",
               "x-example": "0",
               "x-sequencenumber": 1
@@ -250,6 +458,7 @@
               "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "0.998",
               "x-sequencenumber": 2
@@ -259,6 +468,7 @@
               "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "-12.8",
               "x-sequencenumber": 3
@@ -274,6 +484,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 5,
       "x-groupid": 65,
       "tags": [
@@ -305,6 +516,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -320,6 +532,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 6,
       "x-groupid": 65,
       "tags": [
@@ -368,6 +581,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-ctype": "int32_t",
               "x-example": "0",
               "x-sequencenumber": 1
@@ -377,6 +591,7 @@
               "type": "number",
               "summary": "Gain Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "0.998",
               "x-sequencenumber": 2
@@ -386,6 +601,7 @@
               "type": "number",
               "summary": "Offset Error",
               "description": "This is applied to all thermistor readings",
+              "required": true,
               "x-ctype": "float",
               "x-example": "-12.8",
               "x-sequencenumber": 3
@@ -401,6 +617,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 7,
       "x-groupid": 65,
       "tags": [
@@ -432,6 +649,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -441,6 +659,7 @@
               "type": "integer",
               "summary": "Epoch Time",
               "description": "Time in seconds",
+              "required": true,
               "x-example": "0",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 2
@@ -456,6 +675,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 8,
       "x-groupid": 65,
       "tags": [
@@ -463,21 +683,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Dummy Parameter required for test tool",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint32_t",
-            "x-default": "1000",
-            "x-example": "1000",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Rtc",
         "schema": {
@@ -487,6 +693,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "Time in seconds",
+              "required": true,
               "x-example": "0",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 1
@@ -502,6 +709,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 9,
       "x-groupid": 65,
       "tags": [
@@ -533,6 +741,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -548,6 +757,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 10,
       "x-groupid": 65,
       "tags": [
@@ -563,6 +773,8 @@
           "required": true,
           "schema": {
             "type": "integer",
+            "minimum": 0,
+            "maximum": 2,
             "x-ctype": "uint8_t",
             "x-default": "0",
             "x-example": "2",
@@ -579,9 +791,20 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, length of file in bytes on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
+            },
+            {
+              "name": "n",
+              "type": "string",
+              "summary": "Name",
+              "description": "The absolute path name of the dump file on the file system. Returned only when successful.",
+              "required": false,
+              "x-example": "4096",
+              "x-ctype": "string",
+              "x-sequencenumber": 2
             }
           ]
         }
@@ -594,6 +817,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 11,
       "x-groupid": 65,
       "tags": [
@@ -601,21 +825,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Read Mode",
-          "description": "0 = First-In First-Out",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint8_t",
-            "x-default": "0",
-            "x-example": "0",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Result",
         "schema": {
@@ -625,6 +835,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, number of log files to read on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -634,6 +845,7 @@
               "type": "integer",
               "summary": "The size of the log file to read",
               "description": "the size of the log file",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "uint32_t",
               "x-sequencenumber": 2
@@ -643,6 +855,7 @@
               "type": "string",
               "summary": "Name",
               "description": "The absolute path name of the log on the file system",
+              "required": true,
               "x-example": "4096",
               "x-ctype": "string",
               "x-sequencenumber": 3
@@ -658,6 +871,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 12,
       "x-groupid": 65,
       "tags": [
@@ -665,21 +879,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Dummy parameter for test tool",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "uint8_t",
-            "x-default": "0",
-            "x-example": "0",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "Result",
         "schema": {
@@ -689,6 +889,7 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
@@ -704,6 +905,7 @@
       "x-jsonmsgtype": "Request",
       "x-interfaceserial": true,
       "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
       "x-id": 13,
       "x-groupid": 65,
       "tags": [
@@ -711,21 +913,7 @@
           "name": 65
         }
       ],
-      "params": [
-        {
-          "name": "p1",
-          "summary": "Parameter 1",
-          "description": "Turn on the factory reset",
-          "required": false,
-          "schema": {
-            "type": "integer",
-            "x-ctype": "bool",
-            "x-default": "0",
-            "x-example": "1",
-            "x-sequencenumber": 1
-          }
-        }
-      ],
+      "params": [],
       "result": {
         "name": "FactoryResetResult",
         "schema": {
@@ -735,9 +923,130 @@
               "type": "integer",
               "summary": "Result",
               "description": "negative error code, 0 on success",
+              "required": true,
               "x-example": "0",
               "x-ctype": "bool",
               "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare_Test_Log",
+      "summary": "Prepare test logs for reading",
+      "description": "Used in conjunction with file system commands to read logs",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 18,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Start timestamp",
+          "description": "The timestamp from which to start test log data.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 1
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "Update rate",
+          "description": "The interval between events.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 2
+          }
+        },
+        {
+          "name": "p3",
+          "summary": "Event type",
+          "description": "The event type to set for test log data.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 3
+          }
+        },
+        {
+          "name": "p4",
+          "summary": "Event count",
+          "description": "The number of events to add to the test log file.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 4
+          }
+        },
+        {
+          "name": "p5",
+          "summary": "Event data type",
+          "description": "The data type to use for the event, 0 = bool, 1 = U32, 2 = Float.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "0",
+            "x-sequencenumber": 5
+          }
+        }
+      ],
+      "result": {
+        "name": "Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, number of log files to read on success",
+              "required": true,
+              "x-example": "0",
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "s",
+              "type": "integer",
+              "summary": "The size of the log file to read",
+              "description": "the size of the log file",
+              "required": true,
+              "x-example": "4096",
+              "x-ctype": "uint32_t",
+              "x-sequencenumber": 2
+            },
+            {
+              "name": "n",
+              "type": "string",
+              "summary": "Name",
+              "description": "The absolute path name of the log on the file system",
+              "required": true,
+              "x-example": "4096",
+              "x-ctype": "string",
+              "x-sequencenumber": 3
             }
           ]
         }
@@ -2648,7 +2957,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.40",
+              "x-default": "1.44",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3114,7 +3423,7 @@
             "name": "pressurePinSelected",
             "summary": "Pressure pin(s) chossen bitmask",
             "required": true,
-            "x-id": 116,
+            "x-id": 117,
             "x-groupid": 65,
             "schema": {
               "type": "integer",

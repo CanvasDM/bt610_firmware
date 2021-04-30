@@ -162,6 +162,10 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
          .mh_write = Sentrius_mgmt_Factory_Reset,
          .mh_read = Sentrius_mgmt_Factory_Reset,
     },
+    [SENTRIUS_MGMT_ID_PREPARE_TEST_LOG] = {
+         .mh_write = Sentrius_mgmt_Prepare_Test_Log,
+         .mh_read = Sentrius_mgmt_Prepare_Test_Log,
+    }
     /* pyend */
 };
 
@@ -382,17 +386,13 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	}
 
 	/* Is this a known attribute? */
-	if (Attribute_GetType(paramID) == ATTR_TYPE_UNKNOWN){
-
+	if (Attribute_GetType(paramID) == ATTR_TYPE_UNKNOWN) {
 		/* No, so don't write anything and exit with an error code */
 		setResult = -EINVAL;
-	}
-	else{
-
+	} else {
 		/* OK to write the parameter value */
 		setResult = SaveParameterValue((attr_idx_t)paramID,
-						parameterDataType,
-						params_value);
+					       parameterDataType, params_value);
 	}
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
@@ -636,20 +636,11 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	long long unsigned int type = ULLONG_MAX;
 	char *fstr = NULL;
 
-	/* The output file is an optional parameter. */
-	strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
-		sizeof(paramString));
-
 	struct cbor_attr_t params_attr[] = {
 		{ .attribute = "p1",
 		  .type = CborAttrUnsignedIntegerType,
 		  .addr.uinteger = &type,
 		  .nodefault = true },
-		{ .attribute = "p2",
-		  .type = CborAttrTextStringType,
-		  .addr.string = paramString,
-		  .len = sizeof(paramString),
-		  .nodefault = false },
 		{ .attribute = NULL }
 	};
 
@@ -663,26 +654,35 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 		if (r >= 0) {
 			r = fsu_write_abs(paramString, fstr, strlen(fstr));
 			k_free(fstr);
+			/* OK to set the file path now */
+			strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
+				sizeof(paramString));
 		}
 	}
 
 	CborError err = 0;
+	/* Add file size */
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
-
+	/* Add file path if successful */
+	if (r >= 0) {
+		err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
+		err |= cbor_encode_text_string(&ctxt->encoder, paramString,
+					       strlen(paramString));
+	}
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 {
-	uint8_t f[LCZ_EVENT_MANAGER_FILENAME_SIZE];
+	uint8_t n[LCZ_EVENT_MANAGER_FILENAME_SIZE];
 	int r = MGMT_ERR_EINVAL;
 	uint32_t s = 0;
 
 	/* Check if we can prepare the log file OK */
-	if (lcz_event_manager_prepare_log_file(f,&s)) {
+	if (lcz_event_manager_prepare_log_file(n, &s)) {
 		/* If not, blank the file path */
-		f[0] = 0;
+		n[0] = 0;
 	}
 	/* Cbor encode result */
 	CborError err = 0;
@@ -693,8 +693,8 @@ int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "s");
 	err |= cbor_encode_int(&ctxt->encoder, s);
 	/* Add file path */
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "f");
-	err |= cbor_encode_text_string(&ctxt->encoder, f, strlen(f));
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
+	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
@@ -729,6 +729,75 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	/* Add result of log delete */
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
+{
+	uint8_t n[LCZ_EVENT_MANAGER_FILENAME_SIZE];
+	uint32_t s = 0;
+	int r = MGMT_ERR_EINVAL;
+	long long unsigned int start_time_stamp = 0;
+	long long unsigned int update_rate = 0;
+	long long unsigned int event_type = 0;
+	long long unsigned int event_count = 0;
+	long long unsigned int event_data_type = 0;
+	DummyLogFileProperties_t dummy_log_file_properties;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &start_time_stamp,
+		  .nodefault = true },
+		{ .attribute = "p2",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &update_rate,
+		  .nodefault = true },
+		{ .attribute = "p3",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &event_type,
+		  .nodefault = true },
+		{ .attribute = "p4",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &event_count,
+		  .nodefault = true },
+		{ .attribute = "p5",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &event_data_type,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return MGMT_ERR_EINVAL;
+	}
+
+	dummy_log_file_properties.start_time_stamp =
+		((uint32_t)(start_time_stamp));
+	dummy_log_file_properties.update_rate = ((uint32_t)(update_rate));
+	dummy_log_file_properties.event_type = ((uint8_t)(event_type));
+	dummy_log_file_properties.event_count = ((uint32_t)(event_count));
+	dummy_log_file_properties.event_data_type =
+		((uint8_t)(event_data_type));
+
+	/* Check if we can prepare the log file OK */
+	if (lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
+						    n, &s)) {
+		/* If not, blank the file path */
+		n[0] = 0;
+	}
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result of log prepare */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Add the file size */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "s");
+	err |= cbor_encode_int(&ctxt->encoder, s);
+	/* Add file path */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
+	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }

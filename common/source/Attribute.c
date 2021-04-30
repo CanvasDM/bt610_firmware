@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #include <logging/log_ctrl.h>
 #include <sys/util.h>
 
-#include "lcz_params.h"
+#include "lcz_param_file.h"
 #include "file_system_utilities.h"
 
 #include "AttributeTable.h"
@@ -36,7 +36,7 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #define TAKE_MUTEX(m) k_mutex_lock(&m, K_FOREVER)
 #define GIVE_MUTEX(m) k_mutex_unlock(&m)
 
-#define ATTR_ABS_PATH CONFIG_LCZ_PARAMS_MOUNT_POINT "/" CONFIG_ATTR_FILE_NAME
+#define ATTR_ABS_PATH CONFIG_LCZ_PARAM_FILE_MOUNT_POINT "/" CONFIG_ATTR_FILE_NAME
 
 #define ATTR_QUIET_ABS_PATH CONFIG_FSU_MOUNT_POINT "/quiet.bin"
 
@@ -539,7 +539,7 @@ int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 		do {
 			for (i = 0; i < ATTR_TABLE_SIZE; i++) {
 				if (dumpable(i)) {
-					r = lcz_params_generate_file(
+					r = lcz_param_file_generate_file(
 						i, ConvertParameterType(i),
 						attrTable[i].pData,
 						GetParameterLength(i), fstr);
@@ -556,7 +556,7 @@ int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 			*/
 			BREAK_ON_ERROR(r);
 
-			r = lcz_params_validate_file(*fstr, strlen(*fstr));
+			r = lcz_param_file_validate_file(*fstr, strlen(*fstr));
 
 		} while (0);
 
@@ -660,7 +660,7 @@ static int SaveAttributes(void)
 	do {
 		for (i = 0; i < ATTR_TABLE_SIZE; i++) {
 			if (attrTable[i].savable && !attrTable[i].deprecated) {
-				r = lcz_params_generate_file(
+				r = lcz_param_file_generate_file(
 					i, ConvertParameterType(i),
 					attrTable[i].pData,
 					GetParameterLength(i), &fstr);
@@ -672,10 +672,10 @@ static int SaveAttributes(void)
 		}
 		BREAK_ON_ERROR(r);
 
-		r = lcz_params_validate_file(fstr, strlen(fstr));
+		r = lcz_param_file_validate_file(fstr, strlen(fstr));
 		BREAK_ON_ERROR(r);
 
-		r = (int)lcz_params_write(CONFIG_ATTR_FILE_NAME, fstr,
+		r = (int)lcz_param_file_write(CONFIG_ATTR_FILE_NAME, fstr,
 					  strlen(fstr));
 		LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
 			strlen(fstr));
@@ -802,7 +802,7 @@ static int LoadAttributes(const char *fname, bool ValidateFirst,
 	size_t pairs = 0;
 
 	do {
-		r = lcz_params_parse_from_file(fname, &fsize, &fstr, &kvp);
+		r = lcz_param_file_parse_from_file(fname, &fsize, &fstr, &kvp);
 		LOG_INF("pairs: %d fsize: %d file: %s", r, fsize,
 			log_strdup(fname));
 		BREAK_ON_ERROR(r);
