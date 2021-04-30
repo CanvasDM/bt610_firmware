@@ -636,20 +636,11 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	long long unsigned int type = ULLONG_MAX;
 	char *fstr = NULL;
 
-	/* The output file is an optional parameter. */
-	strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
-		sizeof(paramString));
-
 	struct cbor_attr_t params_attr[] = {
 		{ .attribute = "p1",
 		  .type = CborAttrUnsignedIntegerType,
 		  .addr.uinteger = &type,
 		  .nodefault = true },
-		{ .attribute = "p2",
-		  .type = CborAttrTextStringType,
-		  .addr.string = paramString,
-		  .len = sizeof(paramString),
-		  .nodefault = false },
 		{ .attribute = NULL }
 	};
 
@@ -663,13 +654,22 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 		if (r >= 0) {
 			r = fsu_write_abs(paramString, fstr, strlen(fstr));
 			k_free(fstr);
+			/* OK to set the file path now */
+			strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
+				sizeof(paramString));
 		}
 	}
 
 	CborError err = 0;
+	/* Add file size */
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
-
+	/* Add file path if successful */
+	if (r >= 0) {
+		err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
+		err |= cbor_encode_text_string(&ctxt->encoder, paramString,
+					       strlen(paramString));
+	}
 	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 

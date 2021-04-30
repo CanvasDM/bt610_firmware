@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.43",
+    "version": "1.44",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -773,6 +773,8 @@
           "required": true,
           "schema": {
             "type": "integer",
+            "minimum": 0,
+            "maximum": 2,
             "x-ctype": "uint8_t",
             "x-default": "0",
             "x-example": "2",
@@ -793,6 +795,16 @@
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
+            },
+            {
+              "name": "n",
+              "type": "string",
+              "summary": "Name",
+              "description": "The absolute path name of the dump file on the file system. Returned only when successful.",
+              "required": false,
+              "x-example": "4096",
+              "x-ctype": "string",
+              "x-sequencenumber": 2
             }
           ]
         }
@@ -2945,7 +2957,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.43",
+              "x-default": "1.44",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
