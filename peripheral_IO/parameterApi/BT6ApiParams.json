@@ -3397,6 +3397,70 @@
               "x-readable": true,
               "x-prepare": true
             }
+          },
+          {
+            "name": "pressureAlarm",
+            "summary": "Pressure Alarm in PSI",
+            "required": true,
+            "x-id": 116,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 4095,
+              "x-ctype": "float",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": false,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "pressurePinSelected",
+            "summary": "Pressure pin(s) chossen bitmask",
+            "required": true,
+            "x-id": 117,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 15,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-broadcast": true,
+              "x-writeable": false,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "ultrasonicAlarm",
+            "summary": "Pressure Alarm in millimeters",
+            "required": true,
+            "x-id": 118,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 4095,
+              "x-ctype": "float",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": false,
+              "x-readable": true
+            }
           }
         ]
       }
