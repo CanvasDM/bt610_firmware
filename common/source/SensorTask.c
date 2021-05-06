@@ -850,7 +850,24 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 			result = AdcBt6_ConvertUltrasonic(raw);
 		}
 		break;
-
+	case ANALOG_INPUT_ACCURRENT_20A:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertCurrent(raw);
+		}
+		break;
+	case ANALOG_INPUT_ACCURRENT_150A:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertCurrent(raw);
+		}
+		break;
+	case ANALOG_INPUT_ACCURRENT_500A:
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		if (r >= 0) {
+			result = AdcBt6_ConvertCurrent(raw);
+		}
+		break;
 	default:
 		r = 0;
 		LOG_DBG("Analog input channel %d disabled", channel + 1);

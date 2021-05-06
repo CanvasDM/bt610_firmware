@@ -178,7 +178,7 @@ void BleTask_Initialize(void)
 /* The Zephyr settings module and Laird settings both use internal flash
  * that has the default mount point of /lfs.
  */
-int lcz_params_mount_fs(void)
+int lcz_param_file_mount_fs(void)
 {
 	int r = 0;
 	k_mutex_lock(&mount_mutex, K_FOREVER);
@@ -202,7 +202,7 @@ static int BluetoothInit(void)
 	int r = 0;
 	do {
 		if (IS_ENABLED(CONFIG_BT_SETTINGS)) {
-			r = lcz_params_mount_fs();
+			r = lcz_param_file_mount_fs();
 			if (r != 0) {
 				break;
 			}
@@ -288,7 +288,6 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		      sizeof(codedPhySelected));
 
 	/*If the magnet activated the advertisment send non coded PHY message*/
-
 	Advertisement_Start();
 
 	return DISPATCH_OK;
@@ -505,6 +504,7 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
 
+	//GREG
 	/*If active mode hasn't been turned on at this point turn off the adverisments*/
 	if (bto.activeModeStatus == false) {
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
