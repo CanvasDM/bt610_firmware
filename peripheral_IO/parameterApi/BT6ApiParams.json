@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.44",
+    "version": "1.45",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -164,18 +164,18 @@
           }
         },
         {
-            "name": "name",
-            "summary": "File name",
-            "description": "Full file name to access",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minimumlength": 1,
-              "maximumlength": 64,
-              "x-ctype": "string",
-              "x-sequencenumber": 4,
-              "x-default": 0,
-              "x-example": "/ext/file.txt"
+          "name": "name",
+          "summary": "File name",
+          "description": "Full file name to access",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minimumlength": 1,
+            "maximumlength": 64,
+            "x-ctype": "string",
+            "x-sequencenumber": 4,
+            "x-default": 0,
+            "x-example": "/ext/file.txt"
           }
         }
       ],
@@ -2791,7 +2791,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4.0,
+              "maximum": 8.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
@@ -2815,7 +2815,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4.0,
+              "maximum": 8.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
@@ -2838,7 +2838,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4.0,
+              "maximum": 8.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
@@ -2861,7 +2861,7 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 4.0,
+              "maximum": 8.0,
               "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "0",
@@ -2957,7 +2957,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.44",
+              "x-default": "1.45",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3443,7 +3443,11 @@
           },
           {
             "name": "ultrasonicAlarm",
+<<<<<<< HEAD
+            "summary": "Ultrasonic Alarm in millimeters",
+=======
             "summary": "Pressure Alarm in millimeters",
+>>>>>>> LairdProdEng/Greg_Integration
             "required": true,
             "x-id": 118,
             "x-groupid": 65,
@@ -3454,6 +3458,27 @@
               "minimum": 0,
               "maximum": 4095,
               "x-ctype": "float",
+              "x-default": "0",
+              "x-example": "40",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": false,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "ultrasonicPin",
+            "summary": "Ultrasonic Pin used. Bitmask",
+            "required": true,
+            "x-id": 119,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0,
+              "maximum": 15,
+              "x-ctype": "uint8_t",
               "x-default": "0",
               "x-example": "1",
               "x-lockable": true,
