@@ -3443,7 +3443,11 @@
           },
           {
             "name": "ultrasonicAlarm",
+<<<<<<< HEAD
             "summary": "Ultrasonic Alarm in millimeters",
+=======
+            "summary": "Pressure Alarm in millimeters",
+>>>>>>> LairdProdEng/Greg_Integration
             "required": true,
             "x-id": 118,
             "x-groupid": 65,

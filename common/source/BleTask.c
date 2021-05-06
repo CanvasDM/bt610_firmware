@@ -175,8 +175,8 @@ void BleTask_Initialize(void)
 	k_thread_name_set(bto.msgTask.pTid, THIS_FILE);
 }
 
-/* The Zephyr settings module and Laird settings both use internal flash
- * that has the default mount point of /lfs.
+/* The Zephyr settings module and Laird Connectivity settings both use internal
+ * flash that has the default mount point of /lfs.
  */
 int lcz_param_file_mount_fs(void)
 {
