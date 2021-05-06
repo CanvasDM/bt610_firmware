@@ -175,10 +175,10 @@ void BleTask_Initialize(void)
 	k_thread_name_set(bto.msgTask.pTid, THIS_FILE);
 }
 
-/* The Zephyr settings module and Laird settings both use internal flash
- * that has the default mount point of /lfs.
+/* The Zephyr settings module and Laird Connectivity settings both use internal
+ * flash that has the default mount point of /lfs.
  */
-int lcz_params_mount_fs(void)
+int lcz_param_file_mount_fs(void)
 {
 	int r = 0;
 	k_mutex_lock(&mount_mutex, K_FOREVER);
@@ -202,7 +202,7 @@ static int BluetoothInit(void)
 	int r = 0;
 	do {
 		if (IS_ENABLED(CONFIG_BT_SETTINGS)) {
-			r = lcz_params_mount_fs();
+			r = lcz_param_file_mount_fs();
 			if (r != 0) {
 				break;
 			}
