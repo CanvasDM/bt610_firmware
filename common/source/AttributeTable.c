@@ -132,9 +132,6 @@ typedef struct RwAttributesTag {
 	float therm4CoefficientC;
 	bool dataloggingEnable;
 	bool factoryResetEnable;
-	float pressureAlarm;
-	uint8_t pressurePinSelected;
-	float ultrasonicAlarm;
 	/* pyend */
 } RwAttribute_t;
 
@@ -232,10 +229,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.therm3CoefficientC = 8.780e-8,
 	.therm4CoefficientC = 8.780e-8,
 	.dataloggingEnable = 0,
-	.factoryResetEnable = 1,
-	.pressureAlarm = 0,
-	.pressurePinSelected = 0,
-	.ultrasonicAlarm = 0
+	.factoryResetEnable = 1
 	/* pyend */
 };
 
@@ -295,7 +289,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.44",
+	.apiVersion = "1.45",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -424,10 +418,10 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [82 ] = { RO_ATTRX(analogInput3)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput3             , .min.fx = 0.0       , .max.fx = 4095.0     },
     [83 ] = { RO_ATTRX(analogInput4)                  , f  , n, n, y, n, n, n, AttributeValidator_float    , AttributePrepare_analogInput4             , .min.fx = 0.0       , .max.fx = 4095.0     },
     [84 ] = { RW_ATTRX(analogAlarms)                  , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
-    [85 ] = { RW_ATTRX(analogInput1Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
-    [86 ] = { RW_ATTRX(analogInput2Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
-    [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
-    [88 ] = { RW_ATTRX(analogInput4Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 4.0        },
+    [85 ] = { RW_ATTRX(analogInput1Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 8.0        },
+    [86 ] = { RW_ATTRX(analogInput2Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 8.0        },
+    [87 ] = { RW_ATTRX(analogInput3Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 8.0        },
+    [88 ] = { RW_ATTRX(analogInput4Type)              , u8 , y, y, y, y, y, n, AttributeValidator_aic      , NULL                                      , .min.ux = 0.0       , .max.ux = 8.0        },
     [89 ] = { RO_ATTRX(flags)                         , u32, n, y, y, n, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [90 ] = { RO_ATTRX(magnetState)                   , b  , n, n, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [91 ] = { RO_ATTRS(paramPath)                     , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
@@ -454,10 +448,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [112] = { RW_ATTRX(therm4CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [113] = { RW_ATTRX(dataloggingEnable)             , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
-    [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          },
-    [116] = { RW_ATTRX(pressureAlarm)                 , f  , y, n, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0         , .max.fx = 4095       },
-    [117] = { RW_ATTRX(pressurePinSelected)           , u8 , y, n, y, y, y, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0         , .max.ux = 15         },
-    [118] = { RW_ATTRX(ultrasonicAlarm)               , f  , y, n, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 0         , .max.fx = 4095       }
+    [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          }
     /* pyend */
 };
 /* clang-format on */
@@ -593,4 +584,5 @@ __weak int AttributePrepare_logFileStatus(void)
 {
 	return 0;
 }
+
 /* pyend */
