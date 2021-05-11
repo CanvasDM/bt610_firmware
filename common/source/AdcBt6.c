@@ -167,7 +167,7 @@ int AdcBt6_Init(void)
 	/* Calibration is independent of parameters/attributes module. */
 	/* todo: should these be shadowed in external flash ? */
 	readReturn = lcz_param_file_read("ge", &adcObj.ge, sizeof(adcObj.ge));
-	if (readReturn == 0) {
+	if (readReturn >= 0) {
 		Attribute_SetFloat(ATTR_INDEX_ge, adcObj.ge);
 	} else {
 		/* No calibration value saved, use default */
@@ -175,7 +175,7 @@ int AdcBt6_Init(void)
 	}
 
 	lcz_param_file_read("oe", &adcObj.oe, sizeof(adcObj.oe));
-	if (readReturn == 0) {
+	if (readReturn >= 0) {
 		Attribute_SetFloat(ATTR_INDEX_oe, adcObj.oe);
 	} else {
 		/* No calibration value saved, use default */
