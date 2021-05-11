@@ -1175,7 +1175,7 @@
           },
           {
             "name": "lock",
-            "summary": "1 = locked, 0 = unlock: Used by the mobile APP to indicate settings are locked",
+            "summary": "True = locked, False = unlock: Used by the mobile APP to indicate settings are locked",
             "required": true,
             "x-id": 5,
             "x-groupid": 65,
@@ -1261,7 +1261,7 @@
           },
           {
             "name": "digitalOutput1State",
-            "summary": "false = off, true - on",
+            "summary": "False = off\nTrue - on",
             "required": true,
             "x-id": 9,
             "x-groupid": 65,
@@ -1283,7 +1283,7 @@
           },
           {
             "name": "digitalOutput2State",
-            "summary": "false = off, true - on",
+            "summary": "False = off\nTrue - on",
             "required": true,
             "x-id": 10,
             "x-groupid": 65,
@@ -2224,7 +2224,7 @@
           },
           {
             "name": "activeMode",
-            "summary": "0 = inactive (shelf mode)\n1 = active (sample enabled)",
+            "summary": "False = inactive (shelf mode)\nTrue = active (sample enabled)",
             "required": true,
             "x-id": 57,
             "x-groupid": 65,
@@ -2246,7 +2246,7 @@
           },
           {
             "name": "useCodedPhy",
-            "summary": "Coded Phy Value",
+            "summary": "False = coded PHY not active\nTrue = Coded PHY on",
             "required": true,
             "x-id": 58,
             "x-groupid": 65,
@@ -2897,7 +2897,7 @@
           },
           {
             "name": "magnetState",
-            "summary": "Magnet State\n 0 = Magnet Near, 1 = Magnet Far",
+            "summary": "Magnet State\n False = Magnet Near, True = Magnet Far",
             "required": true,
             "x-id": 90,
             "x-groupid": 65,
@@ -3336,7 +3336,7 @@
           },
           {
             "name": "dataloggingEnable",
-            "summary": "0 = disable, 1 = enable ",
+            "summary": "False = disable\nTrue = enable ",
             "required": true,
             "x-id": 113,
             "x-groupid": 65,
@@ -3357,7 +3357,7 @@
           },
           {
             "name": "factoryResetEnable",
-            "summary": "0 = disable, 1 = enable ",
+            "summary": "False = disable\nTrue = enable ",
             "required": true,
             "x-id": 114,
             "x-groupid": 65,
