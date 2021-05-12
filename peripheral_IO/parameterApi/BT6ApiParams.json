@@ -1175,7 +1175,7 @@
           },
           {
             "name": "lock",
-            "summary": "True = locked, False = unlock: Used by the mobile APP to indicate settings are locked",
+            "summary": "false = unlock: Used by the mobile APP to indicate settings are locked\ntrue = locked",
             "required": true,
             "x-id": 5,
             "x-groupid": 65,
@@ -1261,7 +1261,7 @@
           },
           {
             "name": "digitalOutput1State",
-            "summary": "False = off\nTrue - on",
+            "summary": "false = off\ntrue = on",
             "required": true,
             "x-id": 9,
             "x-groupid": 65,
@@ -1283,7 +1283,7 @@
           },
           {
             "name": "digitalOutput2State",
-            "summary": "False = off\nTrue - on",
+            "summary": "false = off\ntrue = on",
             "required": true,
             "x-id": 10,
             "x-groupid": 65,
@@ -2224,7 +2224,7 @@
           },
           {
             "name": "activeMode",
-            "summary": "False = inactive (shelf mode)\nTrue = active (sample enabled)",
+            "summary": "false = inactive (shelf mode)\ntrue = active (sample enabled)",
             "required": true,
             "x-id": 57,
             "x-groupid": 65,
@@ -2246,7 +2246,7 @@
           },
           {
             "name": "useCodedPhy",
-            "summary": "False = coded PHY not active\nTrue = Coded PHY on",
+            "summary": "false = coded PHY not active\ntrue = Coded PHY on",
             "required": true,
             "x-id": 58,
             "x-groupid": 65,
@@ -2897,7 +2897,7 @@
           },
           {
             "name": "magnetState",
-            "summary": "Magnet State\n False = Magnet Near, True = Magnet Far",
+            "summary": "Magnet State:\nfalse = Magnet Near\ntrue = Magnet Far",
             "required": true,
             "x-id": 90,
             "x-groupid": 65,
@@ -3039,7 +3039,7 @@
           {
             "name": "tamperSwitchStatus",
             "summary": "Returns the current state of the tamper switch",
-            "description": "True = Tamper switch active (not pressed) \nFalse = Tamper switch inactive (pressed).",
+            "description": "false = Tamper switch inactive (pressed)\ntrue = Tamper switch active (not pressed).",
             "required": true,
             "x-id": 98,
             "x-groupid": 65,
@@ -3336,7 +3336,7 @@
           },
           {
             "name": "dataloggingEnable",
-            "summary": "False = disable\nTrue = enable ",
+            "summary": "false = disable\ntrue = enable ",
             "required": true,
             "x-id": 113,
             "x-groupid": 65,
@@ -3357,7 +3357,7 @@
           },
           {
             "name": "factoryResetEnable",
-            "summary": "False = disable\nTrue = enable ",
+            "summary": "false = disable\ntrue = enable ",
             "required": true,
             "x-id": 114,
             "x-groupid": 65,
