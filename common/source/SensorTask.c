@@ -685,9 +685,9 @@ static void DisableDigitalIO(void)
 {
 	/*Disable the digital inputs*/
 	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
-			    (!DIGITAL_IN_ENABLE_MASK | DIGITAL_IN_ALARM_MASK));
+			    ((!DIGITAL_IN_ENABLE_MASK) | DIGITAL_IN_ALARM_MASK));
 	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
-			    (!DIGITAL_IN_ENABLE_MASK | DIGITAL_IN_ALARM_MASK));
+			    ((!DIGITAL_IN_ENABLE_MASK) | DIGITAL_IN_ALARM_MASK));
 
 	/*Disable the digital outputs*/
 	BSP_PinSet(DO1_PIN, (0));
