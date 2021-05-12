@@ -652,11 +652,11 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	if (type < UINT8_MAX) {
 		r = Attribute_Dump(&fstr, type);
 		if (r >= 0) {
-			r = fsu_write_abs(paramString, fstr, strlen(fstr));
-			k_free(fstr);
 			/* OK to set the file path now */
 			strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
 				sizeof(paramString));
+			r = fsu_write_abs(paramString, fstr, strlen(fstr));
+			k_free(fstr);
 		}
 	}
 
