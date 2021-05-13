@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.45",
+    "version": "1.46",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -683,7 +683,21 @@
           "name": 65
         }
       ],
-      "params": [],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint32_t",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
       "result": {
         "name": "Rtc",
         "schema": {
@@ -721,7 +735,7 @@
         {
           "name": "p1",
           "summary": "Parameter 1",
-          "description": "Dummy Parameter required for test tool",
+          "description": "Dummy Parameter",
           "required": false,
           "schema": {
             "type": "integer",
@@ -825,7 +839,21 @@
           "name": 65
         }
       ],
-      "params": [],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
       "result": {
         "name": "Result",
         "schema": {
@@ -2957,7 +2985,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.45",
+              "x-default": "1.46",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
