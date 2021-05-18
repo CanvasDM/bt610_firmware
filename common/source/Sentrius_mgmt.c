@@ -400,7 +400,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
-	return (err != 0) ? ENOMEM : 0;
+	return (err != 0) ? -ENOMEM : 0;
 }
 
 int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
