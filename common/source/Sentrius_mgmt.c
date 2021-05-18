@@ -676,11 +676,12 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 {
 	uint8_t n[LCZ_EVENT_MANAGER_FILENAME_SIZE];
-	int r = MGMT_ERR_EINVAL;
+	int r = -MGMT_ERR_EINVAL;
 	uint32_t s = 0;
 
 	/* Check if we can prepare the log file OK */
-	if (lcz_event_manager_prepare_log_file(n, &s)) {
+	r = lcz_event_manager_prepare_log_file(n, &s);
+	if (r != 0) {
 		/* If not, blank the file path */
 		n[0] = 0;
 	}
