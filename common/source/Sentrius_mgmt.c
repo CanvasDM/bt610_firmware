@@ -219,7 +219,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 
 	readCbor = cbor_read_object(&ctxt->it, params_attr);
 	if (readCbor != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 	/*just need the type from p1 look up id don't need the params_value structure*/
 	parameterDataType =
@@ -265,7 +265,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
@@ -291,7 +291,7 @@ int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 	echo_buf[0] = '\0';
 
 	if (cbor_read_object(&ctxt->it, attrs) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	echo_len = strlen(echo_buf);
@@ -304,7 +304,7 @@ int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_text_string(&ctxt->encoder, rev_buf, echo_len);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
@@ -331,7 +331,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 
 	/* Don't proceed if the types weren't extracted OK */
 	if (err != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Get the parameter id */
@@ -344,7 +344,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	};
 	readCbor = cbor_read_object(&ctxt->it, params_attr);
 	if (readCbor != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Type from p1 look up id number match to type */
@@ -362,14 +362,14 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 			params_value, &floatContainer);
 		/* Again don't proceed if the type didn't convert */
 		if (result != 0) {
-			return -EINVAL;
+			return MGMT_ERR_EINVAL;
 		}
 	}
 
 	/* Now go ahead and read the CBOR value */
 	readCbor = cbor_read_object(&dataCopy, params_value);
 	if (readCbor != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Convert it back if needed */
@@ -381,7 +381,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 
 		/* And don't proceed if the type didn't convert */
 		if (result != 0) {
-			return -EINVAL;
+			return MGMT_ERR_EINVAL;
 		}
 	}
 
@@ -400,7 +400,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
@@ -417,7 +417,7 @@ int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
 	};
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	if (duration < UINT32_MAX) {
@@ -428,7 +428,7 @@ int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
@@ -454,7 +454,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 
 	/* Don't proceed if the values weren't extracted OK */
 	if (err != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Set up the intended parameters structure */
@@ -474,7 +474,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 		params_attr, &floatContainerP1);
 
 	if (result != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	result = FloatParameterExternalValueType(
@@ -482,12 +482,12 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 		&params_attr[SENTRIUS_MGMT_P1_INDEX], &floatContainerP2);
 
 	if (result != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Read the values */
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* Now convert them back again */
@@ -496,7 +496,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 		ATTR_TYPE_FLOAT, params_attr, &floatContainerP1, &c1);
 
 	if (result != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	result = FloatParameterExternalToInternal(
@@ -505,7 +505,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 		&floatContainerP2, &c2);
 
 	if (result != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 	/* Then perform the calibration */
 	r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
@@ -517,7 +517,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
@@ -541,7 +541,7 @@ int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 	};
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	r = AdcBt6_CalibrateThermistor(
@@ -556,7 +556,7 @@ int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
@@ -574,7 +574,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 	};
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	if (epoch < UINT32_MAX) {
@@ -588,7 +588,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");
 	err |= cbor_encode_int(&ctxt->encoder, t);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
@@ -599,7 +599,7 @@ int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "t");
 	err |= cbor_encode_int(&ctxt->encoder, t);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
@@ -618,7 +618,7 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 					     { .attribute = NULL } };
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	r = Attribute_Load(paramString);
@@ -627,7 +627,7 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
@@ -645,7 +645,7 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	};
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	/* This will malloc a string as large as maximum parameter file size. */
@@ -670,7 +670,7 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_text_string(&ctxt->encoder, paramString,
 					       strlen(paramString));
 	}
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
@@ -697,7 +697,7 @@ int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
 	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
@@ -712,7 +712,7 @@ int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 	/* Exit with result */
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 {
@@ -731,7 +731,7 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 	/* Exit with result */
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
@@ -771,7 +771,7 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 	};
 
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+		return MGMT_ERR_EINVAL;
 	}
 
 	dummy_log_file_properties.start_time_stamp =
@@ -783,8 +783,9 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 		((uint8_t)(event_data_type));
 
 	/* Check if we can prepare the log file OK */
-	if (lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
-						    n, &s)) {
+	r = lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
+						    n, &s) if (r != 0)
+	{
 		/* If not, blank the file path */
 		n[0] = 0;
 	}
@@ -800,7 +801,7 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
 	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
-	return (err != 0) ? -ENOMEM : 0;
+	return (err != 0) ? MGMT_ERR_ENOMEM : 0;
 }
 
 static CborAttrType ParameterValueType(attr_idx_t paramID,
