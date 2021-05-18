@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.46",
+    "version": "1.47",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -691,7 +691,7 @@
           "required": true,
           "schema": {
             "type": "integer",
-            "x-ctype": "uint32_t",
+            "x-ctype": "uint8_t",
             "x-default": "0",
             "x-example": "1",
             "x-sequencenumber": 1
@@ -862,7 +862,7 @@
               "name": "r",
               "type": "integer",
               "summary": "Result",
-              "description": "negative error code, number of log files to read on success",
+              "description": "negative error code, return zero on success",
               "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
@@ -907,7 +907,21 @@
           "name": 65
         }
       ],
-      "params": [],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy Parameter",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
       "result": {
         "name": "Result",
         "schema": {
@@ -2985,7 +2999,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.46",
+              "x-default": "1.47",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
