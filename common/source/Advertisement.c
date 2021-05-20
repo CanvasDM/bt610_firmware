@@ -67,7 +67,7 @@ static struct bt_le_adv_param bt_param =
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
 			     NULL);
 static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
-	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
+	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME | BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
 	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
 #endif
 
@@ -207,7 +207,8 @@ int Advertisement_IntervalUpdate(void)
 		r = Advertisement_End();
 		if (r == 0) {
 			if (extendPhyEnbled == true) {
-				r = bt_le_ext_adv_update_param(extendedAdv, &bt_extendParam);
+				r = bt_le_ext_adv_update_param(extendedAdv,
+							       &bt_extendParam);
 			} else {
 				r = bt_le_ext_adv_update_param(adv, &bt_param);
 			}
@@ -217,7 +218,8 @@ int Advertisement_IntervalUpdate(void)
 		r = Advertisement_Start();
 	} else {
 		if (extendPhyEnbled == true) {
-			r = bt_le_ext_adv_update_param(extendedAdv, &bt_extendParam);
+			r = bt_le_ext_adv_update_param(extendedAdv,
+						       &bt_extendParam);
 		} else {
 			r = bt_le_ext_adv_update_param(adv, &bt_param);
 		}
