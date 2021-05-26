@@ -301,6 +301,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
+	bool updateAnalogInterval = false;
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
 		case ATTR_INDEX_batterySenseInterval:
@@ -328,7 +329,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_analogInput2Type:
 		case ATTR_INDEX_analogInput3Type:
 		case ATTR_INDEX_analogInput4Type:
-			StartAnalogInterval();
+			updateAnalogInterval = true;
 			break;
 		case ATTR_INDEX_configType:
 			SensorConfigChange();
@@ -349,6 +350,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			// don't do anything - this is a broadcast
 			break;
 		}
+	}
+	if(updateAnalogInterval == true)
+	{
+		StartAnalogInterval();
 	}
 
 	return DISPATCH_OK;
@@ -622,6 +627,12 @@ static void SensorConfigChange(void)
 
 		/*Disable Digital*/
 		DisableDigitalIO();
+
+		/*Configure the first 3 analogs*/
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_ULTRASONIC);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_PRESSURE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_PRESSURE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
 
 		break;
 	case CONFIG_SPI_I2C:
