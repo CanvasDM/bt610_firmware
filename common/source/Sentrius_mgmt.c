@@ -647,7 +647,7 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
 		return -EINVAL;
 	}
-
+	fsu_delete_abs(SENTRIUS_MGMT_PARAMETER_DUMP_PATH); 
 	/* This will malloc a string as large as maximum parameter file size. */
 	if (type < UINT8_MAX) {
 		r = Attribute_Dump(&fstr, type);
