@@ -18,6 +18,42 @@ This project makes use of the following third-party components:
 
 
 # Firmware Versions
+# Application Version 1.15.37 (May 26, 2021)
+
+
+### Summary
+
+This release of the BT610 that includes the following configurable features: Analog inputs, digital inputs, thermistors, digital outputs, pressure inputs, ultrasonic input.
+Also this release does not provide support for: I2C/SPI/UART configuration.
+
+### Target Hardware
+
+The hardware is R5.0
+
+### Added
+Ultrasonic and pressure configuration.
+
+### Changed
+-18979 Change order of the flags
+
+### Fixed
+-18989 prepare log return values are not populated
+-18978 length of device name missing
+-18668 The SetRtc Time API Message Needs Clarity
+-18664 SetParameter message response in OpenRPC does not match what is being sent.
+
+### Known Issues / Limitations
+
+-18814 BT610 Stops Advertising 
+-18806 BT610 will indicate the RX ring buffer is full 
+-18728 Missing scan response 
+-18826 ASSERTION FAIL in /zephyr/subsys/bluetooth/controller/ll_sw/nordic/lll/lll_adv_aux.c:367 
+
+### Resource Documents
+
+- BT6ApiParams v1.38
+- BT610 Comm Spec v1.0
+- User Guide v1.0
 
 # Application Version 1.11.1 (April 21, 2021)
 
