@@ -970,7 +970,21 @@
           "name": 65
         }
       ],
-      "params": [],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter 1",
+          "description": "Dummy",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
       "result": {
         "name": "FactoryResetResult",
         "schema": {
