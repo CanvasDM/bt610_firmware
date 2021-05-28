@@ -351,8 +351,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 		}
 	}
-	if(updateAnalogInterval == true)
-	{
+	if (updateAnalogInterval == true) {
 		StartAnalogInterval();
 	}
 
@@ -500,22 +499,31 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg)
 {
-	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
 	uint8_t activeModeStatus = 0;
 
 	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
 		      sizeof(activeModeStatus));
 
-	if (activeModeStatus == 0) {
+	if ((activeModeStatus == 0) &&
+	    (pMsg->header.txId == FWK_ID_USER_IF_TASK)) {
 		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
-		Flags_Set(FLAG_ACTIVE_MODE, 1);
-	} else {
+		activeModeStatus = 1;
+	} else if ((activeModeStatus == 0) &&
+		   (pMsg->header.txId == FWK_ID_SENSOR_TASK)) {
+		//The BT610 needs to enter shelf perform reset
 		Flags_Set(FLAG_ACTIVE_MODE, 0);
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+					      FWK_ID_CONTROL_TASK,
+					      FMC_SOFTWARE_RESET);
 	}
 
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_BLE_TASK,
-				      FMC_BLE_START_ADVERTISING);
+	if (activeModeStatus == 1) {
+		Flags_Set(FLAG_ACTIVE_MODE, 1);
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+					      FWK_ID_BLE_TASK,
+					      FMC_BLE_START_ADVERTISING);
+	}
 	return DISPATCH_OK;
 }
 static void LoadSensorConfiguration(void)
@@ -629,9 +637,12 @@ static void SensorConfigChange(void)
 		DisableDigitalIO();
 
 		/*Configure the first 3 analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_ULTRASONIC);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_PRESSURE);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_PRESSURE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput1Type,
+				    ANALOG_ULTRASONIC);
+		Attribute_SetUint32(ATTR_INDEX_analogInput2Type,
+				    ANALOG_PRESSURE);
+		Attribute_SetUint32(ATTR_INDEX_analogInput3Type,
+				    ANALOG_PRESSURE);
 		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
 
 		break;
@@ -696,9 +707,11 @@ static void DisableDigitalIO(void)
 {
 	/*Disable the digital inputs*/
 	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
-			    ((!DIGITAL_IN_ENABLE_MASK) | DIGITAL_IN_ALARM_MASK));
+			    ((!DIGITAL_IN_ENABLE_MASK) |
+			     DIGITAL_IN_ALARM_MASK));
 	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
-			    ((!DIGITAL_IN_ENABLE_MASK) | DIGITAL_IN_ALARM_MASK));
+			    ((!DIGITAL_IN_ENABLE_MASK) |
+			     DIGITAL_IN_ALARM_MASK));
 
 	/*Disable the digital outputs*/
 	BSP_PinSet(DO1_PIN, (0));
