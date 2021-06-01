@@ -55,6 +55,8 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define DIGITAL_IN_ALARM_MASK (0x03)
 #define DIGITAL_IN_ENABLE_MASK (0x80)
 #define DIGITAL_IN_BIT_SHIFT (7)
+/* 0x0F is all the thermisters enabled*/
+#define ALL_THERMISTORS (0x0F)
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(spi1), okay)
 #define SPI_DEV_NAME DT_LABEL(DT_NODELABEL(spi1))
@@ -132,6 +134,8 @@ static void InitializeIntervalTimers(void);
 static void StartAnalogInterval(void);
 static void StartTempertureInterval(void);
 static void StartBatteryInterval(void);
+static void DisableAnalogPins(void);
+static void DisableThermistorPins(void);
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
 static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
@@ -505,13 +509,15 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
 		      sizeof(activeModeStatus));
 
+	/*Button was pressed make sure device enters active mode*/
 	if ((activeModeStatus == 0) &&
 	    (pMsg->header.txId == FWK_ID_USER_IF_TASK)) {
 		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 		activeModeStatus = 1;
+		/*User set active mode back 0*/
 	} else if ((activeModeStatus == 0) &&
 		   (pMsg->header.txId == FWK_ID_SENSOR_TASK)) {
-		//The BT610 needs to enter shelf perform reset
+		/*The BT610 needs to perform reset after leaving active mode to enter shelf mode*/
 		Flags_Set(FLAG_ACTIVE_MODE, 0);
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 					      FWK_ID_CONTROL_TASK,
@@ -526,6 +532,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	}
 	return DISPATCH_OK;
 }
+
 static void LoadSensorConfiguration(void)
 {
 	SensorConfigChange();
@@ -541,38 +548,22 @@ static void SensorConfigureAnalog(void)
 static void SensorConfigChange(void)
 {
 	uint32_t configurationType;
-	uint32_t thermistorsConfig = 0;
-	analogConfigType_t analog1Config = ANALOG_UNUSED;
-	analogConfigType_t analog2Config = ANALOG_UNUSED;
-	analogConfigType_t analog3Config = ANALOG_UNUSED;
-	analogConfigType_t analog4Config = ANALOG_UNUSED;
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
 
 	switch (configurationType) {
 	case CONFIG_UNDEFINED:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
+		DisableThermistorPins();
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+		DisableAnalogPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
 		break;
 	case CONFIG_ANALOG_INPUT:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
-
-		/*Configure all analogs to voltage*/
-		//Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_VOLTAGE);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_VOLTAGE);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_VOLTAGE);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_VOLTAGE);
+		DisableThermistorPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
@@ -580,14 +571,10 @@ static void SensorConfigChange(void)
 		break;
 	case CONFIG_DIGITAL:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
+		DisableThermistorPins();
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+		DisableAnalogPins();
 
 		/*Enable the digital inputs*/
 		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
@@ -598,40 +585,29 @@ static void SensorConfigChange(void)
 				     DIGITAL_IN_ALARM_MASK));
 		break;
 	case CONFIG_TEMPERATURE:
-		/*Enable all the thermistors*/
-		thermistorsConfig = 0x0F;
+		/*Enable all the thermistors */
 		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
+				    ALL_THERMISTORS);
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
-		StartTempertureInterval();
+		DisableAnalogPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
 
+		StartTempertureInterval();
+
 		break;
 	case CONFIG_ANALOG_AC_CURRENT:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
-
-		/*Configure all analogs to current*/
-		//Attribute_SetUint32(ATTR_INDEX_analogInput1, ANALOG_AC_CURRENT);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput2, ANALOG_AC_CURRENT);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput3, ANALOG_AC_CURRENT);
-		//Attribute_SetUint32(ATTR_INDEX_analogInput4, ANALOG_AC_CURRENT);
+		DisableThermistorPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
 		break;
 	case CONFIG_ULTRASONIC_PRESSURE:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
+		DisableThermistorPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
@@ -648,14 +624,10 @@ static void SensorConfigChange(void)
 		break;
 	case CONFIG_SPI_I2C:
 		/*Disable all the thermistors*/
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    thermistorsConfig);
+		DisableThermistorPins();
 
 		/*Disable all analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type, analog1Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type, analog2Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type, analog3Config);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, analog4Config);
+		DisableAnalogPins();
 
 		/*Disable Digital*/
 		DisableDigitalIO();
@@ -835,6 +807,20 @@ static void StartBatteryInterval(void)
 				      K_NO_WAIT);
 		}
 	}
+}
+
+static void DisableAnalogPins(void)
+{
+	Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
+}
+
+static void DisableThermistorPins(void)
+{
+	uint32_t thermistorsConfig = 0;
+	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
 }
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
