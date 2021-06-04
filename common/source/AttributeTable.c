@@ -289,7 +289,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.50",
+	.apiVersion = "1.51",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -446,7 +446,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [110] = { RW_ATTRX(therm2CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [111] = { RW_ATTRX(therm3CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [112] = { RW_ATTRX(therm4CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
-    [113] = { RW_ATTRX(dataloggingEnable)             , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [113] = { RW_ATTRX(dataloggingEnable)             , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          }
     /* pyend */
