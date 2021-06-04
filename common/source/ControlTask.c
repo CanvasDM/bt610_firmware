@@ -165,11 +165,14 @@ void ControlTask_Thread(void)
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
+	bool dataLogEnable;
 
 	/* Prevent 'lost' logs */
 	k_sleep(K_SECONDS(1));
 
 	LOG_WRN("Version %s", VERSION_STRING);
+	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
+		      sizeof(dataLogEnable));
 
 	Attribute_Init();
 
@@ -185,7 +188,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	SensorTask_Initialize();
 
-	lcz_event_manager_initialise();
+	lcz_event_manager_initialise(dataLogEnable);
 
 	EventTask_Initialize();
 
@@ -281,7 +284,7 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	LOG_WRN("Factory Reset");
 	Attribute_FactoryReset();
 	/*Need reset to init all the values*/
-    FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
 				      FMC_SOFTWARE_RESET);
 	return DISPATCH_OK;
 }
@@ -313,11 +316,11 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 int AttributePrepare_upTime(void)
 {
 	int64_t uptimeMs = k_uptime_get();
-	return(Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
+	return (Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
 }
 
 int AttributePrepare_logFileStatus(void)
 {
 	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
-	return(Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
+	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
 }

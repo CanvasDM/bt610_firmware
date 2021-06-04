@@ -65,8 +65,11 @@ K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH,
 static void EventTaskThread(void *, void *, void *);
 static uint32_t GetAdvertEventId(void);
 static uint32_t GetEventTimestamp(uint32_t id);
+static void SetDataloggerStatus(void);
 static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
+static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						   FwkMsg_t *pMsg);
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -76,6 +79,7 @@ static FwkMsgHandler_t EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
 	case FMC_EVENT_TRIGGER:       return EventTriggerMsgHandler;
+	case FMC_ATTR_CHANGED:        return EventAttrChangedMsgHandler;
 	default:                      return NULL;
 	}
 	/* clang-format on */
@@ -164,27 +168,48 @@ static uint32_t GetEventTimestamp(uint32_t id)
 	return (timestamp);
 }
 
+static void SetDataloggerStatus(void)
+{
+	bool dataLogEnable;
+	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
+		      sizeof(dataLogEnable));
+
+	lcz_event_manager_set_logging_state(dataLogEnable);
+}
+
 static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	bool dataEnable;
 
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 
-	/*Check if datalogging needs to be done or not*/
-	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataEnable,
-		      sizeof(dataEnable));
-	if (dataEnable == true) {
-		eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
-			lcz_event_manager_add_sensor_event(
-				pEventMsg->eventType, &pEventMsg->eventData);
+	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
+		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
+						   &pEventMsg->eventData);
 
-		eventTaskObject.eventID = eventTaskObject.eventID + 1;
+	eventTaskObject.eventID = eventTaskObject.eventID + 1;
 
-		FRAMEWORK_MSG_CREATE_AND_SEND(
-			FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK, FMC_SENSOR_EVENT);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
+				      FMC_SENSOR_EVENT);
+
+	return DISPATCH_OK;
+}
+static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						   FwkMsg_t *pMsg)
+{
+	UNUSED_PARAMETER(pMsgRxer);
+	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	size_t i;
+	for (i = 0; i < pb->count; i++) {
+		switch (pb->list[i]) {
+		case ATTR_INDEX_dataloggingEnable:
+			SetDataloggerStatus();
+			break;
+		default:
+			/* Don't care about this attribute. This is a broadcast. */
+			break;
+		}
 	}
-
 	return DISPATCH_OK;
 }
