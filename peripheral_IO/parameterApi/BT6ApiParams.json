@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.51",
+    "version": "1.53",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -2639,8 +2639,8 @@
           },
           {
             "name": "temperatureAlarms",
-            "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa",
-            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65535 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
+            "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa\n 1 = indicates active, 0 = no alarm triggered",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
             "x-id": 74,
             "x-groupid": 65,
@@ -2832,8 +2832,8 @@
           },
           {
             "name": "analogAlarms",
-            "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa",
-            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65535 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
+            "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa\n 1 = indicates active, 0 = no alarm triggered",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
             "x-id": 84,
             "x-groupid": 65,
@@ -3028,7 +3028,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.51",
+              "x-default": "1.53",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3468,6 +3468,46 @@
               "x-writeable": false,
               "x-readable": true,
               "x-prepare": true
+            }
+          },
+          {
+            "name": "temperatureAlarmsEnable",
+            "summary": "Bitmask for all 4 channels and enable/disable each alarm.\n dddddcccccbbbbbaaaaa\n 1 = alarm is enabled\n0 = alarm is disabled",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
+            "required": true,
+            "x-id": 116,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 1048575.0,
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": true
+            }
+          },
+          {
+            "name": "analogAlarmsEnable",
+            "summary": "Bitmask for all 4 channels and enable/disable each alarm.\n dddddcccccbbbbbaaaaa\n 1 = alarm is enabled\n0 = alarm is disabled",
+            "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
+            "required": true,
+            "x-id": 117,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimum": 0.0,
+              "maximum": 1048575.0,
+              "x-ctype": "uint32_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": true,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-savable": true
             }
           }
         ]

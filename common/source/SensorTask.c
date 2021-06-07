@@ -121,7 +121,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 static void LoadSensorConfiguration(void);
 static void SensorConfigureAnalog(void);
-static void SensorConfigChange(void);
+static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
 static void SensorOutput2Control(void);
 
@@ -336,7 +336,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			updateAnalogInterval = true;
 			break;
 		case ATTR_INDEX_configType:
-			SensorConfigChange();
+			SensorConfigChange(false);
 			break;
 
 		case ATTR_INDEX_digitalOutput1State:
@@ -460,7 +460,9 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t index = 0;
 	uint8_t r;
+
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
+		LOG_DBG("Test check = %d", index);
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
 		if (r == 0) {
 			HighTempAlarmCheck(index);
@@ -535,7 +537,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static void LoadSensorConfiguration(void)
 {
-	SensorConfigChange();
+	SensorConfigChange(true);
 	//Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
@@ -545,7 +547,7 @@ static void SensorConfigureAnalog(void)
 	/*todo: for the AC current*/
 }
 
-static void SensorConfigChange(void)
+static void SensorConfigChange(bool bootup)
 {
 	uint32_t configurationType;
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
@@ -577,17 +579,21 @@ static void SensorConfigChange(void)
 		DisableAnalogPins();
 
 		/*Enable the digital inputs*/
-		Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
-				    (DIGITAL_IN_ENABLE_MASK |
-				     DIGITAL_IN_ALARM_MASK));
-		Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
-				    (DIGITAL_IN_ENABLE_MASK |
-				     DIGITAL_IN_ALARM_MASK));
+		if (bootup == false) {
+			Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
+					    (DIGITAL_IN_ENABLE_MASK |
+					     DIGITAL_IN_ALARM_MASK));
+			Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
+					    (DIGITAL_IN_ENABLE_MASK |
+					     DIGITAL_IN_ALARM_MASK));
+		}
 		break;
 	case CONFIG_TEMPERATURE:
 		/*Enable all the thermistors */
-		Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-				    ALL_THERMISTORS);
+		if (bootup == false) {
+			Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
+					    ALL_THERMISTORS);
+		}
 
 		/*Disable all analogs*/
 		DisableAnalogPins();
@@ -613,13 +619,16 @@ static void SensorConfigChange(void)
 		DisableDigitalIO();
 
 		/*Configure the first 3 analogs*/
-		Attribute_SetUint32(ATTR_INDEX_analogInput1Type,
-				    ANALOG_ULTRASONIC);
-		Attribute_SetUint32(ATTR_INDEX_analogInput2Type,
-				    ANALOG_PRESSURE);
-		Attribute_SetUint32(ATTR_INDEX_analogInput3Type,
-				    ANALOG_PRESSURE);
-		Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
+		if (bootup == false) {
+			Attribute_SetUint32(ATTR_INDEX_analogInput1Type,
+					    ANALOG_ULTRASONIC);
+			Attribute_SetUint32(ATTR_INDEX_analogInput2Type,
+					    ANALOG_PRESSURE);
+			Attribute_SetUint32(ATTR_INDEX_analogInput3Type,
+					    ANALOG_PRESSURE);
+			Attribute_SetUint32(ATTR_INDEX_analogInput4Type,
+					    ANALOG_UNUSED);
+		}
 
 		break;
 	case CONFIG_SPI_I2C:
@@ -883,7 +892,6 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 {
 	int r = -EPERM;
 	float result = 0.0;
-
 	int16_t raw = 0;
 
 	uint32_t config =
@@ -901,7 +909,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 		}
 	} else {
 		LOG_DBG("Thermistor channel %d not enabled", channel + 1);
-		r = 0;
+		r = -ENODEV;
 	}
 
 	if (r >= 0) {
