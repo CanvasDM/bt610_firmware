@@ -132,6 +132,8 @@ typedef struct RwAttributesTag {
 	float therm4CoefficientC;
 	bool dataloggingEnable;
 	bool factoryResetEnable;
+	uint32_t temperatureAlarmsEnable;
+	uint32_t analogAlarmsEnable;
 	/* pyend */
 } RwAttribute_t;
 
@@ -229,7 +231,9 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.therm3CoefficientC = 8.780e-8,
 	.therm4CoefficientC = 8.780e-8,
 	.dataloggingEnable = 0,
-	.factoryResetEnable = 1
+	.factoryResetEnable = 1,
+	.temperatureAlarmsEnable = 0,
+	.analogAlarmsEnable = 0
 	/* pyend */
 };
 
@@ -289,7 +293,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.51",
+	.apiVersion = "1.52",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -448,7 +452,9 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [112] = { RW_ATTRX(therm4CoefficientC)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [113] = { RW_ATTRX(dataloggingEnable)             , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
-    [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          }
+    [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          },
+    [116] = { RW_ATTRX(temperatureAlarmsEnable)       , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
+    [117] = { RW_ATTRX(analogAlarmsEnable)            , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  }
     /* pyend */
 };
 /* clang-format on */
