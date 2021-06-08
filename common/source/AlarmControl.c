@@ -74,23 +74,39 @@ int HighTempAlarmCheck(size_t channel)
 		uint8_t highTemp2Bit =
 			HIGH_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
-		if ((currentTemp >= highTempAlarm1) &&
-		    (highTempAlarmEnable & BIT_MASK(highTemp1Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
+		if (currentTemp >= highTempAlarm1) {
+			if (highTempAlarmEnable & BIT_MASK(highTemp1Bit)) {
+				AlarmTypeHandler(
+					SENSOR_EVENT_TEMPERATURE_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
-					    highTemp1Bit, 1);
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					highTemp1Bit, 1);
 
-			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					highTemp1Bit, 0);
+			}
 
-		} else if ((currentTemp >= highTempAlarm2) &&
-			   (highTempAlarmEnable & BIT_MASK(highTemp2Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
+		} else if (currentTemp >= highTempAlarm2) {
+			if (highTempAlarmEnable & BIT_MASK(highTemp2Bit)) {
+				AlarmTypeHandler(
+					SENSOR_EVENT_TEMPERATURE_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
-					    highTemp2Bit, 1);
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					highTemp2Bit, 1);
 
-			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					highTemp2Bit, 0);
+			}
 		}
 	}
 	return r;
@@ -121,23 +137,39 @@ int LowTempAlarmCheck(size_t channel)
 		uint8_t lowTemp2Bit =
 			LOW_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
-		if ((currentTemp <= lowTempAlarm1) &&
-		    (lowTempAlarmEnable & BIT_MASK(lowTemp1Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
+		if (currentTemp <= lowTempAlarm1) {
+			if (lowTempAlarmEnable & BIT_MASK(lowTemp1Bit)) {
+				AlarmTypeHandler(
+					SENSOR_EVENT_TEMPERATURE_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
-					    lowTemp1Bit, 1);
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					lowTemp1Bit, 1);
 
-			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					lowTemp1Bit, 0);
+			}
 
-		} else if ((currentTemp <= lowTempAlarm2) &&
-			   (lowTempAlarmEnable & BIT_MASK(lowTemp2Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
+		} else if (currentTemp <= lowTempAlarm2) {
+			if (lowTempAlarmEnable & BIT_MASK(lowTemp2Bit)) {
+				AlarmTypeHandler(
+					SENSOR_EVENT_TEMPERATURE_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
-					    lowTemp2Bit, 1);
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					lowTemp2Bit, 1);
 
-			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(
+					ATTR_INDEX_temperatureAlarms,
+					lowTemp2Bit, 0);
+			}
 		}
 	}
 	return r;
@@ -156,13 +188,19 @@ int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 
 	flagTempBit = FLAG_TEMP_ALARM_START_BIT + channel;
 
-	if ((tempDifference > threshold) &&
-	    (deltaTempAlarmEnable & BIT_MASK(deltaBit))) {
-		AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
+	if (tempDifference > threshold) {
+		if (deltaTempAlarmEnable & BIT_MASK(deltaBit)) {
+			AlarmTypeHandler(SENSOR_EVENT_TEMPERATURE_ALARM);
 
-		Attribute_SetMask32(ATTR_INDEX_temperatureAlarms, deltaBit, 1);
+			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
+					    deltaBit, 1);
 
-		Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
+		} else {
+			/* Alarm not enabled clear the active parameter if it was set */
+			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
+					    deltaBit, 0);
+		}
 	}
 	return 0;
 }
@@ -193,23 +231,33 @@ int HighAnalogAlarmCheck(size_t channel)
 		uint8_t highAnalog2Bit =
 			HIGH_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
-		if ((currentAnalogValue >= highAnalogAlarm1) &&
-		    (highAnalogAlarmEnable & BIT_MASK(highAnalog1Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
+		if (currentAnalogValue >= highAnalogAlarm1) {
+			if (highAnalogAlarmEnable & BIT_MASK(highAnalog1Bit)) {
+				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
-					    highAnalog1Bit, 1);
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    highAnalog1Bit, 1);
 
-			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    highAnalog1Bit, 0);
+			}
 
-		} else if ((currentAnalogValue >= highAnalogAlarm2) &&
-			   (highAnalogAlarmEnable & BIT_MASK(highAnalog2Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
+		} else if (currentAnalogValue >= highAnalogAlarm2) {
+			if (highAnalogAlarmEnable & BIT_MASK(highAnalog2Bit)) {
+				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
-					    highAnalog2Bit, 1);
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    highAnalog2Bit, 1);
 
-			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    highAnalog2Bit, 0);
+			}
 		}
 	}
 	return r;
@@ -240,23 +288,33 @@ int LowAnalogAlarmCheck(size_t channel)
 		uint8_t lowAnalog2Bit =
 			LOW_THRESH_2 + (NUMBER_ALARM_TYPES * channel);
 
-		if ((currentAnalogValue <= lowAnalogAlarm1) &&
-		    (lowAnalogAlarmEnable & BIT_MASK(lowAnalog2Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
+		if (currentAnalogValue <= lowAnalogAlarm1) {
+			if (lowAnalogAlarmEnable & BIT_MASK(lowAnalog2Bit)) {
+				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
-					    lowAnalog1Bit, 1);
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    lowAnalog1Bit, 1);
 
-			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    lowAnalog1Bit, 0);
+			}
 
-		} else if ((currentAnalogValue <= lowAnalogAlarm2) &&
-			   (lowAnalogAlarmEnable & BIT_MASK(lowAnalog2Bit))) {
-			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
+		} else if (currentAnalogValue <= lowAnalogAlarm2) {
+			if (lowAnalogAlarmEnable & BIT_MASK(lowAnalog2Bit)) {
+				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
-			Attribute_SetMask32(ATTR_INDEX_analogAlarms,
-					    lowAnalog2Bit, 1);
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    lowAnalog2Bit, 1);
 
-			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+			} else {
+				/* Alarm not enabled clear the active parameter if it was set */
+				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
+						    lowAnalog2Bit, 0);
+			}
 		}
 	}
 	return r;
@@ -275,11 +333,17 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 	Attribute_GetFloat(&threshold, ATTR_INDEX_analog1DeltaThresh + channel);
 
 	flagAnalogBit = FLAG_ANALOG_ALARM_START_BIT + channel;
-	if ((analogDifference > threshold) &&
-	    (deltaAnalogAlarmEnable & BIT_MASK(deltaBit))) {
-		AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
-		Attribute_SetMask32(ATTR_INDEX_analogAlarms, deltaBit, 1);
-		Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+	if (analogDifference > threshold) {
+		if (deltaAnalogAlarmEnable & BIT_MASK(deltaBit)) {
+			AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
+			Attribute_SetMask32(ATTR_INDEX_analogAlarms, deltaBit,
+					    1);
+			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
+		} else {
+			/* Alarm not enabled clear the active parameter if it was set */
+			Attribute_SetMask32(ATTR_INDEX_analogAlarms, deltaBit,
+					    0);
+		}
 	}
 	return 0;
 }
