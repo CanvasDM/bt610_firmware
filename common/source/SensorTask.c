@@ -461,7 +461,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t index = 0;
 	uint8_t r;
 
-	for (index = 0; index < TOTAL_THERM_CH; index++) {		
+	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
 		if (r == 0) {
 			HighTempAlarmCheck(index);
