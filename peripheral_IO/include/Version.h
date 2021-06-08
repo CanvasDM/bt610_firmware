@@ -18,7 +18,7 @@ extern "C" {
 /******************************************************************************/
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 16
-#define VERSION_PATCH 27
+#define VERSION_PATCH 28
 #define VERSION_STRING                                                         \
 	STRINGIFY(VERSION_MAJOR)                                               \
 	"." STRINGIFY(VERSION_MINOR) "." STRINGIFY(VERSION_PATCH)
