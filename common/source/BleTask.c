@@ -59,7 +59,7 @@ typedef struct {
 #endif
 
 #ifndef BLE_TASK_QUEUE_DEPTH
-#define BLE_TASK_QUEUE_DEPTH 8
+#define BLE_TASK_QUEUE_DEPTH 32
 #endif
 #define BOOTUP_ADVERTISMENT_TIME_MS (15000)
 
@@ -504,7 +504,6 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
 
-	//GREG
 	/*If active mode hasn't been turned on at this point turn off the adverisments*/
 	if (bto.activeModeStatus == false) {
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,

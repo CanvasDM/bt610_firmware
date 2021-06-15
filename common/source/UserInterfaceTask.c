@@ -44,7 +44,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #endif
 
 #ifndef USER_IF_TASK_QUEUE_DEPTH
-#define USER_IF_TASK_QUEUE_DEPTH 8
+#define USER_IF_TASK_QUEUE_DEPTH 32
 #endif
 
 /******************************************************************************/
