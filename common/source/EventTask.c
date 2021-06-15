@@ -31,11 +31,11 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #endif
 
 #ifndef EVENT_TASK_STACK_DEPTH
-#define EVENT_TASK_STACK_DEPTH 2048
+#define EVENT_TASK_STACK_DEPTH 4096
 #endif
 
 #ifndef EVENT_TASK_QUEUE_DEPTH
-#define EVENT_TASK_QUEUE_DEPTH 8
+#define EVENT_TASK_QUEUE_DEPTH 32
 #endif
 
 /* This is the total number of events available */
@@ -188,6 +188,7 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
 						   &pEventMsg->eventData);
 
+	//LOG_INF("Event Type (%d)", pEventMsg->eventType);
 	eventTaskObject.eventID = eventTaskObject.eventID + 1;
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,

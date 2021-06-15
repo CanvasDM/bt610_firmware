@@ -59,7 +59,7 @@ typedef struct {
 #endif
 
 #ifndef BLE_TASK_QUEUE_DEPTH
-#define BLE_TASK_QUEUE_DEPTH 8
+#define BLE_TASK_QUEUE_DEPTH 32
 #endif
 #define BOOTUP_ADVERTISMENT_TIME_MS (15000)
 
