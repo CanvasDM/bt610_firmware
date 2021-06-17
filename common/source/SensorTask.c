@@ -91,6 +91,8 @@ static SensorTaskObj_t sensorTaskObject;
 static struct k_timer batteryTimer;
 static struct k_timer temperatureReadTimer;
 static struct k_timer analogReadTimer;
+struct k_work temperatureWork;
+struct k_delayed_work temperatureWorkDelay;
 
 K_THREAD_STACK_DEFINE(sensorTaskStack, SENSOR_TASK_STACK_DEPTH);
 
@@ -119,6 +121,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
+static void TemperatureWorker(struct k_work *work);						  
 static void LoadSensorConfiguration(void);
 static void SensorConfigureAnalog(void);
 static void SensorConfigChange(bool bootup);
@@ -147,6 +150,7 @@ static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
+static void temperatureStOPCallbackIsr(struct k_timer *timer_id);
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
@@ -315,9 +319,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 
 		case ATTR_INDEX_temperatureSenseInterval:
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-						      FWK_ID_SENSOR_TASK,
-						      FMC_TEMPERATURE_MEASURE);
+		k_work_submit(&temperatureWork);
+			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+			//			      FWK_ID_SENSOR_TASK,
+			//			      FMC_TEMPERATURE_MEASURE);
 			break;
 		case ATTR_INDEX_analogSenseInterval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
@@ -460,6 +465,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t index = 0;
 	uint8_t r;
+	LOG_INF("****Old Measure****");
 
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
@@ -532,6 +538,28 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FMC_BLE_START_ADVERTISING);
 	}
 	return DISPATCH_OK;
+}
+
+static void TemperatureWorker(struct k_work *work)
+{
+	uint8_t index = 0;
+	uint8_t r;
+
+	for (index = 0; index < TOTAL_THERM_CH; index++) {
+		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
+		if (r == 0) {
+			HighTempAlarmCheck(index);
+			LowTempAlarmCheck(index);
+			DeltaTempAlarmCheck(
+				index,
+				sensorTaskObject
+					.magnitudeOfTempDifference[index]);
+			AggregationTempHandler(index);
+		}
+	}
+	//k_timer_stop(&temperatureReadTimer);
+	//LOG_INF("Stop Temp Timer");
+	//StartTempertureInterval();
 }
 
 static void LoadSensorConfiguration(void)
@@ -738,7 +766,9 @@ static void InitializeIntervalTimers(void)
 
 	/*Temperture Interval timer*/
 	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
-		     NULL);
+		     temperatureStOPCallbackIsr);
+	k_work_init(&temperatureWork, TemperatureWorker);
+	k_delayed_work_init(&temperatureWorkDelay, TemperatureWorker);
 	StartTempertureInterval();
 
 	/*Analog Interval timer*/
@@ -793,9 +823,15 @@ static void StartTempertureInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
 		if (intervalSeconds != 0) {
+			
+			//LOG_INF("Temp Timer Status = %d",k_timer_remaining_get(&temperatureReadTimer));
+			//k_sleep(K_MSEC(100));
+			//k_timer_start(&temperatureReadTimer,
+			//	      K_SECONDS(intervalSeconds), K_NO_WAIT);
 			k_timer_start(&temperatureReadTimer,
-				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-		}
+				      K_NO_WAIT, K_SECONDS(intervalSeconds));		  
+			//LOG_INF("Temp Timer Start");
+					}
 	}
 }
 
@@ -944,8 +980,15 @@ static void batteryTimerCallbackIsr(struct k_timer *timer_id)
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
-				      FMC_TEMPERATURE_MEASURE);
+	//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
+	//			      FMC_TEMPERATURE_MEASURE);
+	//LOG_INF("Temp Timer ISR");
+	k_delayed_work_submit(&temperatureWorkDelay, K_MSEC(20));
+
+}
+static void temperatureStOPCallbackIsr(struct k_timer *timer_id)
+{
+	LOG_INF("Stop Temp Timer ISR");
 }
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id)
 {
