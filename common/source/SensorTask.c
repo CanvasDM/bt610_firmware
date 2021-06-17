@@ -559,7 +559,7 @@ static void TemperatureWorker(struct k_work *work)
 	}
 	//k_timer_stop(&temperatureReadTimer);
 	//LOG_INF("Stop Temp Timer");
-	//StartTempertureInterval();
+	StartTempertureInterval();
 }
 
 static void LoadSensorConfiguration(void)
@@ -826,10 +826,10 @@ static void StartTempertureInterval(void)
 			
 			//LOG_INF("Temp Timer Status = %d",k_timer_remaining_get(&temperatureReadTimer));
 			//k_sleep(K_MSEC(100));
-			//k_timer_start(&temperatureReadTimer,
-			//	      K_SECONDS(intervalSeconds), K_NO_WAIT);
 			k_timer_start(&temperatureReadTimer,
-				      K_NO_WAIT, K_SECONDS(intervalSeconds));		  
+				      K_SECONDS(intervalSeconds), K_NO_WAIT);
+			//k_timer_start(&temperatureReadTimer,
+			//	      K_NO_WAIT, K_SECONDS(intervalSeconds));		  
 			//LOG_INF("Temp Timer Start");
 					}
 	}

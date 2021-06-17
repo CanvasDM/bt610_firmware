@@ -760,8 +760,8 @@ void Show(attr_idx_t Index)
 		memcpy(&f, p->pData, p->size);
 		snprintf(float_str, sizeof(float_str), CONFIG_ATTR_FLOAT_FMT,
 			 f);
-		//LOG_DBG(CONFIG_ATTR_SHOW_FMT "%s", Index, p->name,
-		//	log_strdup(float_str));
+		LOG_DBG(CONFIG_ATTR_SHOW_FMT "%s", Index, p->name,
+			log_strdup(float_str));
 		break;
 
 	case ATTR_TYPE_STRING:
