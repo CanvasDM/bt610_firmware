@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.55",
+    "version": "1.56",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -3031,7 +3031,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.55",
+              "x-default": "1.56",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3511,6 +3511,178 @@
               "x-writeable": true,
               "x-readable": true,
               "x-savable": true
+            }
+          },
+          {
+            "name": "adcBatterySimulated",
+            "summary": "Enables simulated Battery ADC counts",
+            "required": true,
+            "x-id": 118,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcBatterySimulatedCounts",
+            "summary": "Simulated counts for Battery ADC channel",
+            "required": true,
+            "x-id": 119,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4095.0,
+              "x-ctype": "int16_t",
+              "x-default": "0",
+              "x-example": "1000",
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcAnalogSensorSimulated",
+            "summary": "Enables simulated Analog Sensor ADC counts",
+            "required": true,
+            "x-id": 120,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcAnalogSensorSimulatedCounts",
+            "summary": "Simulated counts for Analog Sensor ADC channel",
+            "required": true,
+            "x-id": 121,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4095.0,
+              "x-ctype": "int16_t",
+              "x-default": "0",
+              "x-example": "1000",
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcThermistorSimulated",
+            "summary": "Enables simulated Thermistor ADC counts",
+            "required": true,
+            "x-id": 122,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcThermistorSimulatedCounts",
+            "summary": "Simulated counts for Thermistor ADC channel",
+            "required": true,
+            "x-id": 123,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4095.0,
+              "x-ctype": "int16_t",
+              "x-default": "0",
+              "x-example": "1000",
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcVRefSimulated",
+            "summary": "Enables simulated counts for VRef ADC counts",
+            "required": true,
+            "x-id": 124,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
+            }
+          },
+          {
+            "name": "adcVRefSimulatedCounts",
+            "summary": "Simulated counts for VRef ADC channel",
+            "required": true,
+            "x-id": 125,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 4095.0,
+              "x-ctype": "int16_t",
+              "x-default": "0",
+              "x-example": "1000",
+              "x-lockable": false,
+              "x-broadcast": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true
             }
           }
         ]

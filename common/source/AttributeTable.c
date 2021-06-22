@@ -134,6 +134,14 @@ typedef struct RwAttributesTag {
 	bool factoryResetEnable;
 	uint32_t temperatureAlarmsEnable;
 	uint32_t analogAlarmsEnable;
+	bool adcBatterySimulated;
+	int16_t adcBatterySimulatedCounts;
+	bool adcAnalogSensorSimulated;
+	int16_t adcAnalogSensorSimulatedCounts;
+	bool adcThermistorSimulated;
+	int16_t adcThermistorSimulatedCounts;
+	bool adcVRefSimulated;
+	int16_t adcVRefSimulatedCounts;
 	/* pyend */
 } RwAttribute_t;
 
@@ -233,7 +241,15 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.dataloggingEnable = 0,
 	.factoryResetEnable = 1,
 	.temperatureAlarmsEnable = 0,
-	.analogAlarmsEnable = 0
+	.analogAlarmsEnable = 0,
+	.adcBatterySimulated = 0,
+	.adcBatterySimulatedCounts = 0,
+	.adcAnalogSensorSimulated = 0,
+	.adcAnalogSensorSimulatedCounts = 0,
+	.adcThermistorSimulated = 0,
+	.adcThermistorSimulatedCounts = 0,
+	.adcVRefSimulated = 0,
+	.adcVRefSimulatedCounts = 0,
 	/* pyend */
 };
 
@@ -293,7 +309,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.55",
+	.apiVersion = "1.56",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -454,7 +470,15 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [114] = { RW_ATTRX(factoryResetEnable)            , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          },
     [116] = { RW_ATTRX(temperatureAlarmsEnable)       , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
-    [117] = { RW_ATTRX(analogAlarmsEnable)            , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  }
+    [117] = { RW_ATTRX(analogAlarmsEnable)            , u32, y, y, y, y, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
+    [118] = { RW_ATTRX(adcBatterySimulated)           , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [119] = { RW_ATTRX(adcBatterySimulatedCounts)     , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     },
+    [120] = { RW_ATTRX(adcAnalogSensorSimulated)      , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [121] = { RW_ATTRX(adcAnalogSensorSimulatedCounts), i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     },
+    [122] = { RW_ATTRX(adcThermistorSimulated)        , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [123] = { RW_ATTRX(adcThermistorSimulatedCounts)  , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     },
+    [124] = { RW_ATTRX(adcVRefSimulated)              , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [125] = { RW_ATTRX(adcVRefSimulatedCounts)        , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     }
     /* pyend */
 };
 /* clang-format on */

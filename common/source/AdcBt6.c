@@ -140,6 +140,8 @@ static void UltrasonicOrPressurePowerAndDelayHandler(AdcMeasurementType_t type);
 static void UltrasonicOrPressureDisablePower(AdcMeasurementType_t type);
 static bool ValidInputForCurrentMeasurement(MuxInput_t input);
 static float Steinhart_Hart(float calibrated, float a, float b, float c);
+static bool ADCChannelIsSimulated(AnalogChannel_t channel,
+				  int16_t *simulated_value);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -535,7 +537,9 @@ static int SampleChannel(int16_t *raw, AnalogChannel_t channel)
 	if (adcObj.dev) {
 		rc = ConfigureChannel(channel);
 		if (rc == 0) {
-			rc = adc_read(adcObj.dev, &sequence);
+			if (!ADCChannelIsSimulated(channel, raw)) {
+				rc = adc_read(adcObj.dev, &sequence);
+			}
 		}
 		if (rc < 0) {
 			LOG_ERR("Unable to sample ADC");
@@ -675,4 +679,57 @@ static float Steinhart_Hart(float calibrated, float a, float b, float c)
 	float denominator = a + (b * x) + (c * cubed);
 	/* Division by zero is safe for this architecture. */
 	return 1 / denominator;
+}
+
+static bool ADCChannelIsSimulated(AnalogChannel_t channel,
+				  int16_t *simulated_value)
+{
+	bool is_simulated = false;
+	uint8_t channel_index;
+	bool channel_found = false;
+	bool simulation_enabled = false;
+
+	const uint8_t channel_map[] = { BATTERY_ADC_CH, ANALOG_SENSOR_1_CH,
+					THERMISTOR_SENSOR_2_CH, VREF_5_CH };
+
+	const uint8_t enable_map[] = { ATTR_INDEX_adcBatterySimulated,
+				       ATTR_INDEX_adcAnalogSensorSimulated,
+				       ATTR_INDEX_adcThermistorSimulated,
+				       ATTR_INDEX_adcVRefSimulated };
+
+	const uint8_t value_map[] = { ATTR_INDEX_adcBatterySimulatedCounts,
+				      ATTR_INDEX_adcAnalogSensorSimulatedCounts,
+				      ATTR_INDEX_adcThermistorSimulatedCounts,
+				      ATTR_INDEX_adcVRefSimulatedCounts };
+
+	/* AD channels don't have incremental values so use a look up
+	 * to find the index of the one being accessed.
+	 */
+	for (channel_index = 0;
+	     (!channel_found) && (channel_index < NUMBER_OF_ANALOG_INPUTS);) {
+		if (channel_map[channel_index] == channel) {
+			channel_found = true;
+		} else {
+			channel_index++;
+		}
+	}
+	if (channel_found) {
+		/* Check if the channel is being simulated */
+		if (Attribute_Get(enable_map[channel_index],
+				  &simulation_enabled,
+				  sizeof(simulation_enabled)) ==
+		    sizeof(simulation_enabled)) {
+			if (simulation_enabled) {
+				/* If so, try to read the simulated value */
+				if (Attribute_Get(value_map[channel_index],
+						  simulated_value,
+						  sizeof(*simulated_value)) ==
+				    sizeof(*simulated_value)) {
+					/* Only apply the value if safe to do so */
+					is_simulated = true;
+				}
+			}
+		}
+	}
+	return (is_simulated);
 }
