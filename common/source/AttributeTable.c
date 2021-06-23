@@ -142,6 +142,38 @@ typedef struct RwAttributesTag {
 	int16_t adcThermistorSimulatedCounts;
 	bool adcVRefSimulated;
 	int16_t adcVRefSimulatedCounts;
+	bool voltage1Simulated;
+	float voltage1SimulatedValue;
+	bool voltage2Simulated;
+	float voltage2SimulatedValue;
+	bool voltage3Simulated;
+	float voltage3SimulatedValue;
+	bool voltage4Simulated;
+	float voltage4SimulatedValue;
+	bool ultrasonicSimulated;
+	float ultrasonicSimulatedValue;
+	bool pressureSimulated;
+	float pressureSimulatedValue;
+	bool current1Simulated;
+	float current1SimulatedValue;
+	bool current2Simulated;
+	float current2SimulatedValue;
+	bool current3Simulated;
+	float current3SimulatedValue;
+	bool current4Simulated;
+	float current4SimulatedValue;
+	bool vrefSimulated;
+	float vrefSimulatedValue;
+	bool temperature1Simulated;
+	float temperature1SimulatedValue;
+	bool temperature2Simulated;
+	float temperature2SimulatedValue;
+	bool temperature3Simulated;
+	float temperature3SimulatedValue;
+	bool temperature4Simulated;
+	float temperature4SimulatedValue;
+	bool batterymvSimulated;
+	int32_t batterymvSimulatedValue;
 	/* pyend */
 } RwAttribute_t;
 
@@ -250,6 +282,38 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.adcThermistorSimulatedCounts = 0,
 	.adcVRefSimulated = 0,
 	.adcVRefSimulatedCounts = 0,
+	.voltage1Simulated = 0,
+	.voltage1SimulatedValue = 0,
+	.voltage2Simulated = 0,
+	.voltage2SimulatedValue = 0,
+	.voltage3Simulated = 0,
+	.voltage3SimulatedValue = 0,
+	.voltage4Simulated = 0,
+	.voltage4SimulatedValue = 0,
+	.ultrasonicSimulated = 0,
+	.ultrasonicSimulatedValue = 0,
+	.pressureSimulated = 0,
+	.pressureSimulatedValue = 0,
+	.current1Simulated = 0,
+	.current1SimulatedValue = 0,
+	.current2Simulated = 0,
+	.current2SimulatedValue = 0,
+	.current3Simulated = 0,
+	.current3SimulatedValue = 0,
+	.current4Simulated = 0,
+	.current4SimulatedValue = 0,
+	.vrefSimulated = 0,
+	.vrefSimulatedValue = 0,
+	.temperature1Simulated = 0,
+	.temperature1SimulatedValue = 0,
+	.temperature2Simulated = 0,
+	.temperature2SimulatedValue = 0,
+	.temperature3Simulated = 0,
+	.temperature3SimulatedValue = 0,
+	.temperature4Simulated = 0,
+	.temperature4SimulatedValue = 0,
+	.batterymvSimulated = 0,
+	.batterymvSimulatedValue = 0,
 	/* pyend */
 };
 
@@ -309,7 +373,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.56",
+	.apiVersion = "1.57",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -478,7 +542,39 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [122] = { RW_ATTRX(adcThermistorSimulated)        , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [123] = { RW_ATTRX(adcThermistorSimulatedCounts)  , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     },
     [124] = { RW_ATTRX(adcVRefSimulated)              , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
-    [125] = { RW_ATTRX(adcVRefSimulatedCounts)        , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     }
+    [125] = { RW_ATTRX(adcVRefSimulatedCounts)        , i16, n, y, y, n, n, n, AttributeValidator_int16    , NULL                                      , .min.sx = 0.0       , .max.sx = 4095.0     },
+    [126] = { RW_ATTRX(voltage1Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [127] = { RW_ATTRX(voltage1SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [128] = { RW_ATTRX(voltage2Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [129] = { RW_ATTRX(voltage2SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [130] = { RW_ATTRX(voltage3Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [131] = { RW_ATTRX(voltage3SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [132] = { RW_ATTRX(voltage4Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [133] = { RW_ATTRX(voltage4SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [134] = { RW_ATTRX(ultrasonicSimulated)           , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [135] = { RW_ATTRX(ultrasonicSimulatedValue)      , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [136] = { RW_ATTRX(pressureSimulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [137] = { RW_ATTRX(pressureSimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [138] = { RW_ATTRX(current1Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [139] = { RW_ATTRX(current1SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [140] = { RW_ATTRX(current2Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [141] = { RW_ATTRX(current2SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [142] = { RW_ATTRX(current3Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [143] = { RW_ATTRX(current3SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [144] = { RW_ATTRX(current4Simulated)             , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [145] = { RW_ATTRX(current4SimulatedValue)        , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [146] = { RW_ATTRX(vrefSimulated)                 , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [147] = { RW_ATTRX(vrefSimulatedValue)            , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [148] = { RW_ATTRX(temperature1Simulated)         , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [149] = { RW_ATTRX(temperature1SimulatedValue)    , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [150] = { RW_ATTRX(temperature2Simulated)         , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [151] = { RW_ATTRX(temperature2SimulatedValue)    , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [152] = { RW_ATTRX(temperature3Simulated)         , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [153] = { RW_ATTRX(temperature3SimulatedValue)    , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [154] = { RW_ATTRX(temperature4Simulated)         , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [155] = { RW_ATTRX(temperature4SimulatedValue)    , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
+    [156] = { RW_ATTRX(batterymvSimulated)            , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [157] = { RW_ATTRX(batterymvSimulatedValue)       , i32, n, y, y, n, n, n, AttributeValidator_int32    , NULL                                      , .min.sx = 0.0       , .max.sx = 0.0        },
     /* pyend */
 };
 /* clang-format on */

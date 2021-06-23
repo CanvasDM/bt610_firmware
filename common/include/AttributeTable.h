@@ -72,7 +72,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 126
+#define ATTR_TABLE_SIZE 158
 
 /* pyend */
 
@@ -239,6 +239,38 @@ typedef enum
 #define ATTR_INDEX_adcThermistorSimulatedCounts          123
 #define ATTR_INDEX_adcVRefSimulated                      124
 #define ATTR_INDEX_adcVRefSimulatedCounts                125
+#define ATTR_INDEX_voltage1Simulated                     126
+#define ATTR_INDEX_voltage1SimulatedValue                127
+#define ATTR_INDEX_voltage2Simulated                     128
+#define ATTR_INDEX_voltage2SimulatedValue                129
+#define ATTR_INDEX_voltage3Simulated                     130
+#define ATTR_INDEX_voltage3SimulatedValue                131
+#define ATTR_INDEX_voltage4Simulated                     132
+#define ATTR_INDEX_voltage4SimulatedValue                133
+#define ATTR_INDEX_ultrasonicSimulated                   134
+#define ATTR_INDEX_ultrasonicSimulatedValue              135
+#define ATTR_INDEX_pressureSimulated                     136
+#define ATTR_INDEX_pressureSimulatedValue                137
+#define ATTR_INDEX_current1Simulated                     138
+#define ATTR_INDEX_current1SimulatedValue                139
+#define ATTR_INDEX_current2Simulated                     140
+#define ATTR_INDEX_current2SimulatedValue                141
+#define ATTR_INDEX_current3Simulated                     142
+#define ATTR_INDEX_current3SimulatedValue                143
+#define ATTR_INDEX_current4Simulated                     144
+#define ATTR_INDEX_current4SimulatedValue                145
+#define ATTR_INDEX_vrefSimulated                         146
+#define ATTR_INDEX_vrefSimulatedValue                    147
+#define ATTR_INDEX_temperature1Simulated                 148
+#define ATTR_INDEX_temperature1SimulatedValue            149
+#define ATTR_INDEX_temperature2Simulated                 150
+#define ATTR_INDEX_temperature2SimulatedValue            151
+#define ATTR_INDEX_temperature3Simulated                 152
+#define ATTR_INDEX_temperature3SimulatedValue            153
+#define ATTR_INDEX_temperature4Simulated                 154
+#define ATTR_INDEX_temperature4SimulatedValue            155
+#define ATTR_INDEX_batterymvSimulated                    156
+#define ATTR_INDEX_batterymvSimulatedValue               157
 /* pyend */
 /* clang-format on */
 

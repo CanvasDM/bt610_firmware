@@ -29,6 +29,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #include "Attribute.h"
 #include "AnalogInput.h"
 #include "AdcBt6.h"
+#include "SensorTask.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -142,6 +143,13 @@ static bool ValidInputForCurrentMeasurement(MuxInput_t input);
 static float Steinhart_Hart(float calibrated, float a, float b, float c);
 static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 				  int16_t *simulated_value);
+static bool VoltageIsSimulated(size_t channel, float *simulated_value);
+static bool UltrasonicIsSimulated(float *simulated_value);
+static bool PressureIsSimulated(float *simulated_value);
+static bool CurrentIsSimulated(size_t channel, float *simulated_value);
+static bool VrefIsSimulated(float *simulated_value);
+static bool TemperatureIsSimulated(size_t channel, float *simulated_value);
+static bool BatterymvIsSimulated(int32_t *simulated_value);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -188,16 +196,20 @@ int AdcBt6_Init(void)
 
 int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv)
 {
-	k_mutex_lock(&adcMutex, K_FOREVER);
+	int rc = 0;
 
-	int rc = SampleChannel(raw, BATTERY_ADC_CH);
-	if (rc >= 0) {
-		*mv = (int32_t)*raw;
-		rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
-					   ADC_RESOLUTION, mv);
+	if (!BatterymvIsSimulated(mv)) {
+		k_mutex_lock(&adcMutex, K_FOREVER);
+
+		rc = SampleChannel(raw, BATTERY_ADC_CH);
+		if (rc >= 0) {
+			*mv = (int32_t)*raw;
+			rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
+						   ADC_RESOLUTION, mv);
+		}
+
+		k_mutex_unlock(&adcMutex);
 	}
-
-	k_mutex_unlock(&adcMutex);
 	return rc;
 }
 
@@ -374,33 +386,57 @@ int AdcBt6_BplusDisable(void)
 	return rc;
 }
 
-float AdcBt6_ConvertVoltage(int32_t raw)
+float AdcBt6_ConvertVoltage(size_t channel, int32_t raw)
 {
-	return ((float)raw) / ANALOG_VOLTAGE_CONVERSION_FACTOR;
+	float voltage;
+
+	if (!VoltageIsSimulated(channel, &voltage)) {
+		voltage = ((float)raw) / ANALOG_VOLTAGE_CONVERSION_FACTOR;
+	}
+	return(voltage);
 }
 
-float AdcBt6_ConvertUltrasonic(int32_t raw)
+float AdcBt6_ConvertUltrasonic(size_t channel, int32_t raw)
 {
-	return AdcBt6_ConvertVoltage(raw) * ULTRASONIC_CONVERSION_FACTOR;
+	float ultrasonic;
+
+	if (!UltrasonicIsSimulated(&ultrasonic)) {
+		ultrasonic = AdcBt6_ConvertVoltage(channel, raw) * ULTRASONIC_CONVERSION_FACTOR;
+	}
+	return(ultrasonic);
 }
 
-float AdcBt6_ConvertPressure(int32_t raw)
+float AdcBt6_ConvertPressure(size_t channel, int32_t raw)
 {
-	return (AdcBt6_ConvertVoltage(raw) * 75) - 37.5;
+	float pressure;
+
+	if (!PressureIsSimulated(&pressure)) {
+		pressure = (AdcBt6_ConvertVoltage(channel, raw) * 75) - 37.5;
+	}
+	return (pressure);
 }
 
-float AdcBt6_ConvertCurrent(int32_t raw)
+float AdcBt6_ConvertCurrent(size_t channel, int32_t raw)
 {
-	return ((float)raw) / ANALOG_CURRENT_CONVERSION_FACTOR;
+	float current;
+
+	if (!CurrentIsSimulated(channel,&current)) {
+		current = ((float)raw) / ANALOG_CURRENT_CONVERSION_FACTOR;
+	}
+	return(current);
 }
 
 float AdcBt6_ConvertVref(int32_t raw)
 {
-	int32_t mv = raw;
-	(void)adc_raw_to_millivolts(adcObj.ref, ADC_GAIN_DEFAULT,
-				    ADC_RESOLUTION, &mv);
-	float f = (float)mv / 1000.0;
-	return f;
+	float vref;
+
+	if (!VrefIsSimulated(&vref)) {
+		int32_t mv = raw;
+		(void)adc_raw_to_millivolts(adcObj.ref, ADC_GAIN_DEFAULT,
+					    ADC_RESOLUTION, &mv);
+		vref = (float)mv / 1000.0;
+	}
+	return (vref);
 }
 
 float AdcBt6_ApplyThermistorCalibration(int32_t raw)
@@ -414,17 +450,23 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw)
 
 float AdcBt6_ConvertThermToTemperature(int32_t raw, size_t channel)
 {
-	float calibrated = AdcBt6_ApplyThermistorCalibration(raw);
-	uint16_t coefficientA = ATTR_INDEX_therm1CoefficientA + channel;
-	uint16_t coefficientB = ATTR_INDEX_therm1CoefficientB + channel;
-	uint16_t coefficientC = ATTR_INDEX_therm1CoefficientC + channel;
-	return Steinhart_Hart(
-		       calibrated,
-		       Attribute_AltGetFloat(coefficientA, THERMISTOR_S_H_A),
-		       Attribute_AltGetFloat(coefficientB, THERMISTOR_S_H_B),
-		       Attribute_AltGetFloat(coefficientC, THERMISTOR_S_H_C)) -
-	       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
-				     THERMISTOR_S_H_OFFSET);
+	float temperature;
+	float calibrated;
+
+	if (!TemperatureIsSimulated(channel,&temperature)) {
+		calibrated = AdcBt6_ApplyThermistorCalibration(raw);
+		uint16_t coefficientA = ATTR_INDEX_therm1CoefficientA + channel;
+		uint16_t coefficientB = ATTR_INDEX_therm1CoefficientB + channel;
+		uint16_t coefficientC = ATTR_INDEX_therm1CoefficientC + channel;
+		temperature = Steinhart_Hart(
+			       calibrated,
+			       Attribute_AltGetFloat(coefficientA, THERMISTOR_S_H_A),
+			       Attribute_AltGetFloat(coefficientB, THERMISTOR_S_H_B),
+			       Attribute_AltGetFloat(coefficientC, THERMISTOR_S_H_C)) -
+		       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
+					     THERMISTOR_S_H_OFFSET);
+	}
+	return(temperature);
 }
 
 void AdcBt6_ConfigPower(AdcMeasurementType_t type)
@@ -732,4 +774,197 @@ static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 		}
 	}
 	return (is_simulated);
+}
+
+static bool VoltageIsSimulated(size_t channel, float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	const uint8_t enable_map[] = { ATTR_INDEX_voltage1Simulated,
+				       ATTR_INDEX_voltage2Simulated,
+				       ATTR_INDEX_voltage3Simulated,
+				       ATTR_INDEX_voltage4Simulated };
+
+	const uint8_t value_map[] = { ATTR_INDEX_voltage1SimulatedValue,
+				      ATTR_INDEX_voltage2SimulatedValue,
+				      ATTR_INDEX_voltage3SimulatedValue,
+				      ATTR_INDEX_voltage4SimulatedValue };
+
+	if (channel < TOTAL_ANALOG_CH) {
+		/* Check if the voltage is being simulated */
+		if (Attribute_Get(enable_map[channel], &simulation_enabled,
+				  sizeof(simulation_enabled)) ==
+		    sizeof(simulation_enabled)) {
+			if (simulation_enabled) {
+				/* If so, try to read the simulated value */
+				if (Attribute_Get(value_map[channel],
+						  simulated_value,
+						  sizeof(*simulated_value)) ==
+				    sizeof(*simulated_value)) {
+					/* Only apply the value if safe to do so */
+					is_simulated = true;
+				}
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool UltrasonicIsSimulated(float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	if (Attribute_Get(ATTR_INDEX_ultrasonicSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_ultrasonicSimulatedValue,
+					  simulated_value,
+					  sizeof(*simulated_value)) ==
+			    sizeof(*simulated_value)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+			}
+		}
+	}
+	return(is_simulated);
+}
+
+static bool PressureIsSimulated(float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	if (Attribute_Get(ATTR_INDEX_pressureSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_pressureSimulatedValue,
+					  simulated_value,
+					  sizeof(*simulated_value)) ==
+			    sizeof(*simulated_value)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+			}
+		}
+	}
+	return(is_simulated);
+}
+
+static bool CurrentIsSimulated(size_t channel, float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	const uint8_t enable_map[] = { ATTR_INDEX_current1Simulated,
+				       ATTR_INDEX_current2Simulated,
+				       ATTR_INDEX_current3Simulated,
+				       ATTR_INDEX_current4Simulated };
+
+	const uint8_t value_map[] = { ATTR_INDEX_current1SimulatedValue,
+				      ATTR_INDEX_current2SimulatedValue,
+				      ATTR_INDEX_current3SimulatedValue,
+				      ATTR_INDEX_current4SimulatedValue };
+
+	if (channel < TOTAL_ANALOG_CH) {
+		/* Check if the current is being simulated */
+		if (Attribute_Get(enable_map[channel], &simulation_enabled,
+				  sizeof(simulation_enabled)) ==
+		    sizeof(simulation_enabled)) {
+			if (simulation_enabled) {
+				/* If so, try to read the simulated value */
+				if (Attribute_Get(value_map[channel],
+						  simulated_value,
+						  sizeof(*simulated_value)) ==
+				    sizeof(*simulated_value)) {
+					/* Only apply the value if safe to do so */
+					is_simulated = true;
+				}
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool VrefIsSimulated(float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	if (Attribute_Get(ATTR_INDEX_vrefSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_vrefSimulatedValue,
+					  simulated_value,
+					  sizeof(*simulated_value)) ==
+			    sizeof(*simulated_value)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+			}
+		}
+	}
+	return(is_simulated);
+}
+
+static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	const uint8_t enable_map[] = { ATTR_INDEX_temperature1Simulated,
+				       ATTR_INDEX_temperature2Simulated,
+				       ATTR_INDEX_temperature3Simulated,
+				       ATTR_INDEX_temperature4Simulated };
+
+	const uint8_t value_map[] = { ATTR_INDEX_temperature1SimulatedValue,
+				      ATTR_INDEX_temperature2SimulatedValue,
+				      ATTR_INDEX_temperature3SimulatedValue,
+				      ATTR_INDEX_temperature4SimulatedValue };
+
+	if (channel < TOTAL_ANALOG_CH) {
+		/* Check if the temperature is being simulated */
+		if (Attribute_Get(enable_map[channel], &simulation_enabled,
+				  sizeof(simulation_enabled)) ==
+		    sizeof(simulation_enabled)) {
+			if (simulation_enabled) {
+				/* If so, try to read the simulated value */
+				if (Attribute_Get(value_map[channel],
+						  simulated_value,
+						  sizeof(*simulated_value)) ==
+				    sizeof(*simulated_value)) {
+					/* Only apply the value if safe to do so */
+					is_simulated = true;
+				}
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool BatterymvIsSimulated(int32_t *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+
+	if (Attribute_Get(ATTR_INDEX_batterymvSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_batterymvSimulatedValue,
+					  simulated_value,
+					  sizeof(*simulated_value)) ==
+			    sizeof(*simulated_value)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+			}
+		}
+	}
+	return(is_simulated);
 }
