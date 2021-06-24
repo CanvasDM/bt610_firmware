@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.54",
+    "version": "1.55",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -1898,7 +1898,7 @@
           },
           {
             "name": "highAnalog1Thresh1",
-            "summary": "High Analog Alarm Threshold 1. Units will either be in mV or mA",
+            "summary": "High Analog Alarm Threshold 1. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 37,
             "x-groupid": 65,
@@ -1918,7 +1918,7 @@
           },
           {
             "name": "highAnalog1Thresh2",
-            "summary": "High Analog Alarm Threshold 2. Units will either be in mV or mA",
+            "summary": "High Analog Alarm Threshold 2. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 38,
             "x-groupid": 65,
@@ -1938,7 +1938,7 @@
           },
           {
             "name": "lowAnalog1Thresh1",
-            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV or mA",
+            "summary": "Low Analog Alarm Threshold 1. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 39,
             "x-groupid": 65,
@@ -1958,7 +1958,7 @@
           },
           {
             "name": "lowAnalog1Thresh2",
-            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV or mA",
+            "summary": "Low Analog Alarm Threshold 2. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 40,
             "x-groupid": 65,
@@ -1978,7 +1978,7 @@
           },
           {
             "name": "analog1DeltaThresh",
-            "summary": "Delta Analog Alarm Threshold. Units will either be in mV or mA",
+            "summary": "Delta Analog Alarm Threshold. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 41,
             "x-groupid": 65,
@@ -2763,7 +2763,7 @@
           },
           {
             "name": "analogInput1",
-            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 80,
             "x-groupid": 65,
@@ -2781,7 +2781,7 @@
           },
           {
             "name": "analogInput2",
-            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 81,
             "x-groupid": 65,
@@ -2799,7 +2799,7 @@
           },
           {
             "name": "analogInput3",
-            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 82,
             "x-groupid": 65,
@@ -2817,7 +2817,7 @@
           },
           {
             "name": "analogInput4",
-            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV or mA",
+            "summary": "Unit depends on Analog Input Configuration Type. Units will either be in mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 83,
             "x-groupid": 65,
@@ -3031,7 +3031,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.54",
+              "x-default": "1.55",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
