@@ -849,12 +849,9 @@ static void StartBatteryInterval(void)
 		if (intervalSeconds != 0) {
 			k_timer_start(&batteryTimer, K_SECONDS(intervalSeconds),
 				      K_NO_WAIT);
-		}
-		else
-		{
+		} else {
 			k_timer_stop(&batteryTimer);
 		}
-		
 	}
 }
 
