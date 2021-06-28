@@ -47,6 +47,14 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #define USER_IF_TASK_QUEUE_DEPTH 32
 #endif
 
+/* IDs used to access buttons in the BUTTON_CFG array */
+typedef enum {
+	BUTTON_CFG_ID_BOOT = 0,
+	BUTTON_CFG_ID_TAMPER,
+	BUTTON_CFG_ID_MAG,
+	BUTTON_CFG_ID_COUNT
+} button_cfg_id;
+
 /******************************************************************************/
 /* Button Configuration                                                       */
 /******************************************************************************/
@@ -203,6 +211,9 @@ static const struct lcz_led_blink_pattern FACTORY_RESET_PATTERN = {
 static int64_t swEventTime;
 static int64_t amrEventTime;
 
+static bool mag_switch_last_state = false;
+static bool tamper_switch_last_state = false;
+
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -264,6 +275,144 @@ int UserInterfaceTask_LedTest(uint32_t duration)
 	k_sleep(K_MSEC(delay));
 
 	return 0;
+}
+
+int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
+	bool simulation_enabled, bool last_simulation_enabled)
+{
+	bool live_input_state;
+	const struct device *dev;
+	int result = 0;
+	bool update_needed = false;
+	bool last_simulated_state;
+
+	/* Simulation being enabled? */
+	if ((simulation_enabled) && (!last_simulation_enabled)) {
+		/* If so, read the current live mag switch state */
+		mag_switch_last_state = (bool)BSP_PinGet(MAGNET_MCU_PIN);
+		/* Simulation being disabled? */
+	} else if ((!simulation_enabled) && (last_simulation_enabled)) {
+		/* If simulation has been disabled we need to know
+		 * whether we need to update the live value.
+		 */
+		if ((result = Attribute_Get(ATTR_INDEX_magSwitchSimulatedValue,
+					    &last_simulated_state,
+					    sizeof(last_simulated_state))) ==
+		    sizeof(last_simulated_state)) {
+			/* Has there been a change in the live mag switch state? */
+			live_input_state = (bool)BSP_PinGet(MAGNET_MCU_PIN);
+			if (mag_switch_last_state != live_input_state) {
+				/* Yes, so we need to update the system */
+				update_needed = true;
+			} else {
+				/* Or a change in the live and simulated state? */
+				if (last_simulated_state != live_input_state) {
+					update_needed = true;
+				}
+			}
+		}
+		if (update_needed) {
+			/* Update needed to the system */
+			dev = device_get_binding(
+				BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
+			Button3HandlerIsr(dev, NULL, 0);
+		}
+	}
+	return (result);
+}
+
+int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
+						    bool last_simulated_value)
+{
+	int result = 0;
+	bool simulation_enabled;
+	const struct device *dev;
+
+	/* Simulation enabled? */
+	if ((result = Attribute_Get(ATTR_INDEX_magSwitchSimulated,
+				    &simulation_enabled,
+				    sizeof(simulation_enabled))) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* Change in value? */
+			if (simulated_value != last_simulated_value) {
+				dev = device_get_binding(
+					BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
+				Button3HandlerIsr(dev, NULL, 0);
+			}
+		}
+	}
+	return (result);
+}
+
+int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
+	bool simulation_enabled, bool last_simulation_enabled)
+{
+	bool live_input_state;
+	const struct device *dev;
+	bool update_needed = false;
+	int result = 0;
+	bool last_simulated_state;
+
+	/* Simulation being enabled? */
+	if ((simulation_enabled) && (!last_simulation_enabled)) {
+		/* If so, read the current live tamper switch state */
+		tamper_switch_last_state = (bool)BSP_PinGet(SW2_PIN);
+		/* Simulation being disabled? */
+	} else if ((!simulation_enabled) && (last_simulation_enabled)) {
+		/* If so, has there been a change in tamper switch state?
+		 * Get the last simulated value.
+		 */
+		if ((result = Attribute_Get(
+			     ATTR_INDEX_tamperSwitchSimulatedValue,
+			     &last_simulated_state,
+			     sizeof(last_simulated_state))) ==
+		    sizeof(last_simulated_state)) {
+			/* First check if the live input state has changed */
+			live_input_state = (bool)BSP_PinGet(SW2_PIN);
+			if (tamper_switch_last_state != live_input_state) {
+				update_needed = true;
+			} else {
+				/* And also that the live state is
+				 * not different from the last simulated state
+				 */
+				if (live_input_state != last_simulated_state) {
+					update_needed = true;
+				}
+			}
+		}
+		if (update_needed) {
+			/* Yes, so we need to update the system */
+			dev = device_get_binding(
+				BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
+			Button2HandlerIsr(dev, NULL, 0);
+		}
+	}
+	return (result);
+}
+
+int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
+	bool simulated_value, bool last_simulated_value)
+{
+	int result = 0;
+	bool simulation_enabled;
+	const struct device *dev;
+
+	/* Simulation enabled? */
+	if ((result = Attribute_Get(ATTR_INDEX_tamperSwitchSimulated,
+				    &simulation_enabled,
+				    sizeof(simulation_enabled))) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* Change in value? */
+			if (simulated_value != last_simulated_value) {
+				dev = device_get_binding(
+					BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
+				Button2HandlerIsr(dev, NULL, 0);
+			}
+		}
+	}
+	return (result);
 }
 
 /******************************************************************************/

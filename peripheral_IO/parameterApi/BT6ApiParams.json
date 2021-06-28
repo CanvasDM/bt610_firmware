@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.57",
+    "version": "1.58",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -3031,7 +3031,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.57",
+              "x-default": "1.58",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -4356,6 +4356,182 @@
               "x-savable": false,
               "x-writeable": true,
               "x-readable": true
+            }
+          },
+          {
+            "name": "digitalInput1Simulated",
+            "summary": "Enables simulated data for Digital Input 1",
+            "required": true,
+            "x-id": 158,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "din1simen"
+            }
+          },
+          {
+            "name": "digitalInput1SimulatedValue",
+            "summary": "Simulated data for Digital Input 1",
+            "required": true,
+            "x-id": 159,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "din1sim"
+            }
+          },
+          {
+            "name": "digitalInput2Simulated",
+            "summary": "Enables simulated data for Digital Input 2",
+            "required": true,
+            "x-id": 160,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "din2simen"
+            }
+          },
+          {
+            "name": "digitalInput2SimulatedValue",
+            "summary": "Simulated data for Digital Input 2",
+            "required": true,
+            "x-id": 161,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "din2sim"
+            }
+          },
+          {
+            "name": "magSwitchSimulated",
+            "summary": "Enables simulated data for the Mag Switch",
+            "required": true,
+            "x-id": 162,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "magsimen"
+            }
+          },
+          {
+            "name": "magSwitchSimulatedValue",
+            "summary": "Simulated data for the Mag Switch",
+            "required": true,
+            "x-id": 163,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "magsim"
+            }
+          },
+          {
+            "name": "tamperSwitchSimulated",
+            "summary": "Enables simulated data for the Tamper Switch",
+            "required": true,
+            "x-id": 164,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "tampsimen"
+            }
+          },
+          {
+            "name": "tamperSwitchSimulatedValue",
+            "summary": "Simulated data for the Tamper Switch",
+            "required": true,
+            "x-id": 165,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": true,
+              "x-validator": "tampsim"
             }
           }
         ]

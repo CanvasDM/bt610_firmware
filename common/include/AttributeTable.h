@@ -72,7 +72,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 158
+#define ATTR_TABLE_SIZE 166
 
 /* pyend */
 
@@ -271,6 +271,14 @@ typedef enum
 #define ATTR_INDEX_temperature4SimulatedValue            155
 #define ATTR_INDEX_batterymvSimulated                    156
 #define ATTR_INDEX_batterymvSimulatedValue               157
+#define ATTR_INDEX_digitalInput1Simulated                158
+#define ATTR_INDEX_digitalInput1SimulatedValue           159
+#define ATTR_INDEX_digitalInput2Simulated                160
+#define ATTR_INDEX_digitalInput2SimulatedValue           161
+#define ATTR_INDEX_magSwitchSimulated                    162
+#define ATTR_INDEX_magSwitchSimulatedValue               163
+#define ATTR_INDEX_tamperSwitchSimulated                 164
+#define ATTR_INDEX_tamperSwitchSimulatedValue            165
 /* pyend */
 /* clang-format on */
 
@@ -316,12 +324,27 @@ int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue, size_t Lengt
 int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
 			   bool DoWrite);
 int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			     bool DoWrite);			   
+			     bool DoWrite);
 int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			     bool DoWrite);			   
+			     bool DoWrite);
 int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
 			    bool DoWrite);
-
+int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_magsimen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_magsim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
+int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
+			    bool DoWrite);
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
 int AttributePrepare_upTime(void);

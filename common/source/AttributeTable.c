@@ -174,6 +174,14 @@ typedef struct RwAttributesTag {
 	float temperature4SimulatedValue;
 	bool batterymvSimulated;
 	int32_t batterymvSimulatedValue;
+	bool digitalInput1Simulated;
+	bool digitalInput1SimulatedValue;
+	bool digitalInput2Simulated;
+	bool digitalInput2SimulatedValue;
+	bool magSwitchSimulated;
+	bool magSwitchSimulatedValue;
+	bool tamperSwitchSimulated;
+	bool tamperSwitchSimulatedValue;
 	/* pyend */
 } RwAttribute_t;
 
@@ -314,6 +322,14 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.temperature4SimulatedValue = 0,
 	.batterymvSimulated = 0,
 	.batterymvSimulatedValue = 0,
+	.digitalInput1Simulated = false,
+	.digitalInput1SimulatedValue = false,
+	.digitalInput2Simulated = false,
+	.digitalInput2SimulatedValue = false,
+	.magSwitchSimulated = false,
+	.magSwitchSimulatedValue = false,
+	.tamperSwitchSimulated = false,
+	.tamperSwitchSimulatedValue = false,
 	/* pyend */
 };
 
@@ -373,7 +389,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.57",
+	.apiVersion = "1.58",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -575,6 +591,14 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [155] = { RW_ATTRX(temperature4SimulatedValue)    , f  , n, y, y, n, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [156] = { RW_ATTRX(batterymvSimulated)            , b  , n, y, y, n, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     [157] = { RW_ATTRX(batterymvSimulatedValue)       , i32, n, y, y, n, n, n, AttributeValidator_int32    , NULL                                      , .min.sx = 0.0       , .max.sx = 0.0        },
+    [158] = { RW_ATTRX(digitalInput1Simulated)        , b  , n, y, y, n, n, n, AttributeValidator_din1simen, NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [159] = { RW_ATTRX(digitalInput1SimulatedValue)   , b  , n, y, y, n, n, n, AttributeValidator_din1sim  , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [160] = { RW_ATTRX(digitalInput2Simulated)        , b  , n, y, y, n, n, n, AttributeValidator_din2simen, NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [161] = { RW_ATTRX(digitalInput2SimulatedValue)   , b  , n, y, y, n, n, n, AttributeValidator_din2sim  , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [162] = { RW_ATTRX(magSwitchSimulated)            , b  , n, y, y, n, n, n, AttributeValidator_magsimen , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [163] = { RW_ATTRX(magSwitchSimulatedValue)       , b  , n, y, y, n, n, n, AttributeValidator_magsim   , NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [164] = { RW_ATTRX(tamperSwitchSimulated)         , b  , n, y, y, n, n, n, AttributeValidator_tampsimen, NULL                                      , .min.ux = 0         , .max.ux = 1          },
+    [165] = { RW_ATTRX(tamperSwitchSimulatedValue)    , b  , n, y, y, n, n, n, AttributeValidator_tampsim  , NULL                                      , .min.ux = 0         , .max.ux = 1          },
     /* pyend */
 };
 /* clang-format on */

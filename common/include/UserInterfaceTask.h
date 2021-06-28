@@ -34,6 +34,46 @@ void UserInterfaceTask_Initialize(void);
  */
 int UserInterfaceTask_LedTest(uint32_t duration);
 
+/**
+ * @brief Updates the status of mag switch simulation.
+ *
+ * @param [in]simulation_enabled - The new simulation status.
+ * @param [in]last_simulation_enabled - The previous simulation status.
+ * @return 0 or greater on success.
+ */
+int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
+	bool simulation_enabled, bool last_simulation_enabled);
+
+/**
+ * @brief Updates the mag switch simulated value.
+ *
+ * @param [in]simulated_value - The new simulation value.
+ * @param [in]last_simulated_value - The previous simulated value.
+ * @return 0 or greater on success.
+ */
+int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
+						    bool last_simulated_value);
+
+/**
+ * @brief Updates the status of tamper switch simulation.
+ *
+ * @param [in]simulation_enabled - The new simulation status.
+ * @param [in]last_simulation_enabled - The previous simulation status.
+ * @return 0 or greater on success.
+ */
+int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
+	bool simulation_enabled, bool last_simulation_enabled);
+
+/**
+ * @brief Updates the tamper switch simulated value.
+ *
+ * @param [in]simulated_value - The new simulation value.
+ * @param [in]last_simulated_value - The previous simulated value.
+ * @return 0 or greater on success.
+ */
+int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
+	bool simulated_value, bool last_simulated_value);
+
 #ifdef __cplusplus
 }
 #endif
