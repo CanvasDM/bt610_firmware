@@ -882,46 +882,49 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 	case ANALOG_INPUT_VOLTAGE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertVoltage(channel, raw);
+			result = AdcBt6_ConvertVoltage(raw);
 		}
 		break;
 
 	case ANALOG_INPUT_CURRENT:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertCurrent(channel, raw);
+			result = AdcBt6_ConvertCurrent(raw);
 		}
 		break;
 
 	case ANALOG_INPUT_PRESSURE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_PRESSURE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertPressure(channel, raw);
+			result = AdcBt6_ConvertPressure(raw);
 		}
 		break;
 
 	case ANALOG_INPUT_ULTRASONIC:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertUltrasonic(channel, raw);
+			result = AdcBt6_ConvertUltrasonic(raw);
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_20A:
-		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		/*Configured for a voltage measurement*/
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertCurrent(channel, raw);
+			result = AdcBt6_ConvertACCurrent20(raw);
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_150A:
-		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		/*Configured for a voltage measurement*/
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertCurrent(channel, raw);
+			result = AdcBt6_ConvertACCurrent150(raw);
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_500A:
-		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
+		/*Configured for a voltage measurement*/
+		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertCurrent(channel, raw);
+			result = AdcBt6_ConvertACCurrent500(raw);
 		}
 		break;
 	default:
