@@ -400,14 +400,14 @@ float AdcBt6_ConvertACCurrent20(int32_t raw)
 	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
      Sensor current ratings = 20A, 150A, or 500A
 	*/
-	return (AdcBt6_ConvertVoltage(raw) / ACCURRENT_20AMP_CONVERSION_FACTOR);
+	return (AdcBt6_ConvertVoltage(raw) * ACCURRENT_20AMP_CONVERSION_FACTOR);
 }
 float AdcBt6_ConvertACCurrent150(int32_t raw)
 {
 	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
      Sensor current ratings = 20A, 150A, or 500A
 	*/
-	return (AdcBt6_ConvertVoltage(raw) /
+	return (AdcBt6_ConvertVoltage(raw) *
 		ACCURRENT_150AMP_CONVERSION_FACTOR);
 }
 float AdcBt6_ConvertACCurrent500(int32_t raw)
@@ -415,7 +415,7 @@ float AdcBt6_ConvertACCurrent500(int32_t raw)
 	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
      Sensor current ratings = 20A, 150A, or 500A
 	*/
-	return (AdcBt6_ConvertVoltage(raw) /
+	return (AdcBt6_ConvertVoltage(raw) *
 		ACCURRENT_500AMP_CONVERSION_FACTOR);
 }
 
