@@ -179,6 +179,27 @@ float AdcBt6_ConvertPressure(int32_t raw);
 float AdcBt6_ConvertCurrent(int32_t raw);
 
 /**
+ * @brief Conversion function
+ *
+ * @retval analog input AC current scaled to circuitry (Volts)
+ */
+float AdcBt6_ConvertACCurrent20(int32_t raw);
+
+/**
+ * @brief Conversion function
+ *
+ * @retval analog input AC current scaled to circuitry (Volts)
+ */
+float AdcBt6_ConvertACCurrent150(int32_t raw);
+
+/**
+ * @brief Conversion function
+ *
+ * @retval analog input AC current scaled to circuitry (Volts)
+ */
+float AdcBt6_ConvertACCurrent500(int32_t raw);
+
+/**
  * @brief Configure the analog input selection.
  *
  * @note

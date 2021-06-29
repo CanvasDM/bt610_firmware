@@ -73,6 +73,9 @@ const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
 #define ANALOG_VOLTAGE_CONVERSION_FACTOR 281.2
 #define ANALOG_CURRENT_CONVERSION_FACTOR 71.875
 #define ULTRASONIC_CONVERSION_FACTOR (10240.0 / 5.0)
+#define ACCURRENT_20AMP_CONVERSION_FACTOR (20.0 / 5.0)
+#define ACCURRENT_150AMP_CONVERSION_FACTOR (150.0 / 5.0)
+#define ACCURRENT_500AMP_CONVERSION_FACTOR (500.0 / 5.0)
 
 /* Constants for Steinhart-Hart Equation for the Focus thermistor */
 #define THERMISTOR_S_H_A 1.132e-3
@@ -390,6 +393,30 @@ float AdcBt6_ConvertPressure(int32_t raw)
 float AdcBt6_ConvertCurrent(int32_t raw)
 {
 	return ((float)raw) / ANALOG_CURRENT_CONVERSION_FACTOR;
+}
+
+float AdcBt6_ConvertACCurrent20(int32_t raw)
+{
+	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
+     Sensor current ratings = 20A, 150A, or 500A
+	*/
+	return (AdcBt6_ConvertVoltage(raw) / ACCURRENT_20AMP_CONVERSION_FACTOR);
+}
+float AdcBt6_ConvertACCurrent150(int32_t raw)
+{
+	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
+     Sensor current ratings = 20A, 150A, or 500A
+	*/
+	return (AdcBt6_ConvertVoltage(raw) /
+		ACCURRENT_150AMP_CONVERSION_FACTOR);
+}
+float AdcBt6_ConvertACCurrent500(int32_t raw)
+{
+	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
+     Sensor current ratings = 20A, 150A, or 500A
+	*/
+	return (AdcBt6_ConvertVoltage(raw) /
+		ACCURRENT_500AMP_CONVERSION_FACTOR);
 }
 
 float AdcBt6_ConvertVref(int32_t raw)
