@@ -254,6 +254,14 @@ int Advertisement_Update(void)
 		      sizeof(codedPhySelected));
 
 	ext.ad = ad;
+
+	/* For Coded PHY, be sure to restore the protocol id here.
+	 * This is the only field that is different between 1M and
+	 * Coded PHY adverts for this part of the advert and we're
+	 * using the 1M advert as the data source for both.
+	 */
+	ext.ad.protocolId = BTXXX_CODED_PHY_AD_PROTOCOL_ID;
+
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 
 	if (advertising == true) {
