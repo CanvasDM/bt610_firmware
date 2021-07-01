@@ -48,6 +48,7 @@ typedef struct EventTaskTag {
 	uint32_t timeStampBuffer[TOTAL_NUMBER_EVENTS];
 	uint32_t advertisingEvent;
 	uint32_t eventID;
+	uint8_t eventBufferRollover;
 } EventTaskObj_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -110,6 +111,7 @@ void EventTask_Initialize(void)
 	memset(eventTaskObject.timeStampBuffer, 0, TOTAL_NUMBER_EVENTS);
 	eventTaskObject.eventID = 0;
 	eventTaskObject.advertisingEvent = 0;
+	eventTaskObject.eventBufferRollover = 0;
 }
 
 void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
@@ -128,7 +130,10 @@ void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
 uint32_t EventTask_RemainingEvents(void)
 {
 	uint32_t numberEvents;
-	if (eventTaskObject.advertisingEvent < eventTaskObject.eventID) {
+	if (eventTaskObject.eventBufferRollover != 0) {
+		numberEvents =
+			TOTAL_NUMBER_EVENTS - eventTaskObject.advertisingEvent;
+	} else if (eventTaskObject.advertisingEvent < eventTaskObject.eventID) {
 		numberEvents = eventTaskObject.eventID -
 			       eventTaskObject.advertisingEvent;
 	} else {
@@ -140,7 +145,15 @@ uint32_t EventTask_RemainingEvents(void)
 
 void EventTask_IncrementEventId(void)
 {
-	eventTaskObject.advertisingEvent = eventTaskObject.advertisingEvent + 1;
+	if (eventTaskObject.advertisingEvent < TOTAL_NUMBER_EVENTS) {
+		eventTaskObject.advertisingEvent =
+			eventTaskObject.advertisingEvent + 1;
+	} else {
+		eventTaskObject.advertisingEvent = 0;
+		/*clear the rollover flag*/
+		eventTaskObject.eventBufferRollover = 0;
+		LOG_INF("#####Roll Count Reset");
+	}
 }
 
 /******************************************************************************/
@@ -189,7 +202,15 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   &pEventMsg->eventData);
 
 	//LOG_INF("Event Type (%d)", pEventMsg->eventType);
-	eventTaskObject.eventID = eventTaskObject.eventID + 1;
+	if (eventTaskObject.eventID < TOTAL_NUMBER_EVENTS) {
+		eventTaskObject.eventID = eventTaskObject.eventID + 1;
+	} else {
+		eventTaskObject.eventID = 0;
+		eventTaskObject.eventBufferRollover =
+			eventTaskObject.eventBufferRollover + 1;
+		LOG_INF("****Roll Count = %d",
+			eventTaskObject.eventBufferRollover);
+	}
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_EVENT);
