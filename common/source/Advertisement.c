@@ -35,6 +35,8 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
  * @param[in] RESOLUTION    Unit to be converted to in [us/ticks].
  */
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
+#define CODED_PHY_STRING "Coded"
+#define STANDARD_PHY_STRING "1M PHY"
 typedef struct {
 	SensorEvent_t event;
 	uint32_t id;
@@ -67,7 +69,8 @@ static struct bt_le_adv_param bt_param =
 			     BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX,
 			     NULL);
 static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
-	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME | BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
+	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME |
+		BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
 	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
 #endif
 
@@ -305,13 +308,16 @@ int Advertisement_Update(void)
 int Advertisement_End(void)
 {
 	int r = 0;
+	char *phyType;
 	if (extendPhyEnbled == true) {
 		r = bt_le_ext_adv_stop(extendedAdv);
+		phyType = CODED_PHY_STRING;
 	} else {
 		r = bt_le_ext_adv_stop(adv);
+		phyType = STANDARD_PHY_STRING;
 	}
 
-	LOG_INF("Advertising end (%d)", r);
+	LOG_INF("Advertising %s end (%d)", phyType, r);
 	advertising = false;
 
 	return r;
@@ -320,17 +326,20 @@ int Advertisement_End(void)
 int Advertisement_Start(void)
 {
 	int r = 0;
+	char *phyType;
 
 #ifndef CONFIG_ADVERTISEMENT_DISABLE
 	if (!advertising) {
 		if (extendPhyEnbled == true) {
 			r = bt_le_ext_adv_start(extendedAdv, NULL);
+			phyType = CODED_PHY_STRING;
 		} else {
 			r = bt_le_ext_adv_start(adv, NULL);
+			phyType = STANDARD_PHY_STRING;
 		}
 
 		advertising = (r == 0);
-		LOG_INF("Advertising start (%d)", r);
+		LOG_INF("Advertising %s start (%d)", phyType, r);
 	}
 
 #endif
