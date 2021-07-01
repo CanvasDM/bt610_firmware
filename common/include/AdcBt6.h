@@ -155,28 +155,28 @@ int AdcBt6_BplusDisable(void);
  *
  * @retval analog input voltage scaled to circuitry (Volts)
  */
-float AdcBt6_ConvertVoltage(int32_t raw);
+float AdcBt6_ConvertVoltage(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function
  *
  * @retval millimeters
  */
-float AdcBt6_ConvertUltrasonic(int32_t raw);
+float AdcBt6_ConvertUltrasonic(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function
  *
  * @retval PSI
  */
-float AdcBt6_ConvertPressure(int32_t raw);
+float AdcBt6_ConvertPressure(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function
  *
  * @retval analog input current scaled to circuitry (Volts)
  */
-float AdcBt6_ConvertCurrent(int32_t raw);
+float AdcBt6_ConvertCurrent(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function

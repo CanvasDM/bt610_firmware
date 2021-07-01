@@ -33,6 +33,10 @@ extern "C" {
 #define SW1_PIN        (24) /* SIO_24 Port0 */
 #define SW2_PIN        (33) /* SIO_33 Port1 */
 
+/* Digital Input pin masks - combined in the digitalInput attribute */
+#define DIN1_PIN_MASK 0x1
+#define DIN2_PIN_MASK 0x2
+
 /* Outputs */
 /* PORT0 */
 #define UART_0_RTS_PIN       (5)  /* SIO_05 Port0 */
@@ -72,8 +76,17 @@ int BSP_PinSet(uint8_t pin, int value);
 int BSP_PinToggle(uint8_t pin);
 int BSP_PinGet(uint8_t pin);
 void BSP_DigitalPinsStatus(void);
-void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable, gpio_flags_t edge);
+void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
+				gpio_flags_t edge);
 void SendDigitalInputStatus(uint16_t pin, uint8_t status);
+int BSP_UpdateDigitalInput1SimulatedStatus(bool simulation_enabled,
+					   bool last_simulation_enabled);
+int BSP_UpdateDigitalInput2SimulatedStatus(bool simulation_enabled,
+					   bool last_simulation_enabled);
+int BSP_UpdateDigitalInput1SimulatedValue(bool simulated_value,
+					  bool last_simulated_value);
+int BSP_UpdateDigitalInput2SimulatedValue(bool simulated_value,
+					  bool last_simulated_value);
 #ifdef __cplusplus
 }
 #endif

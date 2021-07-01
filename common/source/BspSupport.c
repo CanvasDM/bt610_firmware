@@ -22,6 +22,8 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 
 #include "FrameworkIncludes.h"
 #include "BspSupport.h"
+#include "Attribute.h"
+#include "AttributeTable.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -45,7 +47,15 @@ static struct k_delayed_work uart0_shut_off_delayed_work;
 /* This is a copy of the context taken from the shell uart before */
 /* it gets switched off.                                          */
 void *uart0_ctx = NULL;
-
+/* Backup of digital input IRQ configuration for simulation purposes */
+static gpio_flags_t digital_input_1_IRQ_config = 0;
+static gpio_flags_t digital_input_2_IRQ_config = 0;
+/* Backup of digital input states when simulation is enabled. These are
+ * used to determine whether the system needs to be updated for a change
+ * in input state when simulation is disabled
+ */
+static bool digital_input_1_last_state = false;
+static bool digital_input_2_last_state = false;
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -73,6 +83,12 @@ static const struct log_backend *UART0FindBackend(void);
 #define UART0LoggingEnable()
 #endif
 static void UART1Initialise(void);
+static bool MagSwitchIsSimulated(int *simulated_value);
+static bool TamperSwitchIsSimulated(int *simulated_value);
+static bool DigitalInput1IsSimulated(int *simulated_value);
+static bool DigitalInput2IsSimulated(int *simulated_value);
+static bool DigitalInputIRQNeeded(bool new_state, bool old_state,
+				  gpio_flags_t pin_config);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -145,13 +161,38 @@ int BSP_PinToggle(uint8_t pin)
 
 int BSP_PinGet(uint8_t pin)
 {
+	int result;
+	bool pin_found = false;
+
 	if (pin > GPIO_PIN_MAX) {
-		return -ENODEV;
-	} else if (pin > GPIO_PER_PORT) {
-		return gpio_pin_get(port1, GPIO_PIN_MAP(pin));
+		result = -ENODEV;
 	} else {
-		return gpio_pin_get(port0, GPIO_PIN_MAP(pin));
+		if (pin == MAGNET_MCU_PIN) {
+			if (MagSwitchIsSimulated(&result)) {
+				pin_found = true;
+			}
+		} else if (pin == SW2_PIN) {
+			if (TamperSwitchIsSimulated(&result)) {
+				pin_found = true;
+			}
+		} else if (pin == DIN1_MCU_PIN) {
+			if (DigitalInput1IsSimulated(&result)) {
+				pin_found = true;
+			}
+		} else if (pin == DIN2_MCU_PIN) {
+			if (DigitalInput2IsSimulated(&result)) {
+				pin_found = true;
+			}
+		}
+		if (!pin_found) {
+			if (pin > GPIO_PER_PORT) {
+				result = gpio_pin_get(port1, GPIO_PIN_MAP(pin));
+			} else {
+				result = gpio_pin_get(port0, GPIO_PIN_MAP(pin));
+			}
+		}
 	}
+	return (result);
 }
 void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
 				gpio_flags_t edge)
@@ -168,6 +209,7 @@ void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
 		gpio_init_callback(&digitalIn1_cb_data, DigitalIn1HandlerIsr,
 				   BIT(GPIO_PIN_MAP(DIN1_MCU_PIN)));
 		gpio_add_callback(port0, &digitalIn1_cb_data);
+		digital_input_1_IRQ_config = edge;
 	}
 	/* DIN2 */
 	else if (pin == DIN2_MCU_PIN) {
@@ -179,7 +221,154 @@ void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
 		gpio_init_callback(&digitalIn2_cb_data, DigitalIn2HandlerIsr,
 				   BIT(GPIO_PIN_MAP(DIN2_MCU_PIN)));
 		gpio_add_callback(port1, &digitalIn2_cb_data);
+		digital_input_2_IRQ_config = edge;
 	}
+}
+
+int BSP_UpdateDigitalInput1SimulatedStatus(bool simulation_enabled,
+					   bool last_simulation_enabled)
+{
+	bool live_input_state;
+	bool irq_needed = false;
+	int result = 0;
+	bool last_simulated_state;
+
+	/* Are we enabling simulation? */
+	if ((simulation_enabled) && (!last_simulation_enabled)) {
+		/* If enabling simulation, store the live input
+		 * value for use later.
+		 */
+		digital_input_1_last_state = (bool)BSP_PinGet(DIN1_MCU_PIN);
+	}
+	/* Or disabling simulation? */
+	else if ((!simulation_enabled) && (last_simulation_enabled)) {
+		/* If disabling, find out if we need to update
+		 * the input state.
+		 */
+		if ((result = Attribute_Get(
+			     ATTR_INDEX_digitalInput1SimulatedValue,
+			     &last_simulated_state,
+			     sizeof(last_simulated_state))) ==
+		    sizeof(last_simulated_state)) {
+			/* First check if the actual input state has changed */
+			live_input_state = (bool)BSP_PinGet(DIN1_MCU_PIN);
+			irq_needed = DigitalInputIRQNeeded(
+				live_input_state, digital_input_1_last_state,
+				digital_input_1_IRQ_config);
+			/* Then if there was a transition from simulated to live */
+			if (!irq_needed) {
+				irq_needed = DigitalInputIRQNeeded(
+					live_input_state, last_simulated_state,
+					digital_input_1_IRQ_config);
+			}
+		}
+		if (irq_needed) {
+			SendDigitalInputStatus(DIN1_MCU_PIN,
+					       (uint8_t)live_input_state);
+		}
+	}
+	return (result);
+}
+
+int BSP_UpdateDigitalInput2SimulatedStatus(bool simulation_enabled,
+					   bool last_simulation_enabled)
+{
+	bool live_input_state;
+	bool irq_needed = false;
+	int result = 0;
+	bool last_simulated_state;
+
+	/* Are we enabling simulation? */
+	if ((simulation_enabled) && (!last_simulation_enabled)) {
+		/* If enabling simulation, store the live input
+		 * value for use later.
+		 */
+		digital_input_2_last_state = (bool)BSP_PinGet(DIN2_MCU_PIN);
+	}
+	/* Or disabling simulation? */
+	else if ((!simulation_enabled) && (last_simulation_enabled)) {
+		/* If disabling, find out if we need to update
+		 * the input state.
+		 */
+		if ((result = Attribute_Get(
+			     ATTR_INDEX_digitalInput2SimulatedValue,
+			     &last_simulated_state,
+			     sizeof(last_simulated_state))) ==
+		    sizeof(last_simulated_state)) {
+			/* First check if the live input state has changed */
+			live_input_state = (bool)BSP_PinGet(DIN2_MCU_PIN);
+			irq_needed = DigitalInputIRQNeeded(
+				live_input_state, digital_input_2_last_state,
+				digital_input_2_IRQ_config);
+			/* Then the simulated to live value */
+			if (!irq_needed) {
+				irq_needed = DigitalInputIRQNeeded(
+					live_input_state, last_simulated_state,
+					digital_input_2_IRQ_config);
+			}
+		}
+		if (irq_needed) {
+			SendDigitalInputStatus(DIN2_MCU_PIN,
+					       (uint8_t)live_input_state);
+		}
+	}
+	return (result);
+}
+
+int BSP_UpdateDigitalInput1SimulatedValue(bool simulated_value,
+					  bool last_simulated_value)
+{
+	int result = 0;
+	bool fire_interrupt = false;
+	bool simulation_enabled = false;
+
+	if ((result = Attribute_Get(ATTR_INDEX_digitalInput1Simulated,
+				    &simulation_enabled,
+				    sizeof(simulation_enabled))) ==
+	    sizeof(simulation_enabled)) {
+		/* Should we apply the value? */
+		if (simulation_enabled) {
+			/* IRQ needed for this input? */
+			fire_interrupt = DigitalInputIRQNeeded(
+				simulated_value, last_simulated_value,
+				digital_input_1_IRQ_config);
+
+			/* Check if we need to trigger the IRQ */
+			if (fire_interrupt) {
+				SendDigitalInputStatus(
+					DIN1_MCU_PIN, (uint8_t)simulated_value);
+			}
+		}
+	}
+	return (result);
+}
+
+int BSP_UpdateDigitalInput2SimulatedValue(bool simulated_value,
+					  bool last_simulated_value)
+{
+	int result = 0;
+	bool fire_interrupt = false;
+	bool simulation_enabled = false;
+
+	if ((result = Attribute_Get(ATTR_INDEX_digitalInput2Simulated,
+				    &simulation_enabled,
+				    sizeof(simulation_enabled))) ==
+	    sizeof(simulation_enabled)) {
+		/* Should we apply the value? */
+		if (simulation_enabled) {
+			/* IRQ needed for this input? */
+			fire_interrupt = DigitalInputIRQNeeded(
+				simulated_value, last_simulated_value,
+				digital_input_2_IRQ_config);
+
+			/* Check if we need to trigger the IRQ */
+			if (fire_interrupt) {
+				SendDigitalInputStatus(
+					DIN2_MCU_PIN, (uint8_t)simulated_value);
+			}
+		}
+	}
+	return (result);
 }
 
 /******************************************************************************/
@@ -239,8 +428,7 @@ static void UART0InitialiseSWFlowControl(void)
 	/* CTS line as an input pulled up high */
 	if (!r) {
 		r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_CTS_PIN),
-				       GPIO_INPUT | GPIO_INT_DISABLE |
-					       GPIO_PULL_UP);
+				       GPIO_INPUT | GPIO_PULL_UP);
 	}
 
 	/* When this gets pulled down, it indicates a client is connected */
@@ -475,6 +663,141 @@ static void UART1Initialise(void)
 						DEVICE_PM_OFF_STATE,
 						NULL,
 						NULL);
-			
 	}
+}
+static bool MagSwitchIsSimulated(int *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+	bool mag_switch_state;
+
+	/* First check we can read back the simulation enabled state and
+	 * that it's enabled.
+	 */
+	if (Attribute_Get(ATTR_INDEX_magSwitchSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_magSwitchSimulatedValue,
+					  &mag_switch_state,
+					  sizeof(mag_switch_state)) ==
+			    sizeof(mag_switch_state)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+				*simulated_value = (int)mag_switch_state;
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool TamperSwitchIsSimulated(int *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+	bool tamper_switch_state;
+
+	/* First check we can read back the simulation enabled state and
+	 * that it's enabled.
+	 */
+	if (Attribute_Get(ATTR_INDEX_tamperSwitchSimulated, &simulation_enabled,
+			  sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_tamperSwitchSimulatedValue,
+					  &tamper_switch_state,
+					  sizeof(tamper_switch_state)) ==
+			    sizeof(tamper_switch_state)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+				*simulated_value = (int)tamper_switch_state;
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool DigitalInput1IsSimulated(int *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+	bool simulated_input_state;
+
+	/* First check we can read back the simulation enabled state and
+	 * that it's enabled.
+	 */
+	if (Attribute_Get(ATTR_INDEX_digitalInput1Simulated,
+			  &simulation_enabled, sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_digitalInput1SimulatedValue,
+					  &simulated_input_state,
+					  sizeof(simulated_input_state)) ==
+			    sizeof(simulated_input_state)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+				*simulated_value = (int)simulated_input_state;
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool DigitalInput2IsSimulated(int *simulated_value)
+{
+	bool is_simulated = false;
+	bool simulation_enabled = false;
+	bool simulated_input_state;
+
+	if (Attribute_Get(ATTR_INDEX_digitalInput2Simulated,
+			  &simulation_enabled, sizeof(simulation_enabled)) ==
+	    sizeof(simulation_enabled)) {
+		if (simulation_enabled) {
+			/* If so, try to read the simulated value */
+			if (Attribute_Get(ATTR_INDEX_digitalInput2SimulatedValue,
+					  &simulated_input_state,
+					  sizeof(simulated_input_state)) ==
+			    sizeof(simulated_input_state)) {
+				/* Only apply the value if safe to do so */
+				is_simulated = true;
+				*simulated_value = (int)simulated_input_state;
+			}
+		}
+	}
+	return (is_simulated);
+}
+
+static bool DigitalInputIRQNeeded(bool new_state, bool old_state,
+				  gpio_flags_t pin_config)
+{
+	bool irq_needed = false;
+
+	/* IRQ enabled for this input? */
+	if (pin_config & GPIO_INT_ENABLE) {
+		/* Was there a change? */
+		if (new_state != old_state) {
+			/* Is the interrupt for either direction? */
+			if (pin_config & GPIO_INT_EDGE_BOTH) {
+				irq_needed = true;
+			}
+			/* Low to high transition and rising edge? */
+			else if (pin_config & GPIO_INT_EDGE_RISING) {
+				if ((old_state == false) &&
+				    (new_state == true)) {
+					irq_needed = true;
+				}
+			}
+			/* High to low transition and falling edge? */
+			else if (pin_config & GPIO_INT_EDGE_FALLING) {
+				if ((old_state == true) &&
+				    (new_state == false)) {
+					irq_needed = true;
+				}
+			}
+		}
+	}
+	return (irq_needed);
 }
