@@ -183,21 +183,21 @@ float AdcBt6_ConvertCurrent(size_t channel, int32_t raw);
  *
  * @retval analog input AC current scaled to circuitry (Volts)
  */
-float AdcBt6_ConvertACCurrent20(int32_t raw);
+float AdcBt6_ConvertACCurrent20(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function
  *
  * @retval analog input AC current scaled to circuitry (Volts)
  */
-float AdcBt6_ConvertACCurrent150(int32_t raw);
+float AdcBt6_ConvertACCurrent150(size_t channel, int32_t raw);
 
 /**
  * @brief Conversion function
  *
  * @retval analog input AC current scaled to circuitry (Volts)
  */
-float AdcBt6_ConvertACCurrent500(int32_t raw);
+float AdcBt6_ConvertACCurrent500(size_t channel, int32_t raw);
 
 /**
  * @brief Configure the analog input selection.

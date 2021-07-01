@@ -140,7 +140,7 @@ static void StartBatteryInterval(void);
 static void DisableAnalogPins(void);
 static void DisableThermistorPins(void);
 
-static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power);
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power, float* result);
 static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
 static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 
@@ -233,22 +233,26 @@ int AttributePrepare_batteryVoltageMv(void)
 
 int AttributePrepare_analogInput1(void)
 {
-	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_analogInput2(void)
 {
-	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_analogInput3(void)
 {
-	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_analogInput4(void)
 {
-	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_temperatureResult1(void)
@@ -490,16 +494,17 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t index = 0;
 	uint8_t r;
+	float analogValue = 0.0;
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
-		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE);
+		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE, &analogValue);
 		if (r == 0) {
-			HighAnalogAlarmCheck(index);
-			LowAnalogAlarmCheck(index);
+			HighAnalogAlarmCheck(index, analogValue);
+			LowAnalogAlarmCheck(index, analogValue);
 			DeltaAnalogAlarmCheck(
 				index,
 				sensorTaskObject
 					.magnitudeOfAnalogDifference[index]);
-			AggregationAnalogHandler(index);
+			AggregationAnalogHandler(index, analogValue);
 		}
 	}
 	StartAnalogInterval();
@@ -869,11 +874,11 @@ static void DisableThermistorPins(void)
 	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
 }
 
-static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power, float* result)
 {
-	int r = -EPERM;
-	float result = 0.0;
+	int r = -EPERM;	
 	int16_t raw = 0;
+	*result = 0.0;
 
 	attr_idx_t base = ATTR_INDEX_analogInput1Type;
 	uint32_t config = Attribute_AltGetUint32(base + channel, 0);
@@ -882,49 +887,65 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 	case ANALOG_INPUT_VOLTAGE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
+<<<<<<< HEAD
 			result = AdcBt6_ConvertVoltage(raw);
+=======
+			*result = AdcBt6_ConvertVoltage(channel, raw);
+>>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_CURRENT:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
 		if (r >= 0) {
+<<<<<<< HEAD
 			result = AdcBt6_ConvertCurrent(raw);
+=======
+			*result = AdcBt6_ConvertCurrent(channel, raw);
+>>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_PRESSURE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_PRESSURE, power);
 		if (r >= 0) {
+<<<<<<< HEAD
 			result = AdcBt6_ConvertPressure(raw);
+=======
+			*result = AdcBt6_ConvertPressure(channel, raw);
+>>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_ULTRASONIC:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC, power);
 		if (r >= 0) {
+<<<<<<< HEAD
 			result = AdcBt6_ConvertUltrasonic(raw);
+=======
+			*result = AdcBt6_ConvertUltrasonic(channel, raw);
+>>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_20A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertACCurrent20(raw);
+			*result = AdcBt6_ConvertACCurrent20(channel, raw);
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_150A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertACCurrent150(raw);
+			*result = AdcBt6_ConvertACCurrent150(channel, raw);
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_500A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertACCurrent500(raw);
+			*result = AdcBt6_ConvertACCurrent500(channel, raw);
 		}
 		break;
 	default:
@@ -935,11 +956,11 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power)
 
 	if (r >= 0) {
 		r = Attribute_SetFloat(ATTR_INDEX_analogInput1 + channel,
-				       result);
+				       *result);
 
 		sensorTaskObject.magnitudeOfAnalogDifference[channel] = abs(
-			result - sensorTaskObject.previousAnalogValue[channel]);
-		sensorTaskObject.previousAnalogValue[channel] = result;
+			*result - sensorTaskObject.previousAnalogValue[channel]);
+		sensorTaskObject.previousAnalogValue[channel] = *result;
 	}
 
 	return r;
