@@ -171,10 +171,15 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	k_sleep(K_SECONDS(1));
 
 	LOG_WRN("Version %s", VERSION_STRING);
-	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
-		      sizeof(dataLogEnable));
 
 	Attribute_Init();
+
+	/* Safe to read the data log enable flag after reading back
+	 * all attributes. We use this to determine whether to disable
+	 * or enable logging at startup.
+	 */
+	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
+		      sizeof(dataLogEnable));
 
 	RebootHandler();
 
@@ -182,13 +187,16 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	Flags_Init();
 
+	/* Start the Event Manager as early as possible before any
+	 * events get posted to it by threads trumping this one.
+	 */
+	lcz_event_manager_initialise(dataLogEnable);
+
 	UserInterfaceTask_Initialize();
 
 	BleTask_Initialize();
 
 	SensorTask_Initialize();
-
-	lcz_event_manager_initialise(dataLogEnable);
 
 	EventTask_Initialize();
 
