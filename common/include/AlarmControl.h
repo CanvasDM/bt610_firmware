@@ -33,17 +33,21 @@ extern "C" {
  *
  * @param channel This is the thermistor channel
  *
+ * @param value This is the current measured analog value
+ * 
  * @retval negative error code, 0 on success
  */
-int HighTempAlarmCheck(size_t channel);
+int HighTempAlarmCheck(size_t channel, float value);
 /**
  * @brief Check the Thermistor temperture against the two low thresholds
  *
  * @param channel This is the thermistor channel
  *
+ * @param value This is the current measured analog value
+ * 
  * @retval negative error code, 0 on success
  */
-int LowTempAlarmCheck(size_t channel);
+int LowTempAlarmCheck(size_t channel, float value);
 /**
  * @brief Check the delta Temperture measurment against the threshold
  *

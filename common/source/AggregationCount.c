@@ -46,36 +46,34 @@ static void AnalogConfigType(size_t channel, float analogValue);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
-int AggregationTempHandler(size_t channel)
+int AggregationTempHandler(size_t channel, float value)
 {
-	float currentTemp = 0;
 	uint8_t aggCount = 0;
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
 	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
 			  sizeof(aggCount));
-	r = Attribute_GetFloat(&currentTemp,
-			       ATTR_INDEX_temperatureResult1 + channel);
-	if (r == 0) {
+
+	if (r > 0) {
 		if (aggCount > 1) {
 			if (currentAggregationNumber <= aggCount) {
 				temperatureBuffer[channel]
 						 [currentAggregationNumber] =
-							 currentTemp;
+							 value;
 				currentAggregationNumber =
 					currentAggregationNumber + 1;
 			}
 			if (currentAggregationNumber == aggCount) {
 				EventTypeHandler(
 					(SENSOR_EVENT_TEMPERATURE_1 + channel),
-					currentTemp);
+					value);
 				/*TODO: Need to send out past temp value*/
 			}
 		} else {
 			/*Send to event LOG */
 			EventTypeHandler((SENSOR_EVENT_TEMPERATURE_1 + channel),
-					 currentTemp);
+					 value);
 		}
 	}
 	return r;
@@ -89,8 +87,8 @@ int AggregationAnalogHandler(size_t channel, float value)
 
 	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
 			  sizeof(aggCount));
-	
-	if (r == 0) {
+
+	if (r > 0) {
 		if (aggCount > 1) {
 			if (currentAggregationNumber <= aggCount) {
 				analogBuffer[channel][currentAggregationNumber] =
