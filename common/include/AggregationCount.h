@@ -33,9 +33,11 @@ extern "C" {
  *
  * @param channel This is the thermistor channel
  *
+ * @param value This is the current measured analog value
+ * 
  * @retval negative error code, 0 on success
  */
-int AggregationTempHandler(size_t channel);
+int AggregationTempHandler(size_t channel, float value);
 /**
  * @brief Check the Analog sensors against the two high thresholds
  *

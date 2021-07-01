@@ -91,8 +91,6 @@ static SensorTaskObj_t sensorTaskObject;
 static struct k_timer batteryTimer;
 static struct k_timer temperatureReadTimer;
 static struct k_timer analogReadTimer;
-struct k_work temperatureWork;
-struct k_delayed_work temperatureWorkDelay;
 
 K_THREAD_STACK_DEFINE(sensorTaskStack, SENSOR_TASK_STACK_DEPTH);
 
@@ -121,7 +119,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
-static void TemperatureWorker(struct k_work *work);						  
+static void TemperatureWorker(struct k_work *work);
 static void LoadSensorConfiguration(void);
 static void SensorConfigureAnalog(void);
 static void SensorConfigChange(bool bootup);
@@ -140,8 +138,10 @@ static void StartBatteryInterval(void);
 static void DisableAnalogPins(void);
 static void DisableThermistorPins(void);
 
-static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power, float* result);
-static int MeasureThermistor(size_t channel, AdcPwrSequence_t power);
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
+			      float *result);
+static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
+			     float *result);
 static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
@@ -234,45 +234,53 @@ int AttributePrepare_batteryVoltageMv(void)
 int AttributePrepare_analogInput1(void)
 {
 	float dummyResult;
-	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE, &dummyResult);
+	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE,
+				  &dummyResult);
 }
 
 int AttributePrepare_analogInput2(void)
 {
 	float dummyResult;
-	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE, &dummyResult);
+	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE,
+				  &dummyResult);
 }
 
 int AttributePrepare_analogInput3(void)
 {
 	float dummyResult;
-	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE, &dummyResult);
+	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE,
+				  &dummyResult);
 }
 
 int AttributePrepare_analogInput4(void)
 {
 	float dummyResult;
-	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE, &dummyResult);
+	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE,
+				  &dummyResult);
 }
 
 int AttributePrepare_temperatureResult1(void)
 {
-	return MeasureThermistor(THERM_CH_1, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureThermistor(THERM_CH_1, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_temperatureResult2(void)
 {
-	return MeasureThermistor(THERM_CH_2, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureThermistor(THERM_CH_2, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_temperatureResult3(void)
 {
-	return MeasureThermistor(THERM_CH_3, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureThermistor(THERM_CH_3, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
 int AttributePrepare_temperatureResult4(void)
 {
-	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE);
+	float dummyResult;
+	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 int AttributePrepare_digitalInput(void)
 {
@@ -323,10 +331,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 
 		case ATTR_INDEX_temperatureSenseInterval:
-		k_work_submit(&temperatureWork);
-			//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-			//			      FWK_ID_SENSOR_TASK,
-			//			      FMC_TEMPERATURE_MEASURE);
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+						      FWK_ID_SENSOR_TASK,
+						      FMC_TEMPERATURE_MEASURE);
 			break;
 		case ATTR_INDEX_analogSenseInterval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
@@ -469,18 +476,18 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t index = 0;
 	uint8_t r;
-	LOG_INF("****Old Measure****");
+	float temperature = 0.0;
 
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
-		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
+		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE, &temperature);
 		if (r == 0) {
-			HighTempAlarmCheck(index);
-			LowTempAlarmCheck(index);
+			HighTempAlarmCheck(index, temperature);
+			LowTempAlarmCheck(index, temperature);
 			DeltaTempAlarmCheck(
 				index,
 				sensorTaskObject
 					.magnitudeOfTempDifference[index]);
-			AggregationTempHandler(index);
+			AggregationTempHandler(index, temperature);
 		}
 	}
 	StartTempertureInterval();
@@ -543,28 +550,6 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FMC_BLE_START_ADVERTISING);
 	}
 	return DISPATCH_OK;
-}
-
-static void TemperatureWorker(struct k_work *work)
-{
-	uint8_t index = 0;
-	uint8_t r;
-
-	for (index = 0; index < TOTAL_THERM_CH; index++) {
-		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE);
-		if (r == 0) {
-			HighTempAlarmCheck(index);
-			LowTempAlarmCheck(index);
-			DeltaTempAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfTempDifference[index]);
-			AggregationTempHandler(index);
-		}
-	}
-	//k_timer_stop(&temperatureReadTimer);
-	//LOG_INF("Stop Temp Timer");
-	StartTempertureInterval();
 }
 
 static void LoadSensorConfiguration(void)
@@ -771,9 +756,7 @@ static void InitializeIntervalTimers(void)
 
 	/*Temperture Interval timer*/
 	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
-		     temperatureStOPCallbackIsr);
-	k_work_init(&temperatureWork, TemperatureWorker);
-	k_delayed_work_init(&temperatureWorkDelay, TemperatureWorker);
+		     NULL);
 	StartTempertureInterval();
 
 	/*Analog Interval timer*/
@@ -828,15 +811,14 @@ static void StartTempertureInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
 		if (intervalSeconds != 0) {
-			
 			//LOG_INF("Temp Timer Status = %d",k_timer_remaining_get(&temperatureReadTimer));
 			//k_sleep(K_MSEC(100));
 			k_timer_start(&temperatureReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
 			//k_timer_start(&temperatureReadTimer,
-			//	      K_NO_WAIT, K_SECONDS(intervalSeconds));		  
+			//	      K_NO_WAIT, K_SECONDS(intervalSeconds));
 			//LOG_INF("Temp Timer Start");
-					}
+		}
 	}
 }
 
@@ -874,9 +856,10 @@ static void DisableThermistorPins(void)
 	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
 }
 
-static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power, float* result)
+static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
+			      float *result)
 {
-	int r = -EPERM;	
+	int r = -EPERM;
 	int16_t raw = 0;
 	*result = 0.0;
 
@@ -942,19 +925,21 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power, float* res
 		r = Attribute_SetFloat(ATTR_INDEX_analogInput1 + channel,
 				       *result);
 
-		sensorTaskObject.magnitudeOfAnalogDifference[channel] = abs(
-			*result - sensorTaskObject.previousAnalogValue[channel]);
+		sensorTaskObject.magnitudeOfAnalogDifference[channel] =
+			abs(*result -
+			    sensorTaskObject.previousAnalogValue[channel]);
 		sensorTaskObject.previousAnalogValue[channel] = *result;
 	}
 
 	return r;
 }
 
-static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
+static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
+			     float *result)
 {
 	int r = -EPERM;
-	float result = 0.0;
 	int16_t raw = 0;
+	*result = 0.0;
 
 	uint32_t config =
 		Attribute_AltGetUint32(ATTR_INDEX_thermistorConfig, 0);
@@ -962,12 +947,13 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 	if (config & BIT(channel)) {
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_THERMISTOR, power);
 		if (r >= 0) {
-			result = AdcBt6_ConvertThermToTemperature(raw, channel);
+			*result =
+				AdcBt6_ConvertThermToTemperature(raw, channel);
 
 			sensorTaskObject.magnitudeOfTempDifference[channel] =
-				abs(result -
+				abs(*result -
 				    sensorTaskObject.previousTemp[channel]);
-			sensorTaskObject.previousTemp[channel] = result;
+			sensorTaskObject.previousTemp[channel] = *result;
 		}
 	} else {
 		LOG_DBG("Thermistor channel %d not enabled", channel + 1);
@@ -976,7 +962,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power)
 
 	if (r >= 0) {
 		r = Attribute_SetFloat(ATTR_INDEX_temperatureResult1 + channel,
-				       result);
+				       *result);
 	}
 
 	return r;
@@ -1007,11 +993,8 @@ static void batteryTimerCallbackIsr(struct k_timer *timer_id)
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
-	//FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
-	//			      FMC_TEMPERATURE_MEASURE);
-	//LOG_INF("Temp Timer ISR");
-	k_delayed_work_submit(&temperatureWorkDelay, K_MSEC(20));
-
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
+				      FMC_TEMPERATURE_MEASURE);
 }
 static void temperatureStOPCallbackIsr(struct k_timer *timer_id)
 {
