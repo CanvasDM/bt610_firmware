@@ -48,7 +48,7 @@ typedef struct EventTaskTag {
 	uint32_t timeStampBuffer[TOTAL_NUMBER_EVENTS];
 	uint32_t advertisingEvent;
 	uint32_t eventID;
-	uint8_t eventBufferRollover;
+	uint32_t eventBufferRollover;
 } EventTaskObj_t;
 /******************************************************************************/
 /* Local Data Definitions                                                     */
