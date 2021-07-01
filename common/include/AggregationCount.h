@@ -36,7 +36,17 @@ extern "C" {
  * @retval negative error code, 0 on success
  */
 int AggregationTempHandler(size_t channel);
-int AggregationAnalogHandler(size_t channel);
+/**
+ * @brief Check the Analog sensors against the two high thresholds
+ *
+ * @param channel This is the analog channel
+ * 
+ * @param value This is the current measured analog value
+ * 
+ * @retval negative error code, 0 on success
+ */
+int AggregationAnalogHandler(size_t channel, float value);
+
 #ifdef __cplusplus
 }
 #endif

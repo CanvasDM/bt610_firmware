@@ -59,17 +59,21 @@ int DeltaTempAlarmCheck(size_t channel, float tempDifference);
  *
  * @param channel This is the analog channel
  *
+ * @param value This is the current measured analog value
+ * 
  * @retval negative error code, 0 on success
  */
-int HighAnalogAlarmCheck(size_t channel);
+int HighAnalogAlarmCheck(size_t channel, float value);
 /**
  * @brief Check the Analog value against the two low thresholds
  *
  * @param channel This is the analog channel
  *
+ * @param value This is the current measured analog value
+ * 
  * @retval negative error code, 0 on success
  */
-int LowAnalogAlarmCheck(size_t channel);
+int LowAnalogAlarmCheck(size_t channel, float value);
 /**
  * @brief Check the delta analog measurment value against the threshold
  *

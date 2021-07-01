@@ -81,32 +81,30 @@ int AggregationTempHandler(size_t channel)
 	return r;
 }
 
-int AggregationAnalogHandler(size_t channel)
+int AggregationAnalogHandler(size_t channel, float value)
 {
-	float currentAnalogValue = 0;
 	uint8_t aggCount = 0;
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
 	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
 			  sizeof(aggCount));
-	r = Attribute_GetFloat(&currentAnalogValue,
-			       ATTR_INDEX_analogInput1 + channel);
+	
 	if (r == 0) {
 		if (aggCount > 1) {
 			if (currentAggregationNumber <= aggCount) {
 				analogBuffer[channel][currentAggregationNumber] =
-					currentAnalogValue;
+					value;
 				currentAggregationNumber =
 					currentAggregationNumber + 1;
 			}
 			if (currentAggregationNumber == aggCount) {
 				/*Send to event LOG */
-				AnalogConfigType(channel, currentAnalogValue);
+				AnalogConfigType(channel, value);
 			}
 		} else {
 			/*Send to event LOG */
-			AnalogConfigType(channel, currentAnalogValue);
+			AnalogConfigType(channel, value);
 		}
 	}
 	return r;
