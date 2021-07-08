@@ -52,7 +52,6 @@ static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
 static uint8_t pairCheck = 0;
-static uint8_t passCheck = 0;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -91,8 +90,6 @@ static struct bt_data bt_rsp[] = {
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp)),
 };
 
-static struct bt_conn_cb connection_callbacks;
-
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -100,15 +97,61 @@ static void CreateAdvertisingParm(void);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthPasskeyEntryCb(struct bt_conn *conn);
 static void AuthCancelCb(struct bt_conn *conn);
 static void AuthPairingConfirmCb(struct bt_conn *conn);
 static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded);
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey);
 static void AuthPairingFailedCb(struct bt_conn *conn,
 				enum bt_security_err reason);
 static void CreateAdvertisingExtendedParm(void);
 static void CreateAdvertisingStandardParm(void);
+
+/******************************************************************************/
+/* Callback Data Definitions - these needed to be defined here due to         */
+/* containing references to the above functions.                              */
+/******************************************************************************/
+
+/******************************************************************************/
+/* Connection callbacks.                                                      */
+/*                                                                            */
+/* Handlers for connection related events.                                    */
+/*                                                                            */
+/* NOTE these have to reside in RAM due to there being a next pointer in the  */
+/* structure for appending further list entries.                              */
+/******************************************************************************/
+static struct bt_conn_cb connection_callbacks = {
+	.connected = NULL,
+	.disconnected = adv_disconnected,
+	.le_param_req = NULL,
+	.le_param_updated = NULL,
+	.identity_resolved = NULL,
+	.security_changed = NULL,
+	.le_phy_updated = NULL,
+};
+
+/******************************************************************************/
+/* Authorisation callbacks.                                                   */
+/*                                                                            */
+/* The device IO capabilities, used to determine the pairing method used, are */
+/* defined depending upon which callbacks have implementations assigned. In   */
+/* the BT6 case, we always want to indicate that we have no keyboard and a    */
+/* display only. In this case, when a client connects with a keyboard and a   */
+/* display, we enforce password entry pairing.                                */
+/*                                                                            */
+/* As the callback locations are not changed at runtime, these reside in ROM  */
+/* to protect against corruption and hard faulting.                           */
+/******************************************************************************/
+const struct bt_conn_auth_cb auth_callback = {
+	.passkey_display = AuthPasskeyDisplayCb,
+	.passkey_entry = NULL,
+	.passkey_confirm = NULL,
+	.oob_data_request = NULL,
+	.cancel = AuthCancelCb,
+	.pairing_confirm = AuthPairingConfirmCb,
+	.pairing_complete = AuthPairingCompleteCb,
+	.pairing_failed = AuthPairingFailedCb,
+	.bond_deleted = NULL
+};
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -171,18 +214,7 @@ int Advertisement_Init(void)
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 	ext.rsp.hardwareVersion = rsp.rsp.hardwareVersion;
 
-	connection_callbacks.disconnected = adv_disconnected;
 	bt_conn_cb_register(&connection_callbacks);
-
-	const struct bt_conn_auth_cb auth_callback = {
-		.passkey_display = AuthPasskeyDisplayCb,
-		.passkey_entry = AuthPasskeyEntryCb,
-		.passkey_confirm = AuthPasskeyConfirmCb,
-		.cancel = AuthCancelCb,
-		.pairing_confirm = AuthPairingConfirmCb,
-		.pairing_complete = AuthPairingCompleteCb,
-		.pairing_failed = AuthPairingFailedCb
-	};
 	r = bt_conn_auth_cb_register(&auth_callback);
 
 	CreateAdvertisingParm();
@@ -430,10 +462,6 @@ static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 
 	LOG_INF("Passkey for %s: %06u\n", log_strdup(addr), passkey);
 }
-static void AuthPasskeyEntryCb(struct bt_conn *conn)
-{
-	LOG_DBG("..");
-}
 static void AuthCancelCb(struct bt_conn *conn)
 {
 	char *addr = ble_addr(conn);
@@ -454,11 +482,6 @@ static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
 	char *addr = ble_addr(conn);
 
 	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
-}
-
-static void AuthPasskeyConfirmCb(struct bt_conn *conn, unsigned int passkey)
-{
-	passCheck = 1;
 }
 static void AuthPairingFailedCb(struct bt_conn *conn,
 				enum bt_security_err reason)
