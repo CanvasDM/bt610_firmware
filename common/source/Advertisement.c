@@ -300,7 +300,7 @@ int Advertisement_Update(void)
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 
 	if (advertising == true) {
-		r = Advertisement_End();
+		//r = Advertisement_End();
 		if (r == 0) {
 			if (extendPhyEnbled == true) {
 				r = bt_le_ext_adv_set_data(extendedAdv,
@@ -316,7 +316,7 @@ int Advertisement_Update(void)
 
 			LOG_INF("update advertising data (%d)", r);
 		}
-		r = Advertisement_Start();
+		//r = Advertisement_Start();
 	} else {
 		if (extendPhyEnbled == true) {
 			r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
