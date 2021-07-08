@@ -67,6 +67,7 @@ static void EventTaskThread(void *, void *, void *);
 static uint32_t GetAdvertEventId(void);
 static uint32_t GetEventTimestamp(uint32_t id);
 static void SetDataloggerStatus(void);
+static void SaveTimeStamp(uint32_t timeStamp);
 static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -117,14 +118,30 @@ void EventTask_Initialize(void)
 void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
 {
 	uint16_t eventCount = 0;
-	uint16_t eventIndex = 0;
+	static uint16_t currentEventCount = 0;
+	static uint16_t eventIndex = 0;
 	SensorEvent_t *readEvent;
 
 	*id = GetAdvertEventId();
 	event->timestamp = GetEventTimestamp(*id);
 	readEvent = lcz_event_manager_get_next_event(event->timestamp,
 						     &eventCount, eventIndex);
+	LOG_INF("Current Event Id = %d", *id);
+	LOG_INF("Current Event Type = %d", readEvent->type);
 	memcpy(event, readEvent, sizeof(SensorEvent_t));
+	if (eventCount == 1) {
+		EventTask_IncrementEventId();
+	} else if ((eventCount != 1) && (currentEventCount == 0)) {
+		currentEventCount = eventCount - 1;
+		eventIndex = eventIndex + 1;
+	} else if (currentEventCount == 1) {
+		EventTask_IncrementEventId();
+		currentEventCount = 0;
+		eventIndex = 0;
+	} else {
+		currentEventCount = currentEventCount - 1;
+		eventIndex = eventIndex + 1;
+	}
 }
 
 uint32_t EventTask_RemainingEvents(void)
@@ -145,7 +162,7 @@ uint32_t EventTask_RemainingEvents(void)
 
 void EventTask_IncrementEventId(void)
 {
-	if (eventTaskObject.advertisingEvent < TOTAL_NUMBER_EVENTS) {
+	if (eventTaskObject.advertisingEvent < (TOTAL_NUMBER_EVENTS - 1)) {
 		eventTaskObject.advertisingEvent =
 			eventTaskObject.advertisingEvent + 1;
 	} else {
@@ -154,6 +171,7 @@ void EventTask_IncrementEventId(void)
 		eventTaskObject.eventBufferRollover = 0;
 		LOG_INF("#####Roll Count Reset");
 	}
+	LOG_INF("AdvertEvent Count = %d", eventTaskObject.advertisingEvent);
 }
 
 /******************************************************************************/
@@ -189,20 +207,10 @@ static void SetDataloggerStatus(void)
 
 	lcz_event_manager_set_logging_state(dataLogEnable);
 }
-
-static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg)
+static void SaveTimeStamp(uint32_t timeStamp)
 {
-	ARG_UNUSED(pMsgRxer);
-
-	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
-
-	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
-		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
-						   &pEventMsg->eventData);
-
-	//LOG_INF("Event Type (%d)", pEventMsg->eventType);
-	if (eventTaskObject.eventID < TOTAL_NUMBER_EVENTS) {
+	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] = timeStamp;
+	if (eventTaskObject.eventID < (TOTAL_NUMBER_EVENTS - 1)) {
 		eventTaskObject.eventID = eventTaskObject.eventID + 1;
 	} else {
 		eventTaskObject.eventID = 0;
@@ -211,9 +219,31 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		LOG_INF("****Roll Count = %d",
 			eventTaskObject.eventBufferRollover);
 	}
-
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_EVENT);
+}
+
+static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	uint32_t timeStamp = 0;
+	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
+
+	timeStamp = lcz_event_manager_add_sensor_event(pEventMsg->eventType,
+						       &pEventMsg->eventData);
+	LOG_INF("Event Time1 = %d", timeStamp);
+
+	if (eventTaskObject.eventID == 0) {
+		/*Increment the buffer counter*/
+		SaveTimeStamp(timeStamp);
+	} else if ((eventTaskObject.eventID != 0) &&
+		   (eventTaskObject.timeStampBuffer[(eventTaskObject.eventID -
+						     1)] != timeStamp)) {
+		SaveTimeStamp(timeStamp);
+	} else {
+		/*Timestamp the same don't increment the buffer count*/
+	}
 
 	return DISPATCH_OK;
 }

@@ -495,8 +495,6 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
 
-	EventTask_IncrementEventId();
-
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_EVENT);
 }
