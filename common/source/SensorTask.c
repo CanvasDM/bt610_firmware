@@ -870,44 +870,28 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 	case ANALOG_INPUT_VOLTAGE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
-<<<<<<< HEAD
-			result = AdcBt6_ConvertVoltage(raw);
-=======
 			*result = AdcBt6_ConvertVoltage(channel, raw);
->>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_CURRENT:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
 		if (r >= 0) {
-<<<<<<< HEAD
-			result = AdcBt6_ConvertCurrent(raw);
-=======
 			*result = AdcBt6_ConvertCurrent(channel, raw);
->>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_PRESSURE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_PRESSURE, power);
 		if (r >= 0) {
-<<<<<<< HEAD
-			result = AdcBt6_ConvertPressure(raw);
-=======
 			*result = AdcBt6_ConvertPressure(channel, raw);
->>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 
 	case ANALOG_INPUT_ULTRASONIC:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC, power);
 		if (r >= 0) {
-<<<<<<< HEAD
-			result = AdcBt6_ConvertUltrasonic(raw);
-=======
 			*result = AdcBt6_ConvertUltrasonic(channel, raw);
->>>>>>> 79f3243... changed the analog measure so that it only takes one measurement and passes that value along
 		}
 		break;
 	case ANALOG_INPUT_ACCURRENT_20A:
