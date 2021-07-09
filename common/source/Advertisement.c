@@ -299,37 +299,15 @@ int Advertisement_Update(void)
 
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 
-	if (advertising == true) {
-		//r = Advertisement_End();
-		if (r == 0) {
-			if (extendPhyEnbled == true) {
-				r = bt_le_ext_adv_set_data(extendedAdv,
-							   bt_extAd,
-							   ARRAY_SIZE(bt_extAd),
-							   NULL, 0);
-			} else {
-				r = bt_le_ext_adv_set_data(adv, bt_ad,
-							   ARRAY_SIZE(bt_ad),
-							   bt_rsp,
-							   ARRAY_SIZE(bt_rsp));
-			}
-
-			LOG_INF("update advertising data (%d)", r);
-		}
-		//r = Advertisement_Start();
+	if (extendPhyEnbled == true) {
+		r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
+					   ARRAY_SIZE(bt_extAd), NULL, 0);
 	} else {
-		if (extendPhyEnbled == true) {
-			r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
-						   ARRAY_SIZE(bt_extAd), NULL,
-						   0);
-		} else {
-			r = bt_le_ext_adv_set_data(adv, bt_ad,
-						   ARRAY_SIZE(bt_ad), bt_rsp,
-						   ARRAY_SIZE(bt_rsp));
-		}
-
-		LOG_INF("update advertising data (%d)", r);
+		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
+					   bt_rsp, ARRAY_SIZE(bt_rsp));
 	}
+
+	LOG_INF("update advertising data (%d)", r);
 
 	if (r < 0) {
 		LOG_INF("Failed to update advertising data (%d)", r);
