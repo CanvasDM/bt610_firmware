@@ -89,6 +89,8 @@ typedef union _floatContainer_t {
 	long long int integerValue;
 } floatContainer_t;
 
+static void Sentrius_mgmt_UpdateConfig(void);
+
 static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs);
 
@@ -400,6 +402,10 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
+	/* If no error update the device configuration id */
+	if (!err) {
+		Sentrius_mgmt_UpdateConfig();
+	}
 	return (err != 0) ? -ENOMEM : 0;
 }
 
@@ -517,6 +523,10 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
+	/* If no error update the device configuration id */
+	if (!err) {
+		Sentrius_mgmt_UpdateConfig();
+	}
 	return (err != 0) ? -ENOMEM : 0;
 }
 
@@ -556,6 +566,10 @@ int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "oe");
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
+	/* If no error update the device configuration id */
+	if (!err) {
+		Sentrius_mgmt_UpdateConfig();
+	}
 	return (err != 0) ? -ENOMEM : 0;
 }
 
@@ -626,7 +640,10 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
-
+	/* If no error update the device configuration id */
+	if (!err) {
+		Sentrius_mgmt_UpdateConfig();
+	}
 	return (err != 0) ? -ENOMEM : 0;
 }
 
@@ -801,6 +818,18 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
 	return (err != 0) ? -ENOMEM : 0;
+}
+
+static void Sentrius_mgmt_UpdateConfig(void)
+{
+	uint8_t config_version;
+
+	if (Attribute_Get(ATTR_INDEX_configVersion, &config_version,
+			  sizeof(config_version)) == sizeof(config_version)) {
+		config_version++;
+		(void)Attribute_Set(ATTR_INDEX_configVersion, ATTR_TYPE_U8,
+				    &config_version, sizeof(config_version));
+	}
 }
 
 static CborAttrType ParameterValueType(attr_idx_t paramID,
