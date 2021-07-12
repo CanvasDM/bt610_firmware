@@ -18,6 +18,8 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "settings/settings.h"
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
+#include <bluetooth/hci.h>
+#include <bluetooth/hci_vs.h>
 #if 0
 #include <bluetooth/hci.h>
 #include <bluetooth/uuid.h>
@@ -72,6 +74,23 @@ typedef struct BleTaskTag {
 	bool activeModeStatus;
 } BleTaskObj_t;
 
+typedef enum {
+	POWER_LEVEL_PLUS_8 = 0,
+	POWER_LEVEL_PLUS_7,
+	POWER_LEVEL_PLUS_6,
+	POWER_LEVEL_PLUS_5,
+	POWER_LEVEL_PLUS_4,
+	POWER_LEVEL_PLUS_3,
+	POWER_LEVEL_PLUS_2,
+	POWER_LEVEL_ZERO,
+	POWER_LEVEL_MIN_4,
+	POWER_LEVEL_MIN_8,
+	POWER_LEVEL_MIN_12,
+	POWER_LEVEL_MIN_16,
+	POWER_LEVEL_MIN_20,
+	POWER_LEVEL_MIN_40,
+} TxPowerLevel_t;
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -97,6 +116,9 @@ static int BluetoothInit(void);
 static int UpdateName(void);
 static void ConnectionTimerStart(void);
 static void ConnectionTimerRestart(void);
+static void TransmitPower(void);
+static void set_tx_power(uint8_t handle_type, uint16_t handle,
+			 int8_t tx_pwr_lvl);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
@@ -228,6 +250,7 @@ static int BluetoothInit(void)
 		if (r != 0) {
 			break;
 		}
+		TransmitPower();
 
 		r = Advertisement_Init();
 		if (r != 0) {
@@ -325,10 +348,14 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_connectionTimeoutSec:
 			ConnectionTimerRestart();
 			break;
+		case ATTR_INDEX_txPower:
+			TransmitPower();
+			break;
 		case ATTR_INDEX_activeMode:
-		Attribute_Get(ATTR_INDEX_activeMode, &bto.activeModeStatus,
-		      sizeof(bto.activeModeStatus));
-		break;
+			Attribute_Get(ATTR_INDEX_activeMode,
+				      &bto.activeModeStatus,
+				      sizeof(bto.activeModeStatus));
+			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
 			//case ATTR_INDEX_flags:
@@ -343,7 +370,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	}
 
 	if (updateData == true) {
-		//Advertisement_Update();
+		Advertisement_Update();
 	}
 	return DISPATCH_OK;
 }
@@ -403,6 +430,9 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L2);
 		LOG_DBG("Setting security status: %d", r);
+
+		/*Set the power for the connection*/
+		TransmitPower();
 
 		ConnectionTimerStart();
 
@@ -470,6 +500,110 @@ static void ConnectionTimerRestart(void)
 {
 	ConnectionTimerStart();
 }
+
+static void TransmitPower(void)
+{
+	TxPowerLevel_t txPower = 0;
+	int8_t powerLevel = 0;
+	uint16_t connectionHandle = 0;
+	int r = 0;
+
+	Attribute_Get(ATTR_INDEX_txPower, &txPower, sizeof(txPower));
+
+	switch (txPower) {
+	case POWER_LEVEL_PLUS_8:
+		powerLevel = 8;
+		break;
+	case POWER_LEVEL_PLUS_7:
+		powerLevel = 7;
+		break;
+	case POWER_LEVEL_PLUS_6:
+		powerLevel = 6;
+		break;
+	case POWER_LEVEL_PLUS_5:
+		powerLevel = 5;
+		break;
+	case POWER_LEVEL_PLUS_4:
+		powerLevel = 4;
+		break;
+	case POWER_LEVEL_PLUS_3:
+		powerLevel = 3;
+		break;
+	case POWER_LEVEL_PLUS_2:
+		powerLevel = 2;
+		break;
+	case POWER_LEVEL_ZERO:
+		powerLevel = 0;
+		break;
+	case POWER_LEVEL_MIN_4:
+		powerLevel = -4;
+		break;
+	case POWER_LEVEL_MIN_8:
+		powerLevel = -8;
+		break;
+	case POWER_LEVEL_MIN_12:
+		powerLevel = -12;
+		break;
+	case POWER_LEVEL_MIN_16:
+		powerLevel = -16;
+		break;
+	case POWER_LEVEL_MIN_20:
+		powerLevel = -20;
+		break;
+	case POWER_LEVEL_MIN_40:
+		powerLevel = -40;
+		break;
+	default:
+		/*This is the default power level for this device*/
+		powerLevel = 8;
+		break;
+	}
+	/*TX power level when connected*/
+	r = bt_hci_get_conn_handle(bto.conn, &connectionHandle);
+	if (r >= 0) {
+		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_CONN, connectionHandle,
+			     powerLevel);
+	} else {
+		/*TX power level when advertising*/
+		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_ADV, 0, powerLevel);
+	}
+}
+static void set_tx_power(uint8_t handle_type, uint16_t handle,
+			 int8_t tx_pwr_lvl)
+{
+	struct bt_hci_cp_vs_write_tx_power_level *cp;
+	struct bt_hci_rp_vs_write_tx_power_level *rp;
+	struct net_buf *buf, *rsp = NULL;
+	int err;
+
+	buf = bt_hci_cmd_create(BT_HCI_OP_VS_WRITE_TX_POWER_LEVEL, sizeof(*cp));
+	if (!buf) {
+		printk("Unable to allocate command buffer\n");
+		return;
+	}
+
+	cp = net_buf_add(buf, sizeof(*cp));
+	cp->handle = handle;
+	cp->handle_type = handle_type;
+	cp->tx_power_level = tx_pwr_lvl;
+
+	err = bt_hci_cmd_send_sync(BT_HCI_OP_VS_WRITE_TX_POWER_LEVEL, buf,
+				   &rsp);
+	if (err) {
+		uint8_t reason =
+			rsp ? ((struct bt_hci_rp_vs_write_tx_power_level *)
+				       rsp->data)
+					->status :
+				    0;
+		printk("Set Tx power err: %d reason 0x%02x\n", err, reason);
+		return;
+	}
+	rp = (void *)rsp->data;
+	printk("Actual Tx Power: %d\n", rp->selected_tx_power);
+
+	net_buf_unref(rsp);
+}
+
 static void RequestDisconnect(struct bt_conn *ConnectionHandle)
 {
 	int r = 0;
