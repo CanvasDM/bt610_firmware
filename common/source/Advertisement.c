@@ -276,10 +276,13 @@ int Advertisement_Update(void)
 	ad.flags = Flags_Get();
 	EventTask_GetCurrentEvent(&current.id, &current.event);
 
-	ad.recordType = current.event.type;
-	ad.id = current.id;
-	ad.epoch = current.event.timestamp;
-	ad.data = current.event.data;
+	/* If no event was available, keep the last */
+	if (current.event.type != SENSOR_EVENT_RESERVED) {
+		ad.recordType = current.event.type;
+		ad.id = current.id;
+		ad.epoch = current.event.timestamp;
+		ad.data = current.event.data;
+	}
 
 	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
 		      sizeof(configVersion));
