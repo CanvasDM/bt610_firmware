@@ -117,31 +117,39 @@ void EventTask_Initialize(void)
 
 void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
 {
-	uint16_t eventCount = 0;
-	static uint16_t currentEventCount = 0;
-	static uint16_t eventIndex = 0;
-	SensorEvent_t *readEvent;
+	uint16_t event_count = 0;
+	SensorEvent_t *read_event = (SensorEvent_t *)NULL;
 
+	/* This is the timestamp from the last published event */
+	static uint32_t last_timestamp = 0;
+	/* This is the index of the event last published for this timestamp */
+	static uint16_t last_index = 0;
+
+	/* Read the timestamp from the local log - we use this to determine
+	 * if the event is part of a set at the same timestamp or a new set
+	 * at a different timestamp.
+	 */
 	*id = GetAdvertEventId();
 	event->timestamp = GetEventTimestamp(*id);
-	readEvent = lcz_event_manager_get_next_event(event->timestamp,
-						     &eventCount, eventIndex);
-	LOG_INF("Current Event Id = %d", *id);
-	LOG_INF("Current Event Type = %d", readEvent->type);
-	memcpy(event, readEvent, sizeof(SensorEvent_t));
-	if (eventCount == 1) {
-		EventTask_IncrementEventId();
-	} else if ((eventCount != 1) && (currentEventCount == 0)) {
-		currentEventCount = eventCount - 1;
-		eventIndex = eventIndex + 1;
-	} else if (currentEventCount == 1) {
-		EventTask_IncrementEventId();
-		currentEventCount = 0;
-		eventIndex = 0;
+
+	/* Have we seen this timestamp before ? */
+	if (event->timestamp != last_timestamp) {
+		/* New set of events at this timestamp */
+		last_timestamp = event->timestamp;
+		/* First event published for this set */
+		last_index = 0;
 	} else {
-		currentEventCount = currentEventCount - 1;
-		eventIndex = eventIndex + 1;
+		/* We've seen this timestamp before, so
+		 * we can read the next event in the list
+		 */
+		last_index++;
 	}
+
+	/* Safe to read the event */
+	read_event = lcz_event_manager_get_next_event(event->timestamp,
+						      &event_count, last_index);
+	/* And copy the content across */
+	memcpy(event, read_event, sizeof(SensorEvent_t));
 }
 
 uint32_t EventTask_RemainingEvents(void)
@@ -193,7 +201,7 @@ static uint32_t GetAdvertEventId(void)
 static uint32_t GetEventTimestamp(uint32_t id)
 {
 	uint32_t timestamp = 0;
-	if (id <= TOTAL_NUMBER_EVENTS) {
+	if (id < TOTAL_NUMBER_EVENTS) {
 		timestamp = eventTaskObject.timeStampBuffer[id];
 	}
 	return (timestamp);
@@ -209,7 +217,15 @@ static void SetDataloggerStatus(void)
 }
 static void SaveTimeStamp(uint32_t timeStamp)
 {
-	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] = timeStamp;
+	ARG_UNUSED(pMsgRxer);
+
+	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
+
+	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
+		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
+						   &pEventMsg->eventData);
+
+	//LOG_INF("Event Type (%d)", pEventMsg->eventType);
 	if (eventTaskObject.eventID < (TOTAL_NUMBER_EVENTS - 1)) {
 		eventTaskObject.eventID = eventTaskObject.eventID + 1;
 	} else {
