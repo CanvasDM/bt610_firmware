@@ -742,12 +742,19 @@ static bool ValidInputForCurrentMeasurement(MuxInput_t input)
 
 static float Steinhart_Hart(float calibrated, float a, float b, float c)
 {
+	float result = 0.0f;
 	float r = (10000 * calibrated) / (4096 - calibrated);
 	float x = log(r);
 	float cubed = x * x * x;
 	float denominator = a + (b * x) + (c * cubed);
-	/* Division by zero is safe for this architecture. */
-	return 1 / denominator;
+
+	/* Division by zero is safe for this architecture, but
+	 * we need to handle this to protect upper level calls.
+	 */
+	if (fpclassify(denominator) == FP_NORMAL) {
+		result = 1.0f / denominator;
+	}
+	return (result);
 }
 
 static bool ADCChannelIsSimulated(AnalogChannel_t channel,
