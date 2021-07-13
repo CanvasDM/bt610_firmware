@@ -485,7 +485,7 @@ static void TamperSwitchStatus(void)
 			eventTamper.u16 = v;
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
 		} else {
-			red_led_off();
+			lcz_led_turn_off(RED_LED);
 		}
 	}
 }
@@ -522,6 +522,7 @@ static void red_led_on(void)
 static void red_led_off(void)
 {
 	lcz_pwm_led_off(RED_LED);
+	//lcz_led_turn_off(RED_LED);
 }
 #endif
 
