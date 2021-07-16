@@ -119,7 +119,6 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
-static void TemperatureWorker(struct k_work *work);
 static void LoadSensorConfiguration(void);
 static void SensorConfigureAnalog(void);
 static void SensorConfigChange(bool bootup);
@@ -133,7 +132,7 @@ static gpio_flags_t GetEdgeType(digitalAlarm_t alarm);
 static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
 static void StartAnalogInterval(void);
-static void StartTempertureInterval(void);
+static void StartTemperatureInterval(void);
 static void StartBatteryInterval(void);
 static void DisableAnalogPins(void);
 static void DisableThermistorPins(void);
@@ -147,7 +146,6 @@ static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
-static void temperatureStOPCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -486,7 +484,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			AggregationTempHandler(index, temperature);
 		}
 	}
-	StartTempertureInterval();
+	StartTemperatureInterval();
 
 	return DISPATCH_OK;
 }
@@ -606,7 +604,7 @@ static void SensorConfigChange(bool bootup)
 		if (bootup == false) {
 			Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 					    ALL_THERMISTORS);
-			StartTempertureInterval();
+			StartTemperatureInterval();
 		}
 
 		/*Disable all analogs*/
@@ -752,7 +750,7 @@ static void InitializeIntervalTimers(void)
 	/*Temperture Interval timer*/
 	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
 		     NULL);
-	StartTempertureInterval();
+	StartTemperatureInterval();
 
 	/*Analog Interval timer*/
 	k_timer_init(&analogReadTimer, analogReadTimerCallbackIsr, NULL);
@@ -791,7 +789,7 @@ static void StartAnalogInterval(void)
 	}
 }
 
-static void StartTempertureInterval(void)
+static void StartTemperatureInterval(void)
 {
 	uint8_t thermConfigEnable;
 	uint8_t activeModeStatus = 0;
@@ -986,10 +984,7 @@ static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id)
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_TEMPERATURE_MEASURE);
 }
-static void temperatureStOPCallbackIsr(struct k_timer *timer_id)
-{
-	LOG_INF("Stop Temp Timer ISR");
-}
+
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
