@@ -147,11 +147,7 @@ static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 static void batteryTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
-
-static void batteryTimerCallbackIsr(struct k_timer *timer_id);
-static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureStOPCallbackIsr(struct k_timer *timer_id);
-static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -610,6 +606,7 @@ static void SensorConfigChange(bool bootup)
 		if (bootup == false) {
 			Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
 					    ALL_THERMISTORS);
+			StartTempertureInterval();
 		}
 
 		/*Disable all analogs*/
@@ -617,8 +614,6 @@ static void SensorConfigChange(bool bootup)
 
 		/*Disable Digital*/
 		DisableDigitalIO();
-
-		StartTempertureInterval();
 
 		break;
 	case CONFIG_ANALOG_AC_CURRENT:
@@ -811,13 +806,8 @@ static void StartTempertureInterval(void)
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
 		if (intervalSeconds != 0) {
-			//LOG_INF("Temp Timer Status = %d",k_timer_remaining_get(&temperatureReadTimer));
-			//k_sleep(K_MSEC(100));
 			k_timer_start(&temperatureReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
-			//k_timer_start(&temperatureReadTimer,
-			//	      K_NO_WAIT, K_SECONDS(intervalSeconds));
-			//LOG_INF("Temp Timer Start");
 		}
 	}
 }
