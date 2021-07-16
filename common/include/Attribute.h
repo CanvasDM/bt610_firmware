@@ -38,6 +38,17 @@ typedef enum AttrDumpType {
 	ATTR_DUMP_RO
 } AttrDumpType_t;
 
+/* Errors associated with parameter writes */
+typedef enum AttrWriteError {
+	ATTR_WRITE_ERROR_OK = 0,
+	ATTR_WRITE_ERROR_NUMERIC_TOO_LOW,
+	ATTR_WRITE_ERROR_NUMERIC_TOO_HIGH,
+	ATTR_WRITE_ERROR_STRING_TOO_MANY_CHARACTERS,
+	ATTR_WRITE_ERROR_PARAMETER_READ_ONLY,
+	ATTR_WRITE_ERROR_PARAMETER_UNKNOWN,
+	ATTR_WRITE_ERROR_PARAMETER_INVALID_LENGTH
+} AttrWriteError_T;
+
 /******************************************************************************/
 /* Function Definitions                                                       */
 /******************************************************************************/
@@ -329,10 +340,12 @@ int Attribute_SetQuiet(attr_idx_t Index, bool Value);
  * @brief Load attributes from a file and save them to params.txt
  *
  * @param abs_path Absolute file name
+ * @param feedback_path Absolute path of feedback file
  *
  * @param negative error code, number of parameters on success
  */
-int Attribute_Load(const char *abs_path);
+int Attribute_Load(const char *abs_path, const char *feedback_path);
+
 /**
  * @brief Retrive the current status of the coded enable parameter
  *

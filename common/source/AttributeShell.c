@@ -21,6 +21,8 @@
 #include "file_system_utilities.h"
 #include "lcz_qrtc.h"
 
+#define ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH "/ext/load_shell_feedback.txt"
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -279,7 +281,7 @@ static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	int r = -EPERM;
 	if ((argc == 2) && (argv[1] != NULL)) {
-		r = Attribute_Load(argv[1]);
+		r = Attribute_Load(argv[1], ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
 		if (r < 0) {
 			shell_error(shell, "Attribute Load error");
 		}

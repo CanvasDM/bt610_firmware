@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.59",
+    "version": "1.60",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -777,6 +777,16 @@
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
+            },
+            {
+              "name": "f",
+              "type": "string",
+              "summary": "Path to the feedback file containing load error details",
+              "description": "Error codes are 0 = OK, 1 = Numeric under range, 2 = Numeric over range, 3 = Too many characters, 4 = Read Only, 5 = Unknown Parameter, 6 = Invalid Length",
+              "required": true,
+              "x-example": "/ext/feedback.txt",
+              "x-ctype": "string",
+              "x-sequencenumber": 2
             }
           ]
         }
@@ -3031,7 +3041,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.59",
+              "x-default": "1.60",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,

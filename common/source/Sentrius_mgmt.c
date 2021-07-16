@@ -60,6 +60,7 @@
 #define SENTRIUS_MGMT_CALIBRATION_SCALER 10000.0f
 #define SENTRIUS_MGMT_PARAMETER_FILE_PATH "/ext/params.txt"
 #define SENTRIUS_MGMT_PARAMETER_DUMP_PATH "/ext/dump.txt"
+#define SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH "/ext/load_bt_feedback.txt"
 
 /* For float conversion routines, the maximum number of parameters we have
  * to deal with is two, so 4 elements. Defined here in case this changes.
@@ -635,11 +636,16 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	r = Attribute_Load(paramString);
+	r = Attribute_Load(paramString, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Encode the feedback file path. */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "f");
+	err |= cbor_encode_text_string(
+		&ctxt->encoder, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
+		strlen(SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH));
 	/* If no error update the device configuration id */
 	if (!err) {
 		Sentrius_mgmt_UpdateConfig();
