@@ -39,9 +39,7 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #endif
 
 /* This is the total number of events available */
-#define TOTAL_NUMBER_EVENTS                                                    \
-	(CONFIG_LCZ_EVENT_MANAGER_NUMBER_OF_FILES *                            \
-	 CONFIG_LCZ_EVENT_MANAGER_EVENTS_PER_FILE)
+#define TOTAL_NUMBER_EVENTS (1000)
 
 typedef struct EventTaskTag {
 	FwkMsgTask_t msgTask;
