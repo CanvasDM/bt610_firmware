@@ -120,7 +120,6 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 static void LoadSensorConfiguration(void);
-static void SensorConfigureAnalog(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
 static void SensorOutput2Control(void);
@@ -553,10 +552,7 @@ static void LoadSensorConfiguration(void)
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 
-static void SensorConfigureAnalog(void)
-{
-	/*todo: for the AC current*/
-}
+
 
 static void SensorConfigChange(bool bootup)
 {
@@ -863,9 +859,13 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 		break;
 
 	case ANALOG_INPUT_CURRENT:
-		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT, power);
-		if (r >= 0) {
-			*result = AdcBt6_ConvertCurrent(channel, raw);
+		r = AdcBt6_ConfigAinSelects();
+		if (r == 0) {
+			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT,
+					   power);
+			if (r >= 0) {
+				*result = AdcBt6_ConvertCurrent(channel, raw);
+			}
 		}
 		break;
 
