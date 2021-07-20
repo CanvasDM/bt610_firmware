@@ -91,6 +91,11 @@ typedef enum {
 	POWER_LEVEL_MIN_40,
 } TxPowerLevel_t;
 
+/* When the Advertising Duration is set to zero by the user, we scale it
+ * against the Advertising Interval by this amount.
+ */
+#define BLE_TASK_ADV_DUR_AT_ZERO_SCALE 15
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -120,6 +125,7 @@ static void TransmitPower(void);
 static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
+static uint32_t GetAdvertisingDuration(void);
 static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
@@ -386,17 +392,16 @@ static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		if (timerLeft == 0) {
 			Advertisement_Update();
 
-			uint32_t timeMilliSeconds = 0;
-
-			Attribute_Get(ATTR_INDEX_advertisingDuration,
-				      &timeMilliSeconds,
-				      sizeof(timeMilliSeconds));
-
-			if (timeMilliSeconds != 0) {
-				k_timer_start(&durationTimer,
-					      K_MSEC(timeMilliSeconds),
-					      K_NO_WAIT);
+			uint32_t timeMilliSeconds = GetAdvertisingDuration();
+			/* If we get 0 back for the Duration, something has
+			 * gone wrong. In this case, set the Duration to the
+			 * maximum value.
+			 */
+			if (!timeMilliSeconds) {
+				timeMilliSeconds = UINT16_MAX;
 			}
+			k_timer_start(&durationTimer, K_MSEC(timeMilliSeconds),
+				      K_NO_WAIT);
 		}
 	}
 
@@ -616,6 +621,29 @@ static void RequestDisconnect(struct bt_conn *ConnectionHandle)
 		}
 	}
 }
+
+static uint32_t GetAdvertisingDuration(void)
+{
+	uint16_t advertising_duration = 0;
+	uint16_t advertising_interval = 0;
+
+	if (Attribute_Get(ATTR_INDEX_advertisingDuration, &advertising_duration,
+			  sizeof(advertising_duration)) ==
+	    sizeof(advertising_duration)) {
+		if (Attribute_Get(ATTR_INDEX_advertisingInterval,
+				  &advertising_interval,
+				  sizeof(advertising_interval)) ==
+		    sizeof(advertising_interval)) {
+			if (advertising_duration == 0) {
+				advertising_duration =
+					advertising_interval *
+					BLE_TASK_ADV_DUR_AT_ZERO_SCALE;
+			}
+		}
+	}
+	return ((uint32_t)(advertising_duration));
+}
+
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/

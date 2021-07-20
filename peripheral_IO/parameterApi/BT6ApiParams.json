@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.60",
+    "version": "1.62",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -777,6 +777,16 @@
               "x-example": "0",
               "x-ctype": "int32_t",
               "x-sequencenumber": 1
+            },
+            {
+              "name": "f",
+              "type": "string",
+              "summary": "Path to the feedback file containing load error details",
+              "description": "Error codes are 0 = OK, 1 = Numeric under range, 2 = Numeric over range, 3 = Too many characters, 4 = Read Only, 5 = Unknown Parameter, 6 = Invalid Length",
+              "required": true,
+              "x-example": "/ext/feedback.txt",
+              "x-ctype": "string",
+              "x-sequencenumber": 2
             }
           ]
         }
@@ -1183,7 +1193,7 @@
           },
           {
             "name": "advertisingInterval",
-            "summary": "Advertising Interval in milliseconds",
+            "summary": "Advertising Interval in milliseconds. Must be 4x less than the Duration when the Duration is non-zero.",
             "required": true,
             "x-id": 2,
             "x-groupid": 65,
@@ -1191,7 +1201,7 @@
               "type": "integer",
               "minimumlength": 0,
               "maximumlength": 0,
-              "minimum": 20.0,
+              "minimum": 500.0,
               "maximum": 10000.0,
               "x-ctype": "uint16_t",
               "x-default": "1000",
@@ -1200,12 +1210,13 @@
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true
+              "x-readable": true,
+              "x-validator": "advin"
             }
           },
           {
             "name": "advertisingDuration",
-            "summary": "Advertising duration of an event in milliseconds. 0=No events advertised",
+            "summary": "Advertising duration of an event in milliseconds. Must be 4x greater than the Interval when non-zero. When zero, is 15x the Interval.",
             "required": true,
             "x-id": 3,
             "x-groupid": 65,
@@ -1222,7 +1233,8 @@
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true
+              "x-readable": true,
+              "x-validator": "advdur"
             }
           },
           {
@@ -3031,7 +3043,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.60",
+              "x-default": "1.62",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
