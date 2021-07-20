@@ -42,6 +42,8 @@ typedef struct {
 	FwkMsgHeader_t header;
 	SensorEventType_t eventType;
 	SensorEventData_t eventData;
+	uint32_t id;
+	uint32_t timeStamp;
 } EventLogMsg_t;
 
 #ifdef __cplusplus

@@ -44,11 +44,6 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 /******************************************************************************/
 K_MUTEX_DEFINE(mount_mutex);
 
-typedef struct {
-	SensorEvent_t event;
-	uint32_t id;
-
-} SensorMsg_t;
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
@@ -96,6 +91,9 @@ typedef enum {
  */
 #define BLE_TASK_ADV_DUR_AT_ZERO_SCALE 15
 
+/* This is the size of the queue used to store events locally */
+#define BLE_TASK_ADVERT_QUEUE_SIZE 32
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -112,9 +110,11 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
-static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					    FwkMsg_t *pMsg);
+static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg);
 static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg);
+static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
@@ -137,6 +137,7 @@ static BleTaskObj_t bto;
 static struct k_timer connectionTimer;
 static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
+static bool duration_timer_expired = true;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -160,6 +161,13 @@ static struct fs_mount_t settings_mnt = {
 /* clang-format on */
 #endif
 
+/* This is the local queue used to store an immediate log of events for
+ * for advertisements. When full, additional events are still logged to
+ * to the file system but discarded from inclusion in advertisements.
+ */
+K_MSGQ_DEFINE(ble_task_advert_queue, sizeof(SensorMsg_t),
+	      BLE_TASK_ADVERT_QUEUE_SIZE, FWK_QUEUE_ALIGNMENT);
+
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -171,8 +179,9 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
-	case FMC_SENSOR_EVENT:                return BleSensorMsgHandler;
 	case FMC_BLE_END_CONNECTION:          return ConnectionTimeoutHandler;
+	case FMC_SENSOR_EVENT:                return BleSensorEventMsgHandler;
+	case FMC_SENSOR_UPDATE:               return BleSensorUpdateMsgHandler;
 	default:                              return NULL;
 	}
 	/* clang-format on */
@@ -336,6 +345,9 @@ static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg)
 {
+	/* Dummy event passed to Advertisement update */
+	SensorMsg_t dummy_event = { .event.type = SENSOR_EVENT_RESERVED };
+
 	UNUSED_PARAMETER(pMsgRxer);
 	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
 	size_t i;
@@ -377,35 +389,42 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	}
 
 	if (updateData == true) {
-		Advertisement_Update();
+		Advertisement_Update(&dummy_event);
 	}
 	return DISPATCH_OK;
 }
-static DispatchResult_t BleSensorMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					    FwkMsg_t *pMsg)
+static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg)
 {
 	uint8_t activeMode = 0;
+	SensorMsg_t sensor_event;
+	bool restart_duration_timer = false;
+
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if ((activeMode) && (EventTask_RemainingEvents() > 0)) {
-		/*if the durration timer is not already running start it*/
+	if (activeMode) {
+		/* If the duration timer is not already running start it */
 		volatile uint32_t timerLeft =
 			k_timer_remaining_get(&durationTimer);
 		if (timerLeft == 0) {
-			Advertisement_Update();
-
-			uint32_t timeMilliSeconds = GetAdvertisingDuration();
-			/* If we get 0 back for the Duration, something has
-			 * gone wrong. In this case, set the Duration to the
-			 * maximum value.
-			 */
-			if (!timeMilliSeconds) {
-				timeMilliSeconds = UINT16_MAX;
+			/* Any events available? */
+			if (k_msgq_num_used_get(&ble_task_advert_queue)) {
+				/* Read the next */
+				k_msgq_get(&ble_task_advert_queue,
+					   &sensor_event, K_FOREVER);
+				/* Update the advertisement */
+				Advertisement_Update(&sensor_event);
 			}
-			k_timer_start(&durationTimer, K_MSEC(timeMilliSeconds),
-				      K_NO_WAIT);
+			/* Restart the duration timer */
+			restart_duration_timer = true;
 		}
 	}
+	if (restart_duration_timer) {
+		/* Get the duration time */
+		uint32_t timeMilliSeconds = GetAdvertisingDuration();
 
+		k_timer_start(&durationTimer, K_MSEC(timeMilliSeconds),
+			      K_NO_WAIT);
+	}
 	return DISPATCH_OK;
 }
 
@@ -414,6 +433,37 @@ static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	RequestDisconnect(bto.conn);
 
+	return DISPATCH_OK;
+}
+
+static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg)
+{
+	SensorMsg_t local_event;
+	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
+	uint8_t activeMode = 0;
+
+	/* Only store events when in active mode */
+	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
+	if (activeMode) {
+		/* If there's space, add this event to our local advert queue */
+		if (k_msgq_num_free_get(&ble_task_advert_queue)) {
+			/* Store event details */
+			local_event.event.timestamp = pEventMsg->timeStamp;
+			local_event.event.type = pEventMsg->eventType;
+			local_event.event.data = pEventMsg->eventData;
+			local_event.id = pEventMsg->id;
+			/* Set event details in the advert queue */
+			k_msgq_put(&ble_task_advert_queue, &local_event, K_NO_WAIT);
+			/* And update the advertisement */
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+						      FMC_SENSOR_UPDATE);
+			LOG_DBG("Added Event to advert queue!");
+		}
+		else {
+			LOG_DBG("Advert queue is full!");
+		}
+	}
 	return DISPATCH_OK;
 }
 
@@ -625,8 +675,9 @@ static void RequestDisconnect(struct bt_conn *ConnectionHandle)
 
 static uint32_t GetAdvertisingDuration(void)
 {
-	uint16_t advertising_duration = 0;
-	uint16_t advertising_interval = 0;
+	uint16_t advertising_duration;
+	uint16_t advertising_interval;
+	bool get_failed = true;
 
 	if (Attribute_Get(ATTR_INDEX_advertisingDuration, &advertising_duration,
 			  sizeof(advertising_duration)) ==
@@ -635,12 +686,17 @@ static uint32_t GetAdvertisingDuration(void)
 				  &advertising_interval,
 				  sizeof(advertising_interval)) ==
 		    sizeof(advertising_interval)) {
+			get_failed = false;
 			if (advertising_duration == 0) {
 				advertising_duration =
 					advertising_interval *
 					BLE_TASK_ADV_DUR_AT_ZERO_SCALE;
 			}
 		}
+	}
+	if (get_failed) {
+		/* If either get failed exit with the max duration */
+		advertising_duration = UINT16_MAX;		
 	}
 	return ((uint32_t)(advertising_duration));
 }
@@ -659,7 +715,7 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 	UNUSED_PARAMETER(timer_id);
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-				      FMC_SENSOR_EVENT);
+				      FMC_SENSOR_UPDATE);
 }
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 {

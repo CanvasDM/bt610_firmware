@@ -38,16 +38,10 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #define EVENT_TASK_QUEUE_DEPTH 32
 #endif
 
-/* This is the total number of events available */
-#define TOTAL_NUMBER_EVENTS (1000)
-
 typedef struct EventTaskTag {
 	FwkMsgTask_t msgTask;
-	uint32_t timeStampBuffer[TOTAL_NUMBER_EVENTS];
-	uint32_t advertisingEvent;
-	uint32_t eventID;
-	uint32_t eventBufferRollover;
 } EventTaskObj_t;
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -58,12 +52,13 @@ K_THREAD_STACK_DEFINE(eventTaskStack, EVENT_TASK_STACK_DEPTH);
 K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
+/* Rolling id used to identify new events */
+static uint32_t event_task_event_id = 0;
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void EventTaskThread(void *, void *, void *);
-static uint32_t GetAdvertEventId(void);
-static uint32_t GetEventTimestamp(uint32_t id);
 static void SetDataloggerStatus(void);
 static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
@@ -105,78 +100,6 @@ void EventTask_Initialize(void)
 				EVENT_TASK_PRIORITY, 0, K_NO_WAIT);
 
 	k_thread_name_set(eventTaskObject.msgTask.pTid, THIS_FILE);
-
-	memset(eventTaskObject.timeStampBuffer, 0, TOTAL_NUMBER_EVENTS);
-	eventTaskObject.eventID = 0;
-	eventTaskObject.advertisingEvent = 0;
-	eventTaskObject.eventBufferRollover = 0;
-}
-
-void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event)
-{
-	uint16_t event_count = 0;
-	SensorEvent_t *read_event = (SensorEvent_t *)NULL;
-
-	/* This is the timestamp from the last published event */
-	static uint32_t last_timestamp = 0;
-	/* This is the index of the event last published for this timestamp */
-	static uint16_t last_index = 0;
-
-	/* Read the timestamp from the local log - we use this to determine
-	 * if the event is part of a set at the same timestamp or a new set
-	 * at a different timestamp.
-	 */
-	*id = GetAdvertEventId();
-	event->timestamp = GetEventTimestamp(*id);
-
-	/* Have we seen this timestamp before ? */
-	if (event->timestamp != last_timestamp) {
-		/* New set of events at this timestamp */
-		last_timestamp = event->timestamp;
-		/* First event published for this set */
-		last_index = 0;
-	} else {
-		/* We've seen this timestamp before, so
-		 * we can read the next event in the list
-		 */
-		last_index++;
-	}
-
-	/* Safe to read the event */
-	read_event = lcz_event_manager_get_next_event(event->timestamp,
-						      &event_count, last_index);
-	/* And copy the content across */
-	memcpy(event, read_event, sizeof(SensorEvent_t));
-}
-
-uint32_t EventTask_RemainingEvents(void)
-{
-	uint32_t numberEvents;
-	if (eventTaskObject.eventBufferRollover != 0) {
-		numberEvents =
-			TOTAL_NUMBER_EVENTS - eventTaskObject.advertisingEvent;
-	} else if (eventTaskObject.advertisingEvent < eventTaskObject.eventID) {
-		numberEvents = eventTaskObject.eventID -
-			       eventTaskObject.advertisingEvent;
-	} else {
-		numberEvents = 0;
-	}
-
-	return (numberEvents);
-}
-
-void EventTask_IncrementEventId(void)
-{
-	if (eventTaskObject.advertisingEvent < (TOTAL_NUMBER_EVENTS - 1)) {
-		eventTaskObject.advertisingEvent =
-			eventTaskObject.advertisingEvent + 1;
-	} else {
-		eventTaskObject.advertisingEvent = 0;
-		/*clear the rollover flag*/
-		eventTaskObject.eventBufferRollover = 0;
-		LOG_INF("#####Roll Count Reset");
-	}
-	LOG_INF("AdvertEvent Count = %d", eventTaskObject.advertisingEvent);
 }
 
 /******************************************************************************/
@@ -189,19 +112,6 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
-}
-
-static uint32_t GetAdvertEventId(void)
-{
-	return eventTaskObject.advertisingEvent;
-}
-static uint32_t GetEventTimestamp(uint32_t id)
-{
-	uint32_t timestamp = 0;
-	if (id < TOTAL_NUMBER_EVENTS) {
-		timestamp = eventTaskObject.timeStampBuffer[id];
-	}
-	return (timestamp);
 }
 
 static void SetDataloggerStatus(void)
@@ -217,27 +127,28 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
+	uint32_t local_timestamp;
 
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 
-	eventTaskObject.timeStampBuffer[eventTaskObject.eventID] =
-		lcz_event_manager_add_sensor_event(pEventMsg->eventType,
-						   &pEventMsg->eventData);
+	/* We always add events to the Event Manager for long term storage */
+	local_timestamp = lcz_event_manager_add_sensor_event(
+		pEventMsg->eventType, &pEventMsg->eventData);
 
-	//LOG_INF("Event Type (%d)", pEventMsg->eventType);
-	if (eventTaskObject.eventID < (TOTAL_NUMBER_EVENTS - 1)) {
-		eventTaskObject.eventID = eventTaskObject.eventID + 1;
-	} else {
-		eventTaskObject.eventID = 0;
-		eventTaskObject.eventBufferRollover =
-			eventTaskObject.eventBufferRollover + 1;
-		LOG_INF("****Roll Count = %d",
-			eventTaskObject.eventBufferRollover);
+	/* Now post the event to the BLE Task */
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
+		pMsgSend->header.txId = FWK_ID_EVENT_TASK;
+		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
+		pMsgSend->eventType = pEventMsg->eventType;
+		pMsgSend->eventData = pEventMsg->eventData;
+		pMsgSend->id = event_task_event_id++;
+		pMsgSend->timeStamp = local_timestamp;
+		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
-
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
-				      FMC_SENSOR_EVENT);
-
 	return DISPATCH_OK;
 }
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,

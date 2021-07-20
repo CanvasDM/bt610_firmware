@@ -37,10 +37,7 @@ LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
 #define MSEC_TO_UNITS(TIME, RESOLUTION) (((TIME)*1000) / (RESOLUTION))
 #define CODED_PHY_STRING "Coded"
 #define STANDARD_PHY_STRING "1M PHY"
-typedef struct {
-	SensorEvent_t event;
-	uint32_t id;
-} SensorMsg_t;
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -264,7 +261,7 @@ int Advertisement_IntervalUpdate(void)
 
 	return r;
 }
-int Advertisement_Update(void)
+int Advertisement_Update(SensorMsg_t *sensor_event)
 {
 	uint16_t networkId = 0;
 	uint8_t configVersion = 0;
@@ -274,14 +271,13 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
-	EventTask_GetCurrentEvent(&current.id, &current.event);
 
 	/* If no event was available, keep the last */
-	if (current.event.type != SENSOR_EVENT_RESERVED) {
-		ad.recordType = current.event.type;
-		ad.id = current.id;
-		ad.epoch = current.event.timestamp;
-		ad.data = current.event.data;
+	if (sensor_event->event.type != SENSOR_EVENT_RESERVED) {
+		ad.recordType = sensor_event->event.type;
+		ad.id = sensor_event->id;
+		ad.epoch = sensor_event->event.timestamp;
+		ad.data = sensor_event->event.data;
 	}
 
 	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,

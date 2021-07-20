@@ -40,10 +40,6 @@ extern "C" {
  */
 void EventTask_Initialize(void);
 
-void EventTask_GetCurrentEvent(uint32_t *id, SensorEvent_t *event);
-uint32_t EventTask_RemainingEvents(void);
-void EventTask_IncrementEventId(void);
-
 #ifdef __cplusplus
 }
 #endif

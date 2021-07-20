@@ -246,64 +246,6 @@ static int advertise(const struct shell *shell, size_t argc, char **argv)
 	return 0;
 }
 
-uint8_t data = 1;
-
-static int addEvent(const struct shell *shell, size_t argc, char **argv)
-{
-	ARG_UNUSED(argc);
-	ARG_UNUSED(argv);
-
-	shell_print(shell, "Adding an event . . .\n");
-
-	SensorEventData_t sensorEventData;
-
-	sensorEventData.u32 = data;
-
-	
-
-	SendDigitalInputStatus(1, 1);
-
-
-	//lcz_event_manager_add_sensor_event(data,
-	//				&sensorEventData);
-	//data++;
-	
-
-
-	return 0;
-}
-
-static int getEvent(const struct shell *shell, size_t argc, char **argv)
-{
-	ARG_UNUSED(argc);
-	ARG_UNUSED(argv);
-
-	shell_print(shell, "Getting an event . . .\n");
-
-	int timestamp = atoi(argv[1]);
-
-	SensorEvent_t *sensorEvent;
-	uint16_t count;
-	uint32_t id;
-
-	EventTask_GetCurrentEvent(&id, sensorEvent);
-
-
-
-	
-	//sensorEvent = lcz_event_manager_get_next_event(timestamp,
-	//					&count, 0);
-
-	if (sensorEvent == NULL){
-		shell_print(shell, "There is no event at that timestamp . . .\n");
-	}
-	else{
-		shell_print(shell, "Found %d events at that timestamp, with index 0 value %d . . .\n",
-				count,sensorEvent->data.u32);
-	}
-	return 0;
-}
-
 static int i2cpull(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
@@ -362,8 +304,6 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		  "Set <number of samples> <delay between samples (ms)>",
 		  configure),
 	SHELL_CMD(advertise, NULL, "Advertises . . .",advertise),
-	SHELL_CMD(addevent, NULL, "Adds an event . . .",addEvent),
-	SHELL_CMD(getevent, NULL, "Adds an event . . .",getEvent),
 	SHELL_CMD(i2cpull, NULL, "Configures I2C pullups . . .",i2cpull),
 
 	SHELL_SUBCMD_SET_END);
