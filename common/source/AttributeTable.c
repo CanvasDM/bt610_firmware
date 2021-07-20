@@ -437,7 +437,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.61",
+	.apiVersion = "1.62",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -531,7 +531,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     /* pystart - attribute table */
     [0  ] = { RW_ATTRS(sensorName)                    , s  , y, y, y, y, y, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [1  ] = { RW_ATTRS(sensorLocation)                , s  , y, y, y, y, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
-    [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, y, y, n, AttributeValidator_advin    , NULL                                      , .min.ux = 20.0      , .max.ux = 10000.0    },
+    [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, y, y, n, AttributeValidator_advin    , NULL                                      , .min.ux = 500.0     , .max.ux = 10000.0    },
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, y, y, n, AttributeValidator_advdur   , NULL                                      , .min.ux = 0.0       , .max.ux = 65535.0    },
     [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
     [5  ] = { RW_ATTRX(lock)                          , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
