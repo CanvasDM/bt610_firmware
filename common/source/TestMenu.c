@@ -278,28 +278,18 @@ static int getEvent(const struct shell *shell, size_t argc, char **argv)
 	ARG_UNUSED(argc);
 	ARG_UNUSED(argv);
 
-	shell_print(shell, "Getting an event . . .\n");
+	shell_print(shell, "Getting event . . .\n");
 
-	int timestamp = atoi(argv[1]);
+	SensorEvent_t sensorEvent;
 
-	SensorEvent_t *sensorEvent;
-	uint16_t count;
-	uint32_t id;
+	EventTask_GetCurrentEvent(&sensorEvent);
 
-	EventTask_GetCurrentEvent(&id, sensorEvent);
-
-
-
-	
-	//sensorEvent = lcz_event_manager_get_next_event(timestamp,
-	//					&count, 0);
-
-	if (sensorEvent == NULL){
-		shell_print(shell, "There is no event at that timestamp . . .\n");
+	if (sensorEvent.type == SENSOR_EVENT_RESERVED){
+		shell_print(shell, "No event available . . .\n");
 	}
 	else{
-		shell_print(shell, "Found %d events at that timestamp, with index 0 value %d . . .\n",
-				count,sensorEvent->data.u32);
+		shell_print(shell, "Found events with value %d . . .\n",
+				sensorEvent.data.u32);
 	}
 	return 0;
 }

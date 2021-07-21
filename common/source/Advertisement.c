@@ -274,7 +274,7 @@ int Advertisement_Update(void)
 	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
-	EventTask_GetCurrentEvent(&current.id, &current.event);
+	EventTask_GetCurrentEvent(&current.event);
 
 	/* If no event was available, keep the last */
 	if (current.event.type != SENSOR_EVENT_RESERVED) {
