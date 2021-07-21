@@ -83,12 +83,6 @@ static FwkMsgHandler_t EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /******************************************************************************/
 void EventTask_Initialize(void)
 {
-	/* Build the queue used to store a local list of events used in
-	 * advertisements.
-	 */
-	k_msgq_init(&event_task_advert_queue, event_task_advert_queue_buffer,
-		    sizeof(SensorEvent_t), EVENT_TASK_ADVERT_QUEUE_SIZE);
-
 	eventTaskObject.msgTask.rxer.id = FWK_ID_EVENT_TASK;
 	eventTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	eventTaskObject.msgTask.rxer.pMsgDispatcher = EventTaskMsgDispatcher;
