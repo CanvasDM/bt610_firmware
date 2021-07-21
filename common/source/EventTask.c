@@ -38,9 +38,6 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #define EVENT_TASK_QUEUE_DEPTH 32
 #endif
 
-/* This is the size of the queue used to store events locally */
-#define EVENT_TASK_ADVERT_QUEUE_SIZE 16
-
 typedef struct EventTaskTag {
 	FwkMsgTask_t msgTask;
 } EventTaskObj_t;
@@ -55,15 +52,8 @@ K_THREAD_STACK_DEFINE(eventTaskStack, EVENT_TASK_STACK_DEPTH);
 K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
-/* This is the local queue used to store an immediate log of events for
- * for advertisements. When full, additional events are still logged to
- * to the file system but discarded from inclusion in advertisements.
- */
-struct k_msgq event_task_advert_queue;
-
-/* Buffer used by the queue to store events locally for advertisements */
-char __aligned(4) event_task_advert_queue_buffer[EVENT_TASK_ADVERT_QUEUE_SIZE *
-						 sizeof(SensorEvent_t)];
+/* Rolling id used to identify new events */
+static uint32_t event_task_event_id = 0;
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -118,30 +108,6 @@ void EventTask_Initialize(void)
 	k_thread_name_set(eventTaskObject.msgTask.pTid, THIS_FILE);
 }
 
-void EventTask_GetCurrentEvent(SensorEvent_t *event)
-{
-	/* Check if there's an event in the queue */
-	if (EventTask_RemainingEvents()) {
-		/* Read out the next event */
-		k_msgq_get(&event_task_advert_queue, event, K_FOREVER);
-	} else {
-		/* If no new event is available, flag this to the caller
-		 * by setting the type to RESERVED.
-		 */
-		event->type = SENSOR_EVENT_RESERVED;
-	}
-}
-
-uint32_t EventTask_RemainingEvents(void)
-{
-	uint32_t numberEvents;
-
-	numberEvents = EVENT_TASK_ADVERT_QUEUE_SIZE -
-		       k_msgq_num_free_get(&event_task_advert_queue);
-
-	return (numberEvents);
-}
-
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -167,7 +133,6 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	SensorEvent_t local_event;
 	uint32_t local_timestamp;
 
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
@@ -176,19 +141,20 @@ static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	local_timestamp = lcz_event_manager_add_sensor_event(
 		pEventMsg->eventType, &pEventMsg->eventData);
 
-	/* If there's space, add this event to our local advert queue */
-	if (k_msgq_num_free_get(&event_task_advert_queue)) {
-		/* Store event details */
-		local_event.timestamp = local_timestamp;
-		local_event.type = pEventMsg->eventType;
-		local_event.data = pEventMsg->eventData;
-		/* Set event details in the advert queue */
-		k_msgq_put(&event_task_advert_queue, &local_event, K_NO_WAIT);
+	/* Now post the event to the BLE Task */
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
+		pMsgSend->header.txId = FWK_ID_EVENT_TASK;
+		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
+		pMsgSend->eventType = pEventMsg->eventType;
+		pMsgSend->eventData = pEventMsg->eventData;
+		pMsgSend->id = event_task_event_id++;
+		pMsgSend->timeStamp = local_timestamp;
+		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
-
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_EVENT_TASK, FWK_ID_BLE_TASK,
-				      FMC_SENSOR_EVENT);
-
 	return DISPATCH_OK;
 }
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,

@@ -20,6 +20,10 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
+typedef struct {
+	SensorEvent_t event;
+	uint32_t id;
+} SensorMsg_t;
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -40,7 +44,7 @@ int Advertisement_Init(void);
 int Advertisement_End(void);
 int Advertisement_Start(void);
 void Advertisement_ExtendedSet(bool status);
-int Advertisement_Update(void);
+int Advertisement_Update(SensorMsg_t *sensor_event);
 int Advertisement_IntervalUpdate(void);
 void SetPasskey(void);
 void TestEventMsg(uint16_t event);
