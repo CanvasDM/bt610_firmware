@@ -19,6 +19,39 @@ This project makes use of the following third-party components:
 
 # Firmware Versions
 
+# Application Version 1.22.5 (July 22, 2021)
+
+
+### Summary
+
+This release of the BT610 includes the following configurable features: analog inputs, digital inputs, thermistors, digital outputs. With some functional support for high current inputs, pressure inputs and ultrasonic input, high current inputs, pressure inputs and ultrasonic input, and I2C/SPI/UART configuration. 
+
+### Target Hardware
+
+The hardware is R5.0
+
+### Added
+
+### Changed
+
+-18828 Connection timeout removal
+
+### Fixed
+
+### Known Issues / Limitations
+
+-19282 Sensor name length being misreported 
+-19249 Normal, BT610 Advertising Issue (not advertising, or phy change) 
+-19248 Normal, Connection Failure, Unhandled ATT code 0x1d + Ignoring unexpected request. 
+-18881 internal timestamp seems to be rolling over around the 36 1/2 hour mark 
+-18806 BT610 will indicate the RX ring buffer is full 
+
+### Resource Documents
+
+- BT6ApiParams v1.54
+- BT610 Comm Spec v1.0
+- User Guide v1.0
+
 # Application Version 1.21.9 (July 21, 2021)
 
 

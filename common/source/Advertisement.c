@@ -363,6 +363,7 @@ void Advertisement_ExtendedSet(bool status)
 		}
 		/*Turn off extended adverts, enable standard*/
 		bt_le_ext_adv_delete(extendedAdv);
+		extendPhyEnbled = status;
 		CreateAdvertisingStandardParm();
 		Advertisement_Start();
 	} else if ((extendPhyEnbled == false) && (status == true)) {
@@ -371,13 +372,12 @@ void Advertisement_ExtendedSet(bool status)
 		}
 		/*Turn on extended adverts, disable standard adverts*/
 		bt_le_ext_adv_delete(adv);
+		extendPhyEnbled = status;
 		CreateAdvertisingExtendedParm();
 		Advertisement_Start();
 	} else {
 		/* Nothing to do here already configured */
-	}
-
-	extendPhyEnbled = status;
+	}	
 }
 void SetPasskey(void)
 {
@@ -416,6 +416,7 @@ void CreateAdvertisingParm(void)
 		extendPhyEnbled = true;
 	} else {
 		CreateAdvertisingStandardParm();
+		extendPhyEnbled = false;
 	}
 }
 
