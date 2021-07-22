@@ -3155,7 +3155,9 @@
               "x-ctype": "uint8_t",
               "x-default": "60",
               "x-example": "30",
+              "x-validator": "cp8",
               "x-lockable": true,
+              "x-broadcast": true,
               "x-writeable": true,
               "x-readable": true,
               "x-deprecated": true
