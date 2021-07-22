@@ -112,21 +112,16 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
-static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
-						 FwkMsg_t *pMsg);
 static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
 static int UpdateName(void);
-static void ConnectionTimerStart(void);
-static void ConnectionTimerRestart(void);
 static void TransmitPower(void);
 static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
-static void ConnectionTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 
@@ -134,10 +129,8 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
-static struct k_timer connectionTimer;
 static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
-static bool duration_timer_expired = true;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -179,7 +172,6 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
-	case FMC_BLE_END_CONNECTION:          return ConnectionTimeoutHandler;
 	case FMC_SENSOR_EVENT:                return BleSensorEventMsgHandler;
 	case FMC_SENSOR_UPDATE:               return BleSensorUpdateMsgHandler;
 	default:                              return NULL;
@@ -289,7 +281,6 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
 	uint8_t activeMode = 0;
 
-	k_timer_init(&connectionTimer, ConnectionTimerCallbackIsr, NULL);
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
 	k_timer_init(&bootAdvertTimer, BootAdvertTimerCallbackIsr, NULL);
 	r = BluetoothInit();
@@ -363,9 +354,6 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		case ATTR_INDEX_advertisingInterval:
 			Advertisement_IntervalUpdate();
 			break;
-		case ATTR_INDEX_connectionTimeoutSec:
-			ConnectionTimerRestart();
-			break;
 		case ATTR_INDEX_txPower:
 			TransmitPower();
 			break;
@@ -427,14 +415,6 @@ static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t ConnectionTimeoutHandler(FwkMsgReceiver_t *pMsgRxer,
-						 FwkMsg_t *pMsg)
-{
-	RequestDisconnect(bto.conn);
-
-	return DISPATCH_OK;
-}
-
 static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg)
 {
@@ -489,8 +469,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		/*Set the power for the connection*/
 		TransmitPower();
 
-		ConnectionTimerStart();
-
 		/*Pause the duration timer if it is running*/
 		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
 		k_timer_stop(&durationTimer);
@@ -535,25 +513,6 @@ static int UpdateName(void)
 		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
 	}
 	return r;
-}
-
-static void ConnectionTimerStart(void)
-{
-	uint32_t timeoutSeconds = 0;
-
-	Attribute_Get(ATTR_INDEX_connectionTimeoutSec, &timeoutSeconds,
-		      sizeof(timeoutSeconds));
-
-	if (timeoutSeconds != 0) {
-		k_timer_start(&connectionTimer, K_SECONDS(timeoutSeconds),
-			      K_NO_WAIT);
-	} else if (timeoutSeconds == 0) {
-		k_timer_stop(&connectionTimer);
-	}
-}
-static void ConnectionTimerRestart(void)
-{
-	ConnectionTimerStart();
 }
 
 static void TransmitPower(void)
@@ -703,12 +662,6 @@ static uint32_t GetAdvertisingDuration(void)
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-static void ConnectionTimerCallbackIsr(struct k_timer *timer_id)
-{
-	UNUSED_PARAMETER(timer_id);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-				      FMC_BLE_END_CONNECTION);
-}
 static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
