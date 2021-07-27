@@ -518,15 +518,15 @@ static void led_blink(ledColors_t color,
 		      struct lcz_led_blink_pattern const *pPattern)
 {
 	if (color == LED_COLOR_GREEN) {
-		led_off(LED_COLOR_RED);
+		led_off(LED_COLOR_NONE);
 		lcz_led_blink(GREEN_LED, pPattern);
 	}
 
 	else if (color == LED_COLOR_RED) {
-		led_off(LED_COLOR_GREEN);
+		led_off(LED_COLOR_NONE);
 		lcz_led_blink(RED_LED, pPattern);
 	} else if (color == LED_COLOR_AMBER) {
-		led_off(LED_COLOR_AMBER);
+		led_off(LED_COLOR_NONE);
 		lcz_led_blink(RED_LED, pPattern);
 		lcz_led_blink(GREEN_LED, pPattern);
 	} else {
@@ -538,15 +538,14 @@ static void led_blink(ledColors_t color,
 static void led_on(ledColors_t color)
 {
 	if (color == LED_COLOR_GREEN) {
-		led_off(LED_COLOR_RED);
+		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(GREEN_LED);
 	}
-
 	else if (color == LED_COLOR_RED) {
-		led_off(LED_COLOR_GREEN);
+		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(RED_LED);
 	} else if (color == LED_COLOR_AMBER) {
-		led_off(LED_COLOR_AMBER);
+		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(GREEN_LED);
 		lcz_led_turn_on(RED_LED);
 	}
@@ -562,7 +561,7 @@ static void led_off(ledColors_t color)
 	else if (color == LED_COLOR_RED) {
 		lcz_pwm_led_off(RED_LED);
 		lcz_led_turn_off(RED_LED);
-	} else if (color == LED_COLOR_AMBER) {
+	} else if ((color == LED_COLOR_NONE) || (color == LED_COLOR_AMBER)) {
 		/*Both LEDs will be turned off*/
 		lcz_pwm_led_off(GREEN_LED);
 		lcz_led_turn_off(GREEN_LED);
