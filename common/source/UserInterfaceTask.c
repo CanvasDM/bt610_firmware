@@ -55,6 +55,13 @@ typedef enum {
 	BUTTON_CFG_ID_COUNT
 } button_cfg_id;
 
+typedef enum {
+	LED_COLOR_RED = 0,
+	LED_COLOR_GREEN,
+	LED_COLOR_AMBER,
+	LED_COLOR_NONE
+}ledColors_t;
+
 /******************************************************************************/
 /* Button Configuration                                                       */
 /******************************************************************************/
@@ -131,6 +138,9 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 
+static void led_blink(ledColors_t color, struct lcz_led_blink_pattern const *pPattern);
+static void led_on(ledColors_t color);
+static void led_off(ledColors_t color);
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
 static void green_led_on(void);
 static void green_led_off(void);
@@ -480,12 +490,13 @@ static void TamperSwitchStatus(void)
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
 			SensorEventData_t eventTamper;
-			lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+			//lcz_led_blink(RED_LED, &TAMPER_PATTERN);
+			led_blink(LED_COLOR_RED, &TAMPER_PATTERN);
 			/*Send Event Message*/
 			eventTamper.u16 = v;
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
 		} else {
-			lcz_led_turn_off(RED_LED);
+			led_off(LED_COLOR_RED);
 		}
 	}
 }
@@ -503,6 +514,79 @@ static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
 }
+static void led_blink(ledColors_t color, struct lcz_led_blink_pattern const *pPattern)
+{
+	if(color == LED_COLOR_GREEN)
+	{
+		led_off(LED_COLOR_RED);
+		lcz_led_blink(GREEN_LED, pPattern);
+	}
+	
+	else if(color == LED_COLOR_RED)
+	{
+		led_off(LED_COLOR_GREEN);
+		lcz_led_blink(RED_LED, pPattern);
+	}
+	else if(color == LED_COLOR_AMBER)
+	{
+		led_off(LED_COLOR_AMBER);
+		lcz_led_blink(RED_LED, pPattern);
+		lcz_led_blink(GREEN_LED, pPattern);
+	}
+	else
+	{
+		/* Turn all LEDs off */
+		led_off(LED_COLOR_AMBER);
+	}
+	
+	
+}
+
+static void led_on(ledColors_t color)
+{
+	if(color == LED_COLOR_GREEN)
+	{
+		led_off(LED_COLOR_RED);
+		lcz_led_turn_on(GREEN_LED);
+	}
+	
+	else if(color == LED_COLOR_RED)
+	{
+		led_off(LED_COLOR_GREEN);
+		lcz_led_turn_on(RED_LED);
+	}
+	else if(color == LED_COLOR_AMBER)
+	{
+		led_off(LED_COLOR_AMBER);
+		lcz_led_turn_on(GREEN_LED);
+		lcz_led_turn_on(RED_LED);
+	}
+}
+
+static void led_off(ledColors_t color)
+{
+	if(color == LED_COLOR_GREEN)
+	{
+		lcz_pwm_led_off(GREEN_LED);
+		lcz_led_turn_off(GREEN_LED);
+	}
+	
+	else if(color == LED_COLOR_RED)
+	{
+		lcz_pwm_led_off(RED_LED);
+		lcz_led_turn_off(RED_LED);
+	}
+	else if(color == LED_COLOR_AMBER)
+	{
+		/*Both LEDs will be turned off*/
+		lcz_pwm_led_off(GREEN_LED);
+		lcz_led_turn_off(GREEN_LED);
+		lcz_pwm_led_off(RED_LED);
+		lcz_led_turn_off(RED_LED);
+	}
+
+}
+
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
 static void green_led_on(void)
 {
@@ -522,7 +606,6 @@ static void red_led_on(void)
 static void red_led_off(void)
 {
 	lcz_pwm_led_off(RED_LED);
-	//lcz_led_turn_off(RED_LED);
 }
 #endif
 
@@ -531,9 +614,8 @@ static Dispatch_t AliveMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 1");
-	/* yellow */
-	lcz_led_blink(GREEN_LED, &ALIVE_PATTERN);
-	lcz_led_blink(RED_LED, &ALIVE_PATTERN);
+	/* Amber */
+	led_blink(LED_COLOR_AMBER, &ALIVE_PATTERN);
 	return DISPATCH_OK;
 }
 
@@ -551,7 +633,7 @@ static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-	lcz_led_turn_on(GREEN_LED);
+	led_on(LED_COLOR_GREEN);
 	return DISPATCH_OK;
 }
 
@@ -559,8 +641,8 @@ static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-	lcz_led_turn_off(GREEN_LED);
-	lcz_led_turn_off(RED_LED);
+	/*Turning off Amber turns off both LEDs*/
+	led_off(LED_COLOR_AMBER);
 	return DISPATCH_OK;
 }
 
@@ -569,7 +651,7 @@ static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-	lcz_led_blink(GREEN_LED, &EXIT_SHELF_MODE_PATTERN);
+	led_blink(LED_COLOR_GREEN, &EXIT_SHELF_MODE_PATTERN);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 	Advertisement_ExtendedSet(false);				  
@@ -585,15 +667,14 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	Attribute_Get(ATTR_INDEX_factoryResetEnable, &factoryResetEnabled,
 			    sizeof(factoryResetEnabled));
 	if (factoryResetEnabled == 1) {
-		/* yellow */
-		lcz_led_blink(GREEN_LED, &FACTORY_RESET_PATTERN);
-		lcz_led_blink(RED_LED, &FACTORY_RESET_PATTERN);
+		/* Amber */
+		led_blink(LED_COLOR_AMBER, &FACTORY_RESET_PATTERN);
 		/* Forward to control task (instead of broadcasting from ISR) */
 		FRAMEWORK_MSG_SEND_TO(FWK_ID_CONTROL_TASK, pMsg);
 		result = DISPATCH_DO_NOT_FREE;
 	} else {
 		/* red, do not perform reset */
-		lcz_led_blink(RED_LED, &FACTORY_RESET_PATTERN);
+		led_blink(LED_COLOR_RED, &FACTORY_RESET_PATTERN);
 		result = DISPATCH_OK;
 	}
 
