@@ -125,6 +125,9 @@ static uint32_t GetAdvertisingDuration(void);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 
+static void le_param_updated(struct bt_conn *conn, uint16_t interval, uint16_t latency, uint16_t timeout);
+static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param);
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -140,6 +143,8 @@ K_MSGQ_DEFINE(bleTaskQueue, FWK_QUEUE_ENTRY_SIZE, BLE_TASK_QUEUE_DEPTH,
 static struct bt_conn_cb connectionCallbacks = {
 	.connected = ConnectedCallback,
 	.disconnected = DisconnectedCallback,
+	.le_param_updated = le_param_updated,
+	.le_param_req = le_param_req,
 };
 
 #if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
@@ -678,4 +683,19 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 					      FMC_BLE_END_ADVERTISING);
 	}
+}
+
+static void le_param_updated(struct bt_conn *conn, uint16_t interval, uint16_t latency, uint16_t timeout)
+{
+	LOG_ERR("Got an LE Param Updated! Interval = %d Latency = %d Timeout = %d", interval, latency, timeout);
+}
+
+static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
+{
+	LOG_ERR("Got an LE Param Update Request!");
+	
+	//param->timeout = 500;
+
+
+	return(true);
 }

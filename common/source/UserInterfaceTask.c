@@ -486,15 +486,23 @@ static int InitializeButtons(void)
 static void TamperSwitchStatus(void)
 {
 	int v = BSP_PinGet(SW2_PIN);
+	uint8_t activeMode = 0;
 	if (v >= 0) {
 		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
 			SensorEventData_t eventTamper;
-			led_blink(LED_COLOR_RED, &TAMPER_PATTERN);
 			/*Send Event Message*/
 			eventTamper.u16 = v;
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
+
+			/* Only turn on LED when in active mode */
+			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
+				      sizeof(activeMode));
+			if (activeMode) {
+				led_blink(LED_COLOR_RED, &TAMPER_PATTERN);
+			}
+
 		} else {
 			led_off(LED_COLOR_RED);
 		}
@@ -540,8 +548,7 @@ static void led_on(ledColors_t color)
 	if (color == LED_COLOR_GREEN) {
 		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(GREEN_LED);
-	}
-	else if (color == LED_COLOR_RED) {
+	} else if (color == LED_COLOR_RED) {
 		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(RED_LED);
 	} else if (color == LED_COLOR_AMBER) {
