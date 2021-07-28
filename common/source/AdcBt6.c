@@ -548,11 +548,11 @@ int AdcBt6_ConfigAinSelects(void)
 
 	adcObj.expander.bits.ain_sel = 0;
 	size_t i;
-	uint32_t config;
+	analogConfigType_t config;
 	for (i = 0; i < ANALOG_INPUT_NUMBER_OF_CHANNELS; i++) {
 		config = Attribute_AltGetUint32(ATTR_INDEX_analogInput1Type + i,
 						0);
-		if (config == ANALOG_INPUT_CURRENT) {
+		if (config == ANALOG_CURRENT) {
 			adcObj.expander.bits.ain_sel |= (1 << i);
 		}
 	}

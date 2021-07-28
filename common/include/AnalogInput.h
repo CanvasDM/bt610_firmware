@@ -22,17 +22,6 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-typedef enum AnalogInput {
-	ANALOG_INPUT_UNUSED = 0,
-	ANALOG_INPUT_VOLTAGE,
-	ANALOG_INPUT_CURRENT,
-	ANALOG_INPUT_PRESSURE,
-	ANALOG_INPUT_ULTRASONIC,
-	ANALOG_INPUT_ACCURRENT_20A,
-	ANALOG_INPUT_ACCURRENT_150A,
-	ANALOG_INPUT_ACCURRENT_500A
-} AnalogInput_t;
-
 #define ANALOG_INPUTS_MAX_PRESSURE_SENSORS 2
 #define ANALOG_INPUTS_MAX_PRESSURE_SENSORS_WITH_ULTRASONIC 1
 #define ANALOG_INPUTS_MAX_ULTRASONIC 1

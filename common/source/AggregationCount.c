@@ -132,23 +132,28 @@ static void EventTypeHandler(SensorEventType_t eventType, float data)
 }
 static void AnalogConfigType(size_t channel, float analogValue)
 {
-	AnalogInput_t configType;
+	analogConfigType_t configType;
 	SensorEventType_t eventType;
 	Attribute_Get((ATTR_INDEX_analogInput1Type + channel), &configType,
 		      sizeof(uint8_t));
 
 	switch (configType) {
-	case ANALOG_INPUT_VOLTAGE:
+	case ANALOG_VOLTAGE:
 		eventType = SENSOR_EVENT_VOLTAGE_1 + channel;
 		break;
-	case ANALOG_INPUT_CURRENT:
+	case ANALOG_CURRENT:
 		eventType = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
-	case ANALOG_INPUT_PRESSURE:
+	case ANALOG_PRESSURE:
 		eventType = SENSOR_EVENT_PRESSURE_1 + channel;
 		break;
-	case ANALOG_INPUT_ULTRASONIC:
+	case ANALOG_ULTRASONIC:
 		eventType = SENSOR_EVENT_ULTRASONIC_1;
+		break;
+	case ANALOG_Current20A:
+	case ANALOG_Current150A:
+	case ANALOG_Current500A:
+		eventType = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
 	default:
 		/*should not get here but just in case still return something*/
