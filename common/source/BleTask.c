@@ -86,10 +86,10 @@ typedef enum {
 	POWER_LEVEL_MIN_40,
 } TxPowerLevel_t;
 
-/* When the Advertising Duration is set to zero by the user, we scale it
- * against the Advertising Interval by this amount.
+/* The Advertising Duration must always be this times greater than the
+ * Advertising Interval.
  */
-#define BLE_TASK_ADV_DUR_AT_ZERO_SCALE 15
+#define BLE_TASK_ADV_DUR_SCALE 4
 
 /* This is the size of the queue used to store events locally */
 #define BLE_TASK_ADVERT_QUEUE_SIZE 32
@@ -646,16 +646,19 @@ static uint32_t GetAdvertisingDuration(void)
 				  sizeof(advertising_interval)) ==
 		    sizeof(advertising_interval)) {
 			get_failed = false;
-			if (advertising_duration == 0) {
-				advertising_duration =
-					advertising_interval *
-					BLE_TASK_ADV_DUR_AT_ZERO_SCALE;
+			/* If the Duration is less than BLE_TASK_ADV_DUR_SCALE
+			 * times the Interval, clamp it to that value.
+			 */
+			if (advertising_duration <
+			    (advertising_interval * BLE_TASK_ADV_DUR_SCALE)) {
+				advertising_duration = advertising_interval *
+						       BLE_TASK_ADV_DUR_SCALE;
 			}
 		}
 	}
 	if (get_failed) {
 		/* If either get failed exit with the max duration */
-		advertising_duration = UINT16_MAX;		
+		advertising_duration = UINT16_MAX;
 	}
 	return ((uint32_t)(advertising_duration));
 }

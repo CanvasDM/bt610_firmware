@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.65",
+    "version": "1.66",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -1210,8 +1210,7 @@
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true,
-              "x-validator": "advin"
+              "x-readable": true
             }
           },
           {
@@ -1233,8 +1232,7 @@
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true,
-              "x-validator": "advdur"
+              "x-readable": true
             }
           },
           {
@@ -3043,7 +3041,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.65",
+              "x-default": "1.66",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,

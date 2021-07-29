@@ -345,10 +345,6 @@ int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue, size_t 
 			    bool DoWrite);
 int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
 			    bool DoWrite);
-int AttributeValidator_advin(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_advdur(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
 
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */

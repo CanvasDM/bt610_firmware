@@ -24,11 +24,6 @@ LOG_MODULE_REGISTER(attrval, LOG_LEVEL_DBG);
 #include "UserInterfaceTask.h"
 
 /******************************************************************************/
-/* Global Constants, Macros and Type Definitions                              */
-/******************************************************************************/
-#define ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE 4
-
-/******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
 extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
@@ -36,8 +31,6 @@ extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static bool validate_interval_and_duration(uint16_t advertising_interval,
-					   uint16_t advertising_duration);
 static int validate_analog_input_config(void);
 
 /******************************************************************************/
@@ -747,78 +740,6 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
 	return (r);
-}
-
-int AttributeValidator_advin(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
-{
-	int r = -EPERM;
-	uint16_t advertising_duration;
-	AttributeEntry_t *attribute_entry;
-
-	/* Check business rules on second pass when DoWrite is set */
-	if (DoWrite) {
-		/* Get the Advertising Duration value */
-		attribute_entry = &attrTable[ATTR_INDEX_advertisingDuration];
-		advertising_duration = *((uint16_t *)(attribute_entry->pData));
-		/* Check it's allowed */
-		if (validate_interval_and_duration(*((uint16_t *)(pValue)),
-						   advertising_duration)) {
-			/* OK to set the value */
-			pEntry->modified = true;
-			*((uint16_t *)pEntry->pData) = *((uint16_t *)(pValue));
-			r = 0;
-		}
-	} else {
-		/* For the initial pass, just use the standard validator */
-		r = AttributeValidator_uint16(pEntry, pValue, Length, false);
-	}
-	return (r);
-}
-
-int AttributeValidator_advdur(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
-{
-	int r = -EPERM;
-	uint16_t advertising_interval;
-	AttributeEntry_t *attribute_entry;
-
-	/* Check business rules on second pass when DoWrite is set */
-	if (DoWrite) {
-		/* Get Interval value */
-		attribute_entry = &attrTable[ATTR_INDEX_advertisingInterval];
-		advertising_interval = *((uint16_t *)(attribute_entry->pData));
-		/* Check if the Duration value is allowed */
-		if (validate_interval_and_duration(advertising_interval,
-						   *((uint16_t *)(pValue)))) {
-			/* This Duration is OK to use */
-			pEntry->modified = true;
-			*((uint16_t *)pEntry->pData) = *((uint16_t *)(pValue));
-			r = 0;
-		}
-	} else {
-		/* For the initial pass, just use the standard validator */
-		r = AttributeValidator_uint16(pEntry, pValue, Length, false);
-	}
-	return (r);
-}
-
-static bool validate_interval_and_duration(uint16_t advertising_interval,
-					   uint16_t advertising_duration)
-{
-	bool result = true;
-
-	/* We need to ensure the Duration is at least
-	 * ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE x the Advertising
-	 * Interval
-	 */
-	if (advertising_duration <
-	    (advertising_interval *
-	     ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE)) {
-		/* Can't use this combination */
-		result = false;
-	}
-	return (result);
 }
 
 /******************************************************************************/
