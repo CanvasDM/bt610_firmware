@@ -557,6 +557,9 @@ static void SensorConfigChange(bool bootup)
 	uint32_t configurationType;
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
 
+	/*Clear the Aggregation queue on event type change*/
+	AggregationPurgeQueueHandler();
+	
 	switch (configurationType) {
 	case CONFIG_UNDEFINED:
 		/*Disable all the thermistors*/
@@ -888,21 +891,21 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 			*result = AdcBt6_ConvertUltrasonic(channel, raw);
 		}
 		break;
-	case ANALOG_Current20A:
+	case ANALOG_CURRENT20A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent20(channel, raw);
 		}
 		break;
-	case ANALOG_Current150A:
+	case ANALOG_CURRENT150A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent150(channel, raw);
 		}
 		break;
-	case ANALOG_Current500A:
+	case ANALOG_CURRENT500A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {

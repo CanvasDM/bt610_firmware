@@ -48,6 +48,10 @@ int AggregationTempHandler(size_t channel, float value);
  * @retval negative error code, 0 on success
  */
 int AggregationAnalogHandler(size_t channel, float value);
+/**
+ * @brief Wipe out the data in the aggregation Queue
+ */
+void AggregationPurgeQueueHandler(void);
 
 #ifdef __cplusplus
 }
