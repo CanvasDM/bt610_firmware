@@ -808,18 +808,15 @@ static bool validate_interval_and_duration(uint16_t advertising_interval,
 {
 	bool result = true;
 
-	/* If the Duration is greater than 0, we need to ensure it's at least
+	/* We need to ensure the Duration is at least
 	 * ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE x the Advertising
 	 * Interval
 	 */
-	if (advertising_duration > 0) {
-		/* Make sure the new value adheres to this */
-		if (advertising_duration <
-		    (advertising_interval *
-		     ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE)) {
-			/* Can't use this combination */
-			result = false;
-		}
+	if (advertising_duration <
+	    (advertising_interval *
+	     ATTRIBUTE_VALIDATOR_ADV_DUR_NON_ZERO_SCALE)) {
+		/* Can't use this combination */
+		result = false;
 	}
 	return (result);
 }
