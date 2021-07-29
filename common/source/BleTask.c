@@ -423,9 +423,9 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 	uint8_t activeMode = 0;
 
-	/* Only store events when in active mode */
+	/* Only store events when in active mode and not in a connection */
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if (activeMode) {
+	if ((activeMode) && (bto.conn == NULL)) {
 		/* If there's space, add this event to our local advert queue */
 		if (k_msgq_num_free_get(&ble_task_advert_queue)) {
 			/* Store event details */
@@ -434,9 +434,11 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			local_event.event.data = pEventMsg->eventData;
 			local_event.id = pEventMsg->id;
 			/* Set event details in the advert queue */
-			k_msgq_put(&ble_task_advert_queue, &local_event, K_NO_WAIT);
+			k_msgq_put(&ble_task_advert_queue, &local_event,
+				   K_NO_WAIT);
 			/* And update the advertisement */
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK,
+						      FWK_ID_BLE_TASK,
 						      FMC_SENSOR_UPDATE);
 			LOG_DBG("Added Event to advert queue!");
 		}
@@ -483,6 +485,12 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
 		lbt_get_hci_err_string(reason));
+
+	/* Purge the advertising event queue so out of
+	 * date events are not broadcast.
+	 */
+	k_msgq_purge(&ble_task_advert_queue);
+
 	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
 
