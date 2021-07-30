@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.65",
+    "version": "1.67",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -1215,7 +1215,7 @@
           },
           {
             "name": "advertisingDuration",
-            "summary": "Advertising duration of an event in milliseconds. Must be 4x greater than the Interval when non-zero. When zero, is 15x the Interval.",
+            "summary": "Advertising duration of an event in milliseconds. Must be 4x greater than the Interval.",
             "required": true,
             "x-id": 3,
             "x-groupid": 65,
@@ -1223,7 +1223,7 @@
               "type": "integer",
               "minimumlength": 0,
               "maximumlength": 0,
-              "minimum": 0.0,
+              "minimum": 2000.0,
               "maximum": 65535.0,
               "x-ctype": "uint16_t",
               "x-default": "15000",
@@ -1232,8 +1232,7 @@
               "x-broadcast": true,
               "x-savable": true,
               "x-writeable": true,
-              "x-readable": true,
-              "x-validator": "advdur"
+              "x-readable": true
             }
           },
           {
@@ -3042,7 +3041,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.65",
+              "x-default": "1.67",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,

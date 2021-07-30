@@ -86,10 +86,10 @@ typedef enum {
 	POWER_LEVEL_MIN_40,
 } TxPowerLevel_t;
 
-/* When the Advertising Duration is set to zero by the user, we scale it
- * against the Advertising Interval by this amount.
+/* The Advertising Duration must always be this times greater than the
+ * Advertising Interval.
  */
-#define BLE_TASK_ADV_DUR_AT_ZERO_SCALE 15
+#define BLE_TASK_ADV_DUR_SCALE 4
 
 /* This is the size of the queue used to store events locally */
 #define BLE_TASK_ADVERT_QUEUE_SIZE 32
@@ -427,9 +427,9 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 	uint8_t activeMode = 0;
 
-	/* Only store events when in active mode */
+	/* Only store events when in active mode and not in a connection */
 	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if (activeMode) {
+	if ((activeMode) && (bto.conn == NULL)) {
 		/* If there's space, add this event to our local advert queue */
 		if (k_msgq_num_free_get(&ble_task_advert_queue)) {
 			/* Store event details */
@@ -438,9 +438,11 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			local_event.event.data = pEventMsg->eventData;
 			local_event.id = pEventMsg->id;
 			/* Set event details in the advert queue */
-			k_msgq_put(&ble_task_advert_queue, &local_event, K_NO_WAIT);
+			k_msgq_put(&ble_task_advert_queue, &local_event,
+				   K_NO_WAIT);
 			/* And update the advertisement */
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK,
+						      FWK_ID_BLE_TASK,
 						      FMC_SENSOR_UPDATE);
 			LOG_DBG("Added Event to advert queue!");
 		}
@@ -487,6 +489,12 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
 		lbt_get_hci_err_string(reason));
+
+	/* Purge the advertising event queue so out of
+	 * date events are not broadcast.
+	 */
+	k_msgq_purge(&ble_task_advert_queue);
+
 	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
 
@@ -650,16 +658,19 @@ static uint32_t GetAdvertisingDuration(void)
 				  sizeof(advertising_interval)) ==
 		    sizeof(advertising_interval)) {
 			get_failed = false;
-			if (advertising_duration == 0) {
-				advertising_duration =
-					advertising_interval *
-					BLE_TASK_ADV_DUR_AT_ZERO_SCALE;
+			/* If the Duration is less than BLE_TASK_ADV_DUR_SCALE
+			 * times the Interval, clamp it to that value.
+			 */
+			if (advertising_duration <
+			    (advertising_interval * BLE_TASK_ADV_DUR_SCALE)) {
+				advertising_duration = advertising_interval *
+						       BLE_TASK_ADV_DUR_SCALE;
 			}
 		}
 	}
 	if (get_failed) {
 		/* If either get failed exit with the max duration */
-		advertising_duration = UINT16_MAX;		
+		advertising_duration = UINT16_MAX;
 	}
 	return ((uint32_t)(advertising_duration));
 }
