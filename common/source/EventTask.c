@@ -20,6 +20,7 @@ LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #include "EventTask.h"
 #include "Flags.h"
 #include "Attribute.h"
+#include "Advertisement.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 
@@ -60,10 +61,13 @@ static uint32_t event_task_event_id = 0;
 /******************************************************************************/
 static void EventTaskThread(void *, void *, void *);
 static void SetDataloggerStatus(void);
-static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
+static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						   FwkMsg_t *pMsg);						   
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg);
+static void SendEventDataAdvert(SensorMsg_t *sensor_event);						   
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -72,7 +76,8 @@ static FwkMsgHandler_t EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	/* clang-format off */
 	switch (MsgCode) {
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
-	case FMC_EVENT_TRIGGER:       return EventTriggerMsgHandler;
+	case FMC_EVENT_TRIGGER:       return EventLogTimeStampMsgHandler;
+	case FMC_AGGREGATION_EVENT:   return EventNoTimeStampMsgHandler;
 	case FMC_ATTR_CHANGED:        return EventAttrChangedMsgHandler;
 	default:                      return NULL;
 	}
@@ -123,34 +128,39 @@ static void SetDataloggerStatus(void)
 	lcz_event_manager_set_logging_state(dataLogEnable);
 }
 
-static DispatchResult_t EventTriggerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg)
+static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						    FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	uint32_t local_timestamp;
+	SensorMsg_t eventData;
 
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
 
+	eventData.event.type = pEventMsg->eventType;
+	eventData.event.data = pEventMsg->eventData;
+
 	/* We always add events to the Event Manager for long term storage */
-	local_timestamp = lcz_event_manager_add_sensor_event(
+	eventData.event.timestamp = lcz_event_manager_add_sensor_event(
 		pEventMsg->eventType, &pEventMsg->eventData);
 
-	/* Now post the event to the BLE Task */
-	EventLogMsg_t *pMsgSend =
-		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
-
-	if (pMsgSend != NULL) {
-		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
-		pMsgSend->header.txId = FWK_ID_EVENT_TASK;
-		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
-		pMsgSend->eventType = pEventMsg->eventType;
-		pMsgSend->eventData = pEventMsg->eventData;
-		pMsgSend->id = event_task_event_id++;
-		pMsgSend->timeStamp = local_timestamp;
-		FRAMEWORK_MSG_SEND(pMsgSend);
-	}
+	SendEventDataAdvert(&eventData);
 	return DISPATCH_OK;
 }
+static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						   FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	SensorMsg_t eventData;
+	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
+
+	eventData.event.type = pEventMsg->eventType;
+	eventData.event.data = pEventMsg->eventData;
+	eventData.event.timestamp = pEventMsg->timeStamp;
+
+	SendEventDataAdvert(&eventData);
+	return DISPATCH_OK;
+}
+
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg)
 {
@@ -168,4 +178,21 @@ static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		}
 	}
 	return DISPATCH_OK;
+}
+static void SendEventDataAdvert(SensorMsg_t *sensor_event)
+{
+	/* Now post the event to the BLE Task */
+	EventLogMsg_t *pMsgSend =
+		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+	if (pMsgSend != NULL) {
+		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
+		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
+		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
+		pMsgSend->eventType = sensor_event->event.type;
+		pMsgSend->eventData = sensor_event->event.data;
+		pMsgSend->id = event_task_event_id++;
+		pMsgSend->timeStamp = sensor_event->event.timestamp;
+		FRAMEWORK_MSG_SEND(pMsgSend);
+	}
 }

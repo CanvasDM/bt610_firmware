@@ -42,9 +42,8 @@ static void EventTypeHandler(SensorEventType_t eventType, float data);
 static void AggregationEventTrigger(SensorMsg_t *sensor_event);
 static SensorEventType_t AnalogConfigType(size_t channel);
 
-/* This is the local queue used to store an immediate log of events for
- * for advertisements. When full, additional events are still logged to
- * to the file system but discarded from inclusion in advertisements.
+/* This is the local queue used to store thermistor measurements 
+* used in the aggragation count.
  */
 K_MSGQ_DEFINE(aggregation_timestamp_queue, sizeof(SensorMsg_t),
 	      AGGREGATION_MAX_SIZE, FWK_QUEUE_ALIGNMENT);
@@ -80,8 +79,6 @@ int AggregationTempHandler(size_t channel, float value)
 						lcz_event_manager_add_sensor_event(
 							Tempevent.event.type,
 							&Tempevent.event.data);
-
-					Tempevent.id = currentAggregationNumber;
 
 					currentAggregationNumber =
 						currentAggregationNumber + 1;
@@ -157,12 +154,12 @@ static void AggregationEventTrigger(SensorMsg_t *sensor_event)
 		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
 
 	if (pMsgSend != NULL) {
-		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
+		pMsgSend->header.msgCode = FMC_AGGREGATION_EVENT;
 		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
-		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
+		pMsgSend->header.rxId = FWK_ID_EVENT_TASK;
 		pMsgSend->eventType = sensor_event->event.type;
 		pMsgSend->eventData = sensor_event->event.data;
-		pMsgSend->id = sensor_event->id;
+		pMsgSend->id = 0;
 		pMsgSend->timeStamp = sensor_event->event.timestamp;
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
