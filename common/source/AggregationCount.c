@@ -38,8 +38,6 @@ LOG_MODULE_REGISTER(AggregationCount, LOG_LEVEL_DBG);
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
-//float temperatureBuffer[TOTAL_THERM_CH][AGGREGATION_MAX_SIZE];
-float analogBuffer[TOTAL_ANALOG_CH][AGGREGATION_MAX_SIZE];
 static void EventTypeHandler(SensorEventType_t eventType, float data);
 static void AggregationEventTrigger(SensorMsg_t *sensor_event);
 static SensorEventType_t AnalogConfigType(size_t channel);
@@ -72,7 +70,6 @@ int AggregationTempHandler(size_t channel, float value)
 			if (currentAggregationNumber <= aggCount) {
 				if (k_msgq_num_free_get(
 					    &aggregation_timestamp_queue)) {
-					//uint32_t localTimestamp;
 
 					Tempevent.event.type =
 						SENSOR_EVENT_TEMPERATURE_1 +
