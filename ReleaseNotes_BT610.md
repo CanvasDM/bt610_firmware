@@ -19,6 +19,46 @@ This project makes use of the following third-party components:
 
 # Firmware Versions
 
+# Application Version 1.23.85 (July 30, 2021)
+
+
+### Summary
+
+This release of the BT610 includes the following configurable features: analog inputs, digital inputs, thermistors, digital outputs. With some functional support for high current inputs, pressure inputs and ultrasonic input, high current inputs, pressure inputs and ultrasonic input, and I2C/SPI/UART configuration. 
+
+### Target Hardware
+
+The hardware is R5.0
+
+### Added
+
+### Changed
+
+-19469 Add button press PHY change timeout
+-19464 Tamper Switch LED off when in self mode
+-19465 Purge advertising event queue during client disconnection
+-19470 Adjust BT510 Interval & Duration business rules
+
+### Fixed
+-19476 Aggregation Count not reporting back correctly
+-19446 Simultaneous LEDs cause lockup
+-19473 Event Id not correct for AC current
+-19460 advertising interval not saving after reset when value is higher 4sec
+
+### Known Issues / Limitations
+
+-19282 Sensor name length being misreported 
+-19249 Normal, BT610 Advertising Issue (not advertising, or phy change) 
+-19248 Normal, Connection Failure, Unhandled ATT code 0x1d + Ignoring unexpected request. 
+-18881 internal timestamp seems to be rolling over around the 36 1/2 hour mark 
+-18806 BT610 will indicate the RX ring buffer is full 
+
+### Resource Documents
+
+- BT6ApiParams v1.67
+- BT610 Comm Spec v1.0
+- User Guide v1.0
+
 # Application Version 1.22.5 (July 22, 2021)
 
 
@@ -48,7 +88,7 @@ The hardware is R5.0
 
 ### Resource Documents
 
-- BT6ApiParams v1.54
+- BT6ApiParams v1.64
 - BT610 Comm Spec v1.0
 - User Guide v1.0
 
@@ -86,7 +126,7 @@ The hardware is R5.0
 
 ### Resource Documents
 
-- BT6ApiParams v1.54
+- BT6ApiParams v1.63
 - BT610 Comm Spec v1.0
 - User Guide v1.0
 
@@ -123,7 +163,7 @@ The hardware is R5.0
 
 ### Resource Documents
 
-- BT6ApiParams v1.54
+- BT6ApiParams v1.60
 - BT610 Comm Spec v1.0
 - User Guide v1.0
 
@@ -161,7 +201,7 @@ The hardware is R5.0
 
 ### Resource Documents
 
-- BT6ApiParams v1.54
+- BT6ApiParams v1.58
 - BT610 Comm Spec v1.0
 - User Guide v1.0
 
@@ -204,7 +244,7 @@ The hardware is R5.0
 
 ### Resource Documents
 
-- BT6ApiParams v1.54
+- BT6ApiParams v1.58
 - BT610 Comm Spec v1.0
 - User Guide v1.0
 
