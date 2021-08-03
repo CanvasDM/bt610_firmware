@@ -806,8 +806,9 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 		((uint8_t)(event_data_type));
 
 	/* Check if we can prepare the log file OK */
-	if (lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
-						    n, &s)) {
+	r = lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
+						    n, &s);
+	if (r != 0) {
 		/* If not, blank the file path */
 		n[0] = 0;
 	}
