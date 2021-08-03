@@ -48,6 +48,7 @@ int Advertisement_Update(SensorMsg_t *sensor_event);
 int Advertisement_IntervalUpdate(void);
 void SetPasskey(void);
 void TestEventMsg(uint16_t event);
+bool GetPairingFlag(void);
 
 #ifdef __cplusplus
 }

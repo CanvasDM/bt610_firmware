@@ -59,6 +59,7 @@ K_MUTEX_DEFINE(mount_mutex);
 #define BLE_TASK_QUEUE_DEPTH 32
 #endif
 #define BOOTUP_ADVERTISMENT_TIME_MS (15000)
+#define PAIRING_CHECK_TIMEOUT_MS (30000)
 
 typedef struct BleTaskTag {
 	FwkMsgTask_t msgTask;
@@ -112,26 +113,32 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
+static DispatchResult_t SeverConnectionHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg);
 static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 
 static int BluetoothInit(void);
 static int UpdateName(void);
+static void PairingCheck(void);
 static void TransmitPower(void);
 static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
+static void PairingTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 
-static void le_param_updated(struct bt_conn *conn, uint16_t interval, uint16_t latency, uint16_t timeout);
+static void le_param_updated(struct bt_conn *conn, uint16_t interval,
+			     uint16_t latency, uint16_t timeout);
 static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
+static struct k_timer pairingTimer;
 static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
 
@@ -177,6 +184,7 @@ static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
 	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
 	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
+	case FMC_BLE_END_CONNECTION:          return SeverConnectionHandler;
 	case FMC_SENSOR_EVENT:                return BleSensorEventMsgHandler;
 	case FMC_SENSOR_UPDATE:               return BleSensorUpdateMsgHandler;
 	default:                              return NULL;
@@ -286,6 +294,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
 	uint8_t activeMode = 0;
 
+	k_timer_init(&pairingTimer, PairingTimerCallbackIsr, NULL);
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
 	k_timer_init(&bootAdvertTimer, BootAdvertTimerCallbackIsr, NULL);
 	r = BluetoothInit();
@@ -420,6 +429,14 @@ static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
+static DispatchResult_t SeverConnectionHandler(FwkMsgReceiver_t *pMsgRxer,
+					       FwkMsg_t *pMsg)
+{
+	RequestDisconnect(bto.conn);
+
+	return DISPATCH_OK;
+}
+
 static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg)
 {
@@ -445,8 +462,7 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						      FWK_ID_BLE_TASK,
 						      FMC_SENSOR_UPDATE);
 			LOG_DBG("Added Event to advert queue!");
-		}
-		else {
+		} else {
 			LOG_DBG("Advert queue is full!");
 		}
 	}
@@ -472,6 +488,9 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L2);
 		LOG_DBG("Setting security status: %d", r);
+
+		/*Once conected make sure the device is paired*/
+		//PairingCheck();
 
 		/*Set the power for the connection*/
 		TransmitPower();
@@ -526,6 +545,14 @@ static int UpdateName(void)
 		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
 	}
 	return r;
+}
+
+static void PairingCheck(void)
+{
+	if (GetPairingFlag() == false) {
+		k_timer_start(&pairingTimer, K_MSEC(PAIRING_CHECK_TIMEOUT_MS),
+			      K_NO_WAIT);
+	}
 }
 
 static void TransmitPower(void)
@@ -678,6 +705,15 @@ static uint32_t GetAdvertisingDuration(void)
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
+static void PairingTimerCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+
+	if (GetPairingFlag() == false) {
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+					      FMC_BLE_END_CONNECTION);
+	}
+}
 static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
@@ -696,17 +732,18 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 	}
 }
 
-static void le_param_updated(struct bt_conn *conn, uint16_t interval, uint16_t latency, uint16_t timeout)
+static void le_param_updated(struct bt_conn *conn, uint16_t interval,
+			     uint16_t latency, uint16_t timeout)
 {
-	LOG_ERR("Got an LE Param Updated! Interval = %d Latency = %d Timeout = %d", interval, latency, timeout);
+	LOG_ERR("Got an LE Param Updated! Interval = %d Latency = %d Timeout = %d",
+		interval, latency, timeout);
 }
 
 static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
 {
 	LOG_ERR("Got an LE Param Update Request!");
-	
+
 	//param->timeout = 500;
 
-
-	return(true);
+	return (true);
 }
