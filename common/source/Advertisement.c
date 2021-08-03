@@ -48,7 +48,7 @@ static struct bt_le_ext_adv *adv;
 static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
-static uint8_t pairCheck = 0;
+static bool pairingFlag = false;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -385,7 +385,10 @@ void TestEventMsg(uint16_t event)
 
 	current.event.data.u32 = dataValue;
 }
-
+bool GetPairingFlag(void)
+{
+	return(pairingFlag);
+}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -414,7 +417,7 @@ static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-	LOG_INF("Passkey for %s: %06u\n", log_strdup(addr), passkey);
+	LOG_INF("Passkey for %s:\n", log_strdup(addr));
 }
 static void AuthCancelCb(struct bt_conn *conn)
 {
@@ -426,7 +429,7 @@ void AuthPairingConfirmCb(struct bt_conn *conn)
 {
 	char *addr = ble_addr(conn);
 
-	pairCheck = 1;
+	pairingFlag = true;
 
 	bt_conn_auth_pairing_confirm(conn);
 	LOG_INF("Pairing confirmed: %s", log_strdup(addr));
@@ -434,13 +437,16 @@ void AuthPairingConfirmCb(struct bt_conn *conn)
 static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
 {
 	char *addr = ble_addr(conn);
+	pairingFlag = true;
 
 	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
 }
+
 static void AuthPairingFailedCb(struct bt_conn *conn,
 				enum bt_security_err reason)
 {
 	LOG_DBG(".");
+	pairingFlag = false;
 }
 void CreateAdvertisingExtendedParm(void)
 {
