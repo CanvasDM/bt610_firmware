@@ -54,6 +54,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define BATTERY_BAD_VOLTAGE (3000)
 #define DIGITAL_IN_ALARM_MASK (0x03)
 #define DIGITAL_IN_ENABLE_MASK (0x80)
+#define DIGITAL_IN_DISABLE_MASK (0x00)
 #define DIGITAL_IN_BIT_SHIFT (7)
 /* 0x0F is all the thermisters enabled*/
 #define ALL_THERMISTORS (0x0F)
@@ -133,8 +134,8 @@ static void InitializeIntervalTimers(void);
 static void StartAnalogInterval(void);
 static void StartTemperatureInterval(void);
 static void StartBatteryInterval(void);
-static void DisableAnalogPins(void);
-static void DisableThermistorPins(void);
+static void DisableAnalogReadings(void);
+static void DisableThermistorReadings(void);
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 			      float *result);
@@ -337,6 +338,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_INDEX_digitalInput2Config:
 			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
 						   FMC_DIGITAL_IN_CONFIG);
+			break;
+		case ATTR_INDEX_thermistorConfig:
+			StartTemperatureInterval();
 			break;
 		case ATTR_INDEX_analogInput1Type:
 		case ATTR_INDEX_analogInput2Type:
@@ -559,99 +563,15 @@ static void SensorConfigChange(bool bootup)
 	uint32_t configurationType;
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
 
-	switch (configurationType) {
-	case CONFIG_UNDEFINED:
+	if ((bootup == false) || (configurationType == CONFIG_UNDEFINED)) {
+		/*Clear the Aggregation queue on event type change*/
+		AggregationPurgeQueueHandler();
 		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
+		DisableThermistorReadings();
 		/*Disable all analogs*/
-		DisableAnalogPins();
-
+		DisableAnalogReadings();
 		/*Disable Digital*/
 		DisableDigitalIO();
-		break;
-	case CONFIG_ANALOG_INPUT:
-		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
-		/*Disable Digital*/
-		DisableDigitalIO();
-
-		break;
-	case CONFIG_DIGITAL:
-		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
-		/*Disable all analogs*/
-		DisableAnalogPins();
-
-		/*Enable the digital inputs*/
-		if (bootup == false) {
-			Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
-					    (DIGITAL_IN_ENABLE_MASK |
-					     DIGITAL_IN_ALARM_MASK));
-			Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
-					    (DIGITAL_IN_ENABLE_MASK |
-					     DIGITAL_IN_ALARM_MASK));
-		}
-		break;
-	case CONFIG_TEMPERATURE:
-		/*Enable all the thermistors */
-		if (bootup == false) {
-			Attribute_SetUint32(ATTR_INDEX_thermistorConfig,
-					    ALL_THERMISTORS);
-			StartTemperatureInterval();
-		}
-
-		/*Disable all analogs*/
-		DisableAnalogPins();
-
-		/*Disable Digital*/
-		DisableDigitalIO();
-
-		break;
-	case CONFIG_ANALOG_AC_CURRENT:
-		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
-		/*Disable Digital*/
-		DisableDigitalIO();
-		break;
-	case CONFIG_ULTRASONIC_PRESSURE:
-		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
-		/*Disable Digital*/
-		DisableDigitalIO();
-
-		/*Configure the first 3 analogs*/
-		if (bootup == false) {
-			Attribute_SetUint32(ATTR_INDEX_analogInput1Type,
-					    ANALOG_ULTRASONIC);
-			Attribute_SetUint32(ATTR_INDEX_analogInput2Type,
-					    ANALOG_PRESSURE);
-			Attribute_SetUint32(ATTR_INDEX_analogInput3Type,
-					    ANALOG_PRESSURE);
-			Attribute_SetUint32(ATTR_INDEX_analogInput4Type,
-					    ANALOG_UNUSED);
-		}
-
-		break;
-	case CONFIG_SPI_I2C:
-		/*Disable all the thermistors*/
-		DisableThermistorPins();
-
-		/*Disable all analogs*/
-		DisableAnalogPins();
-
-		/*Disable Digital*/
-		DisableDigitalIO();
-
-		break;
-	default:
-		/*Set to undefined*/
-		Attribute_SetUint32(ATTR_INDEX_configType, CONFIG_UNDEFINED);
-		break;
 	}
 }
 static void SensorOutput1Control(void)
@@ -694,11 +614,9 @@ static void DisableDigitalIO(void)
 {
 	/*Disable the digital inputs*/
 	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
-			    ((!DIGITAL_IN_ENABLE_MASK) |
-			     DIGITAL_IN_ALARM_MASK));
+			    DIGITAL_IN_DISABLE_MASK);
 	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
-			    ((!DIGITAL_IN_ENABLE_MASK) |
-			     DIGITAL_IN_ALARM_MASK));
+			    DIGITAL_IN_DISABLE_MASK);
 
 	/*Disable the digital outputs*/
 	BSP_PinSet(DO1_PIN, (0));
@@ -759,6 +677,7 @@ static void StartAnalogInterval(void)
 	uint8_t analog3ConfigEnable;
 	uint8_t analog4ConfigEnable;
 	uint8_t activeModeStatus = 0;
+	uint32_t analogTimer = 0;
 
 	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
 		      sizeof(activeModeStatus));
@@ -771,8 +690,10 @@ static void StartAnalogInterval(void)
 		      sizeof(analog3ConfigEnable));
 	Attribute_Get(ATTR_INDEX_analogInput4Type, &analog4ConfigEnable,
 		      sizeof(analog4ConfigEnable));
+	/*Check if the timer is already running*/
+	analogTimer = k_timer_remaining_get(&analogReadTimer);
 
-	if ((activeModeStatus == true) &&
+	if ((activeModeStatus == true) && (analogTimer == 0) &&
 	    ((analog1ConfigEnable > 0) || (analog2ConfigEnable > 0) ||
 	     (analog3ConfigEnable > 0) || (analog4ConfigEnable > 0))) {
 		uint32_t intervalSeconds = 0;
@@ -789,13 +710,17 @@ static void StartTemperatureInterval(void)
 {
 	uint8_t thermConfigEnable;
 	uint8_t activeModeStatus = 0;
+	uint32_t tempTimer = 0;
 
 	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
 		      sizeof(activeModeStatus));
 	Attribute_Get(ATTR_INDEX_thermistorConfig, &thermConfigEnable,
 		      sizeof(thermConfigEnable));
 
-	if ((activeModeStatus == true) && (thermConfigEnable > 0)) {
+	/*Check if the timer is already running*/
+	tempTimer = k_timer_remaining_get(&temperatureReadTimer);
+	if ((activeModeStatus == true) && (thermConfigEnable > 0) &&
+	    (tempTimer == 0)) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
 				    ATTR_INDEX_temperatureSenseInterval);
@@ -826,18 +751,22 @@ static void StartBatteryInterval(void)
 	}
 }
 
-static void DisableAnalogPins(void)
+static void DisableAnalogReadings(void)
 {
 	Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_UNUSED);
 	Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_UNUSED);
 	Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_UNUSED);
 	Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
+	/*Turn off the timer*/
+	k_timer_stop(&analogReadTimer);
 }
 
-static void DisableThermistorPins(void)
+static void DisableThermistorReadings(void)
 {
 	uint32_t thermistorsConfig = 0;
 	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
+	/*Turn off the timer*/
+	k_timer_stop(&temperatureReadTimer);
 }
 
 static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
