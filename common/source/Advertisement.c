@@ -92,7 +92,6 @@ static struct bt_data bt_rsp[] = {
 /******************************************************************************/
 static void CreateAdvertisingParm(void);
 static char *ble_addr(struct bt_conn *conn);
-static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
 static void AuthCancelCb(struct bt_conn *conn);
 static void AuthPairingConfirmCb(struct bt_conn *conn);
@@ -106,24 +105,6 @@ static void CreateAdvertisingStandardParm(void);
 /* Callback Data Definitions - these needed to be defined here due to         */
 /* containing references to the above functions.                              */
 /******************************************************************************/
-
-/******************************************************************************/
-/* Connection callbacks.                                                      */
-/*                                                                            */
-/* Handlers for connection related events.                                    */
-/*                                                                            */
-/* NOTE these have to reside in RAM due to there being a next pointer in the  */
-/* structure for appending further list entries.                              */
-/******************************************************************************/
-static struct bt_conn_cb connection_callbacks = {
-	.connected = NULL,
-	.disconnected = adv_disconnected,
-	.le_param_req = NULL,
-	.le_param_updated = NULL,
-	.identity_resolved = NULL,
-	.security_changed = NULL,
-	.le_phy_updated = NULL,
-};
 
 /******************************************************************************/
 /* Authorisation callbacks.                                                   */
@@ -211,7 +192,6 @@ int Advertisement_Init(void)
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 	ext.rsp.hardwareVersion = rsp.rsp.hardwareVersion;
 
-	bt_conn_cb_register(&connection_callbacks);
 	r = bt_conn_auth_cb_register(&auth_callback);
 
 	CreateAdvertisingParm();
@@ -430,10 +410,6 @@ static char *ble_addr(struct bt_conn *conn)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
 	return addr;
-}
-static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
-{
-	advertising = false;
 }
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 {
