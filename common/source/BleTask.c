@@ -133,6 +133,7 @@ static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,
 			     uint16_t latency, uint16_t timeout);
 static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param);
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -149,6 +150,8 @@ K_MSGQ_DEFINE(bleTaskQueue, FWK_QUEUE_ENTRY_SIZE, BLE_TASK_QUEUE_DEPTH,
 static struct bt_conn_cb connectionCallbacks = {
 	.connected = ConnectedCallback,
 	.disconnected = DisconnectedCallback,
+	.le_param_updated = le_param_updated,
+	.le_param_req = le_param_req,
 };
 
 #if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
@@ -328,7 +331,6 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		      sizeof(codedPhySelected));
 
 	/*If the magnet activated the advertisment send non coded PHY message*/
-
 	Advertisement_Start();
 
 	return DISPATCH_OK;
@@ -475,10 +477,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 	char addr[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-	/* If we have a connection error, allow the stack to restart
-	 * advertising via the bt_conn_unref call. We don't adjust
-	 * the advertising state machine variables in this case.
-	 */
 	if (r) {
 		LOG_ERR("Failed to connect to central %s (%u)",
 			log_strdup(addr), r);
@@ -500,11 +498,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		/*Pause the duration timer if it is running*/
 		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
 		k_timer_stop(&durationTimer);
-
-		/* If the connection is established OK, we manually stop
-		 * advertising here which also resets state machine variables
-		 */
-		Advertisement_End();
 	}
 }
 

@@ -556,8 +556,6 @@ static void LoadSensorConfiguration(void)
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
 }
 
-
-
 static void SensorConfigChange(bool bootup)
 {
 	uint32_t configurationType;
@@ -777,17 +775,17 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 	*result = 0.0;
 
 	attr_idx_t base = ATTR_INDEX_analogInput1Type;
-	uint32_t config = Attribute_AltGetUint32(base + channel, 0);
+	analogConfigType_t config = Attribute_AltGetUint32(base + channel, 0);
 
 	switch (config) {
-	case ANALOG_INPUT_VOLTAGE:
+	case ANALOG_VOLTAGE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertVoltage(channel, raw);
 		}
 		break;
 
-	case ANALOG_INPUT_CURRENT:
+	case ANALOG_CURRENT:
 		r = AdcBt6_ConfigAinSelects();
 		if (r == 0) {
 			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_CURRENT,
@@ -798,34 +796,34 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 		}
 		break;
 
-	case ANALOG_INPUT_PRESSURE:
+	case ANALOG_PRESSURE:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_PRESSURE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertPressure(channel, raw);
 		}
 		break;
 
-	case ANALOG_INPUT_ULTRASONIC:
+	case ANALOG_ULTRASONIC:
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertUltrasonic(channel, raw);
 		}
 		break;
-	case ANALOG_INPUT_ACCURRENT_20A:
+	case ANALOG_CURRENT20A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent20(channel, raw);
 		}
 		break;
-	case ANALOG_INPUT_ACCURRENT_150A:
+	case ANALOG_CURRENT150A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent150(channel, raw);
 		}
 		break;
-	case ANALOG_INPUT_ACCURRENT_500A:
+	case ANALOG_CURRENT500A:
 		/*Configured for a voltage measurement*/
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
@@ -833,8 +831,8 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 		}
 		break;
 	default:
-		r = 0;
 		LOG_DBG("Analog input channel %d disabled", channel + 1);
+		r = -ENODEV;
 		break;
 	}
 

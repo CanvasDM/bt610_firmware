@@ -759,10 +759,10 @@ static int validate_analog_input_config(void)
 		       attrTable[ATTR_INDEX_analogInput1Type + i].size);
 
 		switch (ch) {
-		case ANALOG_INPUT_PRESSURE:
+		case ANALOG_PRESSURE:
 			pressure_sensors += 1;
 			break;
-		case ANALOG_INPUT_ULTRASONIC:
+		case ANALOG_ULTRASONIC:
 			ultrasonic_sensors += 1;
 			break;
 		default:
