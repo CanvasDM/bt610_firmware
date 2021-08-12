@@ -68,6 +68,7 @@ typedef struct BleTaskTag {
 	bool lfs_mounted;
 	uint32_t durationTimeMs;
 	bool activeModeStatus;
+	bool codedPHYBroadcast;
 } BleTaskObj_t;
 
 typedef enum {
@@ -206,6 +207,7 @@ void BleTask_Initialize(void)
 
 	bto.durationTimeMs = 0;
 	bto.activeModeStatus = false;
+	bto.codedPHYBroadcast = false;
 	Framework_RegisterTask(&bto.msgTask);
 
 	bto.msgTask.pTid =
@@ -292,7 +294,6 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	int r;
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
-	uint8_t activeMode = 0;
 
 	k_timer_init(&pairingTimer, PairingTimerCallbackIsr, NULL);
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
@@ -301,14 +302,24 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	while (r != 0) {
 		k_sleep(K_SECONDS(1));
 	}
-	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
 
-	if (activeMode == false) {
+	/* Initialise PHY and Shelf/Active state */
+	Attribute_Get(ATTR_INDEX_activeMode, &bto.activeModeStatus,
+		sizeof(bto.activeModeStatus));
+
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &bto.codedPHYBroadcast,
+		sizeof(bto.codedPHYBroadcast));
+
+	/* If not in Active Mode, advertise for BOOTUP_ADVERTISMENT_TIME_MS
+	 * in 1M
+	 */
+	if (bto.activeModeStatus == false) {
 		Advertisement_ExtendedSet(false);
 		k_timer_start(&bootAdvertTimer,
 			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
 
 	} else {
+		/* Otherwise start advertising in configured broadcast PHY */
 		Advertisement_Start();
 	}
 
@@ -325,10 +336,6 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	UNUSED_PARAMETER(pMsg);
 	UNUSED_PARAMETER(pMsgRxer);
-	uint8_t codedPhySelected = 0;
-
-	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
-		      sizeof(codedPhySelected));
 
 	/*If the magnet activated the advertisment send non coded PHY message*/
 	Advertisement_Start();
@@ -378,11 +385,14 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
-			//case ATTR_INDEX_flags:
+		case ATTR_INDEX_flags:
 			updateData = true;
 			break;
 		case ATTR_INDEX_useCodedPhy:
-			Advertisement_ExtendedSet(Attribute_CodedEnableCheck());
+			Attribute_Get(ATTR_INDEX_useCodedPhy,
+				      &bto.codedPHYBroadcast,
+				      sizeof(bto.codedPHYBroadcast));
+			Advertisement_ExtendedSet(bto.codedPHYBroadcast);
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;
@@ -397,12 +407,10 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg)
 {
-	uint8_t activeMode = 0;
 	SensorMsg_t sensor_event;
 	bool restart_duration_timer = false;
 
-	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if (activeMode) {
+	if (bto.activeModeStatus) {
 		/* If the duration timer is not already running start it */
 		volatile uint32_t timerLeft =
 			k_timer_remaining_get(&durationTimer);
@@ -442,11 +450,9 @@ static DispatchResult_t BleSensorEventMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	SensorMsg_t local_event;
 	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
-	uint8_t activeMode = 0;
 
 	/* Only store events when in active mode and not in a connection */
-	Attribute_Get(ATTR_INDEX_activeMode, &activeMode, sizeof(activeMode));
-	if ((activeMode) && (bto.conn == NULL)) {
+	if ((bto.activeModeStatus) && (bto.conn == NULL)) {
 		/* If there's space, add this event to our local advert queue */
 		if (k_msgq_num_free_get(&ble_task_advert_queue)) {
 			/* Store event details */
