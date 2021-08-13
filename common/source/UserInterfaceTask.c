@@ -133,13 +133,12 @@ static void Button3HandlerIsr(const struct device *dev,
 
 static Dispatch_t AliveMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
-static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
+static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					  FwkMsg_t *pMsg);
 static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg);
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
-static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 
 static void led_blink(ledColors_t color,
 		      struct lcz_led_blink_pattern const *pPattern);
@@ -155,13 +154,11 @@ static void red_led_off(void);
 static bool ValidAliveDuration(int64_t duration);
 static bool ValidExitShelfModeDuration(int64_t duration);
 static bool ValidFactoryResetDuration(int64_t duration);
-static void AdvertiseLEDTimerCallbackIsr(struct k_timer *timer_id);
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static UserIfTaskObj_t userIfTaskObject;
-static struct k_timer advertiseLEDActiveTimer;
 
 static struct gpio_callback button_cb_data[CONFIG_UI_NUMBER_OF_BUTTONS];
 
@@ -237,15 +234,14 @@ static FwkMsgHandler_t UserIfTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:           return Framework_UnknownMsgHandler;
-	case FMC_ALIVE:             return AliveMsgHandler;
-	case FMC_TAMPER:            return TamperMsgHandler;
-	case FMC_EXIT_SHELF_MODE:   return ExitShelfModeMsgHandler;
-	case FMC_FACTORY_RESET:     return UiFactoryResetMsgHandler;
-	case FMC_AMR_LED_ON:        return AmrLedOnMsgHandler;
-	case FMC_LEDS_OFF:          return LedsOffMsgHandler;
-	case FMC_EXTEND_ADVERT_ON:  return ExtendAdvertOnMsgHandler;
-	default:                    return NULL;
+	case FMC_INVALID:                 return Framework_UnknownMsgHandler;
+	case FMC_ALIVE:                   return AliveMsgHandler;
+	case FMC_TAMPER:                  return TamperMsgHandler;
+	case FMC_ENTER_ACTIVE_MODE:       return EnterActiveModeMsgHandler;
+	case FMC_FACTORY_RESET:           return UiFactoryResetMsgHandler;
+	case FMC_AMR_LED_ON:              return AmrLedOnMsgHandler;
+	case FMC_LEDS_OFF:                return LedsOffMsgHandler;
+	default:                          return NULL;
 	}
 	/* clang-format on */
 }
@@ -443,8 +439,6 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	lcz_led_init((lcz_led_configuration_t *)LED_CONFIGURATION,
 		     ARRAY_SIZE(LED_CONFIGURATION));
-
-	k_timer_init(&advertiseLEDActiveTimer, AdvertiseLEDTimerCallbackIsr, NULL);
 
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
@@ -644,16 +638,20 @@ static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 	return DISPATCH_OK;
 }
 
-static Dispatch_t ExitShelfModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
+static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					  FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
+	
+	/* This starts the green LED flashing for 30s */
 	led_blink(LED_COLOR_GREEN, &EXIT_SHELF_MODE_PATTERN);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
-				      FMC_ENTER_ACTIVE_MODE);
-	Advertisement_ExtendedSet(false);
-	k_timer_start(&advertiseLEDActiveTimer, K_SECONDS(ADVERTISE_30SEC_TIMER), K_NO_WAIT);
+
+	/* Set the Active Mode flag - all other activities are
+	 * handled by the Sensor Task.
+	 */
+	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+
 	return DISPATCH_OK;
 }
 
@@ -680,13 +678,6 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	return result;
 }
 
-static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	ARG_UNUSED(pMsgRxer);
-	ARG_UNUSED(pMsg);
-	Advertisement_ExtendedSet(true);
-	return DISPATCH_OK;
-}
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -709,7 +700,7 @@ static void Button1HandlerIsr(const struct device *dev,
 		if (ValidExitShelfModeDuration(delta)) {
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 						      FWK_ID_USER_IF_TASK,
-						      FMC_EXIT_SHELF_MODE);
+						      FMC_ENTER_ACTIVE_MODE);
 		}
 		if (ValidFactoryResetDuration(delta)) {
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
@@ -739,7 +730,7 @@ static void Button3HandlerIsr(const struct device *dev,
 	if (gpio_pin_get(dev, BUTTON_CFG[2].pin)) {
 		LOG_DBG("Rising amr");
 		if (ValidExitShelfModeDuration(k_uptime_delta(&amrEventTime))) {
-			code = FMC_EXIT_SHELF_MODE;
+			code = FMC_ENTER_ACTIVE_MODE;
 		}
 	} else {
 		LOG_DBG("Falling amr");
@@ -782,9 +773,4 @@ static bool ValidFactoryResetDuration(int64_t duration)
 	} else {
 		return false;
 	}
-}
-static void AdvertiseLEDTimerCallbackIsr(struct k_timer *timer_id)
-{
-	UNUSED_PARAMETER(timer_id);
-	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_USER_IF_TASK, FMC_EXTEND_ADVERT_ON);
 }
