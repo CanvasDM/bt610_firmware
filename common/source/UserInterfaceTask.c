@@ -47,7 +47,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #define USER_IF_TASK_QUEUE_DEPTH 32
 #endif
 
-#define ADVERTISE_30SEC_TIMER  30
+#define ADVERTISE_30SEC_TIMER 30
 
 /* IDs used to access buttons in the BUTTON_CFG array */
 typedef enum {
@@ -139,7 +139,8 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg);
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
-static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
+static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer,
+					   FwkMsg_t *pMsg);
 
 static void led_blink(ledColors_t color,
 		      struct lcz_led_blink_pattern const *pPattern);
@@ -444,7 +445,8 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	lcz_led_init((lcz_led_configuration_t *)LED_CONFIGURATION,
 		     ARRAY_SIZE(LED_CONFIGURATION));
 
-	k_timer_init(&advertiseLEDActiveTimer, AdvertiseLEDTimerCallbackIsr, NULL);
+	k_timer_init(&advertiseLEDActiveTimer, AdvertiseLEDTimerCallbackIsr,
+		     NULL);
 
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
@@ -533,34 +535,29 @@ static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
 static void led_blink(ledColors_t color,
 		      struct lcz_led_blink_pattern const *pPattern)
 {
-	if (color == LED_COLOR_GREEN) {
-		led_off(LED_COLOR_NONE);
-		lcz_led_blink(GREEN_LED, pPattern);
-	}
+	/* Turn all LEDs off */
+	led_off(LED_COLOR_NONE);
 
-	else if (color == LED_COLOR_RED) {
-		led_off(LED_COLOR_NONE);
+	if (color == LED_COLOR_GREEN) {
+		lcz_led_blink(GREEN_LED, pPattern);
+	} else if (color == LED_COLOR_RED) {
 		lcz_led_blink(RED_LED, pPattern);
 	} else if (color == LED_COLOR_AMBER) {
-		led_off(LED_COLOR_NONE);
 		lcz_led_blink(RED_LED, pPattern);
 		lcz_led_blink(GREEN_LED, pPattern);
-	} else {
-		/* Turn all LEDs off */
-		led_off(LED_COLOR_AMBER);
 	}
 }
 
 static void led_on(ledColors_t color)
 {
+	/* Turn all LEDs off */
+	led_off(LED_COLOR_NONE);
+
 	if (color == LED_COLOR_GREEN) {
-		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(GREEN_LED);
 	} else if (color == LED_COLOR_RED) {
-		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(RED_LED);
 	} else if (color == LED_COLOR_AMBER) {
-		led_off(LED_COLOR_NONE);
 		lcz_led_turn_on(GREEN_LED);
 		lcz_led_turn_on(RED_LED);
 	}
@@ -571,9 +568,7 @@ static void led_off(ledColors_t color)
 	if (color == LED_COLOR_GREEN) {
 		lcz_pwm_led_off(GREEN_LED);
 		lcz_led_turn_off(GREEN_LED);
-	}
-
-	else if (color == LED_COLOR_RED) {
+	} else if (color == LED_COLOR_RED) {
 		lcz_pwm_led_off(RED_LED);
 		lcz_led_turn_off(RED_LED);
 	} else if ((color == LED_COLOR_NONE) || (color == LED_COLOR_AMBER)) {
@@ -680,7 +675,8 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	return result;
 }
 
-static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
+static Dispatch_t ExtendAdvertOnMsgHandler(FwkMsgRxer_t *pMsgRxer,
+					   FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
