@@ -242,7 +242,7 @@ static int advertise(const struct shell *shell, size_t argc, char **argv)
 	shell_print(shell, "Starting advertising . . .\n");
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 						      FWK_ID_USER_IF_TASK,
-						      FMC_EXIT_SHELF_MODE);
+						      FMC_ENTER_ACTIVE_MODE);
 	return 0;
 }
 

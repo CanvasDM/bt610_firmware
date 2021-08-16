@@ -120,6 +120,9 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg);
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
+static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg);
+
 static void LoadSensorConfiguration(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
@@ -162,7 +165,8 @@ static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_READ_BATTERY:        return ReadBatteryMsgHandler;
 	case FMC_TEMPERATURE_MEASURE: return MeasureTemperatureMsgHandler;
 	case FMC_ANALOG_MEASURE:      return AnalogReadMsgHandler;
-	case FMC_ENTER_ACTIVE_MODE:   return EnterActiveModeMsgHandler;	
+	case FMC_ENTER_ACTIVE_MODE:   return EnterActiveModeMsgHandler;
+	case FMC_ENTER_SHELF_MODE:    return EnterShelfModeMsgHandler;
 	default:                      return NULL;
 	}
 	/* clang-format on */
@@ -316,6 +320,8 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	AttrChangedMsg_t *pAttrMsg = (AttrChangedMsg_t *)pMsg;
 	size_t i;
 	bool updateAnalogInterval = false;
+	uint8_t activeMode = 0;
+
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
 		case ATTR_INDEX_batterySenseInterval:
@@ -359,9 +365,19 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			SensorOutput2Control();
 			break;
 		case ATTR_INDEX_activeMode:
+			/* This is to handle direct calls from remote clients
+			 * but also when set via the local interfaces. In the
+			 * case of local interfaces, it only ever gets set to
+			 * true, and so always routed to the Enter Active
+			 * handler.
+			 */
+			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
+				sizeof(activeMode));
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-						      FWK_ID_SENSOR_TASK,
-						      FMC_ENTER_ACTIVE_MODE);
+							FWK_ID_SENSOR_TASK,
+							(!activeMode ?
+							FMC_ENTER_SHELF_MODE :
+							FMC_ENTER_ACTIVE_MODE));
 		case ATTR_INDEX_settingsPasscode:
 		default:
 			// don't do anything - this is a broadcast
@@ -520,32 +536,34 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
-	uint8_t activeModeStatus = 0;
 
-	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
-		      sizeof(activeModeStatus));
+	/* This handler triggers a change to 1M PHY. This
+	 * may be ignored if a connection is already active.
+	 */
+	Flags_Set(FLAG_ACTIVE_MODE, 1);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+				      FWK_ID_BLE_TASK,
+				      FMC_ENTER_ACTIVE_MODE);
 
-	/*Button was pressed make sure device enters active mode*/
-	if ((activeModeStatus == 0) &&
-	    (pMsg->header.txId == FWK_ID_USER_IF_TASK)) {
-		Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
-		activeModeStatus = 1;
-		/*User set active mode back 0*/
-	} else if ((activeModeStatus == 0) &&
-		   (pMsg->header.txId == FWK_ID_SENSOR_TASK)) {
-		/*The BT610 needs to perform reset after leaving active mode to enter shelf mode*/
-		Flags_Set(FLAG_ACTIVE_MODE, 0);
-		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-					      FWK_ID_CONTROL_TASK,
-					      FMC_SOFTWARE_RESET);
-	}
+	return DISPATCH_OK;
+}
 
-	if (activeModeStatus == 1) {
-		Flags_Set(FLAG_ACTIVE_MODE, 1);
-		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-					      FWK_ID_BLE_TASK,
-					      FMC_BLE_START_ADVERTISING);
-	}
+static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						  FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+
+	/* The BT610 needs to perform a reset after leaving
+	 * active mode to enter shelf mode. This is so it can
+	 * disable broadcasting and go through the start up
+	 * sequence where it advertises in 1M then disables
+	 * advertising altogether.
+	 */
+	Flags_Set(FLAG_ACTIVE_MODE, 0);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
+				      FWK_ID_CONTROL_TASK,
+				      FMC_SOFTWARE_RESET);
+
 	return DISPATCH_OK;
 }
 
