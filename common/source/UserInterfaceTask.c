@@ -720,10 +720,12 @@ static void Button3HandlerIsr(const struct device *dev,
 	ARG_UNUSED(cb);
 	ARG_UNUSED(pins);
 	FwkMsgCode_t code = FMC_LEDS_OFF;
+	int64_t delta;
 
 	if (gpio_pin_get(dev, BUTTON_CFG[2].pin)) {
+		delta = k_uptime_delta(&amrEventTime);
 		LOG_DBG("Rising amr");
-		if (ValidExitShelfModeDuration(k_uptime_delta(&amrEventTime))) {
+		if (ValidExitShelfModeDuration(delta)) {
 			code = FMC_ENTER_ACTIVE_MODE;
 		}
 	} else {
