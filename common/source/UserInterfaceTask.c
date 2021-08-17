@@ -694,6 +694,7 @@ static void Button1HandlerIsr(const struct device *dev,
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 						      FWK_ID_USER_IF_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
+							  LOG_DBG("Active");
 		}
 		if (ValidFactoryResetDuration(delta)) {
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
