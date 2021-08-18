@@ -134,7 +134,7 @@ static void Button3HandlerIsr(const struct device *dev,
 static Dispatch_t AliveMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t TamperMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
-					  FwkMsg_t *pMsg);
+					    FwkMsg_t *pMsg);
 static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 					   FwkMsg_t *pMsg);
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -632,11 +632,11 @@ static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 }
 
 static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
-					  FwkMsg_t *pMsg)
+					    FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-	
+
 	/* This starts the green LED flashing for 30s */
 	led_blink(LED_COLOR_GREEN, &EXIT_SHELF_MODE_PATTERN);
 
@@ -694,7 +694,7 @@ static void Button1HandlerIsr(const struct device *dev,
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
 						      FWK_ID_USER_IF_TASK,
 						      FMC_ENTER_ACTIVE_MODE);
-							  LOG_DBG("Active");
+			LOG_DBG("Active");
 		}
 		if (ValidFactoryResetDuration(delta)) {
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
@@ -736,8 +736,7 @@ static void Button3HandlerIsr(const struct device *dev,
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_MAGNET_STATE);
-
-	FRAMEWORK_MSG_UNICAST_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, code);
+	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_USER_IF_TASK, code);
 }
 
 static bool ValidAliveDuration(int64_t duration)
