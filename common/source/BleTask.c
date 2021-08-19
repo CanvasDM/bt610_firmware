@@ -549,7 +549,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
 
-		r = bt_conn_set_security(bto.conn, BT_SECURITY_L2);
+		r = bt_conn_set_security(bto.conn, (BT_SECURITY_L2|BT_SECURITY_FORCE_PAIR));
 		LOG_DBG("Setting security status: %d", r);
 
 		/*Once conected make sure the device is paired*/

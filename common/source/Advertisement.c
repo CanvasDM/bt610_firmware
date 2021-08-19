@@ -49,6 +49,13 @@ static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
 static bool pairingFlag = false;
+static struct bt_uuid_128 pairNotify_uuid =
+	BT_UUID_INIT_128(0x50, 0x25, 0xba, 0x7e, 0x0f, 0x8d, 0x40, 0x2b, 0x9b,
+			 0x91, 0xba, 0xa8, 0x7e, 0x94, 0x58, 0x9e);
+
+static struct bt_uuid_128 pairNotifyCh_uuid =
+	BT_UUID_INIT_128(0x5d, 0x38, 0x18, 0xb8, 0x87, 0x7d, 0x4e, 0xf8, 0xa5,
+			 0xe8, 0xba, 0xa8, 0x7e, 0x94, 0x58, 0x9e);
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -72,7 +79,7 @@ static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
 
 static struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA(BT_DATA_MANUFACTURER_DATA, &ad, sizeof(ad))
+	BT_DATA(BT_DATA_MANUFACTURER_DATA, &ad, sizeof(ad)),
 };
 
 static struct bt_data bt_extAd[] = {
@@ -86,11 +93,11 @@ static struct bt_data bt_extAd[] = {
 static struct bt_data bt_rsp[] = {
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp)),
 };
-
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void CreateAdvertisingParm(void);
+static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
@@ -106,7 +113,16 @@ static void CreateAdvertisingStandardParm(void);
 /* Callback Data Definitions - these needed to be defined here due to         */
 /* containing references to the above functions.                              */
 /******************************************************************************/
+/* Pairing Notifiction Primary Service Declaration */
 
+BT_GATT_SERVICE_DEFINE(
+	pairNotify_svc, BT_GATT_PRIMARY_SERVICE(&pairNotify_uuid),
+	BT_GATT_CHARACTERISTIC(&pairNotifyCh_uuid.uuid, BT_GATT_CHRC_NOTIFY,
+			       BT_GATT_PERM_READ, NULL, NULL, &pairingFlag),
+	BT_GATT_CCC(PairChanged,
+		    BT_GATT_PERM_READ|BT_GATT_PERM_WRITE),			   
+
+);
 /******************************************************************************/
 /* Connection callbacks.                                                      */
 /*                                                                            */
@@ -312,6 +328,7 @@ int Advertisement_Update(SensorMsg_t *sensor_event)
 		LOG_INF("Failed to update advertising data (%d)", r);
 	}
 	return r;
+
 }
 
 int Advertisement_End(void)
@@ -377,7 +394,7 @@ void Advertisement_ExtendedSet(bool status)
 		Advertisement_Start();
 	} else {
 		/* Nothing to do here already configured */
-	}	
+	}
 }
 void SetPasskey(void)
 {
@@ -407,7 +424,7 @@ void TestEventMsg(uint16_t event)
 }
 bool GetPairingFlag(void)
 {
-	return(pairingFlag);
+	return (pairingFlag);
 }
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -421,6 +438,13 @@ void CreateAdvertisingParm(void)
 		CreateAdvertisingStandardParm();
 		extendPhyEnbled = false;
 	}
+}
+static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value)
+{
+	ARG_UNUSED(attr);
+	volatile bool notify_enable;
+	notify_enable = (value == BT_GATT_CCC_NOTIFY);
+	LOG_INF("Notification %s", notify_enable ? "enabled" : "disabled");
 }
 
 static char *ble_addr(struct bt_conn *conn)
@@ -464,6 +488,8 @@ static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
 	pairingFlag = true;
 
 	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
+	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1],
+					     &pairingFlag, sizeof(pairingFlag));
 }
 
 static void AuthPairingFailedCb(struct bt_conn *conn,
@@ -471,6 +497,8 @@ static void AuthPairingFailedCb(struct bt_conn *conn,
 {
 	LOG_DBG(".");
 	pairingFlag = false;
+	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1],
+					     &pairingFlag, sizeof(pairingFlag));
 }
 void CreateAdvertisingExtendedParm(void)
 {
