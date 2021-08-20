@@ -299,7 +299,6 @@ int Advertisement_IntervalDefault(void)
 
 		LOG_INF("update interval to default(%d)", r);
 
-		//r = Advertisement_Start();
 	} else {
 		r = bt_le_ext_adv_update_param(adv, &bt_param);
 		LOG_INF("update interval to default(%d)", r);
