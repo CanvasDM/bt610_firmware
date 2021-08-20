@@ -363,6 +363,7 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		k_timer_start(&bootAdvertTimer,
 			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
 	}
+	Advertisement_IntervalUpdate();
 	Advertisement_Start();
 
 	return DISPATCH_OK;
@@ -513,11 +514,13 @@ static DispatchResult_t BleEnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		/* No, so we can go ahead and start advertising in
 		 * 1M. First make sure the boot up timer isn't running
 		 */
-		k_timer_stop(&bootAdvertTimer);
+		k_timer_stop(&bootAdvertTimer);		
 		/* Stop advertising */
 		Advertisement_End();
 		/* Switch to 1M advertising */
 		Advertisement_ExtendedSet(false);
+		/* Switch Advert intrval back to default*/
+		Advertisement_IntervalDefault();
 		/* Restart advertising */
 		Advertisement_Start();
 		/* Advertise for at most
@@ -549,7 +552,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
 
-		r = bt_conn_set_security(bto.conn, (BT_SECURITY_L2|BT_SECURITY_FORCE_PAIR));
+		r = bt_conn_set_security(bto.conn, (BT_SECURITY_L2));
 		LOG_DBG("Setting security status: %d", r);
 
 		/*Once conected make sure the device is paired*/

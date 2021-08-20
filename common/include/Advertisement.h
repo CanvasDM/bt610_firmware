@@ -46,6 +46,7 @@ int Advertisement_Start(void);
 void Advertisement_ExtendedSet(bool status);
 int Advertisement_Update(SensorMsg_t *sensor_event);
 int Advertisement_IntervalUpdate(void);
+int Advertisement_IntervalDefault(void);
 void SetPasskey(void);
 void TestEventMsg(uint16_t event);
 bool GetPairingFlag(void);

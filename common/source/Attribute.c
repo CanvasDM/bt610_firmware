@@ -189,7 +189,27 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 	}
 	return r;
 }
+int Attribute_GetDefault(attr_idx_t Index, void *pValue, size_t ValueLength)
+{
+	memset(pValue, 0, ValueLength);
+	size_t size;
+	int r = -EPERM;
 
+	if (isValid(Index)) {
+		if (isReadable(Index)) {
+			r = PrepareForRead(Index);
+			if (r >= 0) {
+				TAKE_MUTEX(attr_mutex);
+				size = MIN(attrTable[Index].size, ValueLength);
+				memcpy(pValue, attrTable[Index].pDefault, size);
+				r = size;
+				GIVE_MUTEX(attr_mutex);
+			}
+		}
+	}
+	return r;
+
+}
 int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	memset(pValue, 0, ValueLength);

@@ -726,50 +726,6 @@ void AttributeTable_FactoryReset(void)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-#ifdef STILL_WORKING_ON
-bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
-				bool DoWrite)
-{
-	UNUSED_PARAMETER(Length);
-	AttributeEntry_t *pEntry = &attrTable[Index];
-	int32_t value = *((int32_t *)pValue);
-
-	// Values supported by nRF52840
-	bool valid = false;
-	switch (value) {
-	case -40:
-	case -20:
-	case -16:
-	case -12:
-	case -8:
-	case -4:
-	case 0:
-	case 2:
-	case 3:
-	case 4:
-	case 5:
-	case 6:
-	case 7:
-	case 8:
-		valid = true;
-		break;
-
-	default:
-		valid = false;
-		break;
-	}
-
-	if (valid) {
-		if (DoWrite && value != *((int32_t *)pEntry->pData)) {
-			pEntry->modified = true;
-			*((int32_t *)pEntry->pData) = value;
-		}
-		return true;
-	}
-	return false;
-}
-#endif
-
 /* pystart - prepare for read weak implementations */
 __weak int AttributePrepare_upTime(void)
 {

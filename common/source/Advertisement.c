@@ -119,8 +119,7 @@ BT_GATT_SERVICE_DEFINE(
 	pairNotify_svc, BT_GATT_PRIMARY_SERVICE(&pairNotify_uuid),
 	BT_GATT_CHARACTERISTIC(&pairNotifyCh_uuid.uuid, BT_GATT_CHRC_NOTIFY,
 			       BT_GATT_PERM_READ, NULL, NULL, &pairingFlag),
-	BT_GATT_CCC(PairChanged,
-		    BT_GATT_PERM_READ|BT_GATT_PERM_WRITE),			   
+	BT_GATT_CCC(PairChanged, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 
 );
 /******************************************************************************/
@@ -277,6 +276,37 @@ int Advertisement_IntervalUpdate(void)
 
 	return r;
 }
+int Advertisement_IntervalDefault(void)
+{
+	int r = 0;
+	uint32_t advetIntervalDefault = 0;
+
+	Attribute_GetDefault(ATTR_INDEX_advertisingInterval,
+			     &advetIntervalDefault,
+			     sizeof(advetIntervalDefault));
+
+	advetIntervalDefault =
+		MSEC_TO_UNITS(advetIntervalDefault, UNIT_0_625_MS);
+	bt_param.interval_max =
+		advetIntervalDefault + BT_GAP_ADV_FAST_INT_MAX_1;
+	bt_param.interval_min = advetIntervalDefault;
+
+	if (advertising == true) {
+		r = Advertisement_End();
+		if (r == 0) {
+			r = bt_le_ext_adv_update_param(adv, &bt_param);
+		}
+
+		LOG_INF("update interval to default(%d)", r);
+
+		//r = Advertisement_Start();
+	} else {
+		r = bt_le_ext_adv_update_param(adv, &bt_param);
+		LOG_INF("update interval to default(%d)", r);
+	}
+
+	return r;
+}
 int Advertisement_Update(SensorMsg_t *sensor_event)
 {
 	uint16_t networkId = 0;
@@ -328,7 +358,6 @@ int Advertisement_Update(SensorMsg_t *sensor_event)
 		LOG_INF("Failed to update advertising data (%d)", r);
 	}
 	return r;
-
 }
 
 int Advertisement_End(void)
@@ -488,8 +517,8 @@ static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
 	pairingFlag = true;
 
 	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
-	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1],
-					     &pairingFlag, sizeof(pairingFlag));
+	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1], &pairingFlag,
+		       sizeof(pairingFlag));
 }
 
 static void AuthPairingFailedCb(struct bt_conn *conn,
@@ -497,8 +526,8 @@ static void AuthPairingFailedCb(struct bt_conn *conn,
 {
 	LOG_DBG(".");
 	pairingFlag = false;
-	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1],
-					     &pairingFlag, sizeof(pairingFlag));
+	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1], &pairingFlag,
+		       sizeof(pairingFlag));
 }
 void CreateAdvertisingExtendedParm(void)
 {
