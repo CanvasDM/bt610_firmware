@@ -98,8 +98,8 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 		  size_t ValueLength);
 
 /**
- * @brief Copy an attribute.  This is the only function that should be
- * used from the SMP interface because it checks the readable flag.
+ * @brief Default value of an attribute.  This function will find the default
+ * value and return based on the index.
  *
  * @param Index A valid index into attribute table.
  * @param pValue pointer to the default value
@@ -108,6 +108,7 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
  * @retval negative error code, size of value on return
  */
 int Attribute_GetDefault(attr_idx_t Index, void *pValue, size_t ValueLength);
+
 /**
  * @brief Copy an attribute.  This is the only function that should be
  * used from the SMP interface because it checks the readable flag.

@@ -100,6 +100,7 @@ static void CreateAdvertisingParm(void);
 static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
+static void sendPaingNotification(void);
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
 static void AuthCancelCb(struct bt_conn *conn);
 static void AuthPairingConfirmCb(struct bt_conn *conn);
@@ -276,36 +277,32 @@ int Advertisement_IntervalUpdate(void)
 
 	return r;
 }
+
 int Advertisement_IntervalDefault(void)
 {
 	int r = 0;
-	uint32_t advetIntervalDefault = 0;
+	uint16_t advertIntervalDefault = 0;
 
 	Attribute_GetDefault(ATTR_INDEX_advertisingInterval,
-			     &advetIntervalDefault,
-			     sizeof(advetIntervalDefault));
+			     &advertIntervalDefault,
+			     sizeof(advertIntervalDefault));
 
-	advetIntervalDefault =
-		MSEC_TO_UNITS(advetIntervalDefault, UNIT_0_625_MS);
+	advertIntervalDefault =
+		MSEC_TO_UNITS(advertIntervalDefault, UNIT_0_625_MS);
 	bt_param.interval_max =
-		advetIntervalDefault + BT_GAP_ADV_FAST_INT_MAX_1;
-	bt_param.interval_min = advetIntervalDefault;
+		advertIntervalDefault + BT_GAP_ADV_FAST_INT_MAX_1;
+	bt_param.interval_min = advertIntervalDefault;
 
 	if (advertising == true) {
 		r = Advertisement_End();
-		if (r == 0) {
-			r = bt_le_ext_adv_update_param(adv, &bt_param);
-		}
-
-		LOG_INF("update interval to default(%d)", r);
-
-	} else {
-		r = bt_le_ext_adv_update_param(adv, &bt_param);
-		LOG_INF("update interval to default(%d)", r);
 	}
-
+	if (r == 0) {
+		r = bt_le_ext_adv_update_param(adv, &bt_param);
+	}
+	LOG_INF("update interval to default(%d)", r);
 	return r;
 }
+
 int Advertisement_Update(SensorMsg_t *sensor_event)
 {
 	uint16_t networkId = 0;
@@ -487,6 +484,18 @@ static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
 }
+static void sendPaingNotification(void)
+{
+	uint16_t gattIndex = 0;
+
+	LOG_INF("Pairing notification sent %d", pairingFlag);
+	size_t gatt_size = (sizeof(attr_pairNotify_svc) / sizeof(attr_pairNotify_svc[0]));
+	gattIndex = lbt_find_gatt_index(&pairNotifyCh_uuid.uuid, attr_pairNotify_svc,
+					       gatt_size);
+
+	bt_gatt_notify(NULL, &pairNotify_svc.attrs[gattIndex], &pairingFlag,
+		       sizeof(pairingFlag));
+}
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
@@ -514,19 +523,15 @@ static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
 {
 	char *addr = ble_addr(conn);
 	pairingFlag = true;
-
-	LOG_INF("Pairing completed: %s, bonded: %d", log_strdup(addr), bonded);
-	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1], &pairingFlag,
-		       sizeof(pairingFlag));
+	sendPaingNotification();
 }
 
 static void AuthPairingFailedCb(struct bt_conn *conn,
 				enum bt_security_err reason)
 {
-	LOG_DBG(".");
+	LOG_DBG("Failed to Pair.");
 	pairingFlag = false;
-	bt_gatt_notify(NULL, &pairNotify_svc.attrs[1], &pairingFlag,
-		       sizeof(pairingFlag));
+	sendPaingNotification();
 }
 void CreateAdvertisingExtendedParm(void)
 {

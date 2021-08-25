@@ -36,7 +36,8 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #define TAKE_MUTEX(m) k_mutex_lock(&m, K_FOREVER)
 #define GIVE_MUTEX(m) k_mutex_unlock(&m)
 
-#define ATTR_ABS_PATH CONFIG_LCZ_PARAM_FILE_MOUNT_POINT "/" CONFIG_ATTR_FILE_NAME
+#define ATTR_ABS_PATH                                                          \
+	CONFIG_LCZ_PARAM_FILE_MOUNT_POINT "/" CONFIG_ATTR_FILE_NAME
 
 #define ATTR_QUIET_ABS_PATH CONFIG_FSU_MOUNT_POINT "/quiet.bin"
 
@@ -189,6 +190,7 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 	}
 	return r;
 }
+
 int Attribute_GetDefault(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	memset(pValue, 0, ValueLength);
@@ -196,20 +198,13 @@ int Attribute_GetDefault(attr_idx_t Index, void *pValue, size_t ValueLength)
 	int r = -EPERM;
 
 	if (isValid(Index)) {
-		if (isReadable(Index)) {
-			r = PrepareForRead(Index);
-			if (r >= 0) {
-				TAKE_MUTEX(attr_mutex);
-				size = MIN(attrTable[Index].size, ValueLength);
-				memcpy(pValue, attrTable[Index].pDefault, size);
-				r = size;
-				GIVE_MUTEX(attr_mutex);
-			}
-		}
+		size = MIN(attrTable[Index].size, ValueLength);
+		memcpy(pValue, attrTable[Index].pDefault, size);
+		r = size;
 	}
 	return r;
-
 }
+
 int Attribute_Get(attr_idx_t Index, void *pValue, size_t ValueLength)
 {
 	memset(pValue, 0, ValueLength);
@@ -572,8 +567,7 @@ int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 		}
 	}
 	/* Only proceed if prepares were executed OK */
-	if (r == 0){
-
+	if (r == 0) {
 		TAKE_MUTEX(attr_mutex);
 
 		do {
@@ -602,9 +596,9 @@ int Attribute_Dump(char **fstr, AttrDumpType_t Type)
 
 		GIVE_MUTEX(attr_mutex);
 	}
-	if (r < 0){
+	if (r < 0) {
 		k_free(fstr);
-		LOG_ERR("Error converting attribute table into file");	
+		LOG_ERR("Error converting attribute table into file");
 	}
 	return (r < 0) ? r : count;
 }
@@ -717,7 +711,7 @@ static int SaveAttributes(void)
 		BREAK_ON_ERROR(r);
 
 		r = (int)lcz_param_file_write(CONFIG_ATTR_FILE_NAME, fstr,
-					  strlen(fstr));
+					      strlen(fstr));
 		LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
 			strlen(fstr));
 
@@ -852,7 +846,8 @@ static int LoadAttributes(const char *fname, const char *feedback_path,
 		pairs = r;
 
 		if (ValidateFirst) {
-			r = Loader(kvp, fstr, pairs, false, MaskModified, &error_count);
+			r = Loader(kvp, fstr, pairs, false, MaskModified,
+				   &error_count);
 		}
 		BREAK_ON_ERROR(r);
 
