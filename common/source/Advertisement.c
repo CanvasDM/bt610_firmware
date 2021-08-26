@@ -101,6 +101,9 @@ static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value);
 static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void sendPaingNotification(void);
+static ssize_t readPairCallback(struct bt_conn *conn,
+				const struct bt_gatt_attr *attr, void *buf,
+				uint16_t len, uint16_t offset);
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
 static void AuthCancelCb(struct bt_conn *conn);
 static void AuthPairingConfirmCb(struct bt_conn *conn);
@@ -118,8 +121,10 @@ static void CreateAdvertisingStandardParm(void);
 
 BT_GATT_SERVICE_DEFINE(
 	pairNotify_svc, BT_GATT_PRIMARY_SERVICE(&pairNotify_uuid),
-	BT_GATT_CHARACTERISTIC(&pairNotifyCh_uuid.uuid, BT_GATT_CHRC_NOTIFY,
-			       BT_GATT_PERM_READ, NULL, NULL, &pairingFlag),
+	BT_GATT_CHARACTERISTIC(&pairNotifyCh_uuid.uuid,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+			       BT_GATT_PERM_READ, readPairCallback, NULL,
+			       &pairingFlag),
 	BT_GATT_CCC(PairChanged, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 
 );
@@ -483,18 +488,27 @@ static char *ble_addr(struct bt_conn *conn)
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
+	pairingFlag = false;
 }
 static void sendPaingNotification(void)
 {
 	uint16_t gattIndex = 0;
 
 	LOG_INF("Pairing notification sent %d", pairingFlag);
-	size_t gatt_size = (sizeof(attr_pairNotify_svc) / sizeof(attr_pairNotify_svc[0]));
-	gattIndex = lbt_find_gatt_index(&pairNotifyCh_uuid.uuid, attr_pairNotify_svc,
-					       gatt_size);
+	size_t gatt_size =
+		(sizeof(attr_pairNotify_svc) / sizeof(attr_pairNotify_svc[0]));
+	gattIndex = lbt_find_gatt_index(&pairNotifyCh_uuid.uuid,
+					attr_pairNotify_svc, gatt_size);
 
 	bt_gatt_notify(NULL, &pairNotify_svc.attrs[gattIndex], &pairingFlag,
 		       sizeof(pairingFlag));
+}
+static ssize_t readPairCallback(struct bt_conn *conn,
+				const struct bt_gatt_attr *attr, void *buf,
+				uint16_t len, uint16_t offset)
+{
+	return bt_gatt_attr_read(conn, attr, buf, len, offset, &pairingFlag,
+				 sizeof(pairingFlag));
 }
 static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
 {
