@@ -59,7 +59,6 @@ K_MUTEX_DEFINE(mount_mutex);
 #define BLE_TASK_QUEUE_DEPTH 32
 #endif
 #define BOOTUP_ADVERTISMENT_TIME_MS (15000)
-#define PAIRING_CHECK_TIMEOUT_MS (30000)
 #define BLE_TASK_ENTER_ACTIVE_MODE_1M_ADVERTISE_TIME_S 30
 
 typedef struct BleTaskTag {
@@ -129,7 +128,6 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
-static void PairingTimerCallbackIsr(struct k_timer *timer_id);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 static void EnterActiveModeTimerCallbackIsr(struct k_timer *timer_id);
@@ -142,7 +140,6 @@ static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param);
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static BleTaskObj_t bto;
-static struct k_timer pairingTimer;
 static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
 static struct k_timer enterActiveModeTimer;
@@ -300,7 +297,6 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	int r;
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
 
-	k_timer_init(&pairingTimer, PairingTimerCallbackIsr, NULL);
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
 	k_timer_init(&bootAdvertTimer, BootAdvertTimerCallbackIsr, NULL);
 	k_timer_init(&enterActiveModeTimer, EnterActiveModeTimerCallbackIsr,
@@ -389,9 +385,6 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t updateData = false;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
-		case ATTR_INDEX_passkey:
-			SetPasskey();
-			break;
 		case ATTR_INDEX_sensorName:
 			UpdateName();
 			updateData = true;
@@ -551,7 +544,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
 
-		r = bt_conn_set_security(bto.conn, BT_SECURITY_L2);
+		r = bt_conn_set_security(bto.conn, BT_SECURITY_L1);
 		LOG_DBG("Setting security status: %d", r);
 
 		/*Set the power for the connection*/
@@ -756,15 +749,8 @@ static uint32_t GetAdvertisingDuration(void)
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-static void PairingTimerCallbackIsr(struct k_timer *timer_id)
-{
-	UNUSED_PARAMETER(timer_id);
 
-	if (GetPairingFlag() == false) {
-		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
-					      FMC_BLE_END_CONNECTION);
-	}
-}
+
 static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);

@@ -81,23 +81,11 @@ int Advertisement_IntervalUpdate(void);
 int Advertisement_IntervalDefault(void);
 
 /**
- * @brief This will be used on init to make sure the passkey is loaded 
- * from memory
- */
-void SetPasskey(void);
-/**
  * @brief This is only used for the test menue to create a simulated event
  *
  * @param status event number that will be created
  */
 void TestEventMsg(uint16_t event);
-
-/**
- * @brief Read the current status of the flag
- *
- * @retval current value of the pairing flag
- */
-bool GetPairingFlag(void);
 
 #ifdef __cplusplus
 }

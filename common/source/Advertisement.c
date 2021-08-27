@@ -48,14 +48,6 @@ static struct bt_le_ext_adv *adv;
 static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
-static bool pairingFlag = false;
-static struct bt_uuid_128 pairNotify_uuid =
-	BT_UUID_INIT_128(0x50, 0x25, 0xba, 0x7e, 0x0f, 0x8d, 0x40, 0x2b, 0x9b,
-			 0x91, 0xba, 0xa8, 0x7e, 0x94, 0x58, 0x9e);
-
-static struct bt_uuid_128 pairNotifyCh_uuid =
-	BT_UUID_INIT_128(0x5d, 0x38, 0x18, 0xb8, 0x87, 0x7d, 0x4e, 0xf8, 0xa5,
-			 0xe8, 0xba, 0xa8, 0x7e, 0x94, 0x58, 0x9e);
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -97,37 +89,10 @@ static struct bt_data bt_rsp[] = {
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void CreateAdvertisingParm(void);
-static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value);
-static char *ble_addr(struct bt_conn *conn);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
-static void sendPaingNotification(void);
-static ssize_t readPairCallback(struct bt_conn *conn,
-				const struct bt_gatt_attr *attr, void *buf,
-				uint16_t len, uint16_t offset);
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey);
-static void AuthCancelCb(struct bt_conn *conn);
-static void AuthPairingConfirmCb(struct bt_conn *conn);
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded);
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason);
 static void CreateAdvertisingExtendedParm(void);
 static void CreateAdvertisingStandardParm(void);
 
-/******************************************************************************/
-/* Callback Data Definitions - these needed to be defined here due to         */
-/* containing references to the above functions.                              */
-/******************************************************************************/
-/* Pairing Notifiction Primary Service Declaration */
-
-BT_GATT_SERVICE_DEFINE(
-	pairNotify_svc, BT_GATT_PRIMARY_SERVICE(&pairNotify_uuid),
-	BT_GATT_CHARACTERISTIC(&pairNotifyCh_uuid.uuid,
-			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
-			       BT_GATT_PERM_READ, readPairCallback, NULL,
-			       &pairingFlag),
-	BT_GATT_CCC(PairChanged, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-
-);
 /******************************************************************************/
 /* Connection callbacks.                                                      */
 /*                                                                            */
@@ -159,14 +124,14 @@ static struct bt_conn_cb connection_callbacks = {
 /* to protect against corruption and hard faulting.                           */
 /******************************************************************************/
 const struct bt_conn_auth_cb auth_callback = {
-	.passkey_display = AuthPasskeyDisplayCb,
+	.passkey_display = NULL,
 	.passkey_entry = NULL,
 	.passkey_confirm = NULL,
 	.oob_data_request = NULL,
-	.cancel = AuthCancelCb,
-	.pairing_confirm = AuthPairingConfirmCb,
-	.pairing_complete = AuthPairingCompleteCb,
-	.pairing_failed = AuthPairingFailedCb,
+	.cancel = NULL,
+	.pairing_confirm = NULL,
+	.pairing_complete = NULL,
+	.pairing_failed = NULL,
 	.bond_deleted = NULL
 };
 
@@ -236,7 +201,6 @@ int Advertisement_Init(void)
 	r = bt_conn_auth_cb_register(&auth_callback);
 
 	CreateAdvertisingParm();
-	SetPasskey();
 	memset(&current, 0, sizeof(SensorMsg_t));
 	return r;
 }
@@ -426,15 +390,6 @@ void Advertisement_ExtendedSet(bool status)
 		/* Nothing to do here already configured */
 	}
 }
-void SetPasskey(void)
-{
-	static uint32_t key = 0;
-
-	Attribute_Get(ATTR_INDEX_passkey, &key, sizeof(key));
-
-	bt_passkey_set(BT_PASSKEY_INVALID);
-	bt_passkey_set(key);
-}
 void TestEventMsg(uint16_t event)
 {
 	static uint32_t idTest = 0;
@@ -452,10 +407,6 @@ void TestEventMsg(uint16_t event)
 
 	current.event.data.u32 = dataValue;
 }
-bool GetPairingFlag(void)
-{
-	return (pairingFlag);
-}
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -469,83 +420,9 @@ void CreateAdvertisingParm(void)
 		extendPhyEnbled = false;
 	}
 }
-static void PairChanged(const struct bt_gatt_attr *attr, uint16_t value)
-{
-	ARG_UNUSED(attr);
-	volatile bool notify_enable;
-	notify_enable = (value == BT_GATT_CCC_NOTIFY);
-	LOG_INF("Notification %s", notify_enable ? "enabled" : "disabled");
-}
-
-static char *ble_addr(struct bt_conn *conn)
-{
-	static char addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
-	return addr;
-}
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
-	pairingFlag = false;
-}
-static void sendPaingNotification(void)
-{
-	uint16_t gattIndex = 0;
-
-	LOG_INF("Pairing notification sent %d", pairingFlag);
-	size_t gatt_size =
-		(sizeof(attr_pairNotify_svc) / sizeof(attr_pairNotify_svc[0]));
-	gattIndex = lbt_find_gatt_index(&pairNotifyCh_uuid.uuid,
-					attr_pairNotify_svc, gatt_size);
-
-	bt_gatt_notify(NULL, &pairNotify_svc.attrs[gattIndex], &pairingFlag,
-		       sizeof(pairingFlag));
-}
-static ssize_t readPairCallback(struct bt_conn *conn,
-				const struct bt_gatt_attr *attr, void *buf,
-				uint16_t len, uint16_t offset)
-{
-	return bt_gatt_attr_read(conn, attr, buf, len, offset, &pairingFlag,
-				 sizeof(pairingFlag));
-}
-static void AuthPasskeyDisplayCb(struct bt_conn *conn, unsigned int passkey)
-{
-	char addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
-	LOG_INF("Passkey for %s:\n", log_strdup(addr));
-}
-static void AuthCancelCb(struct bt_conn *conn)
-{
-	char *addr = ble_addr(conn);
-
-	LOG_INF("Pairing cancelled: %s", log_strdup(addr));
-}
-void AuthPairingConfirmCb(struct bt_conn *conn)
-{
-	char *addr = ble_addr(conn);
-
-	pairingFlag = true;
-
-	bt_conn_auth_pairing_confirm(conn);
-	LOG_INF("Pairing confirmed: %s", log_strdup(addr));
-}
-static void AuthPairingCompleteCb(struct bt_conn *conn, bool bonded)
-{
-	char *addr = ble_addr(conn);
-	pairingFlag = true;
-	sendPaingNotification();
-}
-
-static void AuthPairingFailedCb(struct bt_conn *conn,
-				enum bt_security_err reason)
-{
-	LOG_DBG("Failed to Pair.");
-	pairingFlag = false;
-	sendPaingNotification();
 }
 void CreateAdvertisingExtendedParm(void)
 {
