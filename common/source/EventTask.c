@@ -71,7 +71,7 @@ static void SendEventDataAdvert(SensorMsg_t *sensor_event);
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
-static FwkMsgHandler_t EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
+static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {

@@ -153,7 +153,7 @@ static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
-static FwkMsgHandler_t SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
+static FwkMsgHandler_t *SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {

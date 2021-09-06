@@ -9,7 +9,7 @@
 #include "ControlTask.h"
 #include "BspSupport.h"
 #include <device.h>
-#include <power/power.h>
+#include <pm/pm.h>
 
 #define CONSOLE_LABEL DT_LABEL(DT_CHOSEN(zephyr_console))
 /* Prevent deep sleep (system off) from being entered on long timeouts
@@ -32,7 +32,6 @@ void main(void)
 	//int rc;
 	//const struct device *cons = device_get_binding(CONSOLE_LABEL);
 	BSP_Init();
-	Framework_Initialize();
 	//rc = device_set_power_state(cons, DEVICE_PM_ACTIVE_STATE, NULL, NULL);
 
 	ControlTask_Initialize();

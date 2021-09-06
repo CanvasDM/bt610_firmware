@@ -111,7 +111,7 @@ static void RebootHandler(void);
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
 
-static FwkMsgHandler_t ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
+static FwkMsgHandler_t *ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {

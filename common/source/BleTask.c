@@ -178,7 +178,7 @@ K_MSGQ_DEFINE(ble_task_advert_queue, sizeof(SensorMsg_t),
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
-static FwkMsgHandler_t BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
+static FwkMsgHandler_t *BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
