@@ -547,8 +547,8 @@ static void UART0SetStatus(bool isStartup)
 			if (!isStartup) {
 				/* If low, a client is connected so       */
 				/* enable the UART                        */
-				rc = device_set_power_state(
-					uart_dev, DEVICE_PM_ACTIVE_STATE, NULL,
+				rc = pm_device_state_set(
+					uart_dev, PM_DEVICE_STATE_ACTIVE, NULL,
 					NULL);
 				/* Safe to resume logging now */
 				UART0LoggingEnable();
@@ -576,8 +576,9 @@ static void UART0WorkqHandler(struct k_work *item)
 	if (uart_dev) {
 		/* Ignoring the return code here - if it's non-zero */
 		/* the UART is already off.                         */
-		(void)device_set_power_state(uart_dev, DEVICE_PM_OFF_STATE,
-					     NULL, NULL);
+		(void)pm_device_state_set(
+			uart_dev, PM_DEVICE_STATE_OFF, NULL,
+			NULL);
 	}
 }
 
@@ -659,10 +660,9 @@ static void UART1Initialise(void)
 
 		/* Ignoring the return code here - if it's non-zero */
 		/* the UART is already off.                         */
-		(void)device_set_power_state(uart_dev,
-						DEVICE_PM_OFF_STATE,
-						NULL,
-						NULL);
+		(void)pm_device_state_set(
+			uart_dev, PM_DEVICE_STATE_OFF, NULL,
+			NULL);
 	}
 }
 static bool MagSwitchIsSimulated(int *simulated_value)
