@@ -43,7 +43,7 @@ static struct gpio_callback digitalIn2_cb_data;
 static struct gpio_callback uart0cts_cb_data;
 /* Delayed work queue item used to hold off on shutting the UART */
 /* down to avoid interfering with shell startup                  */
-static struct k_delayed_work uart0_shut_off_delayed_work;
+static struct k_work_delayable uart0_shut_off_delayed_work;
 /* This is a copy of the context taken from the shell uart before */
 /* it gets switched off.                                          */
 void *uart0_ctx = NULL;
@@ -449,8 +449,8 @@ static void UART0InitialiseSWFlowControl(void)
 
 		/* Set up the delayed work structure used to disable */
 		/* the UART                                          */
-		k_delayed_work_init(&uart0_shut_off_delayed_work,
-				    UART0WorkqHandler);
+		k_work_init_delayable(&uart0_shut_off_delayed_work,
+				      UART0WorkqHandler);
 
 		UART0SetStatus(true);
 	}
@@ -528,14 +528,14 @@ static void UART0SetStatus(bool isStartup)
 			/* do this, we won't be able to reconnect at  */
 			/* a later stage.                             */
 			if (isStartup) {
-				k_delayed_work_submit(
+				k_work_reschedule(
 					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_STARTUP_DELAY_MS));
 			} else {
 				/* If we've already started up, a client has */
 				/* disconnected so we can safely disconnect  */
 				/* the UART with a reduced delay             */
-				k_delayed_work_submit(
+				k_work_reschedule(
 					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS));
 			}
@@ -665,6 +665,7 @@ static void UART1Initialise(void)
 			NULL);
 	}
 }
+
 static bool MagSwitchIsSimulated(int *simulated_value)
 {
 	bool is_simulated = false;
