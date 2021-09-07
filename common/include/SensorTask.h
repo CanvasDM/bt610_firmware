@@ -39,6 +39,10 @@ enum {
 	ANALOG_CH_4,
 	TOTAL_ANALOG_CH
 };
+
+/* RTC timestamps are printed in HH:MM:SS format (extra character for NULL) */
+#define SENSOR_TASK_RTC_TIMESTAMP_SIZE 9
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -50,6 +54,17 @@ enum {
  * @brief The setup of the thread parameters
  */
 void SensorTask_Initialize(void);
+
+/**
+ * @brief Converts the RTC time to a meaningful time string.
+ *
+ * @param [out] The converted RTC time.
+ */
+#ifdef CONFIG_LOG
+void SensorTask_GetTimeString(uint8_t *time_string);
+#else
+#define SensorTask_GetTimeString(x)
+#endif
 
 #ifdef __cplusplus
 }

@@ -22,6 +22,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include <sys/printk.h>
 #include <inttypes.h>
 #include <drivers/spi.h>
+#include <time.h>
 
 #include "FrameworkIncludes.h"
 #include "Attribute.h"
@@ -34,6 +35,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 #include "AggregationCount.h"
+#include <stdio.h>
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -127,6 +129,12 @@ static void LoadSensorConfiguration(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
 static void SensorOutput2Control(void);
+
+#ifdef CONFIG_LOG
+static void printRTCTime(void);
+#else
+#define printRTCTime()
+#endif
 
 static void UpdateDin1(void);
 static void UpdateDin2(void);
@@ -280,12 +288,30 @@ int AttributePrepare_temperatureResult4(void)
 	float dummyResult;
 	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
+
 int AttributePrepare_digitalInput(void)
 {
 	UpdateDin1();
 	UpdateDin2();
 	return 0;
 }
+
+#ifdef CONFIG_LOG
+void SensorTask_GetTimeString(uint8_t *time_string)
+{
+	struct tm *tm;
+	uint32_t savedRTCSeconds = 0;
+	time_t time;
+
+	Attribute_Get(ATTR_INDEX_qrtcLastSet, &savedRTCSeconds,
+		      sizeof(savedRTCSeconds));
+	time = (time_t)(savedRTCSeconds);
+
+	tm = gmtime(&time);
+	snprintf(time_string, SENSOR_TASK_RTC_TIMESTAMP_SIZE, "%.2d:%.2d:%.2d",
+		 tm->tm_hour, tm->tm_min, tm->tm_sec);
+}
+#endif
 
 /******************************************************************************/
 /* Local Function Definitions                                                 */
@@ -356,6 +382,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			break;
 		case ATTR_INDEX_configType:
 			SensorConfigChange(false);
+			break;
+
+		case ATTR_INDEX_qrtcLastSet:
+			printRTCTime();
 			break;
 
 		case ATTR_INDEX_digitalOutput1State:
@@ -606,6 +636,17 @@ static void SensorOutput2Control(void)
 
 	BSP_PinSet(DO2_PIN, (outputStatus));
 }
+
+#ifdef CONFIG_LOG
+static void printRTCTime(void)
+{
+	uint8_t time_string[SENSOR_TASK_RTC_TIMESTAMP_SIZE];
+
+	SensorTask_GetTimeString(time_string);
+	LOG_DBG("Time = %s", time_string);
+}
+#endif
+
 static void UpdateDin1(void)
 {
 	/*Check if the input is enabled first*/
