@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.70",
+    "version": "1.71",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -3043,7 +3043,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.70",
+              "x-default": "1.71",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -4546,6 +4546,28 @@
               "x-writeable": true,
               "x-readable": true,
               "x-validator": "tampsim"
+            }
+          },
+          {
+            "name": "bootPHY",
+            "summary": "The PHY to enable for 30s at bootup",
+            "description": "Enumeration:\n 0 = Default\n 1 = 1M\n 2 = Coded",
+            "required": true,
+            "x-id": 166,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": true,
+              "x-writeable": true,
+              "x-readable": true,
             }
           }
         ]

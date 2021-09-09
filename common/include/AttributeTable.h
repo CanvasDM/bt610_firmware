@@ -72,7 +72,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 166
+#define ATTR_TABLE_SIZE 167
 
 /* pyend */
 
@@ -95,6 +95,7 @@ typedef enum
 	CONFIG_ULTRASONIC_PRESSURE,
 	CONFIG_SPI_I2C,
 }configType_t;
+
 typedef enum
 {
 	ANALOG_UNUSED = 0,
@@ -107,6 +108,13 @@ typedef enum
 	ANALOG_CURRENT500A,
 }analogConfigType_t;
 
+typedef enum
+{
+	BOOT_PHY_TYPE_DEFAULT = 0,
+	BOOT_PHY_TYPE_1M,
+	BOOT_PHY_TYPE_CODED,
+	BOOT_PHY_TYPE_COUNT
+}bootPHYType_t;
 
 /******************************************************************************/
 /* Indices                                                                    */
@@ -279,6 +287,7 @@ typedef enum
 #define ATTR_INDEX_magSwitchSimulatedValue               163
 #define ATTR_INDEX_tamperSwitchSimulated                 164
 #define ATTR_INDEX_tamperSwitchSimulatedValue            165
+#define ATTR_INDEX_bootPHY                               166
 /* pyend */
 /* clang-format on */
 

@@ -182,6 +182,7 @@ typedef struct RwAttributesTag {
 	bool magSwitchSimulatedValue;
 	bool tamperSwitchSimulated;
 	bool tamperSwitchSimulatedValue;
+	uint8_t bootPHY;
 	/* pyend */
 } RwAttribute_t;
 
@@ -329,7 +330,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.magSwitchSimulated = 0,
 	.magSwitchSimulatedValue = 0,
 	.tamperSwitchSimulated = 0,
-	.tamperSwitchSimulatedValue = 0
+	.tamperSwitchSimulatedValue = 0,
+	.bootPHY = 0,
 	/* pyend */
 };
 
@@ -694,7 +696,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [162] = { RO_ATTRX(magSwitchSimulated)            , b  , n, y, y, n, n, n, AttributeValidator_magsimen , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [163] = { RO_ATTRX(magSwitchSimulatedValue)       , b  , n, y, y, n, n, n, AttributeValidator_magsim   , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [164] = { RO_ATTRX(tamperSwitchSimulated)         , b  , n, y, y, n, n, n, AttributeValidator_tampsimen, NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [165] = { RO_ATTRX(tamperSwitchSimulatedValue)    , b  , n, y, y, n, n, n, AttributeValidator_tampsim  , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        }
+    [165] = { RO_ATTRX(tamperSwitchSimulatedValue)    , b  , n, y, y, n, n, n, AttributeValidator_tampsim  , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [166] = { RW_ATTRX(bootPHY)                       , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        }
     /* pyend */
 };
 /* clang-format on */
