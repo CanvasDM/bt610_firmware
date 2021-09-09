@@ -2,7 +2,7 @@
  * @file ControlTask.c
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,6 +19,8 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <pm_config.h>
 #include <hal/nrf_power.h>
 #include <logging/log_ctrl.h>
+#include <mgmt/mgmt.h>
+#include <img_mgmt/img_mgmt.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"
@@ -106,6 +108,9 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
 
 static void RebootHandler(void);
+
+static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
+				 void *arg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -203,6 +208,9 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
 	Sentrius_mgmt_register_group();
 #endif
+
+	/* Register a callback for mcumgr management events */
+	mgmt_register_evt_cb(mcumgr_mgmt_callback);
 
 	Framework_StartTimer(&pObj->msgTask);
 
@@ -331,4 +339,26 @@ int AttributePrepare_logFileStatus(void)
 {
 	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
 	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
+}
+
+static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
+				 void *arg)
+{
+	/* We are only interested in the firmware upload complete event, skip
+	 * all others
+	 */
+	if (opcode != MGMT_EVT_OP_CMD_STATUS ||
+	    group != MGMT_GROUP_ID_IMAGE ||
+	    id != IMG_MGMT_ID_UPLOAD ||
+	    ((struct mgmt_evt_op_cmd_status_arg*)arg)->status !=
+	    IMG_MGMT_ID_UPLOAD_STATUS_COMPLETE) {
+		return;
+	}
+
+	/* Save the current PHY to the boot PHY attribute so it can be restored
+	 * after rebooting
+	 */
+	Attribute_SetUint32(ATTR_INDEX_bootPHY, (ble_conn_last_was_le_coded() ?
+						 BOOT_PHY_TYPE_CODED :
+						 BOOT_PHY_TYPE_1M));
 }

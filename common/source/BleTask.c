@@ -69,6 +69,7 @@ typedef struct BleTaskTag {
 	uint32_t durationTimeMs;
 	bool activeModeStatus;
 	bool codedPHYBroadcast;
+	bool conn_from_le_coded;
 } BleTaskObj_t;
 
 typedef enum {
@@ -131,6 +132,7 @@ static uint32_t GetAdvertisingDuration(void);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 static void EnterActiveModeTimerCallbackIsr(struct k_timer *timer_id);
+static void upgrade_advert_phy_timer_callback_isr(struct k_timer *timer_id);
 
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,
 			     uint16_t latency, uint16_t timeout);
@@ -143,6 +145,7 @@ static BleTaskObj_t bto;
 static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
 static struct k_timer enterActiveModeTimer;
+static struct k_timer upgrade_advert_phy_timer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -221,6 +224,11 @@ void BleTask_Initialize(void)
 	k_thread_name_set(bto.msgTask.pTid, THIS_FILE);
 }
 
+bool ble_conn_last_was_le_coded(void)
+{
+	return bto.conn_from_le_coded;
+}
+
 /* The Zephyr settings module and Laird Connectivity settings both use internal
  * flash that has the default mount point of /lfs.
  */
@@ -295,12 +303,18 @@ static int BluetoothInit(void)
 static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	int r;
+	uint8_t force_phy;
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
 
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
 	k_timer_init(&bootAdvertTimer, BootAdvertTimerCallbackIsr, NULL);
 	k_timer_init(&enterActiveModeTimer, EnterActiveModeTimerCallbackIsr,
 		     NULL);
+	k_timer_init(&upgrade_advert_phy_timer,
+		     upgrade_advert_phy_timer_callback_isr,
+		     NULL);
+
+	force_phy = BOOT_PHY_TYPE_DEFAULT;
 
 	r = BluetoothInit();
 	while (r != 0) {
@@ -314,15 +328,27 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &bto.codedPHYBroadcast,
 		      sizeof(bto.codedPHYBroadcast));
 
-	/* If not in Active Mode, advertise for BOOTUP_ADVERTISMENT_TIME_MS
-	 * in 1M
-	 */
-	if (bto.activeModeStatus == false) {
+	Attribute_Get(ATTR_INDEX_bootPHY, &force_phy,
+		      sizeof(force_phy));
+
+	if (force_phy != BOOT_PHY_TYPE_DEFAULT) {
+		/* If a firmware update has taken place, re-advertise in PHY
+		 * that was used prior to upgrade, then clear it
+		 */
+		Advertisement_ExtendedSet((force_phy == BOOT_PHY_TYPE_CODED));
+		Advertisement_Start();
+		k_timer_start(&upgrade_advert_phy_timer,
+			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
+
+	        Attribute_SetUint32(ATTR_INDEX_bootPHY, BOOT_PHY_TYPE_DEFAULT);
+	} else if (bto.activeModeStatus == false) {
+		/* If not in Active Mode, advertise for
+		 * BOOTUP_ADVERTISMENT_TIME_MS in 1M
+		 */
 		Advertisement_ExtendedSet(false);
 		Advertisement_Start();
 		k_timer_start(&bootAdvertTimer,
 			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
-
 	} else {
 		/* Otherwise start advertising in configured broadcast PHY */
 		Advertisement_Start();
@@ -362,6 +388,7 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t EndAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg)
 {
@@ -420,6 +447,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	}
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t BleSensorUpdateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg)
 {
@@ -533,8 +561,8 @@ static DispatchResult_t BleEnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
+	struct bt_conn_info conn_info;
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-
 	if (r) {
 		LOG_ERR("Failed to connect to central %s (%u)",
 			log_strdup(addr), r);
@@ -544,10 +572,19 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		LOG_INF("Connected: %s", log_strdup(addr));
 		bto.conn = bt_conn_ref(conn);
 
+		/* Fetch PHY so we know what to advertise in if a firmware
+		 * update takes places to re-allow connectivity
+		 */
+		bto.conn_from_le_coded = false;
+		r = bt_conn_get_info(conn, &conn_info);
+		if (!r && conn_info.le.phy->tx_phy == BT_GAP_LE_PHY_CODED) {
+			bto.conn_from_le_coded = true;
+		}
+
 		r = bt_conn_set_security(bto.conn, BT_SECURITY_L1);
 		LOG_DBG("Setting security status: %d", r);
 
-		/*Set the power for the connection*/
+		/* Set the power for the connection */
 		TransmitPower();
 
 		/* Stop boot and active mode timers. We don't want
@@ -556,7 +593,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		k_timer_stop(&bootAdvertTimer);
 		k_timer_stop(&enterActiveModeTimer);
 
-		/*Pause the duration timer if it is running*/
+		/* Pause the duration timer if it is running */
 		bto.durationTimeMs = k_timer_remaining_get(&durationTimer);
 		k_timer_stop(&durationTimer);
 	}
@@ -666,6 +703,7 @@ static void TransmitPower(void)
 		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_ADV, 0, powerLevel);
 	}
 }
+
 static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl)
 {
@@ -749,8 +787,6 @@ static uint32_t GetAdvertisingDuration(void)
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-
-
 static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
@@ -758,11 +794,14 @@ static void DurationTimerCallbackIsr(struct k_timer *timer_id)
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_SENSOR_UPDATE);
 }
+
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
 
-	/*If active mode hasn't been turned on at this point turn off the adverisments*/
+	/* If active mode hasn't been turned on at this point turn off the
+	 * adverisments
+	 */
 	if (bto.activeModeStatus == false) {
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 					      FMC_BLE_END_ADVERTISING);
@@ -775,6 +814,22 @@ static void EnterActiveModeTimerCallbackIsr(struct k_timer *timer_id)
 
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
+}
+
+static void upgrade_advert_phy_timer_callback_isr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+
+	/* Stop advertising in the designated PHY and advertise in the pre-set
+	 * PHY or do not restart advertising if active mode is disabled
+	 */
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+				      FMC_BLE_END_ADVERTISING);
+
+	if (bto.activeModeStatus == true) {
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
+					      FMC_BLE_START_ADVERTISING);
+	}
 }
 
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,

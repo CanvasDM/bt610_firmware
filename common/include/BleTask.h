@@ -40,6 +40,13 @@ extern "C" {
  */
 void BleTask_Initialize(void);
 
+/**
+ * @brief Returns if the last connection was made used coded PHY
+ *
+ * @retval true if LE coded, false otherwise
+ */
+bool ble_conn_last_was_le_coded(void);
+
 #ifdef __cplusplus
 }
 #endif
