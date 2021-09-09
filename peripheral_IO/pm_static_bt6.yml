@@ -4,28 +4,28 @@ mcuboot:
     before:
       - mcuboot_primary
   region: flash_primary
-  size: 0x18000
+  size: 0xC000
 mcuboot_pad:
-  address: 0x18000
+  address: 0xC000
   placement:
     before:
       - mcuboot_primary_app
   region: flash_primary
   size: 0x200
 mcuboot_primary:
-  address: 0x18000
+  address: 0xC000
   orig_span: &id001
     - mcuboot_pad
     - app
   region: flash_primary
-  size: 0xE0000
+  size: 0xEC000
   span: *id001
 mcuboot_primary_app:
-  address: 0x18200
+  address: 0xC200
   orig_span: &id002
     - app
   region: flash_primary
-  size: 0xDFE00
+  size: 0xEBE00
   span: *id002
 littlefs_storage:
   address: 0xf8000
@@ -41,15 +41,15 @@ external_flash:
 mcuboot_secondary:
   address: 0x0
   region: external_flash
-  size: 0xE0000
+  size: 0xEC000
 scratch:
-  address: 0xE0000
+  address: 0xEC000
   region: external_flash
   size: 0x4000
 customer:
-  address: 0xE4000
+  address: 0xf0000
   region: external_flash
-  size: 0x1C000
+  size: 0x10000
 lfs_storage:
   address: 0x100000
   region: external_flash
