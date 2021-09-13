@@ -86,7 +86,7 @@ static const struct log_backend *UART0FindBackend(void);
 #endif
 
 static void ConfigureOutputs(void);
-//static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
+static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
 static void UART0InitialiseSWFlowControl(void);
 static void UART1Initialise(void);
 static bool MagSwitchIsSimulated(int *simulated_value);
@@ -403,7 +403,7 @@ static void ConfigureOutputs(void)
 			   GPIO_OUTPUT_LOW);
 }
 
-void SendDigitalInputStatus(uint16_t pin, uint8_t status)
+static void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 {
 	DigitalInMsg_t *pMsgSend =
 		(DigitalInMsg_t *)BufferPool_Take(sizeof(DigitalInMsg_t));

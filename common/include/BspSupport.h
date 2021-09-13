@@ -78,7 +78,6 @@ int BSP_PinGet(uint8_t pin);
 void BSP_DigitalPinsStatus(void);
 void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
 				gpio_flags_t edge);
-void SendDigitalInputStatus(uint16_t pin, uint8_t status);
 int BSP_UpdateDigitalInput1SimulatedStatus(bool simulation_enabled,
 					   bool last_simulation_enabled);
 int BSP_UpdateDigitalInput2SimulatedStatus(bool simulation_enabled,
