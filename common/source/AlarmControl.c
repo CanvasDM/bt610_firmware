@@ -37,14 +37,12 @@ typedef enum {
 	DELTA_THRESH,
 	NUMBER_ALARM_TYPES
 } AlarmTypes_t;
-/******************************************************************************/
-/* Local Data Definitions                                                     */
-/******************************************************************************/
-/* N/A */
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void AlarmTypeHandler(SensorEventType_t alarmType);
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -82,7 +80,9 @@ int HighTempAlarmCheck(size_t channel, float value)
 
 				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(
 					ATTR_INDEX_temperatureAlarms,
 					highTemp1Bit, 0);
@@ -99,15 +99,19 @@ int HighTempAlarmCheck(size_t channel, float value)
 
 				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(
 					ATTR_INDEX_temperatureAlarms,
 					highTemp2Bit, 0);
 			}
 		}
 	}
+
 	return r;
 }
+
 int LowTempAlarmCheck(size_t channel, float value)
 {
 	float lowTempAlarm1 = 0;
@@ -141,7 +145,9 @@ int LowTempAlarmCheck(size_t channel, float value)
 
 				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(
 					ATTR_INDEX_temperatureAlarms,
 					lowTemp1Bit, 0);
@@ -158,15 +164,19 @@ int LowTempAlarmCheck(size_t channel, float value)
 
 				Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(
 					ATTR_INDEX_temperatureAlarms,
 					lowTemp2Bit, 0);
 			}
 		}
 	}
+
 	return r;
 }
+
 int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 {
 	float threshold = 0;
@@ -190,11 +200,14 @@ int DeltaTempAlarmCheck(size_t channel, float tempDifference)
 
 			Flags_Set(TEMP_ALARM_MASK, flagTempBit, 1);
 		} else {
-			/* Alarm not enabled clear the active parameter if it was set */
+			/* Alarm not enabled clear the active parameter if it
+			 * was set
+			 */
 			Attribute_SetMask32(ATTR_INDEX_temperatureAlarms,
 					    deltaBit, 0);
 		}
 	}
+
 	return 0;
 }
 
@@ -284,7 +297,9 @@ int LowAnalogAlarmCheck(size_t channel, float value)
 
 				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 						    lowAnalog1Bit, 0);
 			}
@@ -298,12 +313,15 @@ int LowAnalogAlarmCheck(size_t channel, float value)
 
 				Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 			} else {
-				/* Alarm not enabled clear the active parameter if it was set */
+				/* Alarm not enabled clear the active parameter
+				 * if it was set
+				 */
 				Attribute_SetMask32(ATTR_INDEX_analogAlarms,
 						    lowAnalog2Bit, 0);
 			}
 		}
 	}
+
 	return r;
 }
 
@@ -327,13 +345,17 @@ int DeltaAnalogAlarmCheck(size_t channel, float analogDifference)
 					    1);
 			Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, 1);
 		} else {
-			/* Alarm not enabled clear the active parameter if it was set */
+			/* Alarm not enabled clear the active parameter if it
+			 * was set
+			 */
 			Attribute_SetMask32(ATTR_INDEX_analogAlarms, deltaBit,
 					    0);
 		}
 	}
+
 	return 0;
 }
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/

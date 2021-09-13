@@ -115,17 +115,16 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
-
 static FwkMsgHandler_t *ControlTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:                   return Framework_UnknownMsgHandler;
-	case FMC_PERIODIC:                  return HeartbeatMsgHandler;
-	case FMC_SOFTWARE_RESET:            return SoftwareResetMsgHandler;
-	case FMC_ATTR_CHANGED:              return AttrBroadcastMsgHandler;
-	case FMC_FACTORY_RESET:             return FactoryResetMsgHandler;
-	default:                            return NULL;
+	case FMC_INVALID:           return Framework_UnknownMsgHandler;
+	case FMC_PERIODIC:          return HeartbeatMsgHandler;
+	case FMC_SOFTWARE_RESET:    return SoftwareResetMsgHandler;
+	case FMC_ATTR_CHANGED:      return AttrBroadcastMsgHandler;
+	case FMC_FACTORY_RESET:     return FactoryResetMsgHandler;
+	default:                    return NULL;
 	}
 	/* clang-format on */
 }
@@ -179,9 +178,9 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	Attribute_Init();
 
-	/* Safe to read the data log enable flag after reading back
-	 * all attributes. We use this to determine whether to disable
-	 * or enable logging at startup.
+	/* Safe to read the data log enable flag after reading back all
+	 * attributes. We use this to determine whether to disable or enable
+	 * logging at startup.
 	 */
 	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
 		      sizeof(dataLogEnable));
@@ -192,8 +191,8 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	Flags_Init();
 
-	/* Start the Event Manager as early as possible before any
-	 * events get posted to it by threads trumping this one.
+	/* Start the Event Manager as early as possible before any events get
+	 * posted to it by threads trumping this one.
 	 */
 	lcz_event_manager_initialise(dataLogEnable);
 
@@ -262,8 +261,9 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
 	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
 
-	/* Read value from system because it should have less error
-	 * than seconds maintained by this function. */
+	/* Read value from system because it should have less error than
+	 * seconds maintained by this function.
+	 */
 	pnird->qrtc = lcz_qrtc_get_epoch();
 	Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
 
@@ -285,7 +285,9 @@ static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
 		default:
-			/* Don't care about this attribute. This is a broadcast. */
+			/* Don't care about this attribute. This is a
+			 * broadcast.
+			 */
 			break;
 		}
 	}
@@ -299,7 +301,7 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	LOG_WRN("Factory Reset");
 	Attribute_FactoryReset();
-	/*Need reset to init all the values*/
+	/* Need reset to init all the values */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
 				      FMC_SOFTWARE_RESET);
 	return DISPATCH_OK;
@@ -321,7 +323,7 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 EXTERNED void Framework_AssertionHandler(char *file, int line)
 {
-	static bool busy = 0; /* prevent recursion (buffer alloc fail, ...) */
+	static bool busy = 0; /* Prevent recursion (buffer alloc fail, ...) */
 	if (!busy) {
 		busy = true;
 		LOG_ERR("\r\n!-----> Assertion <-----! %s:%d\r\n", file, line);

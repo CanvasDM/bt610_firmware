@@ -36,9 +36,9 @@
 
 #define FLOAT_MAX 3.4028235E38
 
-/* These are used to index CBOR message elements. Messages received from 
-   clients are divided into Key Value pairs called parameters, with the first
-   parameter being called P0, the second P1, etc.
+/* These are used to index CBOR message elements. Messages received from
+ * clients are divided into Key Value pairs called parameters, with the first
+ * parameter being called P0, the second P1, etc.
  */
 #define SENTRIUS_MGMT_P0_INDEX 0
 #define SENTRIUS_MGMT_P1_INDEX 1
@@ -90,6 +90,9 @@ typedef union _floatContainer_t {
 	long long int integerValue;
 } floatContainer_t;
 
+/******************************************************************************/
+/* Local Function Prototypes                                                  */
+/******************************************************************************/
 static void Sentrius_mgmt_UpdateConfig(void);
 
 static CborAttrType ParameterValueType(attr_idx_t paramID,
@@ -224,7 +227,9 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	if (readCbor != 0) {
 		return -EINVAL;
 	}
-	/*just need the type from p1 look up id don't need the params_value structure*/
+	/* Just need the type from p1 look up id don't need the params_value
+	 * structure
+	 */
 	parameterDataType =
 		ParameterValueType((attr_idx_t)paramID, params_value);
 	/* Encode the response. */
@@ -233,7 +238,7 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
 
-	/*Get the value*/
+	/* Get the value */
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
 		getResult = Attribute_Get(paramID, &intData, sizeof(intData));
@@ -354,12 +359,13 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	parameterDataType =
 		ParameterValueType((attr_idx_t)paramID, params_value);
 
-	/* Now check if the expected parameter type can 
-	   be modifed by CBOR to save space.            */
+	/* Now check if the expected parameter type can be modified by CBOR to
+	 * save space.
+	 */
 	if (Attribute_GetType(paramID) == ATTR_TYPE_FLOAT) {
-		/* If it can, we need to remap the params_value
-		   structure so we can convert the data to internal
-		   format */
+		/* If it can, we need to remap the params_value structure so we
+		 * can convert the data to internal format
+		 */
 		result = FloatParameterExternalValueType(
 			paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
 			params_value, &floatContainer);
@@ -670,7 +676,7 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
 		return -EINVAL;
 	}
-	fsu_delete_abs(SENTRIUS_MGMT_PARAMETER_DUMP_PATH); 
+	fsu_delete_abs(SENTRIUS_MGMT_PARAMETER_DUMP_PATH);
 	/* This will malloc a string as large as maximum parameter file size. */
 	if (type < UINT8_MAX) {
 		r = Attribute_Dump(&fstr, type);

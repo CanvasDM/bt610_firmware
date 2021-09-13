@@ -53,6 +53,7 @@ int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -66,6 +67,7 @@ int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
 		pEntry->modified = true;
 		*((uint64_t *)pEntry->pData) = value;
 	}
+
 	return 0;
 }
 
@@ -74,7 +76,7 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
-	uint32_t value; // = *(uint32_t *)pValue;
+	uint32_t value;
 	memcpy(&value, pValue, sizeof(value));
 
 	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
@@ -85,6 +87,7 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -103,12 +106,14 @@ int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
+
 int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
 			    size_t Length, bool DoWrite)
 {
-	/*Same as UINT8*/
+	/* Same as UINT8 */
 	ARG_UNUSED(Length);
 	int r = -EPERM;
 	uint32_t value = (uint32_t)(*(uint8_t *)pValue);
@@ -121,8 +126,10 @@ int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
+
 int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite)
 {
@@ -138,6 +145,7 @@ int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -151,6 +159,7 @@ int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
 		pEntry->modified = true;
 		*((int64_t *)pEntry->pData) = value;
 	}
+
 	return 0;
 }
 
@@ -169,6 +178,7 @@ int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -187,6 +197,7 @@ int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -205,6 +216,7 @@ int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -223,6 +235,7 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -251,6 +264,7 @@ int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
 	if (r < 0) {
 		LOG_ERR("Invalid analog input configuration");
 	}
+
 	return r;
 }
 /**
@@ -272,6 +286,7 @@ int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -290,6 +305,7 @@ int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -308,6 +324,7 @@ int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -326,6 +343,7 @@ int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -344,6 +362,7 @@ int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -362,6 +381,7 @@ int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue,
 		}
 		r = 0;
 	}
+
 	return r;
 }
 
@@ -438,6 +458,7 @@ int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return r;
 }
 
@@ -467,6 +488,7 @@ int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return r;
 }
 
@@ -542,6 +564,7 @@ int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return r;
 }
 
@@ -568,6 +591,7 @@ int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue,
 		/* Call standard validator for initial call */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return r;
 }
 
@@ -625,6 +649,7 @@ int AttributeValidator_magsimen(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return (r);
 }
 
@@ -653,6 +678,7 @@ int AttributeValidator_magsim(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return (r);
 }
 
@@ -711,6 +737,7 @@ int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return (r);
 }
 
@@ -739,6 +766,7 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 		 */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
 	}
+
 	return (r);
 }
 

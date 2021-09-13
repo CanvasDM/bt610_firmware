@@ -42,14 +42,11 @@ static void EventTypeHandler(SensorEventType_t eventType, float data);
 static void AggregationEventTrigger(SensorMsg_t *sensor_event);
 static SensorEventType_t AnalogConfigType(size_t channel);
 
-/* This is the local queue used to store thermistor measurements 
-* used in the aggragation count.
+/* This is the local queue used to store thermistor measurements used in the
+ * aggragation count.
  */
 K_MSGQ_DEFINE(aggregation_timestamp_queue, sizeof(SensorMsg_t),
 	      AGGREGATION_MAX_SIZE, FWK_QUEUE_ALIGNMENT);
-/******************************************************************************/
-/* Local Function Prototypes                                                  */
-/******************************************************************************/
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -74,7 +71,9 @@ int AggregationTempHandler(size_t channel, float value)
 						SENSOR_EVENT_TEMPERATURE_1 +
 						channel;
 					Tempevent.event.data.f = value;
-					/* We always add events to the Event Manager for long term storage */
+					/* We always add events to the Event
+					 * Manager for long term storage
+					 */
 					Tempevent.event.timestamp =
 						lcz_event_manager_add_sensor_event(
 							Tempevent.event.type,
@@ -83,14 +82,17 @@ int AggregationTempHandler(size_t channel, float value)
 					currentAggregationNumber =
 						currentAggregationNumber + 1;
 
-					/* Set event details in the AGGREGATION queue */
+					/* Set event details in the AGGREGATION
+					 * queue
+					 */
 					k_msgq_put(&aggregation_timestamp_queue,
 						   &Tempevent.event.timestamp,
 						   K_NO_WAIT);
 				}
 			}
+
 			if (currentAggregationNumber == aggCount) {
-				/*Need to send out past temp value*/
+				/* Need to send out past temp value */
 				while (k_msgq_num_used_get(
 					&aggregation_timestamp_queue)) {
 					k_msgq_get(&aggregation_timestamp_queue,
@@ -146,6 +148,7 @@ static void EventTypeHandler(SensorEventType_t eventType, float data)
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
 }
+
 static void AggregationEventTrigger(SensorMsg_t *sensor_event)
 {
 	/* Now post the event to the BLE Task */
@@ -164,6 +167,7 @@ static void AggregationEventTrigger(SensorMsg_t *sensor_event)
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
 }
+
 static SensorEventType_t AnalogConfigType(size_t channel)
 {
 	analogConfigType_t configType;
@@ -196,6 +200,3 @@ static SensorEventType_t AnalogConfigType(size_t channel)
 	}
 	return (eventTypeReturn);
 }
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/

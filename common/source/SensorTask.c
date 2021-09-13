@@ -40,7 +40,6 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
-
 #ifndef SENSOR_TASK_PRIORITY
 #define SENSOR_TASK_PRIORITY K_PRIO_PREEMPT(1)
 #endif
@@ -189,7 +188,7 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	sensorTaskObject.msgTask.rxer.pMsgDispatcher = SensorTaskMsgDispatcher;
 	sensorTaskObject.msgTask.timerDurationTicks = K_MSEC(1000);
-	sensorTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); // 0 for one shot
+	sensorTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); /* One shot */
 	sensorTaskObject.msgTask.rxer.pQueue = &sensorTaskQueue;
 
 	sensorTaskObject.digitalIn1Enabled = NO_ALARM;
@@ -410,7 +409,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 							FMC_ENTER_ACTIVE_MODE));
 		case ATTR_INDEX_settingsPasscode:
 		default:
-			// don't do anything - this is a broadcast
+			/* Don't do anything - this is a broadcast */
 			break;
 		}
 	}
@@ -420,6 +419,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t
 SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
@@ -431,7 +431,7 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
-		/*Alarm from interrupt*/
+		/* Alarm from interrupt */
 		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 0, 1);
 
 	} else if ((pSensorMsg->pin == DIN2_MCU_PIN) &&
@@ -446,6 +446,7 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t
 SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
@@ -454,7 +455,7 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	gpio_flags_t edgeTypeDin1;
 	gpio_flags_t edgeTypeDin2;
 
-	/*Digital Input 1*/
+	/* Digital Input 1 */
 	Attribute_Get(ATTR_INDEX_digitalInput1Config, &input1Config,
 		      sizeof(input1Config));
 	sensorTaskObject.input1Alarm = input1Config & DIGITAL_IN_ALARM_MASK;
@@ -472,7 +473,7 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		BSP_PinSet(DIN1_ENABLE_PIN, 0);
 	}
 
-	/*Digital Input 2*/
+	/* Digital Input 2 */
 	Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
 		      sizeof(input2Config));
 	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
@@ -498,8 +499,8 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-
 	UpdateMagnet();
+
 	return DISPATCH_OK;
 }
 static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -610,13 +611,13 @@ static void SensorConfigChange(bool bootup)
 	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
 
 	if ((bootup == false) || (configurationType == CONFIG_UNDEFINED)) {
-		/*Clear the Aggregation queue on event type change*/
+		/* Clear the Aggregation queue on event type change */
 		AggregationPurgeQueueHandler();
-		/*Disable all the thermistors*/
+		/* Disable all the thermistors */
 		DisableThermistorReadings();
-		/*Disable all analogs*/
+		/* Disable all analogs */
 		DisableAnalogReadings();
-		/*Disable Digital*/
+		/* Disable Digital */
 		DisableDigitalIO();
 	}
 }
@@ -649,7 +650,7 @@ static void printRTCTime(void)
 
 static void UpdateDin1(void)
 {
-	/*Check if the input is enabled first*/
+	/* Check if the input is enabled first */
 	int v = BSP_PinGet(DIN1_MCU_PIN);
 
 	if (v >= 0) {
@@ -669,13 +670,13 @@ static void UpdateDin2(void)
 }
 static void DisableDigitalIO(void)
 {
-	/*Disable the digital inputs*/
+	/* Disable the digital inputs */
 	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
 			    DIGITAL_IN_DISABLE_MASK);
 	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
 			    DIGITAL_IN_DISABLE_MASK);
 
-	/*Disable the digital outputs*/
+	/* Disable the digital outputs */
 	BSP_PinSet(DO1_PIN, (0));
 	BSP_PinSet(DO2_PIN, (0));
 }
@@ -714,16 +715,16 @@ static void UpdateMagnet(void)
 }
 static void InitializeIntervalTimers(void)
 {
-	/*Battery Interval timer*/
+	/* Battery Interval timer */
 	k_timer_init(&batteryTimer, batteryTimerCallbackIsr, NULL);
 	StartBatteryInterval();
 
-	/*Temperture Interval timer*/
+	/* Temperture Interval timer */
 	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
 		     NULL);
 	StartTemperatureInterval();
 
-	/*Analog Interval timer*/
+	/* Analog Interval timer */
 	k_timer_init(&analogReadTimer, analogReadTimerCallbackIsr, NULL);
 	StartAnalogInterval();
 }
@@ -747,7 +748,7 @@ static void StartAnalogInterval(void)
 		      sizeof(analog3ConfigEnable));
 	Attribute_Get(ATTR_INDEX_analogInput4Type, &analog4ConfigEnable,
 		      sizeof(analog4ConfigEnable));
-	/*Check if the timer is already running*/
+	/* Check if the timer is already running */
 	analogTimer = k_timer_remaining_get(&analogReadTimer);
 
 	if ((activeModeStatus == true) && (analogTimer == 0) &&
@@ -774,7 +775,7 @@ static void StartTemperatureInterval(void)
 	Attribute_Get(ATTR_INDEX_thermistorConfig, &thermConfigEnable,
 		      sizeof(thermConfigEnable));
 
-	/*Check if the timer is already running*/
+	/* Check if the timer is already running */
 	tempTimer = k_timer_remaining_get(&temperatureReadTimer);
 	if ((activeModeStatus == true) && (thermConfigEnable > 0) &&
 	    (tempTimer == 0)) {
@@ -814,7 +815,7 @@ static void DisableAnalogReadings(void)
 	Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_UNUSED);
 	Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_UNUSED);
 	Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
-	/*Turn off the timer*/
+	/* Turn off the timer */
 	k_timer_stop(&analogReadTimer);
 }
 
@@ -822,7 +823,7 @@ static void DisableThermistorReadings(void)
 {
 	uint32_t thermistorsConfig = 0;
 	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
-	/*Turn off the timer*/
+	/* Turn off the timer */
 	k_timer_stop(&temperatureReadTimer);
 }
 
@@ -868,22 +869,25 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 			*result = AdcBt6_ConvertUltrasonic(channel, raw);
 		}
 		break;
+
 	case ANALOG_CURRENT20A:
-		/*Configured for a voltage measurement*/
+		/* Configured for a voltage measurement */
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent20(channel, raw);
 		}
 		break;
+
 	case ANALOG_CURRENT150A:
-		/*Configured for a voltage measurement*/
+		/* Configured for a voltage measurement */
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent150(channel, raw);
 		}
 		break;
+
 	case ANALOG_CURRENT500A:
-		/*Configured for a voltage measurement*/
+		/* Configured for a voltage measurement */
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 		if (r >= 0) {
 			*result = AdcBt6_ConvertACCurrent500(channel, raw);
@@ -941,6 +945,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 
 	return r;
 }
+
 static void SendEvent(SensorEventType_t type, SensorEventData_t data)
 {
 	EventLogMsg_t *pMsgSend =
@@ -955,6 +960,7 @@ static void SendEvent(SensorEventType_t type, SensorEventData_t data)
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
 }
+
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
@@ -964,6 +970,7 @@ static void batteryTimerCallbackIsr(struct k_timer *timer_id)
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
 				      FMC_READ_BATTERY);
 }
+
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);

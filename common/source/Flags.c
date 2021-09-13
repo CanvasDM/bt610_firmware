@@ -26,10 +26,12 @@ struct {
 	uint32_t data;
 
 } flags;
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void SetFlag(uint32_t Mask, uint32_t Position, uint32_t Value);
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -46,7 +48,9 @@ void Flags_Set(uint32_t Mask, uint32_t Position, uint32_t Value)
 		SetFlag(FLAG_ANY_ALARM, 1);
 	}
 	k_mutex_unlock(&flags_mutex);
-	/* The flags are used in the advertisment and shadowed in the attribute table.*/
+	/* The flags are used in the advertisment and shadowed in the
+	 * attribute table.
+	 */
 	Attribute_SetUint32(ATTR_INDEX_flags, flags.data);
 }
 
@@ -54,6 +58,7 @@ uint32_t Flags_Get(void)
 {
 	return flags.data;
 }
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -62,6 +67,3 @@ static void SetFlag(uint32_t Mask, uint32_t Position, uint32_t Value)
 	flags.data &= ~(Mask << Position);
 	flags.data |= (Value & Mask) << Position;
 }
-/******************************************************************************/
-/* Interrupt Service Routines                                                 */
-/******************************************************************************/

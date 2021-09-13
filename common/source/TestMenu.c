@@ -29,10 +29,7 @@ LOG_MODULE_REGISTER(TestMenu);
 #include "AdcBt6.h"
 #include "BspSupport.h"
 #include "EventTask.h"
-
-
 #include "FrameworkIncludes.h"
-
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -256,7 +253,6 @@ static int i2cpull(const struct shell *shell, size_t argc, char **argv)
 	int state = atoi(argv[1]);
 
 	if (state){
-	
 		shell_print(shell, "Enabling I2C pullups . . .\n");
 		NRF_P0->PIN_CNF[26] &= ~0xC;
 		NRF_P0->PIN_CNF[26] |= 0xC;

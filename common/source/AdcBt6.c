@@ -294,6 +294,7 @@ int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 				       ADC_TYPE_THERMISTOR, ADC_PWR_SEQ_BYPASS);
 		m1 += (float)raw;
 	}
+
 	for (i = 0; ((i < SAMPLES) && (status == 0)); i++) {
 		status =
 			AdcBt6_Measure(&raw, MUX_AIN2_THERM2,
@@ -344,6 +345,7 @@ int AdcBt6_FiveVoltEnable(void)
 	} else {
 		LOG_ERR("Enable 5V before enabling b+");
 	}
+
 	if (rc == 0) {
 		k_sleep(K_MSEC(V_5_ENABLE_DELAY_MS));
 		adcObj.fiveEnabled = true;
@@ -383,6 +385,7 @@ int AdcBt6_BplusDisable(void)
 	} else {
 		LOG_ERR("Disable 5V after disabling b+");
 	}
+
 	if (rc == 0) {
 		adcObj.bPlusEnabled = false;
 	}
@@ -431,24 +434,24 @@ float AdcBt6_ConvertCurrent(size_t channel, int32_t raw)
 
 float AdcBt6_ConvertACCurrent20(size_t channel, int32_t raw)
 {
-	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
-     Sensor current ratings = 20A, 150A, or 500A
-	*/
+	/* AC Current reading  = (reported Volts/5V)*Sensor current rating (in
+	 * Amps rms) Sensor current ratings = 20A, 150A, or 500A
+	 */
 	return (AdcBt6_ConvertVoltage(channel, raw) * ACCURRENT_20AMP_CONVERSION_FACTOR);
 }
 float AdcBt6_ConvertACCurrent150(size_t channel, int32_t raw)
 {
-	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
-     Sensor current ratings = 20A, 150A, or 500A
-	*/
+	/* AC Current reading  = (reported Volts/5V)*Sensor current rating (in
+	 * Amps rms) Sensor current ratings = 20A, 150A, or 500A
+	 */
 	return (AdcBt6_ConvertVoltage(channel, raw) *
 		ACCURRENT_150AMP_CONVERSION_FACTOR);
 }
 float AdcBt6_ConvertACCurrent500(size_t channel, int32_t raw)
 {
-	/*AC Current reading  = (reported Volts/5V)*Sensor current rating(in Amps rms)
-     Sensor current ratings = 20A, 150A, or 500A
-	*/
+	/* AC Current reading  = (reported Volts/5V)*Sensor current rating (in
+	 * Amps rms) Sensor current ratings = 20A, 150A, or 500A
+	 */
 	return (AdcBt6_ConvertVoltage(channel, raw) *
 		ACCURRENT_500AMP_CONVERSION_FACTOR);
 }
@@ -754,6 +757,7 @@ static float Steinhart_Hart(float calibrated, float a, float b, float c)
 	if (fpclassify(denominator) == FP_NORMAL) {
 		result = 1.0f / denominator;
 	}
+
 	return (result);
 }
 
@@ -789,6 +793,7 @@ static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 			channel_index++;
 		}
 	}
+
 	if (channel_found) {
 		/* Check if the channel is being simulated */
 		if (Attribute_Get(enable_map[channel_index],
@@ -807,6 +812,7 @@ static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -842,6 +848,7 @@ static bool VoltageIsSimulated(size_t channel, float *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -864,6 +871,7 @@ static bool UltrasonicIsSimulated(float *simulated_value)
 			}
 		}
 	}
+
 	return(is_simulated);
 }
 
@@ -886,6 +894,7 @@ static bool PressureIsSimulated(float *simulated_value)
 			}
 		}
 	}
+
 	return(is_simulated);
 }
 
@@ -921,6 +930,7 @@ static bool CurrentIsSimulated(size_t channel, float *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -943,6 +953,7 @@ static bool VrefIsSimulated(float *simulated_value)
 			}
 		}
 	}
+
 	return(is_simulated);
 }
 
@@ -978,6 +989,7 @@ static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -1000,5 +1012,6 @@ static bool BatterymvIsSimulated(int32_t *simulated_value)
 			}
 		}
 	}
+
 	return(is_simulated);
 }

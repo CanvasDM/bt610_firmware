@@ -55,13 +55,13 @@ CborError GetMessageElementTypes(CborValue *it,
 		switch (type) {
 			case CborArrayType:
 			case CborMapType: {
-				// recursive type
+				/* Recursive type */
 				CborValue recursed;
 				assert(cbor_value_is_container(it));
 				err = cbor_value_enter_container(it,
 								&recursed);
 				if (err){
-					// parse error
+					/* Parse error */
 					return err;
                                 }
 				err = GetMessageElementTypes(&recursed,
@@ -69,12 +69,12 @@ CborError GetMessageElementTypes(CborValue *it,
                                                                 maxStringLength,
 								pCborTypeList);
 				if (err){
-					// parse error
+					/* Parse error */
 					return err;
                                 }
 				err = cbor_value_leave_container(it, &recursed);
 				if (err){
-					// parse error
+					/* Parse error */
 					return err;
 				}
 				continue;
@@ -82,7 +82,7 @@ CborError GetMessageElementTypes(CborValue *it,
 
 			case CborIntegerType: {
 				int64_t val;
-                                // can't fail
+                                /* Can't fail */
 				cbor_value_get_int64(it, &val);
 				pCborTypeList->typeList[pCborTypeList->
 					typeIndex++] = CborIntegerType;
@@ -96,7 +96,7 @@ CborError GetMessageElementTypes(CborValue *it,
 							&bufferLength,
 							it);
 				if (err){
-					// parse error
+					/* Parse error */
 					return err;
 				}
 				pCborTypeList->typeList[pCborTypeList->
@@ -111,7 +111,7 @@ CborError GetMessageElementTypes(CborValue *it,
 							&bufferLength,
 							it);
 				if (err){
-					// parse error
+					/* Parse error */
 					return err;
 				}
 				pCborTypeList->typeList[pCborTypeList->
@@ -121,7 +121,7 @@ CborError GetMessageElementTypes(CborValue *it,
 
 			case CborTagType: {
 				CborTag tag;
-                                // can't fail
+                                /* Can't fail */
 				cbor_value_get_tag(it, &tag);
 				pCborTypeList->typeList[pCborTypeList->
 					typeIndex++] = CborTagType;
@@ -130,7 +130,7 @@ CborError GetMessageElementTypes(CborValue *it,
 
 			case CborSimpleType: {
 				uint8_t type;
-                                // can't fail
+                                /* Can't fail */
 				cbor_value_get_simple_type(it, &type);
 				pCborTypeList->typeList[pCborTypeList->
 					typeIndex++] = CborSimpleType;
@@ -149,7 +149,7 @@ CborError GetMessageElementTypes(CborValue *it,
 
 			case CborBooleanType: {
 				bool val;
-				// can't fail
+				/* Can't fail */
 				cbor_value_get_boolean(it, &val);
 				pCborTypeList->typeList[pCborTypeList->
 					typeIndex++] = CborBooleanType;
@@ -181,7 +181,7 @@ CborError GetMessageElementTypes(CborValue *it,
 			}
 
 			case CborInvalidType:
-				// can't happen
+				/* Can't happen */
 				assert(false);
 				break;
 			}

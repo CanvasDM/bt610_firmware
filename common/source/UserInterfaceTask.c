@@ -443,7 +443,7 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
 #endif
-	/*Check the current state of the tamper switch*/
+	/* Check the current state of the tamper switch */
 	TamperSwitchStatus();
 
 	while (true) {
@@ -494,7 +494,7 @@ static void TamperSwitchStatus(void)
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
 			SensorEventData_t eventTamper;
-			/*Send Event Message*/
+			/* Send Event Message */
 			eventTamper.u16 = v;
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
 
@@ -564,7 +564,7 @@ static void led_off(ledColors_t color)
 		lcz_pwm_led_off(RED_LED);
 		lcz_led_turn_off(RED_LED);
 	} else if ((color == LED_COLOR_NONE) || (color == LED_COLOR_AMBER)) {
-		/*Both LEDs will be turned off*/
+		/* Both LEDs will be turned off */
 		lcz_pwm_led_off(GREEN_LED);
 		lcz_led_turn_off(GREEN_LED);
 		lcz_pwm_led_off(RED_LED);
@@ -626,7 +626,7 @@ static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
-	/*Turning off Amber turns off both LEDs*/
+	/* Turning off Amber turns off both LEDs */
 	led_off(LED_COLOR_AMBER);
 	return DISPATCH_OK;
 }
@@ -663,7 +663,7 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 		FRAMEWORK_MSG_SEND_TO(FWK_ID_CONTROL_TASK, pMsg);
 		result = DISPATCH_DO_NOT_FREE;
 	} else {
-		/* red, do not perform reset */
+		/* Red, do not perform reset */
 		led_blink(LED_COLOR_RED, &FACTORY_RESET_PATTERN);
 		result = DISPATCH_OK;
 	}

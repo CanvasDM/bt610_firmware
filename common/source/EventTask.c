@@ -10,6 +10,7 @@
 #include <logging/log.h>
 LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
 #define THIS_FILE "Event"
+
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
@@ -64,10 +65,11 @@ static void SetDataloggerStatus(void);
 static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					       FwkMsg_t *pMsg);
 static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg);						   
+						   FwkMsg_t *pMsg);
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg);
-static void SendEventDataAdvert(SensorMsg_t *sensor_event);						   
+static void SendEventDataAdvert(SensorMsg_t *sensor_event);
+
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
 /******************************************************************************/
@@ -83,6 +85,7 @@ static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	}
 	/* clang-format on */
 }
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -92,7 +95,7 @@ void EventTask_Initialize(void)
 	eventTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	eventTaskObject.msgTask.rxer.pMsgDispatcher = EventTaskMsgDispatcher;
 	eventTaskObject.msgTask.timerDurationTicks = K_MSEC(1000);
-	eventTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); // 0 for one shot
+	eventTaskObject.msgTask.timerPeriodTicks = K_MSEC(0); /* One shot */
 	eventTaskObject.msgTask.rxer.pQueue = &eventTaskQueue;
 
 	Framework_RegisterTask(&eventTaskObject.msgTask);
@@ -173,7 +176,9 @@ static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			SetDataloggerStatus();
 			break;
 		default:
-			/* Don't care about this attribute. This is a broadcast. */
+			/* Don't care about this attribute. This is a
+			 * broadcast.
+			 */
 			break;
 		}
 	}

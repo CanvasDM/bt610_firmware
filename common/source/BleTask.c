@@ -185,15 +185,15 @@ static FwkMsgHandler_t *BleTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
 	switch (MsgCode) {
-	case FMC_INVALID:                     return Framework_UnknownMsgHandler;
-	case FMC_BLE_START_ADVERTISING:       return StartAdvertisingMsgHandler;
-	case FMC_BLE_END_ADVERTISING:         return EndAdvertisingMsgHandler;
-	case FMC_ATTR_CHANGED:                return BleAttrChangedMsgHandler;
-	case FMC_BLE_END_CONNECTION:          return SeverConnectionHandler;
-	case FMC_SENSOR_EVENT:                return BleSensorEventMsgHandler;
-	case FMC_SENSOR_UPDATE:               return BleSensorUpdateMsgHandler;
-	case FMC_ENTER_ACTIVE_MODE:           return BleEnterActiveModeMsgHandler;
-	default:                              return NULL;
+	case FMC_INVALID:                 return Framework_UnknownMsgHandler;
+	case FMC_BLE_START_ADVERTISING:   return StartAdvertisingMsgHandler;
+	case FMC_BLE_END_ADVERTISING:     return EndAdvertisingMsgHandler;
+	case FMC_ATTR_CHANGED:            return BleAttrChangedMsgHandler;
+	case FMC_BLE_END_CONNECTION:      return SeverConnectionHandler;
+	case FMC_SENSOR_EVENT:            return BleSensorEventMsgHandler;
+	case FMC_SENSOR_UPDATE:           return BleSensorUpdateMsgHandler;
+	case FMC_ENTER_ACTIVE_MODE:       return BleEnterActiveModeMsgHandler;
+	default:                          return NULL;
 	}
 	/* clang-format on */
 }
@@ -526,7 +526,7 @@ static DispatchResult_t BleEnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 * attribute operations, but repeatedly by local user interfaces.
 	 */
 	bto.activeModeStatus = true;
-	/* Is a connection active? If so, advertisement changes are also 
+	/* Is a connection active? If so, advertisement changes are also
 	 * handled in the disconnect callback.
 	 */
 	if (bto.conn == NULL) {
@@ -689,17 +689,17 @@ static void TransmitPower(void)
 		powerLevel = -40;
 		break;
 	default:
-		/*This is the default power level for this device*/
+		/* This is the default power level for this device */
 		powerLevel = 8;
 		break;
 	}
-	/*TX power level when connected*/
+	/* TX power level when connected */
 	r = bt_hci_get_conn_handle(bto.conn, &connectionHandle);
 	if (r >= 0) {
 		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_CONN, connectionHandle,
 			     powerLevel);
 	} else {
-		/*TX power level when advertising*/
+		/* TX power level when advertising */
 		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_ADV, 0, powerLevel);
 	}
 }
@@ -835,15 +835,13 @@ static void upgrade_advert_phy_timer_callback_isr(struct k_timer *timer_id)
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,
 			     uint16_t latency, uint16_t timeout)
 {
-	LOG_ERR("Got an LE Param Updated! Interval = %d Latency = %d Timeout = %d",
+	LOG_DBG("Got an LE Param Updated! Interval = %d Latency = %d Timeout = %d",
 		interval, latency, timeout);
 }
 
 static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
 {
-	LOG_ERR("Got an LE Param Update Request!");
-
-	//param->timeout = 500;
+	LOG_DBG("Got an LE Param Update Request!");
 
 	return (true);
 }

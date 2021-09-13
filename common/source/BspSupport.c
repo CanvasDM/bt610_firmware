@@ -56,6 +56,7 @@ static gpio_flags_t digital_input_2_IRQ_config = 0;
  */
 static bool digital_input_1_last_state = false;
 static bool digital_input_2_last_state = false;
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -113,14 +114,14 @@ int BSP_PinSet(uint8_t pin, int value)
 {
 	int gpioReturn = 0;
 	switch (pin) {
-	/*Port 0*/
+	/* Port 0 */
 	case THERM_ENABLE_PIN:
 	case DO2_PIN:
 	case DO1_PIN:
 	case BATT_OUT_ENABLE_PIN:
 		gpioReturn = gpio_pin_set(port0, GPIO_PIN_MAP(pin), value);
 		break;
-	/*Port 1*/
+	/* Port 1 */
 	case DIN1_ENABLE_PIN:
 	case FIVE_VOLT_ENABLE_PIN:
 	case DIN2_ENABLE_PIN:
@@ -382,7 +383,7 @@ static void ConfigureOutputs(void)
 	gpio_pin_configure(port0, GPIO_PIN_MAP(DO1_PIN), GPIO_OUTPUT_LOW);
 	gpio_pin_configure(port0, GPIO_PIN_MAP(DO2_PIN), GPIO_OUTPUT_LOW);
 	gpio_pin_configure(port0, GPIO_PIN_MAP(THERM_ENABLE_PIN),
-			   GPIO_OUTPUT_HIGH); /* active low */
+			   GPIO_OUTPUT_HIGH); /* Active low */
 
 	/* Port1 */
 	gpio_pin_configure(port1, GPIO_PIN_MAP(FIVE_VOLT_ENABLE_PIN),
@@ -394,6 +395,7 @@ static void ConfigureOutputs(void)
 	gpio_pin_configure(port1, GPIO_PIN_MAP(ANALOG_ENABLE_PIN),
 			   GPIO_OUTPUT_LOW);
 }
+
 void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 {
 	DigitalInMsg_t *pMsgSend =
@@ -420,8 +422,9 @@ static void UART0InitialiseSWFlowControl(void)
 {
 	int r = 0;
 
-	/* RTS line as output and set low */
-	/* This will permanently signal to clients data can be sent */
+	/* RTS line as output and set low. This will permanently signal to
+	 * clients data can be sent
+	 */
 	r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
 			       GPIO_OUTPUT_LOW);
 
@@ -431,9 +434,10 @@ static void UART0InitialiseSWFlowControl(void)
 				       GPIO_INPUT | GPIO_PULL_UP);
 	}
 
-	/* When this gets pulled down, it indicates a client is connected */
-	/* and the UART needing to be enabled. When pulled up, the client */
-	/* is disconnected and the UART switched off. */
+	/* When this gets pulled down, it indicates a client is connected
+	 * and the UART needing to be enabled. When pulled up, the client
+	 * is disconnected and the UART switched off.
+	 */
 	if (!r) {
 		r = gpio_pin_interrupt_configure(port0,
 						 GPIO_PIN_MAP(UART_0_CTS_PIN),
@@ -441,14 +445,15 @@ static void UART0InitialiseSWFlowControl(void)
 	}
 
 	if (!r) {
-		/* Set up the callback called when the CTS changes   */
+		/* Set up the callback called when the CTS changes */
 		gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
 				   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
 
 		gpio_add_callback(port0, &uart0cts_cb_data);
 
-		/* Set up the delayed work structure used to disable */
-		/* the UART                                          */
+		/* Set up the delayed work structure used to disable
+		 * the UART
+		 */
 		k_work_init_delayable(&uart0_shut_off_delayed_work,
 				      UART0WorkqHandler);
 
@@ -520,33 +525,37 @@ static void UART0SetStatus(bool isStartup)
 	uart_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
 
 	if (uart_dev) {
-		/* If high, a client has been disconnected and the    */
-		/* UART needs to be shut off.                         */
+		/* If high, a client has been disconnected and the UART needs
+		 * to be shut off.
+		 */
 		if (pinStatus) {
-			/* If we're starting up, we need to allow the */
-			/* shell to finish starting up. If we don't   */
-			/* do this, we won't be able to reconnect at  */
-			/* a later stage.                             */
+			/* If we're starting up, we need to allow the shell to
+			 * finish starting up. If we don't do this, we won't be
+			 * able to reconnect at a later stage.
+			 */
 			if (isStartup) {
 				k_work_reschedule(
 					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_STARTUP_DELAY_MS));
 			} else {
-				/* If we've already started up, a client has */
-				/* disconnected so we can safely disconnect  */
-				/* the UART with a reduced delay             */
+				/* If we've already started up, a client has
+				 * disconnected so we can safely disconnect the
+				 * UART with a reduced delay
+				 */
 				k_work_reschedule(
 					&uart0_shut_off_delayed_work,
 					K_MSEC(BSP_SUPPORT_SHELL_RUNTIME_DELAY_MS));
 			}
 		} else {
-			/* Don't do anything if we're starting up. If so, */
-			/* the UART is already enabled and the context    */
-			/* pointer will be NULL. We need to go through    */
-			/* procedure to get a copy of the context data.   */
+			/* Don't do anything if we're starting up. If so, the
+			 * UART is already enabled and the context pointer will
+			 * be NULL. We need to go through procedure to get a
+			 * copy of the context data.
+			 */
 			if (!isStartup) {
-				/* If low, a client is connected so       */
-				/* enable the UART                        */
+				/* If low, a client is connected so enable
+				 * the UART
+				 */
 				rc = pm_device_state_set(
 					uart_dev, PM_DEVICE_STATE_ACTIVE, NULL,
 					NULL);
@@ -574,8 +583,9 @@ static void UART0WorkqHandler(struct k_work *item)
 
 	/* And shut it off */
 	if (uart_dev) {
-		/* Ignoring the return code here - if it's non-zero */
-		/* the UART is already off.                         */
+		/* Ignoring the return code here - if it's non-zero the UART is
+		 * already off.
+		 */
 		(void)pm_device_state_set(
 			uart_dev, PM_DEVICE_STATE_OFF, NULL,
 			NULL);
@@ -640,6 +650,7 @@ static const struct log_backend *UART0FindBackend(void)
 			null_backend_found = true;
 		}
 	}
+
 	return (uart0_backend);
 }
 #endif
@@ -658,8 +669,9 @@ static void UART1Initialise(void)
 	/* And shut it off */
 	if (uart_dev){
 
-		/* Ignoring the return code here - if it's non-zero */
-		/* the UART is already off.                         */
+		/* Ignoring the return code here - if it's non-zero the UART is
+		 * already off.
+		 */
 		(void)pm_device_state_set(
 			uart_dev, PM_DEVICE_STATE_OFF, NULL,
 			NULL);
@@ -690,6 +702,7 @@ static bool MagSwitchIsSimulated(int *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -717,6 +730,7 @@ static bool TamperSwitchIsSimulated(int *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -744,6 +758,7 @@ static bool DigitalInput1IsSimulated(int *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -768,6 +783,7 @@ static bool DigitalInput2IsSimulated(int *simulated_value)
 			}
 		}
 	}
+
 	return (is_simulated);
 }
 
@@ -800,5 +816,6 @@ static bool DigitalInputIRQNeeded(bool new_state, bool old_state,
 			}
 		}
 	}
+
 	return (irq_needed);
 }

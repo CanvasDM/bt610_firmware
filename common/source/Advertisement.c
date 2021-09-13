@@ -85,6 +85,7 @@ static struct bt_data bt_extAd[] = {
 static struct bt_data bt_rsp[] = {
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp)),
 };
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -157,7 +158,7 @@ int Advertisement_Init(void)
 	LOG_INF("Bluetooth Address: %s count: %d status: %d",
 		log_strdup(addr_str), count, r);
 
-	/* remove ':' from default format */
+	/* Remove ':' from default format */
 	size_t i;
 	size_t j;
 	for (i = 0, j = 0; j < size - 1; i++) {
@@ -269,6 +270,7 @@ int Advertisement_IntervalDefault(void)
 		r = bt_le_ext_adv_update_param(adv, &bt_param);
 	}
 	LOG_INF("update interval to default(%d)", r);
+
 	return r;
 }
 
@@ -322,6 +324,7 @@ int Advertisement_Update(SensorMsg_t *sensor_event)
 	if (r < 0) {
 		LOG_INF("Failed to update advertising data (%d)", r);
 	}
+
 	return r;
 }
 
@@ -363,6 +366,7 @@ int Advertisement_Start(void)
 	}
 
 #endif
+
 	return r;
 }
 
@@ -372,7 +376,7 @@ void Advertisement_ExtendedSet(bool status)
 		if (advertising == true) {
 			Advertisement_End();
 		}
-		/*Turn off extended adverts, enable standard*/
+		/* Turn off extended adverts, enable standard */
 		bt_le_ext_adv_delete(extendedAdv);
 		extendPhyEnbled = status;
 		CreateAdvertisingStandardParm();
@@ -381,7 +385,7 @@ void Advertisement_ExtendedSet(bool status)
 		if (advertising == true) {
 			Advertisement_End();
 		}
-		/*Turn on extended adverts, disable standard adverts*/
+		/* Turn on extended adverts, disable standard adverts */
 		bt_le_ext_adv_delete(adv);
 		extendPhyEnbled = status;
 		CreateAdvertisingExtendedParm();
@@ -390,6 +394,7 @@ void Advertisement_ExtendedSet(bool status)
 		/* Nothing to do here already configured */
 	}
 }
+
 void TestEventMsg(uint16_t event)
 {
 	static uint32_t idTest = 0;
@@ -407,6 +412,7 @@ void TestEventMsg(uint16_t event)
 
 	current.event.data.u32 = dataValue;
 }
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -420,10 +426,12 @@ void CreateAdvertisingParm(void)
 		extendPhyEnbled = false;
 	}
 }
+
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
 }
+
 void CreateAdvertisingExtendedParm(void)
 {
 	int err = 0;
@@ -437,6 +445,7 @@ void CreateAdvertisingExtendedParm(void)
 		LOG_WRN("Failed to set advertising data (%d)\n", err);
 	}
 }
+
 void CreateAdvertisingStandardParm(void)
 {
 	int err = 0;
