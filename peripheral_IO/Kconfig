@@ -18,6 +18,13 @@ config JSON_BRACKET_BUFFER_SIZE
     help
         This applies to sensor messages received over Bluetooth.
 
+config UART_SHUTOFF
+    bool "Enables shutting the main UART off to conserve power"
+    default n
+    help
+        Note that there is an issue with this which can cause a module
+        lock up, it is therefore disabled by default.
+
 endif # USER_APPLICATION
 
 rsource "../common/Kconfig"

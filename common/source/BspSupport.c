@@ -40,13 +40,17 @@ static const struct device *port0;
 static const struct device *port1;
 static struct gpio_callback digitalIn1_cb_data;
 static struct gpio_callback digitalIn2_cb_data;
+#if defined(CONFIG_UART_SHUTOFF)
 static struct gpio_callback uart0cts_cb_data;
-/* Delayed work queue item used to hold off on shutting the UART */
-/* down to avoid interfering with shell startup                  */
+/* Delayed work queue item used to hold off on shutting the UART down to avoid
+ * interfering with shell startup
+ */
 static struct k_work_delayable uart0_shut_off_delayed_work;
-/* This is a copy of the context taken from the shell uart before */
-/* it gets switched off.                                          */
+/* This is a copy of the context taken from the shell uart before it gets
+ * switched off
+ */
 void *uart0_ctx = NULL;
+#endif
 /* Backup of digital input IRQ configuration for simulation purposes */
 static gpio_flags_t digital_input_1_IRQ_config = 0;
 static gpio_flags_t digital_input_2_IRQ_config = 0;
@@ -66,13 +70,9 @@ static void DigitalIn1HandlerIsr(const struct device *port,
 static void DigitalIn2HandlerIsr(const struct device *port,
 				 struct gpio_callback *cb,
 				 gpio_port_pins_t pins);
+#if defined(CONFIG_UART_SHUTOFF)
 static void UART0CTSHandlerIsr(const struct device *port,
 			       struct gpio_callback *cb, gpio_port_pins_t pins);
-
-static void ConfigureOutputs(void);
-//static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
-
-static void UART0InitialiseSWFlowControl(void);
 static void UART0SetStatus(bool isStartup);
 static void UART0WorkqHandler(struct k_work *item);
 #ifdef CONFIG_LOG
@@ -83,6 +83,11 @@ static const struct log_backend *UART0FindBackend(void);
 #define UART0LoggingDisable()
 #define UART0LoggingEnable()
 #endif
+#endif
+
+static void ConfigureOutputs(void);
+//static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
+static void UART0InitialiseSWFlowControl(void);
 static void UART1Initialise(void);
 static bool MagSwitchIsSimulated(int *simulated_value);
 static bool TamperSwitchIsSimulated(int *simulated_value);
@@ -105,6 +110,7 @@ void BSP_Init(void)
 	if (!port1) {
 		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
 	}
+
 	ConfigureOutputs();
 	UART0InitialiseSWFlowControl();
 	UART1Initialise();
@@ -195,6 +201,7 @@ int BSP_PinGet(uint8_t pin)
 	}
 	return (result);
 }
+
 void BSP_ConfigureDigitalInputs(uint8_t pin, gpio_flags_t enable,
 				gpio_flags_t edge)
 {
@@ -434,6 +441,7 @@ static void UART0InitialiseSWFlowControl(void)
 				       GPIO_INPUT | GPIO_PULL_UP);
 	}
 
+#if defined(CONFIG_UART_SHUTOFF)
 	/* When this gets pulled down, it indicates a client is connected
 	 * and the UART needing to be enabled. When pulled up, the client
 	 * is disconnected and the UART switched off.
@@ -459,6 +467,7 @@ static void UART0InitialiseSWFlowControl(void)
 
 		UART0SetStatus(true);
 	}
+#endif
 }
 
 /******************************************************************************/
@@ -484,6 +493,7 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 	SendDigitalInputStatus(DIN2_MCU_PIN, pinStatus);
 }
 
+#if defined(CONFIG_UART_SHUTOFF)
 /** @brief IRQ handler for changes to UART 0's CTS line. Used to switch the
  *         UART on and off dependent upon the state of the CTS line.
  *
@@ -653,6 +663,7 @@ static const struct log_backend *UART0FindBackend(void)
 
 	return (uart0_backend);
 }
+#endif
 #endif
 
 /** @brief Disables UART1 for this revision - note in successive releases this
