@@ -48,6 +48,7 @@ static struct bt_le_ext_adv *adv;
 static struct bt_le_ext_adv *extendedAdv;
 static SensorMsg_t current;
 static bool extendPhyEnbled = false;
+static bool connected = false;
 
 enum {
 	/**< Number of microseconds in 0.625 milliseconds. */
@@ -96,7 +97,8 @@ struct ad_update_work_item_t {
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void CreateAdvertisingParm(void);
-static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
+static void AdvConnected(struct bt_conn *conn, uint8_t reason);
+static void AdvDisconnected(struct bt_conn *conn, uint8_t reason);
 static void CreateAdvertisingExtendedParm(void);
 static void CreateAdvertisingStandardParm(void);
 static void QueuedUpdateAdvertisement(struct k_work *item);
@@ -110,8 +112,8 @@ static void QueuedUpdateAdvertisement(struct k_work *item);
 /* structure for appending further list entries.                              */
 /******************************************************************************/
 static struct bt_conn_cb connection_callbacks = {
-	.connected = NULL,
-	.disconnected = adv_disconnected,
+	.connected = AdvConnected,
+	.disconnected = AdvDisconnected,
 	.le_param_req = NULL,
 	.le_param_updated = NULL,
 	.identity_resolved = NULL,
@@ -287,12 +289,10 @@ int Advertisement_IntervalDefault(void)
 
 int Advertisement_Update(SensorMsg_t *sensor_event)
 {
-	int r = 0;
-
 	ad_update_work_item.sensor_event = *sensor_event;
 	k_work_submit(&ad_update_work_item.work);
 
-	return r;
+	return 0;
 }
 
 int Advertisement_End(void)
@@ -394,9 +394,15 @@ void CreateAdvertisingParm(void)
 	}
 }
 
-static void adv_disconnected(struct bt_conn *conn, uint8_t reason)
+static void AdvConnected(struct bt_conn *conn, uint8_t reason)
 {
 	advertising = false;
+	connected = true;
+}
+
+static void AdvDisconnected(struct bt_conn *conn, uint8_t reason)
+{
+	connected = false;
 }
 
 void CreateAdvertisingExtendedParm(void)
@@ -467,7 +473,15 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 
-	Advertisement_End();
+	/* Don't stop advertising if in a connection. We still want
+	 * the advert content to be as up to date as possible when
+	 * advertising restarts, so still update the content. But we
+	 * want to avoid the stack issuing any errors by stopping a
+	 * a non-advertising device.
+	 */
+	if (!connected) {
+		Advertisement_End();
+	}
 
 	if (extendPhyEnbled == true) {
 		r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
@@ -482,5 +496,12 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	if (r < 0) {
 		LOG_INF("Failed to update advertising data (%d)", r);
 	}
-	Advertisement_Start();
+	/* Don't start advertising if in a connection. The advert content
+	 * has been updated, but if we're in a connection we'll get an
+	 * error code being issued due to starting advertising in a
+	 * connection.
+	 */
+	if (!connected) {
+		Advertisement_Start();
+	}
 }
