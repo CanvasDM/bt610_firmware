@@ -762,8 +762,8 @@ void Show(attr_idx_t Index)
 	AttributeEntry_t *p = &attrTable[Index];
 	uint32_t u = 0;
 	int32_t i = 0;
-	uint32_t a = 0;
-	uint32_t b = 0;
+	uint64_t a = 0;
+	int64_t b = 0;
 	float f = 0.0;
 	char float_str[CONFIG_ATTR_FLOAT_MAX_STR_SIZE];
 
@@ -805,12 +805,13 @@ void Show(attr_idx_t Index)
 		break;
 
 	case ATTR_TYPE_U64:
+		a = *(uint64_t *)p->pData;
+		LOG_DBG(CONFIG_ATTR_SHOW_FMT "%llu", Index, p->name, a);
+		break;
+
 	case ATTR_TYPE_S64:
-		/* These weren't printing properly */
-		memcpy(&a, (uint8_t *)p->pData, 4);
-		memcpy(&b, ((uint8_t *)p->pData) + 4, 4);
-		LOG_DBG(CONFIG_ATTR_SHOW_FMT "0x%08x %08x", Index, p->name, b,
-			a);
+		b = *(int64_t *)p->pData;
+		LOG_DBG(CONFIG_ATTR_SHOW_FMT "%lld", Index, p->name, b);
 		break;
 
 	default:
