@@ -156,10 +156,10 @@ static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
 
 	if ((argc == 2) && (argv[1] != NULL)) {
 		idx = get_index(argv[1]);
-		/* If the value changed then prepare will cause a duplicate show. */
-		Attribute_Show(idx);
 		/* Discard data (assumes show is enabled). */
 		r = Attribute_Get(idx, dummy, sizeof(dummy));
+		/* If the value changed then prepare will cause a duplicate show. */
+		Attribute_Show(idx);
 		shell_print(shell, "get status: %d", r);
 	} else {
 		shell_error(shell, "Unexpected parameters");
