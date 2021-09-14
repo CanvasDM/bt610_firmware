@@ -59,7 +59,8 @@ K_MUTEX_DEFINE(mount_mutex);
 #define BLE_TASK_QUEUE_DEPTH 32
 #endif
 #define BOOTUP_ADVERTISMENT_TIME_MS (15000)
-#define BLE_TASK_ENTER_ACTIVE_MODE_1M_ADVERTISE_TIME_S 30
+#define BLE_TASK_ENTER_ACTIVE_MODE_1M_ADVERTISE_TIME_S (30)
+#define BLE_TASK_FORCE_DISCONNECT_DELAY_S (2)
 
 typedef struct BleTaskTag {
 	FwkMsgTask_t msgTask;
@@ -127,12 +128,15 @@ static int UpdateName(void);
 static void TransmitPower(void);
 static void set_tx_power(uint8_t handle_type, uint16_t handle,
 			 int8_t tx_pwr_lvl);
+static void StartDisconnectTimer(void);
+static void ResetAppDisconnectParam(void);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 static void EnterActiveModeTimerCallbackIsr(struct k_timer *timer_id);
 static void upgrade_advert_phy_timer_callback_isr(struct k_timer *timer_id);
+static void AppDisconnectCallbackIsr(struct k_timer *timer_id);
 
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,
 			     uint16_t latency, uint16_t timeout);
@@ -146,6 +150,7 @@ static struct k_timer durationTimer;
 static struct k_timer bootAdvertTimer;
 static struct k_timer enterActiveModeTimer;
 static struct k_timer upgrade_advert_phy_timer;
+static struct k_timer mobileAppDisconnectTimer;
 
 K_THREAD_STACK_DEFINE(bleTaskStack, BLE_TASK_STACK_DEPTH);
 
@@ -311,11 +316,10 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	k_timer_init(&enterActiveModeTimer, EnterActiveModeTimerCallbackIsr,
 		     NULL);
 	k_timer_init(&upgrade_advert_phy_timer,
-		     upgrade_advert_phy_timer_callback_isr,
-		     NULL);
+		     upgrade_advert_phy_timer_callback_isr, NULL);
+	k_timer_init(&mobileAppDisconnectTimer, AppDisconnectCallbackIsr, NULL);
 
 	force_phy = BOOT_PHY_TYPE_DEFAULT;
-
 	r = BluetoothInit();
 	while (r != 0) {
 		k_sleep(K_SECONDS(1));
@@ -328,8 +332,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &bto.codedPHYBroadcast,
 		      sizeof(bto.codedPHYBroadcast));
 
-	Attribute_Get(ATTR_INDEX_bootPHY, &force_phy,
-		      sizeof(force_phy));
+	Attribute_Get(ATTR_INDEX_bootPHY, &force_phy, sizeof(force_phy));
 
 	if (force_phy != BOOT_PHY_TYPE_DEFAULT) {
 		/* If a firmware update has taken place, re-advertise in PHY
@@ -421,6 +424,9 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			break;
 		case ATTR_INDEX_txPower:
 			TransmitPower();
+			break;
+		case ATTR_INDEX_mobileAppDisconnect:
+			StartDisconnectTimer();
 			break;
 		case ATTR_INDEX_networkId:
 		case ATTR_INDEX_configVersion:
@@ -587,6 +593,8 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 		/* Set the power for the connection */
 		TransmitPower();
 
+		ResetAppDisconnectParam();
+
 		/* Stop boot and active mode timers. We don't want
 		 * any PHY changes to occur mid-connection.
 		 */
@@ -614,6 +622,9 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 
 	bt_conn_unref(bto.conn);
 	bto.conn = NULL;
+
+	/* Disconnect detected stop force disconnect */
+	k_timer_stop(&mobileAppDisconnectTimer);
 
 	/* Start the advertisement again */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
@@ -740,6 +751,26 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 	net_buf_unref(rsp);
 }
 
+static void StartDisconnectTimer(void)
+{
+	bool disconnectFlag = false;
+	Attribute_Get(ATTR_INDEX_mobileAppDisconnect, &disconnectFlag,
+		      sizeof(disconnectFlag));
+
+	if (disconnectFlag == true) {
+		k_timer_start(&mobileAppDisconnectTimer,
+			      K_SECONDS(BLE_TASK_FORCE_DISCONNECT_DELAY_S),
+			      K_NO_WAIT);
+	}
+}
+
+static void ResetAppDisconnectParam(void)
+{
+	bool disconnectFlag = 0;
+
+	Attribute_SetQuiet(ATTR_INDEX_mobileAppDisconnect, disconnectFlag);
+}
+
 static void RequestDisconnect(struct bt_conn *ConnectionHandle)
 {
 	int r = 0;
@@ -830,6 +861,12 @@ static void upgrade_advert_phy_timer_callback_isr(struct k_timer *timer_id)
 		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 					      FMC_BLE_START_ADVERTISING);
 	}
+}
+
+static void AppDisconnectCallbackIsr(struct k_timer *timer_id)
+{
+	UNUSED_PARAMETER(timer_id);
+	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_BLE_TASK, FMC_BLE_END_CONNECTION);
 }
 
 static void le_param_updated(struct bt_conn *conn, uint16_t interval,

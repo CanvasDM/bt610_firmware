@@ -183,6 +183,7 @@ typedef struct RwAttributesTag {
 	bool tamperSwitchSimulated;
 	bool tamperSwitchSimulatedValue;
 	uint8_t bootPHY;
+	bool mobileAppDisconnect;
 	/* pyend */
 } RwAttribute_t;
 
@@ -332,6 +333,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.tamperSwitchSimulated = 0,
 	.tamperSwitchSimulatedValue = 0,
 	.bootPHY = 0,
+	.mobileAppDisconnect = 0
 	/* pyend */
 };
 
@@ -412,6 +414,7 @@ typedef struct RoAttributesTag {
 	bool magSwitchSimulatedValue;
 	bool tamperSwitchSimulated;
 	bool tamperSwitchSimulatedValue;
+	bool mobileAppDisconnect;
 	/* pyend */
 } RoAttribute_t;
 
@@ -439,7 +442,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.71",
+	.apiVersion = "1.72",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -491,7 +494,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magSwitchSimulated = 0,
 	.magSwitchSimulatedValue = 0,
 	.tamperSwitchSimulated = 0,
-	.tamperSwitchSimulatedValue = 0
+	.tamperSwitchSimulatedValue = 0,
+	.mobileAppDisconnect = 0
 	/* pyend */
 };
 
@@ -697,7 +701,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [163] = { RO_ATTRX(magSwitchSimulatedValue)       , b  , n, y, y, n, n, n, AttributeValidator_magsim   , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [164] = { RO_ATTRX(tamperSwitchSimulated)         , b  , n, y, y, n, n, n, AttributeValidator_tampsimen, NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [165] = { RO_ATTRX(tamperSwitchSimulatedValue)    , b  , n, y, y, n, n, n, AttributeValidator_tampsim  , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [166] = { RW_ATTRX(bootPHY)                       , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        }
+    [166] = { RW_ATTRX(bootPHY)                       , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        },
+    [167] = { RO_ATTRX(mobileAppDisconnect)           , b  , n, y, y, n, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        }
     /* pyend */
 };
 /* clang-format on */
