@@ -86,6 +86,12 @@ static struct bt_data bt_rsp[] = {
 	BT_DATA(BT_DATA_MANUFACTURER_DATA, &rsp, sizeof(rsp)),
 };
 
+/* Work queue item used to update advertisement */
+struct ad_update_work_item_t {
+	struct k_work work;
+	SensorMsg_t sensor_event;
+} ad_update_work_item;
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -93,6 +99,7 @@ static void CreateAdvertisingParm(void);
 static void adv_disconnected(struct bt_conn *conn, uint8_t reason);
 static void CreateAdvertisingExtendedParm(void);
 static void CreateAdvertisingStandardParm(void);
+static void QueuedUpdateAdvertisement(struct k_work *item);
 
 /******************************************************************************/
 /* Connection callbacks.                                                      */
@@ -203,6 +210,10 @@ int Advertisement_Init(void)
 
 	CreateAdvertisingParm();
 	memset(&current, 0, sizeof(SensorMsg_t));
+
+	/* Delayed work item for ad update */
+	k_work_init(&ad_update_work_item.work, QueuedUpdateAdvertisement);
+
 	return r;
 }
 
@@ -276,54 +287,10 @@ int Advertisement_IntervalDefault(void)
 
 int Advertisement_Update(SensorMsg_t *sensor_event)
 {
-	uint16_t networkId = 0;
-	uint8_t configVersion = 0;
-	uint8_t codedPhySelected = 0;
 	int r = 0;
 
-	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
-	ad.networkId = networkId;
-	ad.flags = Flags_Get();
-
-	/* If no event was available, keep the last */
-	if (sensor_event->event.type != SENSOR_EVENT_RESERVED) {
-		ad.recordType = sensor_event->event.type;
-		ad.id = sensor_event->id;
-		ad.epoch = sensor_event->event.timestamp;
-		ad.data = sensor_event->event.data;
-	}
-
-	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
-		      sizeof(configVersion));
-	rsp.rsp.configVersion = configVersion;
-
-	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
-		      sizeof(codedPhySelected));
-
-	ext.ad = ad;
-
-	/* For Coded PHY, be sure to restore the protocol id here.
-	 * This is the only field that is different between 1M and
-	 * Coded PHY adverts for this part of the advert and we're
-	 * using the 1M advert as the data source for both.
-	 */
-	ext.ad.protocolId = BTXXX_CODED_PHY_AD_PROTOCOL_ID;
-
-	ext.rsp.configVersion = rsp.rsp.configVersion;
-
-	if (extendPhyEnbled == true) {
-		r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
-					   ARRAY_SIZE(bt_extAd), NULL, 0);
-	} else {
-		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
-					   bt_rsp, ARRAY_SIZE(bt_rsp));
-	}
-
-	LOG_INF("update advertising data (%d)", r);
-
-	if (r < 0) {
-		LOG_INF("Failed to update advertising data (%d)", r);
-	}
+	ad_update_work_item.sensor_event = *sensor_event;
+	k_work_submit(&ad_update_work_item.work);
 
 	return r;
 }
@@ -458,4 +425,62 @@ void CreateAdvertisingStandardParm(void)
 	if (err) {
 		LOG_WRN("Failed to set advertising data (%d)\n", err);
 	}
+}
+
+void QueuedUpdateAdvertisement(struct k_work *item)
+{
+	struct ad_update_work_item_t *ad_update =
+		CONTAINER_OF(item, struct ad_update_work_item_t, work);
+
+	uint16_t networkId = 0;
+	uint8_t configVersion = 0;
+	uint8_t codedPhySelected = 0;
+	int r = 0;
+
+	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
+	ad.networkId = networkId;
+	ad.flags = Flags_Get();
+
+	/* If no event was available, keep the last */
+	if (ad_update->sensor_event.event.type != SENSOR_EVENT_RESERVED) {
+		ad.recordType = ad_update->sensor_event.event.type;
+		ad.id = ad_update->sensor_event.id;
+		ad.epoch = ad_update->sensor_event.event.timestamp;
+		ad.data = ad_update->sensor_event.event.data;
+	}
+
+	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
+		      sizeof(configVersion));
+	rsp.rsp.configVersion = configVersion;
+
+	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+		      sizeof(codedPhySelected));
+
+	ext.ad = ad;
+
+	/* For Coded PHY, be sure to restore the protocol id here.
+	 * This is the only field that is different between 1M and
+	 * Coded PHY adverts for this part of the advert and we're
+	 * using the 1M advert as the data source for both.
+	 */
+	ext.ad.protocolId = BTXXX_CODED_PHY_AD_PROTOCOL_ID;
+
+	ext.rsp.configVersion = rsp.rsp.configVersion;
+
+	Advertisement_End();
+
+	if (extendPhyEnbled == true) {
+		r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
+						ARRAY_SIZE(bt_extAd), NULL, 0);
+	} else {
+		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
+						   bt_rsp, ARRAY_SIZE(bt_rsp));
+	}
+
+	LOG_INF("update advertising data (%d)", r);
+
+	if (r < 0) {
+		LOG_INF("Failed to update advertising data (%d)", r);
+	}
+	Advertisement_Start();
 }
