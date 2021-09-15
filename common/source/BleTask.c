@@ -704,12 +704,17 @@ static void TransmitPower(void)
 		powerLevel = 8;
 		break;
 	}
-	/* TX power level when connected */
-	r = bt_hci_get_conn_handle(bto.conn, &connectionHandle);
-	if (r >= 0) {
-		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_CONN, connectionHandle,
-			     powerLevel);
-	} else {
+
+	if (bto.conn != NULL) {
+		/* TX power level when connected */
+		r = bt_hci_get_conn_handle(bto.conn, &connectionHandle);
+		if (r >= 0) {
+			set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_CONN,
+				     connectionHandle, powerLevel);
+		}
+	}
+
+	if (bto.conn == NULL || r < 0) {
 		/* TX power level when advertising */
 		set_tx_power(BT_HCI_VS_LL_HANDLE_TYPE_ADV, 0, powerLevel);
 	}
