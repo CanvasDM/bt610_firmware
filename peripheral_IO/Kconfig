@@ -20,10 +20,7 @@ config JSON_BRACKET_BUFFER_SIZE
 
 config UART_SHUTOFF
     bool "Enables shutting the main UART off to conserve power"
-    default n
-    help
-        Note that there is an issue with this which can cause a module
-        lock up, it is therefore disabled by default.
+    default y
 
 endif # USER_APPLICATION
 
