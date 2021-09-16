@@ -29,7 +29,7 @@ extern "C" {
 #define DIN1_MCU_PIN   (9)  /* SIO_09 Port0 */
 #define DIN2_MCU_PIN   (43) /* SIO_43 Port1 */
 #define MAGNET_MCU_PIN (47) /* SIO_47 Port1 */
-#define UART_0_RXD_PIN (6)  /* SIO_06 Port0 */
+#define UART_0_RXD_PIN (5)  /* SIO_05 Port0 */
 #define SW1_PIN        (24) /* SIO_24 Port0 */
 #define SW2_PIN        (33) /* SIO_33 Port1 */
 
