@@ -59,10 +59,6 @@ static struct k_timer uart0CTSCheckTimer;
  * interfering with shell startup
  */
 static struct k_work_delayable uart0_shut_off_delayed_work;
-/* This is a copy of the context taken from the shell uart before it gets
- * switched off
- */
-static void *uart0_ctx = NULL;
 #endif
 /* Backup of digital input IRQ configuration for simulation purposes */
 static gpio_flags_t digital_input_1_IRQ_config = 0;
@@ -86,7 +82,6 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 #if defined(CONFIG_UART_SHUTOFF)
 static void UART0CTSHandlerIsr(const struct device *port,
 			       struct gpio_callback *cb, gpio_port_pins_t pins);
-static void UART0SetStatus(bool isStartup);
 static void UART0WorkqHandler(struct k_work *item);
 static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id);
 #endif
@@ -655,8 +650,7 @@ static void UART0CTSHandlerIsr(const struct device *port,
 		      K_MSEC(BSP_SUPPORT_UART_PIN_CHANGE_CHECK_TIMER_MS));
 }
 
-/** @brief System work queue handler for initial shut off of the UART. Refer to
- *         the UART0SetStatus header for further details.
+/** @brief System work queue handler for initial shut off of the UART.
  *
  *  @param [in]item - Unused pointer to the work item.
  */
