@@ -58,8 +58,7 @@ K_MUTEX_DEFINE(mount_mutex);
 #ifndef BLE_TASK_QUEUE_DEPTH
 #define BLE_TASK_QUEUE_DEPTH 32
 #endif
-#define BOOTUP_ADVERTISMENT_TIME_MS (15000)
-#define BLE_TASK_ENTER_ACTIVE_MODE_1M_ADVERTISE_TIME_S (30)
+#define BOOTUP_ADVERTISMENT_TIME_S (30)
 #define BLE_TASK_FORCE_DISCONNECT_DELAY_S (2)
 
 typedef struct BleTaskTag {
@@ -341,7 +340,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		Advertisement_ExtendedSet((force_phy == BOOT_PHY_TYPE_CODED));
 		Advertisement_Start();
 		k_timer_start(&upgrade_advert_phy_timer,
-			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
+			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 
 	        Attribute_SetUint32(ATTR_INDEX_bootPHY, BOOT_PHY_TYPE_DEFAULT);
 	} else if (bto.activeModeStatus == false) {
@@ -351,7 +350,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		Advertisement_ExtendedSet(false);
 		Advertisement_Start();
 		k_timer_start(&bootAdvertTimer,
-			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
+			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 	} else {
 		/* Otherwise start advertising in configured broadcast PHY */
 		Advertisement_Start();
@@ -363,7 +362,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 }
 
 /******************************************************************************/
-/* Framework Message Functions                                               */
+/* Framework Message Functions                                                */
 /******************************************************************************/
 static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg)
@@ -384,7 +383,7 @@ static DispatchResult_t StartAdvertisingMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		 * start-up timer, we'll already be in 1M PHY mode.
 		 */
 		k_timer_start(&bootAdvertTimer,
-			      K_MSEC(BOOTUP_ADVERTISMENT_TIME_MS), K_NO_WAIT);
+			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 	}
 	Advertisement_IntervalUpdate();
 	Advertisement_Start();
@@ -554,9 +553,7 @@ static DispatchResult_t BleEnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		 */
 		k_timer_start(
 			&enterActiveModeTimer,
-			K_SECONDS(
-				BLE_TASK_ENTER_ACTIVE_MODE_1M_ADVERTISE_TIME_S),
-			K_NO_WAIT);
+			K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 	}
 	return DISPATCH_OK;
 }
