@@ -18,12 +18,13 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #include <stdio.h>
 #include <logging/log_ctrl.h>
 #include <sys/util.h>
+#include <sys/crc.h>
 
 #include "lcz_param_file.h"
 #include "file_system_utilities.h"
-
 #include "AttributeTable.h"
 #include "Attribute.h"
+#include "ControlTask.h"
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
@@ -749,6 +750,9 @@ static void SaveAttributesWork(struct k_work *item)
 	int r = -EPERM;
 	char *fstr = NULL;
 	attr_idx_t i;
+	uint32_t checksum_file = 0;
+	uint32_t checksum_ram = 0;
+	uint32_t fstrlen;
 
 	TAKE_MUTEX(attr_save_change_mutex);
 
@@ -770,13 +774,36 @@ static void SaveAttributesWork(struct k_work *item)
 		}
 		BREAK_ON_ERROR(r);
 
-		r = lcz_param_file_validate_file(fstr, strlen(fstr));
+		fstrlen = strlen(fstr);
+		r = lcz_param_file_validate_file(fstr, fstrlen);
 		BREAK_ON_ERROR(r);
 
-		r = (int)lcz_param_file_write(CONFIG_ATTR_FILE_NAME, fstr,
-					      strlen(fstr));
-		LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
-			strlen(fstr));
+		/* Calculate a CRC32 checksum of the current settings file and
+		 * pending data in RAM, which avoids an erase and write process
+		 * on the storage flash if there are no changes to write
+		 */
+		r = fsu_crc32_abs(&checksum_file, ATTR_ABS_PATH,
+				  fsu_get_file_size_abs(ATTR_ABS_PATH));
+
+		if (r == 0) {
+			checksum_ram = crc32_ieee_update(0, fstr, fstrlen);
+		} else {
+			/* If calculating the checksum fails, skip working out
+			 * the checksum of the RAM variables and just set the
+			 * checksums to be different
+			 */
+			checksum_ram = checksum_file + 1;
+		}
+
+		if (checksum_file != checksum_ram) {
+			/* Checksums mismatch, data has changed, write the
+			 * file
+			 */
+			r = (int)lcz_param_file_write(CONFIG_ATTR_FILE_NAME,
+						      fstr, fstrlen);
+			LOG_DBG("Wrote %d of %d bytes of parameters to file",
+				r, fstrlen);
+		}
 	} while (0);
 
 	k_free(fstr);
