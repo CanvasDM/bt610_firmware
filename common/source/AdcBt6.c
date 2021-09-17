@@ -478,7 +478,7 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw)
 	return result;
 }
 
-float AdcBt6_ConvertThermToTemperature(int32_t raw, size_t channel)
+float AdcBt6_ConvertThermToTemperature(size_t channel, int32_t raw)
 {
 	float temperature;
 	float calibrated;

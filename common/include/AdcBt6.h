@@ -233,7 +233,7 @@ float AdcBt6_ApplyThermistorCalibration(int32_t raw);
  *
  * @retval temperature in Celsius
  */
-float AdcBt6_ConvertThermToTemperature(int32_t raw, size_t channel);
+float AdcBt6_ConvertThermToTemperature(size_t channel, int32_t raw);
 
 /**
  * @brief Get type enum as string.

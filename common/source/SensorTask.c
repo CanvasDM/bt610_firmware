@@ -925,7 +925,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_THERMISTOR, power);
 		if (r >= 0) {
 			*result =
-				AdcBt6_ConvertThermToTemperature(raw, channel);
+				AdcBt6_ConvertThermToTemperature(channel, raw);
 
 			sensorTaskObject.magnitudeOfTempDifference[channel] =
 				abs(*result -

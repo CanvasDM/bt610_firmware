@@ -68,8 +68,9 @@ static int batteryMeasurement(const struct shell *shell, size_t argc,
 	return 0;
 }
 
-static int sample(const struct shell *shell, int channel,
-		  AdcMeasurementType_t type, float (*func)(int32_t))
+static int sample_with_channel(const struct shell *shell, int channel,
+			       AdcMeasurementType_t type,
+			       float (*func)(size_t, int32_t))
 {
 	int16_t raw = 0;
 	int32_t avg_raw = 0;
@@ -80,6 +81,34 @@ static int sample(const struct shell *shell, int channel,
 	for (i = 0; i < samples; i++) {
 		status =
 			AdcBt6_Measure(&raw, channel, type, ADC_PWR_SEQ_SINGLE);
+		conv = func(channel, raw);
+		shell_print(shell, "[%u] status: %d raw: %d converted: %.4e", i,
+			    status, raw, conv);
+		if (status != 0) {
+			break;
+		}
+		avg_raw += raw;
+		avg_conv += conv;
+		k_sleep(K_MSEC(delay));
+	}
+	avg_raw /= samples;
+	avg_conv /= samples;
+	shell_print(shell, "averages: raw: %d converted: %.4e", avg_raw,
+		    avg_conv);
+	return 0;
+}
+
+static int sample_no_channel(const struct shell *shell,
+			     AdcMeasurementType_t type, float (*func)(int32_t))
+{
+	int16_t raw = 0;
+	int32_t avg_raw = 0;
+	float conv = 0.0;
+	float avg_conv = 0.0;
+	int status;
+	size_t i;
+	for (i = 0; i < samples; i++) {
+		status = AdcBt6_Measure(&raw, 0, type, ADC_PWR_SEQ_SINGLE);
 		conv = func(raw);
 		shell_print(shell, "[%u] status: %d raw: %d converted: %.4e", i,
 			    status, raw, conv);
@@ -109,7 +138,7 @@ static int vin(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_VOLTAGE;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch - 1, type, AdcBt6_ConvertVoltage);
+	return sample_with_channel(shell, ch - 1, type, AdcBt6_ConvertVoltage);
 }
 
 static int cin(const struct shell *shell, size_t argc, char **argv)
@@ -118,7 +147,7 @@ static int cin(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_CURRENT;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch - 1, type, AdcBt6_ConvertCurrent);
+	return sample_with_channel(shell, ch - 1, type, AdcBt6_ConvertCurrent);
 }
 
 static int therm(const struct shell *shell, size_t argc, char **argv)
@@ -127,7 +156,8 @@ static int therm(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	return sample(shell, ch - 1, type, AdcBt6_ApplyThermistorCalibration);
+	return sample_no_channel(shell, type,
+				 AdcBt6_ApplyThermistorCalibration);
 }
 
 static int temp(const struct shell *shell, size_t argc, char **argv)
@@ -136,17 +166,17 @@ static int temp(const struct shell *shell, size_t argc, char **argv)
 	int ch = convert_channel(argv[1]);
 	AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
 	shell_print(shell, "ch: %d type: %s", ch, AdcBt6_GetTypeString(type));
-	int rc = sample(shell, ch - 1, type, AdcBt6_ConvertThermToTemperature);
+	int rc = sample_with_channel(shell, ch - 1, type,
+				     AdcBt6_ConvertThermToTemperature);
 	return rc;
 }
 
 static int vref(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	int ch = 0; /* don't care */
 	AdcMeasurementType_t type = ADC_TYPE_VREF;
 	shell_print(shell, "type: %s", AdcBt6_GetTypeString(type));
-	return sample(shell, ch, type, AdcBt6_ConvertVref);
+	return sample_no_channel(shell, type, AdcBt6_ConvertVref);
 }
 
 static int configure(const struct shell *shell, size_t argc, char **argv)
@@ -195,14 +225,6 @@ static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
 	int status1 = BSP_PinSet(DIN1_ENABLE_PIN, value);
 	int status2 = BSP_PinSet(DIN2_ENABLE_PIN, value);
 	shell_print(shell, "Set To DIN_EN: %d %d %d", value, status1, status2);
-	return 0;
-}
-static int thermEnable(const struct shell *shell, size_t argc, char **argv)
-{
-	ARG_UNUSED(argc);
-	int value = atoi(argv[1]);
-	int status1 = BSP_PinSet(THERM_ENABLE_PIN, value);
-	shell_print(shell, "Set To THERM_EN: %d %d", value, status1);
 	return 0;
 }
 
