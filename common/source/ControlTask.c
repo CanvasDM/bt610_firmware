@@ -21,6 +21,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <logging/log_ctrl.h>
 #include <mgmt/mgmt.h>
 #include <img_mgmt/img_mgmt.h>
+#include <lcz_os_mgmt/os_mgmt_impl.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"
@@ -39,7 +40,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "EventTask.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
-
 #include "ControlTask.h"
 
 /******************************************************************************/
@@ -73,8 +73,10 @@ typedef struct no_init_ram {
 	no_init_ram_header_t header;
 	uint32_t battery_age;
 	uint32_t qrtc;
+	uint32_t bootloader_time;
+	bool attribute_save_pending;
 } no_init_ram_t;
-#define SIZE_OF_NIRD 8
+#define SIZE_OF_NIRD (sizeof(no_init_ram_t) - sizeof(no_init_ram_header_t))
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -111,6 +113,8 @@ static void RebootHandler(void);
 
 static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 				 void *arg);
+
+static void non_init_save_data(void);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -161,6 +165,41 @@ void ControlTask_Thread(void)
 #if CONTROL_TASK_USES_MAIN_THREAD
 	ControlTaskThread(&cto, NULL, NULL);
 #endif
+}
+
+EXTERNED void Framework_AssertionHandler(char *file, int line)
+{
+	static bool busy = 0; /* Prevent recursion (buffer alloc fail, ...) */
+	if (!busy) {
+		busy = true;
+		LOG_ERR("\r\n!-----> Assertion <-----! %s:%d\r\n", file, line);
+		__NOP();
+	}
+}
+
+int AttributePrepare_upTime(void)
+{
+	int64_t uptimeMs = k_uptime_get();
+	return (Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
+}
+
+int AttributePrepare_logFileStatus(void)
+{
+	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
+	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
+}
+
+void non_init_set_save_flag(bool status)
+{
+	pnird->attribute_save_pending = status;
+	non_init_save_data();
+}
+
+void app_prepare_for_reboot(void)
+{
+	/* Save attributes */
+	(void)Attribute_Save_Now();
+	non_init_save_data();
 }
 
 /******************************************************************************/
@@ -243,10 +282,18 @@ static void RebootHandler(void)
 		LOG_INF("Battery age: %u", pnird->battery_age);
 		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
 		lcz_qrtc_set_epoch(pnird->qrtc);
+
+		if (pnird->attribute_save_pending == true) {
+			LOG_ERR("Device was rebooted with unsaved "
+				"configuration changes!");
+			pnird->attribute_save_pending = false;
+		}
 	} else {
 		LOG_WRN("No init ram data is not valid");
 		pnird->battery_age = 0;
 		pnird->qrtc = 0;
+		pnird->bootloader_time = 0;
+		pnird->attribute_save_pending = false;
 		lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 	}
 }
@@ -313,6 +360,8 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 
+	app_prepare_for_reboot();
+
 	LOG_PANIC();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
 	LOG_ERR("Software Reset in ~5 seconds");
@@ -321,39 +370,16 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-EXTERNED void Framework_AssertionHandler(char *file, int line)
-{
-	static bool busy = 0; /* Prevent recursion (buffer alloc fail, ...) */
-	if (!busy) {
-		busy = true;
-		LOG_ERR("\r\n!-----> Assertion <-----! %s:%d\r\n", file, line);
-		__NOP();
-	}
-}
-
-int AttributePrepare_upTime(void)
-{
-	int64_t uptimeMs = k_uptime_get();
-	return (Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
-}
-
-int AttributePrepare_logFileStatus(void)
-{
-	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
-	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
-}
-
 static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 				 void *arg)
 {
 	/* We are only interested in the firmware upload complete event, skip
 	 * all others
 	 */
-	if (opcode != MGMT_EVT_OP_CMD_STATUS ||
-	    group != MGMT_GROUP_ID_IMAGE ||
+	if (opcode != MGMT_EVT_OP_CMD_STATUS || group != MGMT_GROUP_ID_IMAGE ||
 	    id != IMG_MGMT_ID_UPLOAD ||
-	    ((struct mgmt_evt_op_cmd_status_arg*)arg)->status !=
-	    IMG_MGMT_ID_UPLOAD_STATUS_COMPLETE) {
+	    ((struct mgmt_evt_op_cmd_status_arg *)arg)->status !=
+		    IMG_MGMT_ID_UPLOAD_STATUS_COMPLETE) {
 		return;
 	}
 
@@ -361,6 +387,15 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 	 * after rebooting
 	 */
 	Attribute_SetUint32(ATTR_INDEX_bootPHY, (ble_conn_last_was_le_coded() ?
-						 BOOT_PHY_TYPE_CODED :
-						 BOOT_PHY_TYPE_1M));
+							       BOOT_PHY_TYPE_CODED :
+							       BOOT_PHY_TYPE_1M));
+
+	app_prepare_for_reboot();
+}
+
+static void non_init_save_data(void)
+{
+	/* Save time to non-initialised section */
+	pnird->qrtc = lcz_qrtc_get_epoch();
+	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 }

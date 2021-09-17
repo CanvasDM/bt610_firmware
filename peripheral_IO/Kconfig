@@ -18,6 +18,11 @@ config JSON_BRACKET_BUFFER_SIZE
     help
         This applies to sensor messages received over Bluetooth.
 
+config ATTR_SAVE_DELAY_MS
+    int "Time (in ms) before saving attributes to filesystem to cache other data to write"
+    default 30000
+    range 1000 3600000
+
 config UART_SHUTOFF
     bool "Enables shutting the main UART off to conserve power"
     default y

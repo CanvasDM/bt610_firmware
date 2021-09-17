@@ -9,6 +9,9 @@
 #ifndef __CONTROL_TASK_H__
 #define __CONTROL_TASK_H__
 
+#include <zephyr/types.h>
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,6 +39,14 @@ void ControlTask_Initialize(void);
  * @brief Run main/control thread.
  */
 void ControlTask_Thread(void);
+
+/**
+ * @brief Sets the unsaved data present flag to be set or unset and saves this
+ * to the non-initialised area in RAM
+ *
+ * @param true if there is pending unsaved data, false otherwide
+ */
+void non_init_set_save_flag(bool status);
 
 #ifdef __cplusplus
 }

@@ -359,6 +359,13 @@ int Attribute_SetQuiet(attr_idx_t Index, bool Value);
 int Attribute_Load(const char *abs_path, const char *feedback_path);
 
 /**
+ * @brief Immediately save data to params.txt
+ *
+ * @param negative error code, 0 on success
+ */
+int Attribute_Save_Now(void);
+
+/**
  * @brief Retrive the current status of the coded enable parameter
  *
  * @retval true = coded enabled, false = disabled

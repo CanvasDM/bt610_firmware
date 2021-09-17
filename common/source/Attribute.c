@@ -2,7 +2,7 @@
  * @file Attribute.c
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -51,11 +51,15 @@ static const char EMPTY_STRING[] = "";
 /* Malloc always wants to align on a 4 byte boundary */
 #define ATTR_LOAD_FEEDBACK_ALIGN_SIZE 4
 
+/* Time (in ms) between checks if a save is currently in progress */
+#define ATTR_SAVE_EXECUTING_CHECK_TIME_MS 200
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
 K_MUTEX_DEFINE(attr_mutex);
 K_MUTEX_DEFINE(attr_work_mutex);
+K_MUTEX_DEFINE(attr_save_change_mutex);
 
 extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
 
@@ -66,13 +70,15 @@ extern AttributeEntry_t attrTable[ATTR_TABLE_SIZE];
 static struct k_work workShow;
 #endif
 
+static struct k_work_delayable attr_save_delayed_work;
+
 static bool quiet[ATTR_TABLE_SIZE];
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static int SaveAndBroadcast(attr_idx_t Index);
-static int SaveAttributes(void);
+static int SaveAttributes(bool Immediately);
 static void Broadcast(void);
 
 static int LoadAttributes(const char *fname, const char *feedback_path,
@@ -121,6 +127,8 @@ static int BuildEmptyFeedbackFile(const char *feedback_path);
 static void systemWorkqShowHandler(struct k_work *item);
 #endif
 
+static void SaveAttributesWork(struct k_work *item);
+
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -143,6 +151,8 @@ int Attribute_Init(void)
 	k_work_init(&workShow, systemWorkqShowHandler);
 #endif
 
+	k_work_init_delayable(&attr_save_delayed_work, SaveAttributesWork);
+
 	InitializeQuiet();
 
 	GIVE_MUTEX(attr_mutex);
@@ -153,7 +163,7 @@ int Attribute_Init(void)
 int Attribute_FactoryReset(void)
 {
 	AttributeTable_FactoryReset();
-	return SaveAttributes();
+	return SaveAttributes(true);
 }
 
 AttrType_t Attribute_GetType(attr_idx_t Index)
@@ -628,7 +638,7 @@ int Attribute_Load(const char *abs_path, const char *feedback_path)
 		r = LoadAttributes(abs_path, feedback_path, true, false);
 		BREAK_ON_ERROR(r);
 
-		r = SaveAttributes();
+		r = SaveAttributes(true);
 		BREAK_ON_ERROR(r);
 
 		Broadcast();
@@ -639,6 +649,11 @@ int Attribute_Load(const char *abs_path, const char *feedback_path)
 	return r;
 }
 
+int Attribute_Save_Now(void)
+{
+	return SaveAttributes(true);
+}
+
 bool Attribute_CodedEnableCheck(void)
 {
 	bool codedPhySelected;
@@ -646,6 +661,7 @@ bool Attribute_CodedEnableCheck(void)
 		      sizeof(codedPhySelected));
 	return (codedPhySelected);
 }
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -675,7 +691,7 @@ static int SaveAndBroadcast(attr_idx_t Index)
 
 	if (p->modified) {
 		if (p->savable && !p->deprecated) {
-			r = SaveAttributes();
+			r = SaveAttributes(false);
 		}
 
 		Broadcast();
@@ -683,11 +699,58 @@ static int SaveAndBroadcast(attr_idx_t Index)
 	return r;
 }
 
-static int SaveAttributes(void)
+static int SaveAttributes(bool Immediately)
+{
+	int32_t r = 0;
+	int rc = 0;
+
+	non_init_set_save_flag(true);
+
+	if (Immediately == true) {
+		/* Flag set to immediate save, because the state of the device
+		 * is unknown and could be about to reboot, cancel a pending
+		 * run and do not reschedule another run, just run it in the
+		 * function directly
+		 */
+		if (k_work_delayable_is_pending(&attr_save_delayed_work) ==
+		    true) {
+			(void)k_work_cancel_delayable(&attr_save_delayed_work);
+		}
+
+		SaveAttributesWork(NULL);
+
+		/* We can return the status with an immediate run */
+		rc = Attribute_GetSigned32(&r, ATTR_INDEX_attrSaveErrorCode);
+		if (rc == 0) {
+			rc = (int)r;
+		}
+	} else {
+		while (k_work_delayable_busy_get(&attr_save_delayed_work) ==
+		       true) {
+			/* The save task is currently running, yield by
+			 * sleeping until it has finished
+			 */
+			k_sleep(K_MSEC(ATTR_SAVE_EXECUTING_CHECK_TIME_MS));
+		}
+
+		/* Schedule task for saving the data */
+		if (k_work_delayable_is_pending(&attr_save_delayed_work) ==
+		    false) {
+			k_work_reschedule(&attr_save_delayed_work,
+					  K_MSEC(CONFIG_ATTR_SAVE_DELAY_MS));
+		}
+	}
+
+	return rc;
+}
+
+static void SaveAttributesWork(struct k_work *item)
 {
 	int r = -EPERM;
 	char *fstr = NULL;
 	attr_idx_t i;
+
+	TAKE_MUTEX(attr_save_change_mutex);
 
 	/* Converting to file format is larger, but makes it easier to go between
 	 * different versions.
@@ -714,12 +777,18 @@ static int SaveAttributes(void)
 					      strlen(fstr));
 		LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
 			strlen(fstr));
-
 	} while (0);
 
 	k_free(fstr);
 
-	return (r < 0) ? r : 0;
+	Attribute_SetSigned32(ATTR_INDEX_attrSaveErrorCode, ((r < 0) ? r : 0));
+
+	if (r >= 0) {
+		/* Clear unsaved data flag */
+		non_init_set_save_flag(false);
+	}
+
+	GIVE_MUTEX(attr_save_change_mutex);
 }
 
 static void Broadcast(void)
@@ -922,7 +991,7 @@ static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
 		}
 
 		if (r < 0) {
-			/* We always update the error count here regardless 
+			/* We always update the error count here regardless
 			 * of whether break out is enabled.
 			 */
 			*error_count = *error_count + 1;
@@ -961,9 +1030,13 @@ static int Write(attr_idx_t Index, AttrType_t Type, void *pValue, size_t Length)
 	int r = -EPERM;
 	AttributeEntry_t *p = &attrTable[Index];
 
+	TAKE_MUTEX(attr_save_change_mutex);
+
 	if (Type == p->type || Type == ATTR_TYPE_ANY) {
 		r = p->pValidator(p, pValue, Length, true);
 	}
+
+	GIVE_MUTEX(attr_save_change_mutex);
 
 	if (r < 0) {
 		LOG_WRN("validation failure %u %s", Index, p->name);

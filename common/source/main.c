@@ -13,5 +13,4 @@ void main(void)
 	BSP_Init();
 	ControlTask_Initialize();
 	ControlTask_Thread();
-
 }
