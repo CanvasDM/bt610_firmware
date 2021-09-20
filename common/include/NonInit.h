@@ -21,6 +21,15 @@ extern "C" {
 /******************************************************************************/
 /* Global Function Prototypes                                                 */
 /******************************************************************************/
+#if defined(CONFIG_MCUBOOT)
+/**
+ * @brief Saves bootloader start up time to non-init RAM section and updates
+ * the header
+ *
+ * @param Run time of mcuboot in ms
+ */
+void non_init_set_bootloader_time(uint32_t time);
+#else
 /**
  * @brief Saves epoch to non-init RAM section and upates the header
  */
@@ -33,6 +42,7 @@ void non_init_save_data(void);
  * @param true if there is pending unsaved data, false otherwide
  */
 void non_init_set_save_flag(bool status);
+#endif
 
 #ifdef __cplusplus
 }

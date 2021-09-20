@@ -61,6 +61,14 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 
 #define RESET_COUNT_FNAME CONFIG_FSU_MOUNT_POINT "/reset_count"
 
+#define MS_TO_SECONDS_DIVISOR 1000
+
+/* 10 minutes in ms, if the bootloader time is greater than this number, it's
+ * value is ignored. This value is higher than the bootloader should ever need
+ * to spend
+ */
+#define BOOTLOADER_MAX_TIME_SANITY_CHECK 600000
+
 typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
 	uint32_t broadcastCount;
@@ -259,8 +267,21 @@ static void RebootHandler(void)
 	if (valid) {
 		LOG_INF("Battery age: %u", pnird->battery_age);
 		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
+		LOG_INF("Bootloader time: %u", pnird->bootloader_time);
+		LOG_INF("Execution time: %u", k_uptime_get_32());
 
+		if (pnird->bootloader_time >=
+		    BOOTLOADER_MAX_TIME_SANITY_CHECK) {
+			LOG_ERR("Bootloader time is in excess of 10 minutes, "
+				"ignoring value");
+			pnird->bootloader_time = 0;
+		}
+
+		pnird->qrtc += ((pnird->bootloader_time + k_uptime_get_32()) /
+			       MS_TO_SECONDS_DIVISOR);
 		lcz_qrtc_set_epoch(pnird->qrtc);
+
+		LOG_INF("Device time: %u", pnird->qrtc);
 
 		if (pnird->attribute_save_pending == true) {
 			LOG_ERR("Device was rebooted with unsaved "
