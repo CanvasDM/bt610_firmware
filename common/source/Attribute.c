@@ -25,6 +25,7 @@ LOG_MODULE_REGISTER(attr, CONFIG_ATTR_LOG_LEVEL);
 #include "AttributeTable.h"
 #include "Attribute.h"
 #include "ControlTask.h"
+#include "NonInit.h"
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */

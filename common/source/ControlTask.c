@@ -16,7 +16,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 /******************************************************************************/
 #include <zephyr.h>
 #include <power/reboot.h>
-#include <pm_config.h>
 #include <hal/nrf_power.h>
 #include <logging/log_ctrl.h>
 #include <mgmt/mgmt.h>
@@ -32,6 +31,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
 #include "lcz_no_init_ram_var.h"
+#include "NonInit.h"
 #include "file_system_utilities.h"
 #include "lcz_bluetooth.h"
 #include "Attribute.h"
@@ -66,18 +66,6 @@ typedef struct ControlTaskTag {
 	uint32_t broadcastCount;
 } ControlTaskObj_t;
 
-/**
- * @note Items in non-initialized RAM need to survive a reset.
- */
-typedef struct no_init_ram {
-	no_init_ram_header_t header;
-	uint32_t battery_age;
-	uint32_t qrtc;
-	uint32_t bootloader_time;
-	bool attribute_save_pending;
-} no_init_ram_t;
-#define SIZE_OF_NIRD (sizeof(no_init_ram_t) - sizeof(no_init_ram_header_t))
-
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -89,8 +77,6 @@ K_THREAD_STACK_DEFINE(controlTaskStack, CONTROL_TASK_STACK_DEPTH);
 
 K_MSGQ_DEFINE(controlTaskQueue, FWK_QUEUE_ENTRY_SIZE, CONTROL_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
-
-static no_init_ram_t *pnird = (no_init_ram_t *)PM_LCZ_NOINIT_SRAM_ADDRESS;
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -113,8 +99,6 @@ static void RebootHandler(void);
 
 static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 				 void *arg);
-
-static void non_init_save_data(void);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -187,12 +171,6 @@ int AttributePrepare_logFileStatus(void)
 {
 	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
 	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
-}
-
-void non_init_set_save_flag(bool status)
-{
-	pnird->attribute_save_pending = status;
-	non_init_save_data();
 }
 
 void app_prepare_for_reboot(void)
@@ -281,6 +259,7 @@ static void RebootHandler(void)
 	if (valid) {
 		LOG_INF("Battery age: %u", pnird->battery_age);
 		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
+
 		lcz_qrtc_set_epoch(pnird->qrtc);
 
 		if (pnird->attribute_save_pending == true) {
@@ -292,10 +271,12 @@ static void RebootHandler(void)
 		LOG_WRN("No init ram data is not valid");
 		pnird->battery_age = 0;
 		pnird->qrtc = 0;
-		pnird->bootloader_time = 0;
-		pnird->attribute_save_pending = false;
-		lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 	}
+
+	/* Clear volatile config */
+	pnird->bootloader_time = 0;
+	pnird->attribute_save_pending = false;
+	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -391,11 +372,4 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 							       BOOT_PHY_TYPE_1M));
 
 	app_prepare_for_reboot();
-}
-
-static void non_init_save_data(void)
-{
-	/* Save time to non-initialised section */
-	pnird->qrtc = lcz_qrtc_get_epoch();
-	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 }
