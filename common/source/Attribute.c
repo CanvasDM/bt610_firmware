@@ -832,14 +832,14 @@ static void SaveAttributesWork(struct k_work *item)
 
 	k_free(fstr);
 
-	Attribute_SetSigned32(ATTR_INDEX_attrSaveErrorCode, ((r < 0) ? r : 0));
-
 	if (r >= 0) {
 		/* Clear unsaved data flag */
 		non_init_set_save_flag(false);
 	}
 
 	GIVE_MUTEX(attr_save_change_mutex);
+
+	Attribute_SetSigned32(ATTR_INDEX_attrSaveErrorCode, ((r < 0) ? r : 0));
 }
 
 static void Broadcast(void)
