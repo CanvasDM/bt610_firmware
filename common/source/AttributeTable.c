@@ -364,7 +364,6 @@ typedef struct RoAttributesTag {
 	char apiVersion[11 + 1];
 	uint32_t qrtc;
 	uint8_t connectionTimeoutSec;
-	uint32_t settingsPasscode;
 	uint8_t logFileStatus;
 	bool adcBatterySimulated;
 	int16_t adcBatterySimulatedCounts;
@@ -447,7 +446,6 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.apiVersion = "1.75",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
-	.settingsPasscode = 123456,
 	.logFileStatus = 0,
 	.adcBatterySimulated = 0,
 	.adcBatterySimulatedCounts = 0,
@@ -544,7 +542,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [2  ] = { RW_ATTRX(advertisingInterval)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 500.0     , .max.ux = 10000.0    },
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, y, y, n, AttributeValidator_uint16   , NULL                                      , .min.ux = 2000.0    , .max.ux = 65535.0    },
     [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
-    [5  ] = { RW_ATTRX(lock)                          , b  , y, y, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [5  ] = { RW_ATTRX(lock)                          , b  , y, n, y, y, n, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [8  ] = { RW_ATTRX(AggregationCount)              , u8 , y, y, y, y, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
@@ -639,7 +637,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [97 ] = { RW_ATTRX(analogSenseInterval)           , u32, y, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [98 ] = { RW_ATTRX(tamperSwitchStatus)            , b  , y, n, y, n, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [99 ] = { RO_ATTRX(connectionTimeoutSec)          , u8 , n, y, y, y, y, y, AttributeValidator_cp8      , NULL                                      , .min.ux = 0.0       , .max.ux = 255.0      },
-    [100] = { RO_ATTRX(settingsPasscode)              , u32, n, y, y, y, y, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
+    [100] = { RW_ATTRX(settingsPasscode)              , u32, y, y, n, n, y, n, AttributeValidator_cp32     , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
     [101] = { RW_ATTRX(therm1CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [102] = { RW_ATTRX(therm2CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },
     [103] = { RW_ATTRX(therm3CoefficientA)            , f  , y, y, y, y, n, n, AttributeValidator_float    , NULL                                      , .min.fx = 1.2e-38   , .max.fx = 3.4e+38    },

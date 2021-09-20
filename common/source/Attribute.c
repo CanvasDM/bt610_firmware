@@ -358,7 +358,7 @@ int Attribute_SetNoBroadcastUint32(attr_idx_t Index, uint32_t Value)
 	if (isValid(Index)) {
 		TAKE_MUTEX(attr_mutex);
 		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
-
+		p->modified = false;
 		/* Need to save right away function is used by items that can not
 		 * operate correctly if data is lost if a reset occurs.
 		 */
@@ -1129,12 +1129,11 @@ static bool isWritable(attr_idx_t Index)
 	bool r = false;
 	AttributeEntry_t *p = &attrTable[Index];
 
-	uint8_t unlocked =
-		((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
+	bool locked = (*((bool *)attrTable[ATTR_INDEX_lock].pData));
 
 	if (p->writable) {
 		if (p->lockable) {
-			if (unlocked == 0) {
+			if (!locked) {
 				r = true;
 			}
 		} else {
