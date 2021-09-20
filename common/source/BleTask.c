@@ -770,7 +770,7 @@ static void ResetAppDisconnectParam(void)
 {
 	bool disconnectFlag = 0;
 
-	Attribute_SetQuiet(ATTR_INDEX_mobileAppDisconnect, disconnectFlag);
+	Attribute_SetUint32(ATTR_INDEX_mobileAppDisconnect, disconnectFlag);
 }
 
 static void RequestDisconnect(struct bt_conn *ConnectionHandle)
