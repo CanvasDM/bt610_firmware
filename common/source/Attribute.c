@@ -348,6 +348,29 @@ int Attribute_SetFloat(attr_idx_t Index, float Value)
 	return r;
 }
 
+int Attribute_SetNoBroadcastUint32(attr_idx_t Index, uint32_t Value)
+{
+	uint32_t local = Value;
+	int r = -EPERM;
+	AttributeEntry_t *p = &attrTable[Index];
+
+	if (isValid(Index)) {
+		TAKE_MUTEX(attr_mutex);
+		r = Write(Index, ATTR_TYPE_ANY, &local, sizeof(local));
+
+		/* Need to save right away function is used by items that can not
+		 * operate correctly if data is lost if a reset occurs.
+		 */
+		if (r == 0) {
+			if (p->savable && !p->deprecated) {
+				r = SaveAttributes(true);
+			}
+		}
+		GIVE_MUTEX(attr_mutex);
+	}
+	return r;
+}
+
 int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 {
 	*pValue = 0;
@@ -801,8 +824,8 @@ static void SaveAttributesWork(struct k_work *item)
 			 */
 			r = (int)lcz_param_file_write(CONFIG_ATTR_FILE_NAME,
 						      fstr, fstrlen);
-			LOG_DBG("Wrote %d of %d bytes of parameters to file",
-				r, fstrlen);
+			LOG_DBG("Wrote %d of %d bytes of parameters to file", r,
+				fstrlen);
 		}
 	} while (0);
 
@@ -1104,17 +1127,15 @@ static bool isWritable(attr_idx_t Index)
 {
 	bool r = false;
 	AttributeEntry_t *p = &attrTable[Index];
-	/*
-	bool unlocked = ((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
-	*/
+
+	uint8_t unlocked =
+		((*((uint8_t *)attrTable[ATTR_INDEX_lock].pData)) == 0);
 
 	if (p->writable) {
 		if (p->lockable) {
-			/*This is controled on the app side for the time being
-			Leave this code here in case it changes **
-			r = unlocked;
-			*/
-			r = true;
+			if (unlocked == 0) {
+				r = true;
+			}
 		} else {
 			r = true;
 		}

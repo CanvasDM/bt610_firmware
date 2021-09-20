@@ -73,12 +73,19 @@ typedef enum {
 	BOTH_EDGE_ALARM
 } digitalAlarm_t;
 
+typedef enum {
+	UNDEFINED_CODE = 0,
+	VAILD_CODE,
+	INVALID_CODE,
+} settingsLockError_t;
+
 typedef struct SensorTaskTag {
 	FwkMsgTask_t msgTask;
 	uint8_t digitalIn1Enabled;
 	uint8_t digitalIn2Enabled;
 	digitalAlarm_t input1Alarm;
 	digitalAlarm_t input2Alarm;
+	uint32_t savedPasscode;
 
 	float previousTemp[TOTAL_THERM_CH];
 	float magnitudeOfTempDifference[TOTAL_THERM_CH];
@@ -124,6 +131,8 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 
+static void LoadSettingPasscode(void);
+static void SaveSettingPasscode(void);
 static void LoadSensorConfiguration(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
@@ -333,6 +342,7 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	AttributePrepare_batteryVoltageMv();
 	InitializeIntervalTimers();
 	UpdateMagnet();
+	LoadSettingPasscode();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -402,12 +412,14 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			 */
 			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
 				sizeof(activeMode));
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-							FWK_ID_SENSOR_TASK,
-							(!activeMode ?
-							FMC_ENTER_SHELF_MODE :
+			FRAMEWORK_MSG_CREATE_AND_SEND(
+				FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
+				(!activeMode ? FMC_ENTER_SHELF_MODE :
 							FMC_ENTER_ACTIVE_MODE));
+			break;
 		case ATTR_INDEX_settingsPasscode:
+			SaveSettingPasscode();
+			break;
 		default:
 			/* Don't do anything - this is a broadcast */
 			break;
@@ -596,6 +608,51 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				      FMC_SOFTWARE_RESET);
 
 	return DISPATCH_OK;
+}
+
+static void LoadSettingPasscode(void)
+{
+	/* Load the settings passcode from memory into local RAM
+	 * to use to compare to what the user enters
+	 */
+	uint32_t passCode = 0;
+	Attribute_GetUint32(&passCode, ATTR_INDEX_settingsPasscode);
+	sensorTaskObject.savedPasscode = passCode;
+}
+
+static void SaveSettingPasscode(void)
+{
+	settingsLockError_t passCodeStatus = UNDEFINED_CODE;
+	bool lockStatus = false;
+	uint32_t passCode = 0;
+	Attribute_Get(ATTR_INDEX_lock, &lockStatus, sizeof(lockStatus));
+	Attribute_GetUint32(&passCode, ATTR_INDEX_settingsPasscode);
+
+	if (lockStatus == true) {
+		/* Check if the passcode entered matches */
+		if (passCode == sensorTaskObject.savedPasscode) {
+			/* Unlock the settings */
+			Attribute_SetUint32(ATTR_INDEX_lock, false);
+
+			passCodeStatus = VAILD_CODE;
+		} else {
+			/* Reset the passcode to last saved passcode */
+			Attribute_SetNoBroadcastUint32(
+				ATTR_INDEX_settingsPasscode,
+				sensorTaskObject.savedPasscode);
+
+			passCodeStatus = INVALID_CODE;
+		}
+	} else {
+		/* set the new passcode */
+		sensorTaskObject.savedPasscode = passCode;
+		/* Lock the settings */
+		Attribute_SetUint32(ATTR_INDEX_lock, true);
+		passCodeStatus = VAILD_CODE;
+	}
+
+	/* Send feedback to APP about the passcode */
+	Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus, passCodeStatus);
 }
 
 static void LoadSensorConfiguration(void)

@@ -416,6 +416,7 @@ typedef struct RoAttributesTag {
 	bool tamperSwitchSimulatedValue;
 	bool mobileAppDisconnect;
 	int32_t attrSaveErrorCode;
+	uint8_t settingsPasscodeStatus;
 	/* pyend */
 } RoAttribute_t;
 
@@ -443,7 +444,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.74",
+	.apiVersion = "1.75",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.settingsPasscode = 123456,
@@ -497,7 +498,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.tamperSwitchSimulated = 0,
 	.tamperSwitchSimulatedValue = 0,
 	.mobileAppDisconnect = 0,
-	.attrSaveErrorCode = 0
+	.attrSaveErrorCode = 0,
+	.settingsPasscodeStatus = 0
 	/* pyend */
 };
 
@@ -704,8 +706,9 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [164] = { RO_ATTRX(tamperSwitchSimulated)         , b  , n, y, y, n, n, n, AttributeValidator_tampsimen, NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [165] = { RO_ATTRX(tamperSwitchSimulatedValue)    , b  , n, y, y, n, n, n, AttributeValidator_tampsim  , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [166] = { RW_ATTRX(bootPHY)                       , u8 , y, y, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        },
-    [167] = { RO_ATTRX(mobileAppDisconnect)           , b  , n, y, y, n, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        },
-    [168] = { RO_ATTRX(attrSaveErrorCode)             , i32, n, n, y, n, y, n, AttributeValidator_int32    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        }
+    [167] = { RO_ATTRX(mobileAppDisconnect)           , b  , n, y, y, n, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [168] = { RO_ATTRX(attrSaveErrorCode)             , i32, n, n, y, n, y, n, AttributeValidator_int32    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [169] = { RO_ATTRX(settingsPasscodeStatus)        , u8 , n, n, y, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        }
     /* pyend */
 };
 /* clang-format on */

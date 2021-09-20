@@ -186,6 +186,16 @@ int Attribute_SetUint32(attr_idx_t Index, uint32_t Value);
 int Attribute_SetSigned32(attr_idx_t Index, int32_t Value);
 
 /**
+ * @brief Helper function for setting uint8, 16 or 32 that will save and not broadcast to the system
+ *
+ * @param Index A valid index into attribute table.
+ * @param Value The value to set.
+ *
+ * @retval negative error code, 0 on success
+ */
+int Attribute_SetNoBroadcastUint32(attr_idx_t Index, uint32_t Value);
+
+/**
  * @brief Accessor Function for uint32
  *
  * @param pValue pointer to data
