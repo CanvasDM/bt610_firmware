@@ -2,7 +2,7 @@
  * @file AttributeTable.c
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -443,7 +443,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.75",
+	.apiVersion = "1.76",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.logFileStatus = 0,
@@ -549,7 +549,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [9  ] = { RW_ATTRX(digitalOutput1State)           , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [10 ] = { RW_ATTRX(digitalOutput2State)           , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [11 ] = { RO_ATTRS(firmwareVersion)               , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
-    [12 ] = { RW_ATTRS(resetReason)                   , s  , y, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
+    [12 ] = { RW_ATTRS(resetReason)                   , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [13 ] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [14 ] = { RO_ATTRX(resetCount)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [15 ] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
