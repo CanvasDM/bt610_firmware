@@ -285,6 +285,8 @@ static void RebootHandler(void)
 				"configuration changes!");
 			pnird->attribute_save_pending = false;
 		}
+
+		Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
 	} else {
 		LOG_WRN("No init ram data is not valid");
 		pnird->battery_age = 0;
