@@ -129,7 +129,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						  FwkMsg_t *pMsg);
+						 FwkMsg_t *pMsg);
 
 static void LoadSettingPasscode(void);
 static void SaveSettingPasscode(void);
@@ -411,11 +411,11 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 			 * handler.
 			 */
 			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
-				sizeof(activeMode));
+				      sizeof(activeMode));
 			FRAMEWORK_MSG_CREATE_AND_SEND(
 				FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
 				(!activeMode ? FMC_ENTER_SHELF_MODE :
-							FMC_ENTER_ACTIVE_MODE));
+						     FMC_ENTER_ACTIVE_MODE));
 			break;
 		case ATTR_INDEX_settingsPasscode:
 			SaveSettingPasscode();
@@ -584,15 +584,14 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 * may be ignored if a connection is already active.
 	 */
 	Flags_Set(FLAG_ACTIVE_MODE, 1);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-				      FWK_ID_BLE_TASK,
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_BLE_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 
 	return DISPATCH_OK;
 }
 
 static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						  FwkMsg_t *pMsg)
+						 FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 
@@ -603,8 +602,7 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 * advertising altogether.
 	 */
 	Flags_Set(FLAG_ACTIVE_MODE, 0);
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
-				      FWK_ID_CONTROL_TASK,
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_CONTROL_TASK,
 				      FMC_SOFTWARE_RESET);
 
 	return DISPATCH_OK;
@@ -618,6 +616,9 @@ static void LoadSettingPasscode(void)
 	uint32_t passCode = 0;
 	Attribute_GetUint32(&passCode, ATTR_INDEX_settingsPasscode);
 	sensorTaskObject.savedPasscode = passCode;
+
+	/* Turn off the display on the terminal of the passcode */
+	Attribute_SetQuiet(ATTR_INDEX_settingsPasscode, true);
 }
 
 static void SaveSettingPasscode(void)
