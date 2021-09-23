@@ -203,8 +203,8 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
-	int32_t intData;
-	uint32_t uintData;
+	int64_t intData;
+	uint64_t uintData;
 	float floatData;
 	bool boolData;
 	char bufferData[ATTR_MAX_STR_SIZE];
@@ -263,7 +263,6 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 		getResult = Attribute_Get(paramID, &boolData, sizeof(boolData));
 		err |= cbor_encode_boolean(&ctxt->encoder, boolData);
 		break;
-
 	default:
 		/* For unrecognised types, we return an error code and value */
 		getResult = -EINVAL;
@@ -862,6 +861,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	case ATTR_TYPE_S8:
 	case ATTR_TYPE_S16:
 	case ATTR_TYPE_S32:
+	case ATTR_TYPE_S64:
 		paramIint = LLONG_MAX;
 		attrs->type = CborAttrIntegerType;
 		attrs->addr.integer = &paramIint;
@@ -869,6 +869,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	case ATTR_TYPE_U8:
 	case ATTR_TYPE_U16:
 	case ATTR_TYPE_U32:
+	case ATTR_TYPE_U64:
 		paramUint = ULLONG_MAX;
 		attrs->type = CborAttrUnsignedIntegerType;
 		attrs->addr.integer = &paramUint;
