@@ -50,7 +50,6 @@ typedef struct RwAttributesTag {
 	uint8_t AggregationCount;
 	bool digitalOutput1State;
 	bool digitalOutput2State;
-	char resetReason[8 + 1];
 	float highTemp1Thresh1;
 	float highTemp1Thresh2;
 	float lowTemp1Thresh1;
@@ -200,7 +199,6 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.AggregationCount = 1,
 	.digitalOutput1State = 0,
 	.digitalOutput2State = 0,
-	.resetReason = "0",
 	.highTemp1Thresh1 = 1.27e+2,
 	.highTemp1Thresh2 = 1.27e+2,
 	.lowTemp1Thresh1 = -1.28e+2,
@@ -340,6 +338,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 typedef struct RoAttributesTag {
 	/* pystart - ro attributes */
 	char firmwareVersion[11 + 1];
+	char resetReason[8 + 1];
 	char bluetoothAddress[12 + 1];
 	uint32_t resetCount;
 	char bootloaderVersion[11 + 1];
@@ -422,6 +421,7 @@ typedef struct RoAttributesTag {
 static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	/* pystart - ro defaults */
 	.firmwareVersion = "0.0.0",
+	.resetReason = "0",
 	.bluetoothAddress = "0",
 	.resetCount = 0,
 	.bootloaderVersion = "0.0",
@@ -549,7 +549,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [9  ] = { RW_ATTRX(digitalOutput1State)           , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [10 ] = { RW_ATTRX(digitalOutput2State)           , b  , y, y, y, y, y, n, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [11 ] = { RO_ATTRS(firmwareVersion)               , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
-    [12 ] = { RW_ATTRS(resetReason)                   , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
+    [12 ] = { RO_ATTRS(resetReason)                   , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [13 ] = { RO_ATTRS(bluetoothAddress)              , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
     [14 ] = { RO_ATTRX(resetCount)                    , u32, n, n, y, n, n, n, AttributeValidator_uint32   , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [15 ] = { RO_ATTRS(bootloaderVersion)             , s  , n, n, y, n, n, n, AttributeValidator_string   , NULL                                      , .min.ux = 0         , .max.ux = 0          },
