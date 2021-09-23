@@ -111,7 +111,17 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 
 	if ((argc == 3) && (argv[1] != NULL) && (argv[2] != NULL)) {
 		idx = get_index(argv[1]);
-		/* The attribute validators try to make sense of what is given to them. */
+
+#if defined(CONFIG_SHELL_SELECTIVE_HISTORY)
+		if (idx == ATTR_INDEX_settingsPasscode) {
+			/* Do not save this command in the shell history */
+			shell->history->skip_current_line = true;
+		}
+#endif
+
+		/* The attribute validators try to make sense of what is given
+		 * to them.
+		 */
 		if (Attribute_ValidIndex(idx)) {
 			if (is_string(argv[2])) {
 				r = Attribute_Set(idx, ATTR_TYPE_ANY, argv[2],
