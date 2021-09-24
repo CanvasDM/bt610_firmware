@@ -195,6 +195,13 @@ BUILD_ASSERT(
 	ARRAY_SIZE(BUTTON_CFG) == CONFIG_UI_NUMBER_OF_BUTTONS,
 	"Unsupported board: sw1, sw2, and sw3 devicetree aliases must be defined");
 
+BUILD_ASSERT(
+	CONFIG_UI_MAX_ALIVE_MS < CONFIG_UI_PAIR_MIN_MS,
+	"Error: CONFIG_UI_MAX_ALIVE_MS must be less than CONFIG_UI_PAIR_MIN_MS");
+BUILD_ASSERT(
+	CONFIG_UI_PAIR_MIN_MS < CONFIG_UI_MIN_FACTORY_RESET_MS,
+	"Error: CONFIG_UI_PAIR_MIN_MS must be less than CONFIG_UI_MIN_FACTORY_RESET_MS");
+
 /* clang-format off */
 static const struct lcz_led_blink_pattern ALIVE_PATTERN = {
 	.on_time = 1000,
@@ -226,6 +233,8 @@ static int64_t amrEventTime;
 
 static bool mag_switch_last_state = false;
 static bool tamper_switch_last_state = false;
+
+static bool button1_pressed = false;
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -682,28 +691,36 @@ static void Button1HandlerIsr(const struct device *dev,
 	int64_t delta;
 
 	if (gpio_pin_get(dev, BUTTON_CFG[0].pin)) {
-		LOG_DBG("Rising");
 		delta = k_uptime_delta(&swEventTime);
+		if (button1_pressed == true) {
+			LOG_DBG("Rising for %lld", delta);
 
-		if (ValidAliveDuration(delta)) {
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
-						      FWK_ID_USER_IF_TASK,
-						      FMC_ALIVE);
-		}
-		if (ValidExitShelfModeDuration(delta)) {
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
-						      FWK_ID_USER_IF_TASK,
-						      FMC_ENTER_ACTIVE_MODE);
-			LOG_DBG("Active");
-		}
-		if (ValidFactoryResetDuration(delta)) {
-			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
-						      FWK_ID_USER_IF_TASK,
-						      FMC_FACTORY_RESET);
+			/* Sorted by longest to shortest */
+			if (ValidFactoryResetDuration(delta)) {
+				FRAMEWORK_MSG_CREATE_AND_SEND(
+							FWK_ID_USER_IF_TASK,
+							FWK_ID_USER_IF_TASK,
+							FMC_FACTORY_RESET);
+			} else if (ValidExitShelfModeDuration(delta)) {
+				FRAMEWORK_MSG_CREATE_AND_SEND(
+							FWK_ID_USER_IF_TASK,
+							FWK_ID_USER_IF_TASK,
+							FMC_ENTER_ACTIVE_MODE);
+				LOG_DBG("Active");
+			} else if (ValidAliveDuration(delta)) {
+				FRAMEWORK_MSG_CREATE_AND_SEND(
+							FWK_ID_USER_IF_TASK,
+							FWK_ID_USER_IF_TASK,
+							FMC_ALIVE);
+			}
+		} else {
+			LOG_ERR("Button1 was released and ignored, no press "
+				"was detected. Delta: %lld", delta);
 		}
 	} else {
 		LOG_DBG("Falling");
 		(void)k_uptime_delta(&swEventTime);
+		button1_pressed = true;
 	}
 }
 
@@ -769,3 +786,4 @@ static bool ValidFactoryResetDuration(int64_t duration)
 		return false;
 	}
 }
+
