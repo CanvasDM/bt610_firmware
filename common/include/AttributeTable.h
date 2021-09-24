@@ -64,7 +64,7 @@ struct AttributeEntry {
 	const bool lockable;
 	const bool broadcast;
 	const bool deprecated;
-	const bool donotdumpd;
+	const bool donotdump;
 	int (*const pValidator)(AttributeEntry_t *, void *, size_t, bool);
 	int (*const pPrepare)(void);
 	const minmax_t min;
