@@ -44,6 +44,7 @@ class attributes:
         self.AttributeReadable = []
         self.AttributeSavable = []
         self.AttributeDeprecated = []
+        self.AttributeDonotDump = []
         self.AttributeValidator = []
         self.AttributePrepare = []
         self.resultName = []
@@ -107,6 +108,8 @@ class attributes:
                     self._GetBoolField(i, 'x-savable'))
                 self.AttributeDeprecated.append(
                     self._GetBoolField(i, 'x-deprecated'))
+                self.AttributeDonotDump.append(
+                    self._GetBoolField(i, 'x-donotdump'))
                 self.AttributeValidator.append(
                     self._GetStringField(i, 'x-validator'))
                 self.AttributePrepare.append(
@@ -199,10 +202,11 @@ class attributes:
             broadcast = toyn(self.AttributeBroadcast[i])
             savable = toyn(self.AttributeSavable[i])
             deprecated = toyn(self.AttributeDeprecated[i])
+            donotdump = toyn(self.AttributeDonotDump[i])
             i_hash = i
             result = f"    [{i_hash:<3}] = " \
                 + "{ " \
-                + f"{self._GetAttributeMacro(i_type, self.AttributeSavable[i], name):<40}, {self._GetType(i_type)}, {savable}, {writable}, {readable}, {lockable}, {broadcast}, {deprecated}, {self._GetValidatorString(i_type, i):<28}, {self._GetPrepareString(name, i)}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                + f"{self._GetAttributeMacro(i_type, self.AttributeSavable[i], name):<40}, {self._GetType(i_type)}, {savable}, {writable}, {readable}, {lockable}, {broadcast}, {deprecated}, {donotdump}, {self._GetValidatorString(i_type, i):<28}, {self._GetPrepareString(name, i)}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                 + " }," \
                 + "\n"
             attributeTable.append(result)

@@ -1152,7 +1152,8 @@ static bool isDumpRw(attr_idx_t Index)
 	bool b = false;
 
 	if (isValid(Index)) {
-		if (attrTable[Index].readable && !attrTable[Index].deprecated) {
+		if (attrTable[Index].readable && !attrTable[Index].donotdump &&
+		    !attrTable[Index].deprecated) {
 			b = true;
 		}
 	}
@@ -1165,8 +1166,8 @@ static bool isDumpW(attr_idx_t Index)
 	bool b = false;
 
 	if (isValid(Index)) {
-		if (attrTable[Index].readable && !attrTable[Index].deprecated &&
-		    attrTable[Index].writable) {
+		if (attrTable[Index].readable && !attrTable[Index].donotdumpd &&
+		    !attrTable[Index].deprecated && attrTable[Index].writable) {
 			b = true;
 		}
 	}
@@ -1179,7 +1180,8 @@ static bool isDumpRo(attr_idx_t Index)
 	bool b = false;
 
 	if (isValid(Index)) {
-		if (attrTable[Index].readable && !attrTable[Index].deprecated &&
+		if (attrTable[Index].readable && !attrTable[Index].donotdumpd &&
+		    !attrTable[Index].deprecated &&
 		    !attrTable[Index].writable) {
 			b = true;
 		}
