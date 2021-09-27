@@ -6,7 +6,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __NON_INIT_STRUCT__H__
+#ifndef __NON_INIT_STRUCT_H__
 #define __NON_INIT_STRUCT_H__
 
 #include <zephyr/types.h>
