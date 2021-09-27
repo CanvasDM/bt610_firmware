@@ -18,10 +18,9 @@
 
 #include "Attribute.h"
 #include "FrameworkIncludes.h"
+#include "FileAccess.h"
 #include "file_system_utilities.h"
 #include "lcz_qrtc.h"
-
-#define ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH "/ext/load_shell_feedback.txt"
 
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
@@ -54,7 +53,7 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		ats_get_cmd),
 	SHELL_CMD(dump, NULL,
 		  "<0 = rw, 1 = w, 2 = ro> <abs_path>\n"
-		  "if path not included then default is /ext/dump.txt",
+		  "if path not included then default is " SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
 		  ats_dump_cmd),
 	SHELL_CMD(show, NULL, "Display all parameters", ats_show_cmd),
 	SHELL_CMD(
@@ -184,7 +183,7 @@ static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
 static int ats_dump_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	char *fstr = NULL;
-	char *fname = "/ext/dump.txt";
+	char *fname = SENTRIUS_MGMT_PARAMETER_DUMP_PATH;
 	int r = -EPERM;
 	int type;
 

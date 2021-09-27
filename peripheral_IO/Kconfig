@@ -27,6 +27,11 @@ config UART_SHUTOFF
     bool "Enables shutting the main UART off to conserve power"
     default y
 
+config FILE_ACCESS_LOG_LEVEL
+    int "File access log level for reading/writing files over SMP"
+    range 0 4
+    default 0
+
 endif # USER_APPLICATION
 
 rsource "../common/Kconfig"

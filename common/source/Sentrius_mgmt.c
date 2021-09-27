@@ -27,6 +27,7 @@
 #include "CBORSupport.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
+#include "FileAccess.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -58,9 +59,6 @@
 
 /* These are defines for specific messages */
 #define SENTRIUS_MGMT_CALIBRATION_SCALER 10000.0f
-#define SENTRIUS_MGMT_PARAMETER_FILE_PATH "/ext/params.txt"
-#define SENTRIUS_MGMT_PARAMETER_DUMP_PATH "/ext/dump.txt"
-#define SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH "/ext/load_bt_feedback.txt"
 
 /* For float conversion routines, the maximum number of parameters we have
  * to deal with is two, so 4 elements. Defined here in case this changes.
