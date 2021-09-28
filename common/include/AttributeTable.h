@@ -2,7 +2,7 @@
  * @file AttributeTable.h
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -73,7 +73,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 170
+#define ATTR_TABLE_SIZE 171
 
 /* pyend */
 
@@ -292,6 +292,7 @@ typedef enum
 #define ATTR_INDEX_mobileAppDisconnect                   167
 #define ATTR_INDEX_attrSaveErrorCode                     168
 #define ATTR_INDEX_settingsPasscodeStatus                169
+#define ATTR_INDEX_recoverSettingsCount                  170
 /* pyend */
 /* clang-format on */
 
@@ -313,7 +314,7 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
 int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite);				  
+			     size_t Length, bool DoWrite);
 int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
 int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,

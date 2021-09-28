@@ -253,12 +253,15 @@ static void RebootHandler(void)
 		lbt_get_nrf52_reset_reason_string_from_register(reset_reason);
 	LOG_WRN("reset reason: %s (%08X)", s, reset_reason);
 
-	uint32_t count = 0;
+	uint32_t reset_count = 0;
+	uint8_t recovery_count = 0;
 	if (fsu_lfs_mount() == 0) {
-		fsu_read_abs(RESET_COUNT_FNAME, &count, sizeof(count));
-		count += 1;
-		fsu_write_abs(RESET_COUNT_FNAME, &count, sizeof(count));
+		fsu_read_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
+		reset_count += 1;
+		fsu_write_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
 	}
+
+	fsu_read_abs(CONFIG_RECOVERY_FILE_PATH, &recovery_count, sizeof(recovery_count));
 
 	bool valid = lcz_no_init_ram_var_is_valid(pnird, SIZE_OF_NIRD);
 	if (valid) {
@@ -300,7 +303,8 @@ static void RebootHandler(void)
 
 	/* Update attributes */
 	Attribute_SetString(ATTR_INDEX_resetReason, s, strlen(s));
-	Attribute_SetUint32(ATTR_INDEX_resetCount, count);
+	Attribute_SetUint32(ATTR_INDEX_resetCount, reset_count);
+	Attribute_SetUint32(ATTR_INDEX_recoverSettingsCount, recovery_count);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,

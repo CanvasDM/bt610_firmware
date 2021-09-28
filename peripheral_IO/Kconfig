@@ -32,6 +32,10 @@ config FILE_ACCESS_LOG_LEVEL
     range 0 4
     default 0
 
+config RECOVERY_FILE_PATH
+    string "File name (including path) of where the recovery count file is stored"
+    default "/lfs/recovery_count"
+
 endif # USER_APPLICATION
 
 rsource "../common/Kconfig"
