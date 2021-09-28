@@ -2,7 +2,7 @@
  * @file AttributeShell.c
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -27,13 +27,15 @@
 /******************************************************************************/
 static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_query_cmd(const struct shell *shell, size_t argc, char **argv);
-static int ats_dump_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_show_cmd(const struct shell *shell, size_t argc, char **argv);
-static int ats_type_cmd(const struct shell *shell, size_t argc, char **argv);
-static int ats_quiet_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv);
-static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv);
 static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv);
+#if defined(CONFIG_ATTR_SHELL_ALLOW_DEBUG_COMMANDS)
+static int ats_type_cmd(const struct shell *shell, size_t argc, char **argv);
+static int ats_dump_cmd(const struct shell *shell, size_t argc, char **argv);
+static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv);
+static int ats_quiet_cmd(const struct shell *shell, size_t argc, char **argv);
+#endif
 
 static int attr_shell_init(const struct device *device);
 
@@ -51,11 +53,12 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		"get attribute <number or name>\n"
 		"If a prepare to read function exists it will be called to update parameter value",
 		ats_get_cmd),
+	SHELL_CMD(show, NULL, "Display all parameters", ats_show_cmd),
+#if defined(CONFIG_ATTR_SHELL_ALLOW_DEBUG_COMMANDS)
 	SHELL_CMD(dump, NULL,
 		  "<0 = rw, 1 = w, 2 = ro> <abs_path>\n"
 		  "if path not included then default is " SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
 		  ats_dump_cmd),
-	SHELL_CMD(show, NULL, "Display all parameters", ats_show_cmd),
 	SHELL_CMD(
 		type, NULL,
 		"Display an attribute file\n"
@@ -65,13 +68,14 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		  "Disable printing for a parameter"
 		  "<idx> <0 = verbose, 1= quiet>",
 		  ats_quiet_cmd),
+	SHELL_CMD(load, NULL, "Load attributes from a file <abs file name>",
+		  ats_load_cmd),
+#endif
 	SHELL_CMD(
 		qrtc, NULL,
 		"Set the Quasi-RTC (Default is time in seconds from Jan 1, 1970)\n"
 		"Value set must be larger than upTime",
 		ats_qrtc_cmd),
-	SHELL_CMD(load, NULL, "Load attributes from a file <abs file name>",
-		  ats_load_cmd),
 	SHELL_SUBCMD_SET_END);
 
 SHELL_CMD_REGISTER(attr, &sub_attr, "Attribute (parameter) Utilities", NULL);
@@ -180,6 +184,15 @@ static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
 	return 0;
 }
 
+static int ats_show_cmd(const struct shell *shell, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+	Attribute_ShowAll();
+	return 0;
+}
+
+#if defined(CONFIG_ATTR_SHELL_ALLOW_DEBUG_COMMANDS)
 static int ats_dump_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	char *fstr = NULL;
@@ -212,14 +225,6 @@ static int ats_dump_cmd(const struct shell *shell, size_t argc, char **argv)
 		shell_error(shell, "Unexpected parameters");
 		return -EINVAL;
 	}
-	return 0;
-}
-
-static int ats_show_cmd(const struct shell *shell, size_t argc, char **argv)
-{
-	ARG_UNUSED(argc);
-	ARG_UNUSED(argv);
-	Attribute_ShowAll();
 	return 0;
 }
 
@@ -269,6 +274,22 @@ static int ats_quiet_cmd(const struct shell *shell, size_t argc, char **argv)
 	return 0;
 }
 
+static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv)
+{
+	int r = -EPERM;
+	if ((argc == 2) && (argv[1] != NULL)) {
+		r = Attribute_Load(argv[1], ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
+		if (r < 0) {
+			shell_error(shell, "Attribute Load error");
+		}
+	} else {
+		shell_error(shell, "Unexpected parameters");
+		return -EINVAL;
+	}
+	return 0;
+}
+#endif
+
 static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	int r = -EPERM;
@@ -281,22 +302,6 @@ static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv)
 		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, qrtc);
 		if (qrtc != result || r < 0) {
 			shell_error(shell, "Unable to set qrtc");
-		}
-	} else {
-		shell_error(shell, "Unexpected parameters");
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv)
-{
-	int r = -EPERM;
-	if ((argc == 2) && (argv[1] != NULL)) {
-		r = Attribute_Load(argv[1],
-				   ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
-		if (r < 0) {
-			shell_error(shell, "Attribute Load error");
 		}
 	} else {
 		shell_error(shell, "Unexpected parameters");

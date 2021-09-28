@@ -36,6 +36,11 @@ config RECOVERY_FILE_PATH
     string "File name (including path) of where the recovery count file is stored"
     default "/lfs/recovery_count"
 
+config ATTR_SHELL_ALLOW_DEBUG_COMMANDS
+    bool "Enables shell functions that can modify, dump and load data"
+    help
+        This should not be enabled for production builds.
+
 endif # USER_APPLICATION
 
 rsource "../common/Kconfig"
