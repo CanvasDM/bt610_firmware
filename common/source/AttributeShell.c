@@ -169,7 +169,10 @@ static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
 		/* Discard data (assumes show is enabled). */
 		r = Attribute_Get(idx, dummy, sizeof(dummy));
 		/* If the value changed then prepare will cause a duplicate show. */
-		Attribute_Show(idx);
+		if (r >= 0) {
+			/* Only show the value if the Get is allowed */
+			Attribute_Show(idx);
+		}
 		shell_print(shell, "get status: %d", r);
 	} else {
 		shell_error(shell, "Unexpected parameters");
@@ -291,7 +294,8 @@ static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	int r = -EPERM;
 	if ((argc == 2) && (argv[1] != NULL)) {
-		r = Attribute_Load(argv[1], ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
+		r = Attribute_Load(argv[1],
+				   ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
 		if (r < 0) {
 			shell_error(shell, "Attribute Load error");
 		}
