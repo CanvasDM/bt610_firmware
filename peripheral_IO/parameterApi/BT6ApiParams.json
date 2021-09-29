@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.78",
+    "version": "1.79",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -3043,7 +3043,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.78",
+              "x-default": "1.79",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -4694,8 +4694,8 @@
           },
           {
             "name": "recoverSettingsCount",
-            "summary": "",
-            "description": "",
+            "summary": "Used for recovering settings",
+            "description": "A rolling count of number of times the module has been recovered",
             "required": true,
             "x-id": 170,
             "x-groupid": 65,
@@ -4711,6 +4711,29 @@
               "x-lockable": false,
               "x-savable": false,
               "x-writeable": false,
+              "x-readable": true,
+              "x-broadcast": false
+            }
+          },
+          {
+            "name": "blockDowngrades",
+            "summary": "Allows FOTA downgrading of older firmwares to be disallowed",
+            "description": "Will disallow receiving older firmware files via FOTA when set to 1",
+            "required": true,
+            "x-id": 171,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": true,
+              "x-savable": true,
+              "x-writeable": true,
               "x-readable": true,
               "x-broadcast": false
             }

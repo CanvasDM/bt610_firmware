@@ -687,6 +687,12 @@ bool Attribute_CodedEnableCheck(void)
 	return (codedPhySelected);
 }
 
+bool Attribute_IsLocked(void)
+{
+	bool locked = (*((bool *)attrTable[ATTR_INDEX_lock].pData));
+	return locked;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/

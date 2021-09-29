@@ -770,6 +770,31 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 	return (r);
 }
 
+int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
+			    size_t Length, bool DoWrite)
+{
+	/* Same as UINT8 */
+	ARG_UNUSED(Length);
+	int r = -EPERM;
+	uint32_t value = (uint32_t)(*(uint8_t *)pValue);
+
+	if (((value >= pEntry->min.ux) && (value <= pEntry->max.ux)) ||
+	    (pEntry->min.ux == pEntry->max.ux)) {
+		if (value == 1 || value == *((uint8_t *)pEntry->pData)) {
+			if (DoWrite && value != *((uint8_t *)pEntry->pData)) {
+				pEntry->modified = true;
+				*((uint8_t *)pEntry->pData) = value;
+			}
+			r = 0;
+		} else {
+			/* Cannot disable blocking downgrades once enabled */
+			r = -EINVAL;
+		}
+	}
+
+	return r;
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/

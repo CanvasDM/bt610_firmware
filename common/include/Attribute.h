@@ -382,6 +382,13 @@ int Attribute_Save_Now(void);
  */
 bool Attribute_CodedEnableCheck(void);
 
+/**
+ * @brief Retrive the current lock status
+ *
+ * @retval true = configuration locked, false = configuration not locked
+ */
+bool Attribute_IsLocked(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,6 +19,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <hal/nrf_power.h>
 #include <logging/log_ctrl.h>
 #include <mgmt/mgmt.h>
+#include <img_mgmt/image.h>
 #include <img_mgmt/img_mgmt.h>
 #include <lcz_os_mgmt/os_mgmt_impl.h>
 
@@ -107,6 +108,12 @@ static void RebootHandler(void);
 
 static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 				 void *arg);
+
+static int img_mgmt_vercmp(const struct image_version *a,
+			   const struct image_version *b);
+
+static int upload_start_check(uint32_t offset, uint32_t size,
+			      const struct image_version *ver, void *arg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -233,8 +240,9 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	Sentrius_mgmt_register_group();
 #endif
 
-	/* Register a callback for mcumgr management events */
+	/* Register callbacks for mcumgr management events */
 	mgmt_register_evt_cb(mcumgr_mgmt_callback);
+	img_mgmt_set_upload_cb(upload_start_check, 0);
 
 	Framework_StartTimer(&pObj->msgTask);
 
@@ -400,4 +408,94 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 							       BOOT_PHY_TYPE_1M));
 
 	app_prepare_for_reboot();
+}
+
+/**
+ * Compares two image version numbers in a semver-compatible way.
+ *
+ * @param a                     The first version to compare.
+ * @param b                     The second version to compare.
+ *
+ * @return                      -1 if a < b
+ * @return                       0 if a = b
+ * @return                       1 if a > b
+ *
+ * Taken from mcumgr file cmd/img_mgmt/port/zephyr/src/zephyr_img_mgmt.c
+ */
+static int img_mgmt_vercmp(const struct image_version *a,
+			   const struct image_version *b)
+{
+    if (a->iv_major < b->iv_major) {
+        return -1;
+    } else if (a->iv_major > b->iv_major) {
+        return 1;
+    }
+
+    if (a->iv_minor < b->iv_minor) {
+        return -1;
+    } else if (a->iv_minor > b->iv_minor) {
+        return 1;
+    }
+
+    if (a->iv_revision < b->iv_revision) {
+        return -1;
+    } else if (a->iv_revision > b->iv_revision) {
+        return 1;
+    }
+
+    if (a->iv_build_num < b->iv_build_num) {
+        return -1;
+    } else if (a->iv_build_num > b->iv_build_num) {
+        return 1;
+    }
+
+    return 0;
+}
+
+static int upload_start_check(uint32_t offset, uint32_t size,
+			      const struct image_version *ver, void *arg)
+{
+	int rc;
+	struct image_version current_ver;
+	bool downgrade_blocked = false;
+
+	/* Only check the first chunk */
+	if (offset == 0) {
+		/* Are we blocking downgrades? If not, allow downgrade */
+		rc = Attribute_Get(ATTR_INDEX_blockDowngrades,
+				   &downgrade_blocked,
+				   sizeof(downgrade_blocked));
+		if (rc <= 0) {
+			/* Failed to query, deny request  */
+			LOG_ERR("Failed to query block downgrade status");
+			return MGMT_ERR_EUNKNOWN;
+		} else if (downgrade_blocked == false) {
+			/* Queried successfully and downgrades are not
+			 * blocked, continue
+			 */
+			return MGMT_ERR_EOK;
+		}
+
+		/* Downgrades are not allowed, get current firmware version to
+		 * check
+		 */
+		rc = img_mgmt_my_version(&current_ver);
+		if (rc != 0) {
+			/* Failed to query current running firmware version, we
+			 * cannot proceed
+			 */
+			LOG_ERR("Failed to query current firmware version");
+			return MGMT_ERR_EUNKNOWN;
+		}
+
+		if (img_mgmt_vercmp(&current_ver, ver) == 1) {
+			/* Current version is greater than new version, block
+			 * downgrade
+			 */
+			LOG_ERR("Attempted firmware downgrade blocked");
+			return MGMT_ERR_EBADSTATE;
+		}
+	}
+
+	return MGMT_ERR_EOK;
 }

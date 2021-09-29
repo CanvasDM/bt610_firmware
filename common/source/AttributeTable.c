@@ -183,6 +183,7 @@ typedef struct RwAttributesTag {
 	bool tamperSwitchSimulatedValue;
 	uint8_t bootPHY;
 	bool mobileAppDisconnect;
+	bool blockDowngrades;
 	/* pyend */
 } RwAttribute_t;
 
@@ -331,7 +332,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.tamperSwitchSimulated = 0,
 	.tamperSwitchSimulatedValue = 0,
 	.bootPHY = 0,
-	.mobileAppDisconnect = 0
+	.mobileAppDisconnect = 0,
+	.blockDowngrades = 0
 	/* pyend */
 };
 
@@ -444,7 +446,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.78",
+	.apiVersion = "1.79",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.logFileStatus = 0,
@@ -516,6 +518,8 @@ bool AttributeValidator_Passkey(uint32_t Index, void *pValue, size_t Length,
 				bool DoWrite);
 bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
 				bool DoWrite);
+int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
+				       size_t Length, bool DoWrite);
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -709,7 +713,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [167] = { RO_ATTRX(mobileAppDisconnect)           , b  , n, y, y, n, y, n, y, AttributeValidator_bool     , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [168] = { RO_ATTRX(attrSaveErrorCode)             , i32, n, n, y, n, y, n, y, AttributeValidator_int32    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [169] = { RO_ATTRX(settingsPasscodeStatus)        , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        },
-    [170] = { RO_ATTRX(recoverSettingsCount)          , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        }
+    [170] = { RO_ATTRX(recoverSettingsCount)          , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8    , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [171] = { RW_ATTRX(blockDowngrades)               , b  , y, y, y, y, n, n, n, AttributeValidator_blockDowngrades, NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        }
     /* pyend */
 };
 /* clang-format on */
