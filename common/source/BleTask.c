@@ -727,7 +727,7 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 
 	buf = bt_hci_cmd_create(BT_HCI_OP_VS_WRITE_TX_POWER_LEVEL, sizeof(*cp));
 	if (!buf) {
-		printk("Unable to allocate command buffer\n");
+		LOG_ERR("Unable to allocate command buffer\n");
 		return;
 	}
 
@@ -744,11 +744,11 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 				       rsp->data)
 					->status :
 				    0;
-		printk("Set Tx power err: %d reason 0x%02x\n", err, reason);
+		LOG_ERR("Set Tx power err: %d reason 0x%02x\n", err, reason);
 		return;
 	}
 	rp = (void *)rsp->data;
-	printk("Actual Tx Power: %d\n", rp->selected_tx_power);
+	LOG_INF("Actual Tx Power: %d\n", rp->selected_tx_power);
 
 	net_buf_unref(rsp);
 }
