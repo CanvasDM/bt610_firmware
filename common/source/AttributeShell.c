@@ -55,10 +55,11 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		ats_get_cmd),
 	SHELL_CMD(show, NULL, "Display all parameters", ats_show_cmd),
 #if defined(CONFIG_ATTR_SHELL_ALLOW_DEBUG_COMMANDS)
-	SHELL_CMD(dump, NULL,
-		  "<0 = rw, 1 = w, 2 = ro> <abs_path>\n"
-		  "if path not included then default is " SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
-		  ats_dump_cmd),
+	SHELL_CMD(
+		dump, NULL,
+		"<0 = rw, 1 = w, 2 = ro> <abs_path>\n"
+		"if path not included then default is " SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
+		ats_dump_cmd),
 	SHELL_CMD(
 		type, NULL,
 		"Display an attribute file\n"
@@ -172,10 +173,8 @@ static int ats_get_cmd(const struct shell *shell, size_t argc, char **argv)
 		/* Discard data (assumes show is enabled). */
 		r = Attribute_Get(idx, dummy, sizeof(dummy));
 		/* If the value changed then prepare will cause a duplicate show. */
-		if (r >= 0) {
-			/* Only show the value if the Get is allowed */
-			Attribute_Show(idx);
-		}
+		Attribute_Show(idx);
+
 		shell_print(shell, "get status: %d", r);
 	} else {
 		shell_error(shell, "Unexpected parameters");
@@ -278,7 +277,8 @@ static int ats_load_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	int r = -EPERM;
 	if ((argc == 2) && (argv[1] != NULL)) {
-		r = Attribute_Load(argv[1], ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
+		r = Attribute_Load(argv[1],
+				   ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH);
 		if (r < 0) {
 			shell_error(shell, "Attribute Load error");
 		}

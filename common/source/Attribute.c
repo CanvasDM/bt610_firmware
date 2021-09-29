@@ -893,6 +893,8 @@ void Show(attr_idx_t Index)
 	float f = 0.0;
 	char float_str[CONFIG_ATTR_FLOAT_MAX_STR_SIZE];
 
+	/* Passcode needs to be hidden all other IDs can be shown */
+	if (Index != ATTR_INDEX_settingsPasscode) {
 	switch (p->type) {
 	case ATTR_TYPE_U8:
 	case ATTR_TYPE_U16:
@@ -943,6 +945,12 @@ void Show(attr_idx_t Index)
 	default:
 		LOG_HEXDUMP_DBG(p->pData, p->size, p->name);
 		break;
+		}
+	}
+	else
+	{
+		/* Still show something so the user knows the command did something */
+		LOG_DBG(CONFIG_ATTR_SHOW_FMT "%s", Index, p->name, "******");
 	}
 }
 
