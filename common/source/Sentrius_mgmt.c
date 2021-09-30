@@ -97,7 +97,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 				       struct cbor_attr_t *attrs);
 
 static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
-			      struct cbor_attr_t *attrs);
+			      struct cbor_attr_t *attrs, bool *modified);
 
 static int FloatParameterExternalValueType(CborType cborType,
 					   struct cbor_attr_t *attrs,
@@ -326,6 +326,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	int result = 0;
 	/* Local context copy for non-destructive iteration */
 	struct mgmt_ctxt localCtxt = *ctxt;
+	bool update_config = true;
 
 	/* This is global so reset before use */
 	paramTypeList.typeIndex = 0;
@@ -398,7 +399,8 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	} else {
 		/* OK to write the parameter value */
 		setResult = SaveParameterValue((attr_idx_t)paramID,
-					       parameterDataType, params_value);
+					       parameterDataType, params_value,
+					       &update_config);
 	}
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
@@ -407,7 +409,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	/* If no error update the device configuration id */
-	if (!err) {
+	if (!err && update_config) {
 		Sentrius_mgmt_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;
@@ -893,7 +895,8 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 }
 
 static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
-			      struct cbor_attr_t *attrs)
+			      struct cbor_attr_t *attrs,
+			      bool *modified)
 {
 	int status = -EINVAL;
 
@@ -903,7 +906,7 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.integer <= INT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.integer,
-					       sizeof(int32_t));
+					       sizeof(int32_t), modified);
 		}
 		break;
 	case CborAttrUnsignedIntegerType:
@@ -911,24 +914,26 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 		    *attrs->addr.uinteger <= UINT32_MAX) {
 			status = Attribute_Set(id, Attribute_GetType(id),
 					       attrs->addr.uinteger,
-					       sizeof(uint32_t));
+					       sizeof(uint32_t), modified);
 		}
 		break;
 
 	case CborAttrTextStringType:
 		status = Attribute_Set(id, Attribute_GetType(id),
 				       attrs->addr.string,
-				       strlen(attrs->addr.string));
+				       strlen(attrs->addr.string), modified);
 		break;
 
 	case CborAttrFloatType:
 		status = Attribute_Set(id, Attribute_GetType(id),
-				       attrs->addr.fval, sizeof(float));
+				       attrs->addr.fval, sizeof(float),
+				       modified);
 		break;
 
 	case CborAttrBooleanType:
 		status = Attribute_Set(id, Attribute_GetType(id),
-				       attrs->addr.boolean, sizeof(bool));
+				       attrs->addr.boolean, sizeof(bool),
+				       modified);
 		break;
 
 	default:

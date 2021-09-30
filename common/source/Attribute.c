@@ -183,7 +183,7 @@ bool Attribute_ValidIndex(attr_idx_t Index)
 }
 
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength)
+		  size_t ValueLength, bool *modified)
 {
 	int r = -EPERM;
 
@@ -193,6 +193,10 @@ int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
 			r = Validate(Index, Type, pValue, ValueLength);
 			if (r == 0) {
 				r = Write(Index, Type, pValue, ValueLength);
+				if (modified != NULL) {
+					*modified = attrTable[Index].modified;
+				}
+
 				if (r == 0) {
 					r = SaveAndBroadcast(Index);
 				}

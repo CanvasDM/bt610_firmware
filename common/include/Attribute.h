@@ -91,11 +91,13 @@ bool Attribute_ValidIndex(attr_idx_t Index);
  * @param ValueLength The length (without null char) of the string
  * being passed in.  If the value isn't a string, then the length is
  * not used.
+ * @param modified Will be set to true if value was updated (different than the
+ * existing value). Can safely be supplied NULL to ignore
  *
  * @retval negative error code, 0 on success
  */
 int Attribute_Set(attr_idx_t Index, AttrType_t Type, void *pValue,
-		  size_t ValueLength);
+		  size_t ValueLength, bool *modified);
 
 /**
  * @brief Default value of an attribute.  This function will find the default
