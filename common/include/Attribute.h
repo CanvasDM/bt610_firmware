@@ -6,8 +6,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-#ifndef __ATTRIBUTE_TASK_H__
-#define __ATTRIBUTE_TASK_H__
+#ifndef __ATTRIBUTE_H__
+#define __ATTRIBUTE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -401,4 +401,4 @@ void Attribute_UpdateConfig(void);
 }
 #endif
 
-#endif /* __ATTRIBUTE_TASK_H__ */
+#endif /* __ATTRIBUTE_H__ */
