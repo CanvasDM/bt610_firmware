@@ -837,8 +837,8 @@ static void Sentrius_mgmt_UpdateConfig(void)
 	if (Attribute_Get(ATTR_INDEX_configVersion, &config_version,
 			  sizeof(config_version)) == sizeof(config_version)) {
 		config_version++;
-		(void)Attribute_Set(ATTR_INDEX_configVersion, ATTR_TYPE_U8,
-				    &config_version, sizeof(config_version));
+		(void)Attribute_SetUint32(ATTR_INDEX_configVersion,
+					  (uint32_t)config_version);
 	}
 }
 
