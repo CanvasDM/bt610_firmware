@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.80",
+    "version": "1.81",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -2976,7 +2976,7 @@
               "x-example": "1",
               "x-lockable": false,
               "x-broadcast": true,
-              "x-writeable": true,
+              "x-writeable": false,
               "x-readable": true,
               "x-savable": false
             }
@@ -3043,7 +3043,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.80",
+              "x-default": "1.81",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
