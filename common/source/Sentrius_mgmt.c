@@ -2,7 +2,7 @@
  * @file Sentrius_mgmt.c
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -628,7 +628,7 @@ int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 {
-	int r = -EPERM;
+	int r = 0;
 
 	/* The input file is an optional parameter. */
 	strncpy(paramString, SENTRIUS_MGMT_PARAMETER_FILE_PATH,
@@ -645,7 +645,13 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	r = Attribute_Load(paramString, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	}
+
+	if (r == 0) {
+		r = Attribute_Load(paramString, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
+	}
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
@@ -656,7 +662,7 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 		&ctxt->encoder, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
 		strlen(SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH));
 	/* If no error update the device configuration id */
-	if (!err) {
+	if (r == 0 && !err) {
 		Attribute_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;
@@ -746,6 +752,7 @@ int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
 	/* Exit with result */
 	return (err != 0) ? -ENOMEM : 0;
 }
+
 int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
