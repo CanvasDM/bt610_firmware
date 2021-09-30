@@ -461,6 +461,19 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 
 	/* Only check the first chunk */
 	if (offset == 0) {
+		/* Check if configuration is locked */
+		if (Attribute_IsLocked() == true) {
+			/* Configuration is locked, deny firmware update request
+			 * until the device has been unlocked to prevent
+			 * unauthorised upgrading or downgrading of firmware.
+			 * Use an EPERUSER error to distinguish this state for
+			 * the mobile application
+			 */
+			LOG_ERR("Attempted firmware update whilst settings are "
+				"locked");
+			return MGMT_ERR_EPERUSER;
+		}
+
 		/* Are we blocking downgrades? If not, allow downgrade */
 		rc = Attribute_Get(ATTR_INDEX_blockDowngrades,
 				   &downgrade_blocked,
