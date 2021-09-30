@@ -755,14 +755,27 @@ int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 {
-	int r = -EINVAL;
+	int r = 0;
+	uint8_t factoryResetEnabled = 0;
 
-	r = Attribute_FactoryReset();
-	LOG_PANIC();
-	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	}
 
-	k_sleep(K_SECONDS(5));
-	sys_reboot(SYS_REBOOT_WARM);
+	if (r == 0) {
+	        Attribute_Get(ATTR_INDEX_factoryResetEnable, &factoryResetEnabled,
+			     sizeof(factoryResetEnabled));
+
+		if (factoryResetEnabled == 0) {
+			r = -EPERM;
+		}
+	}
+
+	if (r == 0) {
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+					      FWK_ID_USER_IF_TASK,
+					      FMC_FACTORY_RESET);
+	}
 
 	/* Cbor encode result */
 	CborError err = 0;
