@@ -354,17 +354,25 @@ static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv)
 	uint32_t result;
 
 	if ((argc == 2) && (argv[1] != NULL)) {
-		qrtc = MAX((int)strtol(argv[1], NULL, 0), 0);
-		result = lcz_qrtc_set_epoch(qrtc);
-		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, qrtc);
-		if (qrtc != result || r < 0) {
-			shell_error(shell, "Unable to set qrtc");
+		if (Attribute_IsLocked() == true) {
+			shell_error(shell, "Configuration is locked");
+			r = -EPERM;
+		} else {
+			qrtc = MAX((int)strtol(argv[1], NULL, 0), 0);
+			result = lcz_qrtc_set_epoch(qrtc);
+			r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, qrtc);
+			if (qrtc != result || r < 0) {
+				shell_error(shell, "Unable to set qrtc");
+			} else {
+				r = 0;
+			}
 		}
 	} else {
 		shell_error(shell, "Unexpected parameters");
-		return -EINVAL;
+		r = -EINVAL;
 	}
-	return 0;
+
+	return r;
 }
 
 static int attr_shell_init(const struct device *device)

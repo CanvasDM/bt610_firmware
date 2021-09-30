@@ -579,7 +579,7 @@ int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 {
-	int r = -EINVAL;
+	int r = 0;
 	int t = 0;
 	long long unsigned int epoch = ULLONG_MAX;
 
@@ -595,9 +595,15 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (epoch < UINT32_MAX) {
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	}
+
+	if (r == 0 && epoch < UINT32_MAX) {
 		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, epoch);
 		t = lcz_qrtc_set_epoch(epoch);
+	} else if (r == 0 && epoch >= UINT32_MAX) {
+		r = -EINVAL;
 	}
 
 	CborError err = 0;
