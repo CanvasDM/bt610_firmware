@@ -112,6 +112,16 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 {
 	attr_idx_t idx = 0;
 	int r = -EPERM;
+	AttrType_t type;
+	static union {
+		uint32_t x;
+		int32_t y;
+		uint64_t xx;
+		int64_t yy;
+		bool b;
+		float f;
+	} param;
+	bool modified = false;
 
 	if ((argc == 3) && (argv[1] != NULL) && (argv[2] != NULL)) {
 		idx = get_index(argv[1]);
@@ -127,24 +137,71 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 		 * to them.
 		 */
 		if (Attribute_ValidIndex(idx)) {
-			if (is_string(argv[2])) {
+			type = Attribute_GetType(idx);
+
+			switch (type) {
+			case ATTR_TYPE_FLOAT:
+				param.f = strtof(argv[2], NULL);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &param.f,
+						  sizeof(param.f), &modified);
+				break;
+
+			case ATTR_TYPE_BOOL:
+			case ATTR_TYPE_U8:
+			case ATTR_TYPE_U16:
+			case ATTR_TYPE_U32:
+				param.x = strtoul(argv[2], NULL, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &param.x,
+						  sizeof(param.x), &modified);
+				break;
+
+			case ATTR_TYPE_U64:
+				param.xx = strtoull(argv[2], NULL, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &param.xx,
+						  sizeof(param.xx), &modified);
+				break;
+
+			case ATTR_TYPE_S8:
+			case ATTR_TYPE_S16:
+			case ATTR_TYPE_S32:
+				param.y = strtol(argv[2], NULL, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &param.y,
+						  sizeof(param.y), &modified);
+				break;
+
+			case ATTR_TYPE_S64:
+				param.yy = strtoll(argv[2], NULL, 0);
+				r = Attribute_Set(idx, ATTR_TYPE_ANY, &param.yy,
+						  sizeof(param.yy), &modified);
+				break;
+
+			case ATTR_TYPE_STRING:
 				r = Attribute_Set(idx, ATTR_TYPE_ANY, argv[2],
-						  strlen(argv[2]), NULL);
-			} else if (Attribute_GetType(idx) != ATTR_TYPE_STRING) {
-				long x = strtol(argv[2], NULL, 0);
-				r = Attribute_Set(idx, ATTR_TYPE_ANY, &x,
-						  sizeof(x), NULL);
-				if (r < 0) {
-					shell_error(shell, "Set failed");
-				}
-			} else {
-				shell_error(shell, "Unexpected type");
+						  strlen(argv[2]), &modified);
+				break;
+
+			default:
+				shell_error(shell, "Unhandled type");
+				break;
 			}
+
+			if (r < 0) {
+				shell_error(shell, "Set failed %d", r);
+			}
+
+		} else {
+			shell_error(shell, "Invalid id");
 		}
 	} else {
 		shell_error(shell, "Unexpected parameters");
 		return -EINVAL;
 	}
+
+	/* Update config version if parameter was modified */
+	if (modified) {
+		Attribute_UpdateConfig();
+	}
+
 	return 0;
 }
 

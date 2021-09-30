@@ -391,6 +391,12 @@ bool Attribute_CodedEnableCheck(void);
  */
 bool Attribute_IsLocked(void);
 
+/**
+ * @brief Updates the attribute set's config version
+ *
+ */
+void Attribute_UpdateConfig(void);
+
 #ifdef __cplusplus
 }
 #endif

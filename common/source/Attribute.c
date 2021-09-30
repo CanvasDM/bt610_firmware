@@ -697,6 +697,18 @@ bool Attribute_IsLocked(void)
 	return locked;
 }
 
+void Attribute_UpdateConfig(void)
+{
+	uint8_t config_version;
+
+	if (Attribute_Get(ATTR_INDEX_configVersion, &config_version,
+			  sizeof(config_version)) == sizeof(config_version)) {
+		config_version++;
+		(void)Attribute_SetUint32(ATTR_INDEX_configVersion,
+					  (uint32_t)config_version);
+	}
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
