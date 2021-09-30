@@ -47,7 +47,10 @@ int fs_mgmt_impl_app_access_check(uint8_t access_type, const char *path)
 	} else if (access_type == ACCESS_TYPE_WRITE) {
 		/* Write: allow access to parameter upload file only */
 		if (strcmp(path, SENTRIUS_MGMT_PARAMETER_FILE_PATH) == 0) {
-			rc = 0;
+			/* But do not allow if the settings lock is engaged */
+			if (Attribute_IsLocked() == false) {
+				rc = 0;
+			}
 		}
 	}
 
