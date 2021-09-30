@@ -38,6 +38,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "Attribute.h"
 #include "BleTask.h"
 #include "EventTask.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -327,6 +328,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	/* Initialise PHY and Shelf/Active state */
 	Attribute_Get(ATTR_INDEX_activeMode, &bto.activeModeStatus,
 		      sizeof(bto.activeModeStatus));
+	Flags_Set(FLAG_ACTIVE_MODE, bto.activeModeStatus);
 
 	Attribute_Get(ATTR_INDEX_useCodedPhy, &bto.codedPHYBroadcast,
 		      sizeof(bto.codedPHYBroadcast));
@@ -342,7 +344,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		k_timer_start(&upgrade_advert_phy_timer,
 			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 
-	        Attribute_SetUint32(ATTR_INDEX_bootPHY, BOOT_PHY_TYPE_DEFAULT);
+		Attribute_SetUint32(ATTR_INDEX_bootPHY, BOOT_PHY_TYPE_DEFAULT);
 	} else if (bto.activeModeStatus == false) {
 		/* If not in Active Mode, advertise for
 		 * BOOTUP_ADVERTISMENT_TIME_MS in 1M
@@ -551,9 +553,8 @@ static DispatchResult_t BleEnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		 * BLE_TASK_EXIT_SHELF_MODE_1M_ADVERTISE_TIME_S
 		 * before switching back to the broadcast PHY.
 		 */
-		k_timer_start(
-			&enterActiveModeTimer,
-			K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
+		k_timer_start(&enterActiveModeTimer,
+			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 	}
 	return DISPATCH_OK;
 }

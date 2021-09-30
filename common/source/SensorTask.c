@@ -395,6 +395,8 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 
 		case ATTR_INDEX_qrtcLastSet:
 			printRTCTime();
+			/* RTC was set by external device */
+			Flags_Set(FLAG_TIME_WAS_SET, 1);
 			break;
 
 		case ATTR_INDEX_digitalOutput1State:
@@ -766,7 +768,8 @@ static void UpdateMagnet(void)
 	int v = BSP_PinGet(MAGNET_MCU_PIN);
 
 	if (v >= 0) {
-		v = Attribute_SetUint32(ATTR_INDEX_magnetState, v);
+		/* NEAR = 0 and FAR = 1 */
+		Attribute_SetUint32(ATTR_INDEX_magnetState, v);
 		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
 }
