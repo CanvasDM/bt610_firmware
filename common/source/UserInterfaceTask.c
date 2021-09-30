@@ -20,12 +20,15 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 
 #include "FrameworkIncludes.h"
 #include "led_configuration.h"
-#include "lcz_pwm_led.h"
 #include "Attribute.h"
 #include "BspSupport.h"
 #include "Flags.h"
 #include "Advertisement.h"
 #include "UserInterfaceTask.h"
+
+#if defined(CONFIG_LCZ_PWM_LED)
+#include "lcz_pwm_led.h"
+#endif
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -494,6 +497,7 @@ static int InitializeButtons(void)
 
 	return r;
 }
+
 static void TamperSwitchStatus(void)
 {
 	int v = BSP_PinGet(SW2_PIN);
@@ -519,6 +523,7 @@ static void TamperSwitchStatus(void)
 		}
 	}
 }
+
 static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
 {
 	EventLogMsg_t *pMsgSend =
@@ -533,6 +538,7 @@ static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
 }
+
 static void led_blink(ledColors_t color,
 		      struct lcz_led_blink_pattern const *pPattern)
 {
@@ -567,16 +573,22 @@ static void led_on(ledColors_t color)
 static void led_off(ledColors_t color)
 {
 	if (color == LED_COLOR_GREEN) {
+#if defined(CONFIG_LCZ_PWM_LED)
 		lcz_pwm_led_off(GREEN_LED);
+#endif
 		lcz_led_turn_off(GREEN_LED);
 	} else if (color == LED_COLOR_RED) {
+#if defined(CONFIG_LCZ_PWM_LED)
 		lcz_pwm_led_off(RED_LED);
+#endif
 		lcz_led_turn_off(RED_LED);
 	} else if ((color == LED_COLOR_NONE) || (color == LED_COLOR_AMBER)) {
 		/* Both LEDs will be turned off */
+#if defined(CONFIG_LCZ_PWM_LED)
 		lcz_pwm_led_off(GREEN_LED);
-		lcz_led_turn_off(GREEN_LED);
 		lcz_pwm_led_off(RED_LED);
+#endif
+		lcz_led_turn_off(GREEN_LED);
 		lcz_led_turn_off(RED_LED);
 	}
 }
