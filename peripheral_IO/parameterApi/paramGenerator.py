@@ -206,7 +206,7 @@ class attributes:
             i_hash = i
             result = f"    [{i_hash:<3}] = " \
                 + "{ " \
-                + f"{self._GetAttributeMacro(i_type, self.AttributeSavable[i], name):<40}, {self._GetType(i_type)}, {savable}, {writable}, {readable}, {lockable}, {broadcast}, {deprecated}, {donotdump}, {self._GetValidatorString(i_type, i):<28}, {self._GetPrepareString(name, i)}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
+                + f"{self._GetAttributeMacro(i_type, self.AttributeSavable[i], name):<40}, {self._GetType(i_type)}, {savable}, {writable}, {readable}, {lockable}, {broadcast}, {deprecated}, {donotdump}, {self._GetValidatorString(i_type, i):<35}, {self._GetPrepareString(name, i)}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                 + " }," \
                 + "\n"
             attributeTable.append(result)
