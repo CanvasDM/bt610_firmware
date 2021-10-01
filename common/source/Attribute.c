@@ -999,6 +999,14 @@ static int LoadAttributes(const char *fname, const char *feedback_path,
 		if (ValidateFirst) {
 			r = Loader(kvp, fstr, pairs, false, MaskModified,
 				   &error_count);
+
+			if (error_count != 0) {
+				/* Error occured during verification, no point
+				 * in continuing
+				 */
+				r = -EINVAL;
+				break;
+			}
 		}
 		BREAK_ON_ERROR(r);
 
@@ -1049,6 +1057,13 @@ static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
 		idx = kvp[i].id;
 
 		if (!isValid(idx)) {
+			r = -EPERM;
+		} else if (DoWrite == false && !isWritable(idx)) {
+			/* This is a validation run which is used when importing
+			 * settings from a remote source, therefore in the
+			 * verification mode, report that we do not support
+			 * writing non-writable entries
+			 */
 			r = -EPERM;
 		} else if (ConvertParameterType(idx) == PARAM_STR) {
 			r = vw(idx, ATTR_TYPE_STRING, kvp[i].keystr,
