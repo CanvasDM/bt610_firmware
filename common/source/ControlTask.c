@@ -426,31 +426,27 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 static int img_mgmt_vercmp(const struct image_version *a,
 			   const struct image_version *b)
 {
-    if (a->iv_major < b->iv_major) {
-        return -1;
-    } else if (a->iv_major > b->iv_major) {
-        return 1;
-    }
+	if (a->iv_major < b->iv_major) {
+		return -1;
+	} else if (a->iv_major > b->iv_major) {
+		return 1;
+	}
 
-    if (a->iv_minor < b->iv_minor) {
-        return -1;
-    } else if (a->iv_minor > b->iv_minor) {
-        return 1;
-    }
+	if (a->iv_minor < b->iv_minor) {
+		return -1;
+	} else if (a->iv_minor > b->iv_minor) {
+		return 1;
+	}
 
-    if (a->iv_revision < b->iv_revision) {
-        return -1;
-    } else if (a->iv_revision > b->iv_revision) {
-        return 1;
-    }
+	if (a->iv_revision < b->iv_revision) {
+		return -1;
+	} else if (a->iv_revision > b->iv_revision) {
+		return 1;
+	}
 
-    if (a->iv_build_num < b->iv_build_num) {
-        return -1;
-    } else if (a->iv_build_num > b->iv_build_num) {
-        return 1;
-    }
+	/* Note: For semver compatibility, don't compare the 32-bit build num. */
 
-    return 0;
+	return 0;
 }
 
 static int upload_start_check(uint32_t offset, uint32_t size,
@@ -458,6 +454,9 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 {
 	int rc;
 	struct image_version current_ver;
+#if defined(CONFIG_MINIMUM_FIRMWARE_VERSION_FOTA_CHECK)
+	struct image_version min_ver;
+#endif
 	bool downgrade_blocked = false;
 
 	/* Only check the first chunk */
@@ -474,6 +473,23 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 				"locked");
 			return MGMT_ERR_EPERUSER;
 		}
+
+#if defined(CONFIG_MINIMUM_FIRMWARE_VERSION_FOTA_CHECK)
+		/* There is a minimum firmware version that can be loaded over
+		 * FOTA, ensure that this version requirement is met
+		 */
+		min_ver.iv_major = CONFIG_MINIMUM_FIRMWARE_VERSION_MAJOR;
+		min_ver.iv_minor = CONFIG_MINIMUM_FIRMWARE_VERSION_MINOR;
+		min_ver.iv_revision = CONFIG_MINIMUM_FIRMWARE_VERSION_REVISION;
+		if (img_mgmt_vercmp(&min_ver, ver) == 1) {
+			/* Trying to downgrade to a pre-release firmware, block
+			 * this action
+			 */
+			LOG_ERR("Attempted pre-release firmware downgrade "
+				"blocked");
+			return MGMT_ERR_EBADSTATE;
+		}
+#endif
 
 		/* Are we blocking downgrades? If not, allow downgrade */
 		rc = Attribute_Get(ATTR_INDEX_blockDowngrades,

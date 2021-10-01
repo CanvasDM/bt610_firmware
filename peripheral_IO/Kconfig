@@ -41,6 +41,28 @@ config ATTR_SHELL_ALLOW_DEBUG_COMMANDS
     help
         This should not be enabled for production builds.
 
+menuconfig MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
+    bool "Enable minimum firmware version FOTA check"
+    default n
+
+config MINIMUM_FIRMWARE_VERSION_MAJOR
+    int "Major firmware version (a.x.x) which is the minimum allowed for FOTA"
+    range 0 255
+    default 1
+    depends on MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
+
+config MINIMUM_FIRMWARE_VERSION_MINOR
+    int "Minor firmware version (x.b.x) which is the minimum allowed for FOTA"
+    range 0 255
+    default 28
+    depends on MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
+
+config MINIMUM_FIRMWARE_VERSION_REVISION
+    int "Revision firmware version (x.x.c) which is the minimum allowed for FOTA"
+    range 0 65535
+    default 0
+    depends on MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
+
 endif # USER_APPLICATION
 
 rsource "../common/Kconfig"
