@@ -19,6 +19,7 @@ LOG_MODULE_REGISTER(FileAccess, CONFIG_FILE_ACCESS_LOG_LEVEL);
 #include <lcz_fs_mgmt/fs_mgmt_impl.h>
 
 #include "FileAccess.h"
+#include "Attribute.h"
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
