@@ -66,7 +66,6 @@ int AggregationTempHandler(size_t channel, float value)
 			if (currentAggregationNumber <= aggCount) {
 				if (k_msgq_num_free_get(
 					    &aggregation_timestamp_queue)) {
-
 					Tempevent.event.type =
 						SENSOR_EVENT_TEMPERATURE_1 +
 						channel;
@@ -182,11 +181,9 @@ static SensorEventType_t AnalogConfigType(size_t channel)
 	case ANALOG_CURRENT:
 		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
+	case ANALOG_ULTRASONIC:	
 	case ANALOG_PRESSURE:
-		eventTypeReturn = SENSOR_EVENT_PRESSURE_1 + channel;
-		break;
-	case ANALOG_ULTRASONIC:
-		eventTypeReturn = SENSOR_EVENT_ULTRASONIC_1;
+		eventTypeReturn = SENSOR_EVENT_ULTRASONIC_1 + (channel);
 		break;
 	case ANALOG_CURRENT20A:
 	case ANALOG_CURRENT150A:
