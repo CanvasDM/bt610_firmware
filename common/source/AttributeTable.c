@@ -510,17 +510,6 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 /******************************************************************************/
 static RwAttribute_t rw;
 static RoAttribute_t ro;
-
-/******************************************************************************/
-/* Local Function Prototypes                                                  */
-/******************************************************************************/
-bool AttributeValidator_Passkey(uint32_t Index, void *pValue, size_t Length,
-				bool DoWrite);
-bool AttributeValidator_TxPower(uint32_t Index, void *pValue, size_t Length,
-				bool DoWrite);
-int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
-				       size_t Length, bool DoWrite);
-
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
