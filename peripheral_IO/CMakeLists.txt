@@ -40,6 +40,7 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
+    ${CMAKE_SOURCE_DIR}/../common/source/Watchdog.c
 )
 
 if(CONFIG_TEST_MENU)

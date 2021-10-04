@@ -261,6 +261,11 @@ static void RebootHandler(void)
 		lbt_get_nrf52_reset_reason_string_from_register(reset_reason);
 	LOG_WRN("reset reason: %s (%08X)", s, reset_reason);
 
+	if (reset_reason ==
+	    (POWER_RESETREAS_DOG_Detected << POWER_RESETREAS_DOG_Pos)) {
+		LOG_ERR("*WARNING* Unit reboot was forced by watchdog timeout");
+	}
+
 	uint32_t reset_count = 0;
 	uint8_t recovery_count = 0;
 	if (fsu_lfs_mount() == 0) {
