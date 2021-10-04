@@ -384,7 +384,7 @@ int Attribute_GetUint32(uint32_t *pValue, attr_idx_t Index)
 
 	if (isValid(Index)) {
 		if (type == ATTR_TYPE_U32 || type == ATTR_TYPE_U16 ||
-		    type == ATTR_TYPE_U8) {
+		    type == ATTR_TYPE_U8 || type == ATTR_TYPE_BOOL) {
 			r = PrepareForRead(Index);
 			if (r >= 0) {
 				TAKE_MUTEX(attr_mutex);
@@ -407,7 +407,7 @@ int Attribute_GetSigned32(int32_t *pValue, attr_idx_t Index)
 
 	if (isValid(Index)) {
 		if (type == ATTR_TYPE_S32 || type == ATTR_TYPE_S16 ||
-		    type == ATTR_TYPE_S8) {
+		    type == ATTR_TYPE_S8 || type == ATTR_TYPE_BOOL) {
 			r = PrepareForRead(Index);
 			if (r >= 0) {
 				TAKE_MUTEX(attr_mutex);
