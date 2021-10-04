@@ -62,6 +62,15 @@ config MINIMUM_FIRMWARE_VERSION_REVISION
     default 0
     depends on MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
 
+config MAX_SETTINGS_FILE_SIZE
+    int "Maximum size of settings file before removing to save space"
+    range 0 4096
+    default 1024
+    depends on SETTINGS_FS
+    help
+        A setting of 0 will not purge the file, purge size must be greater than
+	256 to be valid.
+
 menuconfig WDT
     bool "Config Watchdog Timer"
     imply WATCHDOG

@@ -75,6 +75,12 @@ typedef struct ControlTaskTag {
 	uint32_t broadcastCount;
 } ControlTaskObj_t;
 
+#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) \
+    && CONFIG_MAX_SETTINGS_FILE_SIZE != 0
+BUILD_ASSERT(CONFIG_MAX_SETTINGS_FILE_SIZE >= 256,
+	     "Settings file maximum size must be at least 256 bytes");
+#endif
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -273,6 +279,18 @@ static void RebootHandler(void)
 		reset_count += 1;
 		fsu_write_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
 	}
+
+#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) && \
+    CONFIG_MAX_SETTINGS_FILE_SIZE > 0
+	/* Check the size of the settings file */
+	if (fsu_get_file_size_abs(CONFIG_SETTINGS_FS_FILE) >=
+	    CONFIG_MAX_SETTINGS_FILE_SIZE) {
+		/* Settings file is too large, clear it so that there is
+		 * sufficient space to save settings
+		 */
+		(void)fsu_delete_abs(CONFIG_SETTINGS_FS_FILE);
+	}
+#endif
 
 	fsu_read_abs(CONFIG_RECOVERY_FILE_PATH, &recovery_count, sizeof(recovery_count));
 
