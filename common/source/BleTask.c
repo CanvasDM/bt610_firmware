@@ -20,12 +20,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include <bluetooth/conn.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_vs.h>
-#if 0
-#include <bluetooth/hci.h>
-#include <bluetooth/uuid.h>
-#include <bluetooth/gatt.h>
-#include <bluetooth/services/bas.h>
-#endif
+#include <host/smp.h>
 
 #if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
 #include <fs/fs.h>
@@ -253,6 +248,15 @@ int lcz_param_file_mount_fs(void)
 	return r;
 }
 
+int AttributePrepare_securityLevel(void)
+{
+	int level = -1;
+	if (bto.conn != NULL) {
+		level = bt_conn_get_security(bto.conn);
+	}
+        return (Attribute_SetSigned32(ATTR_INDEX_securityLevel, level));
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -414,6 +418,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
 	size_t i;
 	uint8_t updateData = false;
+	uint32_t tmp_val = 0;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
 		case ATTR_INDEX_sensorName:
@@ -443,6 +448,26 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				Advertisement_ExtendedSet(
 					bto.codedPHYBroadcast);
 			}
+			break;
+		case ATTR_INDEX_securityRequest:
+			Attribute_GetUint32(&tmp_val,
+					    ATTR_INDEX_securityRequest);
+
+			/* Skip sending a request if the link is already
+			 * encrypted otherwise it will just cause a disconnect
+			 */
+			if (tmp_val && bt_conn_get_security(bto.conn) <=
+			    BT_SECURITY_L1) {
+				/* Send security request */
+				if (bto.conn != NULL) {
+					(void)bt_smp_start_security(bto.conn);
+				}
+
+				/* Reset value back to 0 */
+				Attribute_SetNoBroadcastUint32(
+					ATTR_INDEX_securityRequest, 0);
+			}
+			break;
 		default:
 			/* Don't care about this attribute. This is a broadcast. */
 			break;

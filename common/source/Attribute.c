@@ -1259,6 +1259,7 @@ static int InitializeQuiet(void)
 			quiet[ATTR_INDEX_batteryAge] = true;
 			quiet[ATTR_INDEX_upTime] = true;
 			quiet[ATTR_INDEX_qrtc] = true;
+			quiet[ATTR_INDEX_securityLevel] = true;
 			r = fsu_write_abs(ATTR_QUIET_ABS_PATH, quiet,
 					  sizeof(quiet));
 

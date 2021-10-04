@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.84",
+    "version": "1.85",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -3043,7 +3043,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.83",
+              "x-default": "1.85",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -4737,6 +4737,53 @@
               "x-readable": true,
               "x-broadcast": false,
               "x-validator": "blockDowngrades"
+            }
+          },
+          {
+            "name": "securityRequest",
+            "summary": "Request sensor sends a Bluetooth security request to upgrade connection security",
+            "description": "Write 1 to have sensor send a security request for pairing",
+            "required": true,
+            "x-id": 172,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-default": "0",
+              "x-example": "1",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": true,
+              "x-readable": false,
+              "x-broadcast": true
+            }
+          },
+          {
+            "name": "securityLevel",
+            "summary": "Current Bluetooth security level as seen by the sensor",
+            "description": "-1 indicates error, otherwise value indicates level as per bt_security_t",
+            "required": true,
+            "x-id": 173,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": -1.0,
+              "maximum": 4.0,
+              "x-ctype": "int8_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-lockable": false,
+              "x-savable": false,
+              "x-writeable": false,
+              "x-readable": true,
+              "x-broadcast": false,
+              "x-prepare": true
             }
           }
         ]
