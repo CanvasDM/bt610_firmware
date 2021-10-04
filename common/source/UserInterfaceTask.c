@@ -6,7 +6,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-
 #include <logging/log.h>
 LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #define THIS_FILE "ui"
@@ -19,16 +18,12 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include <drivers/gpio.h>
 
 #include "FrameworkIncludes.h"
-#include "led_configuration.h"
 #include "Attribute.h"
 #include "BspSupport.h"
 #include "Flags.h"
 #include "Advertisement.h"
 #include "UserInterfaceTask.h"
-
-#if defined(CONFIG_LCZ_PWM_LED)
-#include "lcz_pwm_led.h"
-#endif
+#include "LEDs.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -50,8 +45,6 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #define USER_IF_TASK_QUEUE_DEPTH 32
 #endif
 
-#define ADVERTISE_30SEC_TIMER 30
-
 /* IDs used to access buttons in the BUTTON_CFG array */
 typedef enum {
 	BUTTON_CFG_ID_BOOT = 0,
@@ -60,12 +53,7 @@ typedef enum {
 	BUTTON_CFG_ID_COUNT
 } button_cfg_id;
 
-typedef enum {
-	LED_COLOR_RED = 0,
-	LED_COLOR_GREEN,
-	LED_COLOR_AMBER,
-	LED_COLOR_NONE
-} ledColors_t;
+#define MINIMUM_LED_TEST_STEP_DURATION_MS (10)
 
 /******************************************************************************/
 /* Button Configuration                                                       */
@@ -96,21 +84,6 @@ struct button_cfg {
 	}
 
 #define DT_HAS_BUTTON_NODE(x) DT_NODE_HAS_STATUS(BUTTON##x##_NODE, okay)
-
-/******************************************************************************/
-/* LED Configuration                                                          */
-/******************************************************************************/
-#define MINIMUM_LED_TEST_STEP_DURATION_MS (10)
-
-#define LED1_NODE DT_ALIAS(led1)
-#define LED2_NODE DT_ALIAS(led2)
-
-/* clang-format off */
-#define LED1_DEV  DT_GPIO_LABEL(LED1_NODE, gpios)
-#define LED1      DT_GPIO_PIN(LED1_NODE, gpios)
-#define LED2_DEV  DT_GPIO_LABEL(LED2_NODE, gpios)
-#define LED2      DT_GPIO_PIN(LED2_NODE, gpios)
-/* clang-format on */
 
 typedef struct UserIfTaskTag {
 	FwkMsgTask_t msgTask;
@@ -143,17 +116,6 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 
-static void led_blink(ledColors_t color,
-		      struct lcz_led_blink_pattern const *pPattern);
-static void led_on(ledColors_t color);
-static void led_off(ledColors_t color);
-#ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
-static void green_led_on(void);
-static void green_led_off(void);
-static void red_led_on(void);
-static void red_led_off(void);
-#endif
-
 static bool ValidAliveDuration(int64_t duration);
 static bool ValidExitShelfModeDuration(int64_t duration);
 static bool ValidFactoryResetDuration(int64_t duration);
@@ -169,19 +131,6 @@ K_THREAD_STACK_DEFINE(userIfTaskStack, USER_IF_TASK_STACK_DEPTH);
 
 K_MSGQ_DEFINE(userIfTaskQueue, FWK_QUEUE_ENTRY_SIZE, USER_IF_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
-
-#ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
-static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, green_led_on, green_led_off },
-	{ RED_LED, red_led_on, red_led_off }
-};
-#else
-
-static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED2_DEV, LED2, LED_ACTIVE_HIGH },
-	{ RED_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH }
-};
-#endif
 
 static const struct button_cfg BUTTON_CFG[] = {
 #if DT_HAS_BUTTON_NODE(1)
@@ -204,32 +153,6 @@ BUILD_ASSERT(
 BUILD_ASSERT(
 	CONFIG_UI_PAIR_MIN_MS < CONFIG_UI_MIN_FACTORY_RESET_MS,
 	"Error: CONFIG_UI_PAIR_MIN_MS must be less than CONFIG_UI_MIN_FACTORY_RESET_MS");
-
-/* clang-format off */
-static const struct lcz_led_blink_pattern ALIVE_PATTERN = {
-	.on_time = 1000,
-	.off_time = 0,
-	.repeat_count = 0
-};
-
-static const struct lcz_led_blink_pattern TAMPER_PATTERN = {
-	.on_time = 50,
-	.off_time = 1950,
-	.repeat_count = 60-1
-};
-
-static const struct lcz_led_blink_pattern EXIT_SHELF_MODE_PATTERN = {
-	.on_time = 100,
-	.off_time = 900,
-	.repeat_count = ADVERTISE_30SEC_TIMER - 1
-};
-
-static const struct lcz_led_blink_pattern FACTORY_RESET_PATTERN = {
-	.on_time = 5000,
-	.off_time = 0,
-	.repeat_count = 0
-};
-/* clang-format on */
 
 static int64_t swEventTime;
 static int64_t amrEventTime;
@@ -287,17 +210,7 @@ int UserInterfaceTask_LedTest(uint32_t duration)
 	uint32_t delay = MAX(MINIMUM_LED_TEST_STEP_DURATION_MS, duration);
 	LOG_DBG("delay %u", delay);
 
-	lcz_led_turn_on(GREEN_LED);
-	k_sleep(K_MSEC(delay));
-
-	lcz_led_turn_on(RED_LED);
-	k_sleep(K_MSEC(delay));
-
-	lcz_led_turn_off(GREEN_LED);
-	k_sleep(K_MSEC(delay));
-
-	lcz_led_turn_off(RED_LED);
-	k_sleep(K_MSEC(delay));
+	led_test(delay);
 
 	return 0;
 }
@@ -448,9 +361,7 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	UserIfTaskObj_t *pObj = (UserIfTaskObj_t *)pArg1;
 
 	InitializeButtons();
-
-	lcz_led_init((lcz_led_configuration_t *)LED_CONFIGURATION,
-		     ARRAY_SIZE(LED_CONFIGURATION));
+	InitialiseLEDs();
 
 #ifdef CONFIG_UI_LED_TEST_ON_RESET
 	UserInterfaceTask_LedTest(CONFIG_UI_LED_TEST_ON_RESET_DURATION_MS);
@@ -515,7 +426,7 @@ static void TamperSwitchStatus(void)
 			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
 				      sizeof(activeMode));
 			if (activeMode) {
-				led_blink(LED_COLOR_RED, &TAMPER_PATTERN);
+				led_blink(LED_COLOR_RED, LED_PATTERN_TAMPER);
 			}
 
 		} else {
@@ -539,89 +450,13 @@ static void SendUIEvent(SensorEventType_t type, SensorEventData_t data)
 	}
 }
 
-static void led_blink(ledColors_t color,
-		      struct lcz_led_blink_pattern const *pPattern)
-{
-	/* Turn all LEDs off */
-	led_off(LED_COLOR_NONE);
-
-	if (color == LED_COLOR_GREEN) {
-		lcz_led_blink(GREEN_LED, pPattern);
-	} else if (color == LED_COLOR_RED) {
-		lcz_led_blink(RED_LED, pPattern);
-	} else if (color == LED_COLOR_AMBER) {
-		lcz_led_blink(RED_LED, pPattern);
-		lcz_led_blink(GREEN_LED, pPattern);
-	}
-}
-
-static void led_on(ledColors_t color)
-{
-	/* Turn all LEDs off */
-	led_off(LED_COLOR_NONE);
-
-	if (color == LED_COLOR_GREEN) {
-		lcz_led_turn_on(GREEN_LED);
-	} else if (color == LED_COLOR_RED) {
-		lcz_led_turn_on(RED_LED);
-	} else if (color == LED_COLOR_AMBER) {
-		lcz_led_turn_on(GREEN_LED);
-		lcz_led_turn_on(RED_LED);
-	}
-}
-
-static void led_off(ledColors_t color)
-{
-	if (color == LED_COLOR_GREEN) {
-#if defined(CONFIG_LCZ_PWM_LED)
-		lcz_pwm_led_off(GREEN_LED);
-#endif
-		lcz_led_turn_off(GREEN_LED);
-	} else if (color == LED_COLOR_RED) {
-#if defined(CONFIG_LCZ_PWM_LED)
-		lcz_pwm_led_off(RED_LED);
-#endif
-		lcz_led_turn_off(RED_LED);
-	} else if ((color == LED_COLOR_NONE) || (color == LED_COLOR_AMBER)) {
-		/* Both LEDs will be turned off */
-#if defined(CONFIG_LCZ_PWM_LED)
-		lcz_pwm_led_off(GREEN_LED);
-		lcz_pwm_led_off(RED_LED);
-#endif
-		lcz_led_turn_off(GREEN_LED);
-		lcz_led_turn_off(RED_LED);
-	}
-}
-
-#ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
-static void green_led_on(void)
-{
-	lcz_pwm_led_on(GREEN_LED, 1500, 700);
-}
-
-static void green_led_off(void)
-{
-	lcz_pwm_led_off(GREEN_LED);
-}
-
-static void red_led_on(void)
-{
-	lcz_pwm_led_on(RED_LED, 1500, 700);
-}
-
-static void red_led_off(void)
-{
-	lcz_pwm_led_off(RED_LED);
-}
-#endif
-
 static Dispatch_t AliveMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	LOG_DBG("Button 1");
 	/* Amber */
-	led_blink(LED_COLOR_AMBER, &ALIVE_PATTERN);
+	led_blink(LED_COLOR_AMBER, LED_PATTERN_ALIVE);
 	return DISPATCH_OK;
 }
 
@@ -659,7 +494,7 @@ static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 
 	/* This starts the green LED flashing for 30s */
-	led_blink(LED_COLOR_GREEN, &EXIT_SHELF_MODE_PATTERN);
+	led_blink(LED_COLOR_GREEN, LED_PATTERN_EXIT_SHELF_MODE);
 
 	/* Set the Active Mode flag - all other activities are
 	 * handled by the Sensor Task.
@@ -679,13 +514,13 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 		      sizeof(factoryResetEnabled));
 	if (factoryResetEnabled == 1) {
 		/* Amber */
-		led_blink(LED_COLOR_AMBER, &FACTORY_RESET_PATTERN);
+		led_blink(LED_COLOR_AMBER, LED_PATTERN_FACTORY_RESET);
 		/* Forward to control task (instead of broadcasting from ISR) */
 		FRAMEWORK_MSG_SEND_TO(FWK_ID_CONTROL_TASK, pMsg);
 		result = DISPATCH_DO_NOT_FREE;
 	} else {
 		/* Red, do not perform reset */
-		led_blink(LED_COLOR_RED, &FACTORY_RESET_PATTERN);
+		led_blink(LED_COLOR_RED, LED_PATTERN_FACTORY_RESET);
 		result = DISPATCH_OK;
 	}
 
@@ -798,4 +633,3 @@ static bool ValidFactoryResetDuration(int64_t duration)
 		return false;
 	}
 }
-
