@@ -23,7 +23,7 @@ extern "C" {
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
 typedef enum AnalogChannel {
-	BATTERY_ADC_CH = 0,
+	POWER_ADC_CH = 0,
 	ANALOG_SENSOR_1_CH = 1, /* AIN 0 */
 	THERMISTOR_SENSOR_2_CH = 2, /* AIN 1 */
 	VREF_5_CH = 6, /* AIN 5 */
@@ -77,14 +77,14 @@ typedef enum AdcPwrSequence {
 int AdcBt6_Init(void);
 
 /**
- * @brief Read battery voltage
+ * @brief Read power voltage
  *
  * @param pointer to raw
  * @param pointer to millivolts
  *
  * @retval 0 on success, negative otherwise
  */
-int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv);
+int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv);
 
 /**
  * @brief Measure analog input or thermistor input

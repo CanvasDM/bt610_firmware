@@ -152,7 +152,7 @@ static bool PressureIsSimulated(float *simulated_value);
 static bool CurrentIsSimulated(size_t channel, float *simulated_value);
 static bool VrefIsSimulated(float *simulated_value);
 static bool TemperatureIsSimulated(size_t channel, float *simulated_value);
-static bool BatterymvIsSimulated(int32_t *simulated_value);
+static bool PowermvIsSimulated(int32_t *simulated_value);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -197,14 +197,14 @@ int AdcBt6_Init(void)
 	return status;
 }
 
-int AdcBt6_ReadBatteryMv(int16_t *raw, int32_t *mv)
+int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv)
 {
 	int rc = 0;
 
-	if (!BatterymvIsSimulated(mv)) {
+	if (!PowermvIsSimulated(mv)) {
 		k_mutex_lock(&adcMutex, K_FOREVER);
 
-		rc = SampleChannel(raw, BATTERY_ADC_CH);
+		rc = SampleChannel(raw, POWER_ADC_CH);
 		if (rc >= 0) {
 			*mv = (int32_t)*raw;
 			rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
@@ -584,7 +584,7 @@ static AnalogChannel_t GetChannel(AdcMeasurementType_t type)
 	case ADC_TYPE_ULTRASONIC:   return ANALOG_SENSOR_1_CH;
 	case ADC_TYPE_THERMISTOR:   return THERMISTOR_SENSOR_2_CH;
 	case ADC_TYPE_VREF:         return VREF_5_CH;
-	default:                    return BATTERY_ADC_CH;
+	default:                    return POWER_ADC_CH;
 	}
 	/* clang-format on */
 }
@@ -649,7 +649,7 @@ static int ConfigureChannel(AnalogChannel_t channel)
 		pcfg->reference = ADC_REFERENCE_DEFAULT;
 		break;
 
-	case BATTERY_ADC_CH:
+	case POWER_ADC_CH:
 	default:
 		pcfg->gain = ADC_GAIN_DEFAULT;
 		pcfg->reference = ADC_REFERENCE_DEFAULT;
@@ -769,15 +769,15 @@ static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 	bool channel_found = false;
 	bool simulation_enabled = false;
 
-	const uint8_t channel_map[] = { BATTERY_ADC_CH, ANALOG_SENSOR_1_CH,
+	const uint8_t channel_map[] = { POWER_ADC_CH, ANALOG_SENSOR_1_CH,
 					THERMISTOR_SENSOR_2_CH, VREF_5_CH };
 
-	const uint8_t enable_map[] = { ATTR_INDEX_adcBatterySimulated,
+	const uint8_t enable_map[] = { ATTR_INDEX_adcPowerSimulated,
 				       ATTR_INDEX_adcAnalogSensorSimulated,
 				       ATTR_INDEX_adcThermistorSimulated,
 				       ATTR_INDEX_adcVRefSimulated };
 
-	const uint8_t value_map[] = { ATTR_INDEX_adcBatterySimulatedCounts,
+	const uint8_t value_map[] = { ATTR_INDEX_adcPowerSimulatedCounts,
 				      ATTR_INDEX_adcAnalogSensorSimulatedCounts,
 				      ATTR_INDEX_adcThermistorSimulatedCounts,
 				      ATTR_INDEX_adcVRefSimulatedCounts };
@@ -993,17 +993,17 @@ static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
 	return (is_simulated);
 }
 
-static bool BatterymvIsSimulated(int32_t *simulated_value)
+static bool PowermvIsSimulated(int32_t *simulated_value)
 {
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (Attribute_Get(ATTR_INDEX_batterymvSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_powermvSimulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_batterymvSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_powermvSimulatedValue,
 					  simulated_value,
 					  sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {

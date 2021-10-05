@@ -52,7 +52,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define SENSOR_TASK_QUEUE_DEPTH 32
 #endif
 
-#define BATTERY_BAD_VOLTAGE (3000)
+#define POWER_BAD_VOLTAGE (3000)
 #define DIGITAL_IN_ALARM_MASK (0x03)
 #define DIGITAL_IN_ENABLE_MASK (0x80)
 #define DIGITAL_IN_DISABLE_MASK (0x00)
@@ -97,7 +97,7 @@ typedef struct SensorTaskTag {
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static SensorTaskObj_t sensorTaskObject;
-static struct k_timer batteryTimer;
+static struct k_timer powerTimer;
 static struct k_timer temperatureReadTimer;
 static struct k_timer analogReadTimer;
 
@@ -120,8 +120,8 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
 static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg);
-static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					      FwkMsg_t *pMsg);
+static DispatchResult_t ReadPowerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+					    FwkMsg_t *pMsg);
 static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						     FwkMsg_t *pMsg);
 static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -152,7 +152,7 @@ static void UpdateMagnet(void);
 static void InitializeIntervalTimers(void);
 static void StartAnalogInterval(void);
 static void StartTemperatureInterval(void);
-static void StartBatteryInterval(void);
+static void StartPowerInterval(void);
 static void DisableAnalogReadings(void);
 static void DisableThermistorReadings(void);
 
@@ -162,7 +162,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 			     float *result);
 static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 
-static void batteryTimerCallbackIsr(struct k_timer *timer_id);
+static void powerTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
 
@@ -178,7 +178,7 @@ static FwkMsgHandler_t *SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_DIGITAL_IN:          return SensorTaskDigitalInAlarmMsgHandler;
 	case FMC_DIGITAL_IN_CONFIG:   return SensorTaskDigitalInConfigMsgHandler;
 	case FMC_MAGNET_STATE:        return MagnetStateMsgHandler;
-	case FMC_READ_BATTERY:        return ReadBatteryMsgHandler;
+	case FMC_READ_POWER:          return ReadPowerMsgHandler;
 	case FMC_TEMPERATURE_MEASURE: return MeasureTemperatureMsgHandler;
 	case FMC_ANALOG_MEASURE:      return AnalogReadMsgHandler;
 	case FMC_ENTER_ACTIVE_MODE:   return EnterActiveModeMsgHandler;
@@ -222,16 +222,16 @@ void SensorTask_Initialize(void)
 	k_thread_name_set(sensorTaskObject.msgTask.pTid, THIS_FILE);
 }
 
-int AttributePrepare_batteryVoltageMv(void)
+int AttributePrepare_powerVoltageMv(void)
 {
 	int16_t raw = 0;
 	int32_t mv = 0;
 	SensorEventData_t eventAlarm;
-	int r = AdcBt6_ReadBatteryMv(&raw, &mv);
+	int r = AdcBt6_ReadPowerMv(&raw, &mv);
 
 	if (r >= 0) {
-		r = Attribute_SetSigned32(ATTR_INDEX_batteryVoltageMv, mv);
-		if (mv > BATTERY_BAD_VOLTAGE) {
+		r = Attribute_SetSigned32(ATTR_INDEX_powerVoltageMv, mv);
+		if (mv > POWER_BAD_VOLTAGE) {
 			eventAlarm.s32 = mv;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
 
@@ -339,7 +339,7 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	SensorOutput1Control();
 	SensorOutput2Control();
 
-	AttributePrepare_batteryVoltageMv();
+	AttributePrepare_powerVoltageMv();
 	InitializeIntervalTimers();
 	UpdateMagnet();
 	LoadSettingPasscode();
@@ -359,10 +359,10 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
-		case ATTR_INDEX_batterySenseInterval:
+		case ATTR_INDEX_powerSenseInterval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
-						      FMC_READ_BATTERY);
+						      FMC_READ_POWER);
 			break;
 
 		case ATTR_INDEX_temperatureSenseInterval:
@@ -517,16 +517,18 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	return DISPATCH_OK;
 }
-static DispatchResult_t ReadBatteryMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+
+static DispatchResult_t ReadPowerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					      FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
-	AttributePrepare_batteryVoltageMv();
-	StartBatteryInterval();
+	AttributePrepare_powerVoltageMv();
+	StartPowerInterval();
 
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						     FwkMsg_t *pMsg)
 {
@@ -552,6 +554,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	return DISPATCH_OK;
 }
+
 static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					     FwkMsg_t *pMsg)
 {
@@ -680,6 +683,7 @@ static void SensorConfigChange(bool bootup)
 		DisableDigitalIO();
 	}
 }
+
 static void SensorOutput1Control(void)
 {
 	uint8_t outputStatus = 0;
@@ -688,6 +692,7 @@ static void SensorOutput1Control(void)
 
 	BSP_PinSet(DO1_PIN, (outputStatus));
 }
+
 static void SensorOutput2Control(void)
 {
 	uint8_t outputStatus = 0;
@@ -727,6 +732,7 @@ static void UpdateDin2(void)
 		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
 }
+
 static void DisableDigitalIO(void)
 {
 	/* Disable the digital inputs */
@@ -773,11 +779,12 @@ static void UpdateMagnet(void)
 		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
 }
+
 static void InitializeIntervalTimers(void)
 {
-	/* Battery Interval timer */
-	k_timer_init(&batteryTimer, batteryTimerCallbackIsr, NULL);
-	StartBatteryInterval();
+	/* Power Interval timer */
+	k_timer_init(&powerTimer, powerTimerCallbackIsr, NULL);
+	StartPowerInterval();
 
 	/* Temperture Interval timer */
 	k_timer_init(&temperatureReadTimer, temperatureReadTimerCallbackIsr,
@@ -788,6 +795,7 @@ static void InitializeIntervalTimers(void)
 	k_timer_init(&analogReadTimer, analogReadTimerCallbackIsr, NULL);
 	StartAnalogInterval();
 }
+
 static void StartAnalogInterval(void)
 {
 	uint8_t analog1ConfigEnable;
@@ -849,7 +857,7 @@ static void StartTemperatureInterval(void)
 	}
 }
 
-static void StartBatteryInterval(void)
+static void StartPowerInterval(void)
 {
 	uint8_t activeModeStatus = 0;
 
@@ -859,12 +867,12 @@ static void StartBatteryInterval(void)
 	if (activeModeStatus == true) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_batterySenseInterval);
+				    ATTR_INDEX_powerSenseInterval);
 		if (intervalSeconds != 0) {
-			k_timer_start(&batteryTimer, K_SECONDS(intervalSeconds),
+			k_timer_start(&powerTimer, K_SECONDS(intervalSeconds),
 				      K_NO_WAIT);
 		} else {
-			k_timer_stop(&batteryTimer);
+			k_timer_stop(&powerTimer);
 		}
 	}
 }
@@ -1040,11 +1048,11 @@ static void SendEvent(SensorEventType_t type, SensorEventData_t data)
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-static void batteryTimerCallbackIsr(struct k_timer *timer_id)
+static void powerTimerCallbackIsr(struct k_timer *timer_id)
 {
 	UNUSED_PARAMETER(timer_id);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
-				      FMC_READ_BATTERY);
+				      FMC_READ_POWER);
 }
 
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id)

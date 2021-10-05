@@ -45,7 +45,7 @@ typedef struct RwAttributesTag {
 	uint16_t advertisingDuration;
 	uint32_t passkey;
 	bool lock;
-	uint32_t batterySenseInterval;
+	uint32_t powerSenseInterval;
 	uint32_t temperatureSenseInterval;
 	uint8_t AggregationCount;
 	bool digitalOutput1State;
@@ -131,8 +131,8 @@ typedef struct RwAttributesTag {
 	bool factoryResetEnable;
 	uint32_t temperatureAlarmsEnable;
 	uint32_t analogAlarmsEnable;
-	bool adcBatterySimulated;
-	int16_t adcBatterySimulatedCounts;
+	bool adcPowerSimulated;
+	int16_t adcPowerSimulatedCounts;
 	bool adcAnalogSensorSimulated;
 	int16_t adcAnalogSensorSimulatedCounts;
 	bool adcThermistorSimulated;
@@ -169,8 +169,8 @@ typedef struct RwAttributesTag {
 	float temperature3SimulatedValue;
 	bool temperature4Simulated;
 	float temperature4SimulatedValue;
-	bool batterymvSimulated;
-	int32_t batterymvSimulatedValue;
+	bool powermvSimulated;
+	int32_t powermvSimulatedValue;
 	bool digitalInput1Simulated;
 	bool digitalInput1SimulatedValue;
 	bool digitalInput2Simulated;
@@ -194,7 +194,7 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.advertisingDuration = 15000,
 	.passkey = 123456,
 	.lock = 0,
-	.batterySenseInterval = 0,
+	.powerSenseInterval = 0,
 	.temperatureSenseInterval = 60,
 	.AggregationCount = 1,
 	.digitalOutput1State = 0,
@@ -280,8 +280,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.factoryResetEnable = 1,
 	.temperatureAlarmsEnable = 0,
 	.analogAlarmsEnable = 0,
-	.adcBatterySimulated = 0,
-	.adcBatterySimulatedCounts = 0,
+	.adcPowerSimulated = 0,
+	.adcPowerSimulatedCounts = 0,
 	.adcAnalogSensorSimulated = 0,
 	.adcAnalogSensorSimulatedCounts = 0,
 	.adcThermistorSimulated = 0,
@@ -318,8 +318,8 @@ static const RwAttribute_t DEFAULT_RW_ATTRIBUTE_VALUES = {
 	.temperature3SimulatedValue = 0.0,
 	.temperature4Simulated = 0,
 	.temperature4SimulatedValue = 0.0,
-	.batterymvSimulated = 0,
-	.batterymvSimulatedValue = 0,
+	.powermvSimulated = 0,
+	.powermvSimulatedValue = 0,
 	.digitalInput1Simulated = 0,
 	.digitalInput1SimulatedValue = 0,
 	.digitalInput2Simulated = 0,
@@ -351,7 +351,7 @@ typedef struct RoAttributesTag {
 	float temperatureResult3;
 	float temperatureResult4;
 	uint32_t temperatureAlarms;
-	uint16_t batteryVoltageMv;
+	uint16_t powerVoltageMv;
 	uint8_t digitalInput;
 	float analogInput1;
 	float analogInput2;
@@ -365,8 +365,8 @@ typedef struct RoAttributesTag {
 	uint32_t qrtc;
 	uint8_t connectionTimeoutSec;
 	uint8_t logFileStatus;
-	bool adcBatterySimulated;
-	int16_t adcBatterySimulatedCounts;
+	bool adcPowerSimulated;
+	int16_t adcPowerSimulatedCounts;
 	bool adcAnalogSensorSimulated;
 	int16_t adcAnalogSensorSimulatedCounts;
 	bool adcThermistorSimulated;
@@ -403,8 +403,8 @@ typedef struct RoAttributesTag {
 	float temperature3SimulatedValue;
 	bool temperature4Simulated;
 	float temperature4SimulatedValue;
-	bool batterymvSimulated;
-	int32_t batterymvSimulatedValue;
+	bool powermvSimulated;
+	int32_t powermvSimulatedValue;
 	bool digitalInput1Simulated;
 	bool digitalInput1SimulatedValue;
 	bool digitalInput2Simulated;
@@ -438,7 +438,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.temperatureResult3 = 0,
 	.temperatureResult4 = 0,
 	.temperatureAlarms = 0,
-	.batteryVoltageMv = 0,
+	.powerVoltageMv = 0,
 	.digitalInput = 0,
 	.analogInput1 = 0,
 	.analogInput2 = 0,
@@ -448,12 +448,12 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.86",
+	.apiVersion = "1.87",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.logFileStatus = 0,
-	.adcBatterySimulated = 0,
-	.adcBatterySimulatedCounts = 0,
+	.adcPowerSimulated = 0,
+	.adcPowerSimulatedCounts = 0,
 	.adcAnalogSensorSimulated = 0,
 	.adcAnalogSensorSimulatedCounts = 0,
 	.adcThermistorSimulated = 0,
@@ -490,8 +490,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.temperature3SimulatedValue = 0.0,
 	.temperature4Simulated = 0,
 	.temperature4SimulatedValue = 0.0,
-	.batterymvSimulated = 0,
-	.batterymvSimulatedValue = 0,
+	.powermvSimulated = 0,
+	.powermvSimulatedValue = 0,
 	.digitalInput1Simulated = 0,
 	.digitalInput1SimulatedValue = 0,
 	.digitalInput2Simulated = 0,
@@ -542,7 +542,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [3  ] = { RW_ATTRX(advertisingDuration)           , u16, y, y, y, y, y, n, n, AttributeValidator_uint16          , NULL                                      , .min.ux = 2000.0    , .max.ux = 65535.0    },
     [4  ] = { RW_ATTRX(passkey)                       , u32, y, y, y, y, y, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 999999.0   },
     [5  ] = { RW_ATTRX(lock)                          , b  , y, n, y, y, n, n, n, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [6  ] = { RW_ATTRX(batterySenseInterval)          , u32, y, y, y, y, y, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
+    [6  ] = { RW_ATTRX(powerSenseInterval)            , u32, y, y, y, y, y, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [7  ] = { RW_ATTRX(temperatureSenseInterval)      , u32, y, y, y, y, y, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 86400.0    },
     [8  ] = { RW_ATTRX(AggregationCount)              , u8 , y, y, y, y, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 1.0       , .max.ux = 32.0       },
     [9  ] = { RW_ATTRX(digitalOutput1State)           , b  , y, y, y, y, y, n, n, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
@@ -611,7 +611,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [72 ] = { RO_ATTRX(temperatureResult3)            , f  , n, n, y, n, n, n, n, AttributeValidator_float           , AttributePrepare_temperatureResult3       , .min.fx = -3.4e+38  , .max.fx = 3.4e+38    },
     [73 ] = { RO_ATTRX(temperatureResult4)            , f  , n, n, y, n, n, n, n, AttributeValidator_float           , AttributePrepare_temperatureResult4       , .min.fx = -3.4e+38  , .max.fx = 3.4e+38    },
     [74 ] = { RO_ATTRX(temperatureAlarms)             , u32, n, y, y, y, n, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
-    [75 ] = { RO_ATTRX(batteryVoltageMv)              , u16, n, n, y, n, n, n, n, AttributeValidator_uint16          , AttributePrepare_batteryVoltageMv         , .min.ux = 0.0       , .max.ux = 3800.0     },
+    [75 ] = { RO_ATTRX(powerVoltageMv)                , u16, n, n, y, n, n, n, n, AttributeValidator_uint16          , AttributePrepare_powerVoltageMv         , .min.ux = 0.0       , .max.ux = 3800.0     },
     [76 ] = { RO_ATTRX(digitalInput)                  , u8 , n, n, y, y, n, n, n, AttributeValidator_uint8           , AttributePrepare_digitalInput             , .min.ux = 0.0       , .max.ux = 3.0        },
     [77 ] = { RW_ATTRX(digitalAlarms)                 , u8 , y, y, y, y, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 3.0        },
     [78 ] = { RW_ATTRX(digitalInput1Config)           , u8 , y, y, y, y, y, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 131.0      },
@@ -654,8 +654,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [115] = { RO_ATTRX(logFileStatus)                 , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8           , AttributePrepare_logFileStatus            , .min.ux = 0         , .max.ux = 3          },
     [116] = { RW_ATTRX(temperatureAlarmsEnable)       , u32, y, y, y, y, n, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
     [117] = { RW_ATTRX(analogAlarmsEnable)            , u32, y, y, y, y, n, n, n, AttributeValidator_uint32          , NULL                                      , .min.ux = 0.0       , .max.ux = 1048575.0  },
-    [118] = { RO_ATTRX(adcBatterySimulated)           , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [119] = { RO_ATTRX(adcBatterySimulatedCounts)     , i16, n, y, y, n, n, n, y, AttributeValidator_int16           , NULL                                      , .min.ux = 0.0       , .max.ux = 4095.0     },
+    [118] = { RO_ATTRX(adcPowerSimulated)             , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [119] = { RO_ATTRX(adcPowerSimulatedCounts)       , i16, n, y, y, n, n, n, y, AttributeValidator_int16           , NULL                                      , .min.ux = 0.0       , .max.ux = 4095.0     },
     [120] = { RO_ATTRX(adcAnalogSensorSimulated)      , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [121] = { RO_ATTRX(adcAnalogSensorSimulatedCounts), i16, n, y, y, n, n, n, y, AttributeValidator_int16           , NULL                                      , .min.ux = 0.0       , .max.ux = 4095.0     },
     [122] = { RO_ATTRX(adcThermistorSimulated)        , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
@@ -692,8 +692,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [153] = { RO_ATTRX(temperature3SimulatedValue)    , f  , n, y, y, n, n, n, y, AttributeValidator_float           , NULL                                      , .min.fx = -3.4e+38  , .max.fx = 3.4e+38    },
     [154] = { RO_ATTRX(temperature4Simulated)         , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [155] = { RO_ATTRX(temperature4SimulatedValue)    , f  , n, y, y, n, n, n, y, AttributeValidator_float           , NULL                                      , .min.fx = -3.4e+38  , .max.fx = 3.4e+38    },
-    [156] = { RO_ATTRX(batterymvSimulated)            , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [157] = { RO_ATTRX(batterymvSimulatedValue)       , i32, n, y, y, n, n, n, y, AttributeValidator_int32           , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
+    [156] = { RO_ATTRX(powermvSimulated)              , b  , n, y, y, n, n, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [157] = { RO_ATTRX(powermvSimulatedValue)         , i32, n, y, y, n, n, n, y, AttributeValidator_int32           , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [158] = { RO_ATTRX(digitalInput1Simulated)        , b  , n, y, y, n, n, n, y, AttributeValidator_din1simen       , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [159] = { RO_ATTRX(digitalInput1SimulatedValue)   , b  , n, y, y, n, n, n, y, AttributeValidator_din1sim         , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [160] = { RO_ATTRX(digitalInput2Simulated)        , b  , n, y, y, n, n, n, y, AttributeValidator_din2simen       , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
@@ -767,7 +767,7 @@ __weak int AttributePrepare_temperatureResult4(void)
 	return 0;
 }
 
-__weak int AttributePrepare_batteryVoltageMv(void)
+__weak int AttributePrepare_powerVoltageMv(void)
 {
 	return 0;
 }

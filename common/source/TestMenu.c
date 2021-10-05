@@ -66,7 +66,7 @@ static int batteryMeasurement(const struct shell *shell, size_t argc,
 	int status;
 	size_t i;
 	for (i = 0; i < samples; i++) {
-		status = AdcBt6_ReadBatteryMv(&raw, &mv);
+		status = AdcBt6_ReadPowerMv(&raw, &mv);
 		shell_print(shell, "[%u] status: %d raw: %d mv: %d", i, status,
 			    raw, mv);
 		if (status != 0) {

@@ -128,7 +128,7 @@ typedef enum
 #define ATTR_INDEX_advertisingDuration                   3
 #define ATTR_INDEX_passkey                               4
 #define ATTR_INDEX_lock                                  5
-#define ATTR_INDEX_batterySenseInterval                  6
+#define ATTR_INDEX_powerSenseInterval                    6
 #define ATTR_INDEX_temperatureSenseInterval              7
 #define ATTR_INDEX_AggregationCount                      8
 #define ATTR_INDEX_digitalOutput1State                   9
@@ -197,7 +197,7 @@ typedef enum
 #define ATTR_INDEX_temperatureResult3                    72
 #define ATTR_INDEX_temperatureResult4                    73
 #define ATTR_INDEX_temperatureAlarms                     74
-#define ATTR_INDEX_batteryVoltageMv                      75
+#define ATTR_INDEX_powerVoltageMv                        75
 #define ATTR_INDEX_digitalInput                          76
 #define ATTR_INDEX_digitalAlarms                         77
 #define ATTR_INDEX_digitalInput1Config                   78
@@ -240,8 +240,8 @@ typedef enum
 #define ATTR_INDEX_logFileStatus                         115
 #define ATTR_INDEX_temperatureAlarmsEnable               116
 #define ATTR_INDEX_analogAlarmsEnable                    117
-#define ATTR_INDEX_adcBatterySimulated                   118
-#define ATTR_INDEX_adcBatterySimulatedCounts             119
+#define ATTR_INDEX_adcPowerSimulated                     118
+#define ATTR_INDEX_adcPowerSimulatedCounts               119
 #define ATTR_INDEX_adcAnalogSensorSimulated              120
 #define ATTR_INDEX_adcAnalogSensorSimulatedCounts        121
 #define ATTR_INDEX_adcThermistorSimulated                122
@@ -278,8 +278,8 @@ typedef enum
 #define ATTR_INDEX_temperature3SimulatedValue            153
 #define ATTR_INDEX_temperature4Simulated                 154
 #define ATTR_INDEX_temperature4SimulatedValue            155
-#define ATTR_INDEX_batterymvSimulated                    156
-#define ATTR_INDEX_batterymvSimulatedValue               157
+#define ATTR_INDEX_powermvSimulated                      156
+#define ATTR_INDEX_powermvSimulatedValue                 157
 #define ATTR_INDEX_digitalInput1Simulated                158
 #define ATTR_INDEX_digitalInput1SimulatedValue           159
 #define ATTR_INDEX_digitalInput2Simulated                160
@@ -372,7 +372,7 @@ int AttributePrepare_temperatureResult1(void);
 int AttributePrepare_temperatureResult2(void);
 int AttributePrepare_temperatureResult3(void);
 int AttributePrepare_temperatureResult4(void);
-int AttributePrepare_batteryVoltageMv(void);
+int AttributePrepare_powerVoltageMv(void);
 int AttributePrepare_digitalInput(void);
 int AttributePrepare_analogInput1(void);
 int AttributePrepare_analogInput2(void);
