@@ -448,7 +448,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.85",
+	.apiVersion = "1.86",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.logFileStatus = 0,
@@ -708,7 +708,7 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
     [169] = { RO_ATTRX(settingsPasscodeStatus)        , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        },
     [170] = { RO_ATTRX(recoverSettingsCount)          , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
     [171] = { RW_ATTRX(blockDowngrades)               , b  , y, y, y, y, n, n, n, AttributeValidator_blockDowngrades , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-    [172] = { RO_ATTRX(securityRequest)               , b  , n, y, n, n, y, n, n, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
+    [172] = { RO_ATTRX(securityRequest)               , b  , n, y, n, n, y, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
     [173] = { RO_ATTRX(securityLevel)                 , i8 , n, n, y, n, n, n, n, AttributeValidator_int8            , AttributePrepare_securityLevel            , .min.sx = -1.0      , .max.sx = 4.0        }
     /* pyend */
 };
