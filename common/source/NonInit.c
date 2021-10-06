@@ -47,7 +47,12 @@ void non_init_save_data(void)
 	pnird->qrtc = lcz_qrtc_get_epoch();
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 }
-
+void non_init_clear_qrtc(void)
+{
+	/* Save time to be zero in the non-initialised section */
+	pnird->qrtc = 0;
+	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
+}
 void non_init_set_save_flag(bool status)
 {
         pnird->attribute_save_pending = status;

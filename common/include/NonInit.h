@@ -42,6 +42,10 @@ void non_init_save_data(void);
  * @param true if there is pending unsaved data, false otherwide
  */
 void non_init_set_save_flag(bool status);
+/**
+ * @brief Saves epoch of zero to non-init RAM section and upates the header
+ */
+void non_init_clear_qrtc(void);
 #endif
 
 #ifdef __cplusplus

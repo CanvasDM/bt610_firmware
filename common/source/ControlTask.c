@@ -73,10 +73,12 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
 	uint32_t broadcastCount;
+	bool factoryResetFlag;
 } ControlTaskObj_t;
 
-#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) \
-    && CONFIG_MAX_SETTINGS_FILE_SIZE != 0
+#if defined(CONFIG_SETTINGS_FS_FILE) &&                                        \
+	defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                              \
+	CONFIG_MAX_SETTINGS_FILE_SIZE != 0
 BUILD_ASSERT(CONFIG_MAX_SETTINGS_FILE_SIZE >= 256,
 	     "Settings file maximum size must be at least 256 bytes");
 #endif
@@ -151,6 +153,7 @@ void ControlTask_Initialize(void)
 	cto.msgTask.rxer.pQueue = &controlTaskQueue;
 
 	Framework_RegisterTask(&cto.msgTask);
+	cto.factoryResetFlag = false;
 
 #if CONTROL_TASK_USES_MAIN_THREAD
 	cto.msgTask.pTid = k_current_get();
@@ -275,13 +278,16 @@ static void RebootHandler(void)
 	uint32_t reset_count = 0;
 	uint8_t recovery_count = 0;
 	if (fsu_lfs_mount() == 0) {
-		fsu_read_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
+		fsu_read_abs(RESET_COUNT_FNAME, &reset_count,
+			     sizeof(reset_count));
 		reset_count += 1;
-		fsu_write_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
+		fsu_write_abs(RESET_COUNT_FNAME, &reset_count,
+			      sizeof(reset_count));
 	}
 
-#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) && \
-    CONFIG_MAX_SETTINGS_FILE_SIZE > 0
+#if defined(CONFIG_SETTINGS_FS_FILE) &&                                        \
+	defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                              \
+	CONFIG_MAX_SETTINGS_FILE_SIZE > 0
 	/* Check the size of the settings file */
 	if (fsu_get_file_size_abs(CONFIG_SETTINGS_FS_FILE) >=
 	    CONFIG_MAX_SETTINGS_FILE_SIZE) {
@@ -292,7 +298,8 @@ static void RebootHandler(void)
 	}
 #endif
 
-	fsu_read_abs(CONFIG_RECOVERY_FILE_PATH, &recovery_count, sizeof(recovery_count));
+	fsu_read_abs(CONFIG_RECOVERY_FILE_PATH, &recovery_count,
+		     sizeof(recovery_count));
 
 	bool valid = lcz_no_init_ram_var_is_valid(pnird, SIZE_OF_NIRD);
 	if (valid) {
@@ -300,27 +307,29 @@ static void RebootHandler(void)
 		LOG_INF("Qrtc Epoch: %u", pnird->qrtc);
 		LOG_INF("Bootloader time: %u", pnird->bootloader_time);
 		LOG_INF("Execution time: %u", k_uptime_get_32());
+		if (pnird->qrtc > 0) {
+			if (pnird->bootloader_time >=
+			    BOOTLOADER_MAX_TIME_SANITY_CHECK) {
+				LOG_ERR("Bootloader time is in excess of 10 minutes, "
+					"ignoring value");
+				pnird->bootloader_time = 0;
+			}
 
-		if (pnird->bootloader_time >=
-		    BOOTLOADER_MAX_TIME_SANITY_CHECK) {
-			LOG_ERR("Bootloader time is in excess of 10 minutes, "
-				"ignoring value");
-			pnird->bootloader_time = 0;
+			pnird->qrtc +=
+				((pnird->bootloader_time + k_uptime_get_32()) /
+				 MS_TO_SECONDS_DIVISOR);
+			lcz_qrtc_set_epoch(pnird->qrtc);
+
+			LOG_INF("Device time: %u", pnird->qrtc);
+
+			if (pnird->attribute_save_pending == true) {
+				LOG_ERR("Device was rebooted with unsaved "
+					"configuration changes!");
+				pnird->attribute_save_pending = false;
+			}
+
+			Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
 		}
-
-		pnird->qrtc += ((pnird->bootloader_time + k_uptime_get_32()) /
-			       MS_TO_SECONDS_DIVISOR);
-		lcz_qrtc_set_epoch(pnird->qrtc);
-
-		LOG_INF("Device time: %u", pnird->qrtc);
-
-		if (pnird->attribute_save_pending == true) {
-			LOG_ERR("Device was rebooted with unsaved "
-				"configuration changes!");
-			pnird->attribute_save_pending = false;
-		}
-
-		Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
 	} else {
 		LOG_WRN("No init ram data is not valid");
 		pnird->battery_age = 0;
@@ -350,10 +359,12 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	/* Read value from system because it should have less error than
 	 * seconds maintained by this function.
+	 * Except if factory reset is in progress
 	 */
-	pnird->qrtc = lcz_qrtc_get_epoch();
-	Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
-
+	if (cto.factoryResetFlag == false) {
+		pnird->qrtc = lcz_qrtc_get_epoch();
+		Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
+	}
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 
 	Framework_StartTimer(&pObj->msgTask);
@@ -387,6 +398,7 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
 	LOG_WRN("Factory Reset");
+	cto.factoryResetFlag = true;
 	Attribute_FactoryReset();
 	lcz_event_manager_factory_reset();
 	/* Need reset to init all the values */
@@ -402,6 +414,10 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 
 	app_prepare_for_reboot();
+
+	if (cto.factoryResetFlag == true) {
+		non_init_clear_qrtc();
+	}
 
 	LOG_PANIC();
 	k_thread_priority_set(k_current_get(), -CONFIG_NUM_COOP_PRIORITIES);
