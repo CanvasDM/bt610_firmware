@@ -84,10 +84,12 @@ static int SaveAttributes(bool Immediately);
 static void Broadcast(void);
 
 static int LoadAttributes(const char *fname, const char *feedback_path,
-			  bool ValidateFirst, bool MaskModified);
+			  bool ValidateFirst, bool MaskModified,
+			  bool SkipNonWriteable);
 
 static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
-		  bool MaskModified, uint16_t *error_count);
+		  bool MaskModified, uint16_t *error_count,
+		  bool SkipNonWriteable);
 
 static int Validate(attr_idx_t Index, AttrType_t Type, void *pValue,
 		    size_t Length);
@@ -146,7 +148,7 @@ int Attribute_Init(void)
 		r = 0;
 		LOG_INF("Parameter file doesn't exist");
 	} else {
-		r = LoadAttributes(ATTR_ABS_PATH, NULL, false, true);
+		r = LoadAttributes(ATTR_ABS_PATH, NULL, false, true, false);
 	}
 
 #ifdef CONFIG_ATTR_SHELL
@@ -664,7 +666,7 @@ int Attribute_Load(const char *abs_path, const char *feedback_path)
 
 	TAKE_MUTEX(attr_mutex);
 	do {
-		r = LoadAttributes(abs_path, feedback_path, true, false);
+		r = LoadAttributes(abs_path, feedback_path, true, false, true);
 		BREAK_ON_ERROR(r);
 
 		r = SaveAttributes(true);
@@ -979,7 +981,8 @@ void Show(attr_idx_t Index)
  * @param MaskModified Don't set modified flag during initialization
  */
 static int LoadAttributes(const char *fname, const char *feedback_path,
-			  bool ValidateFirst, bool MaskModified)
+			  bool ValidateFirst, bool MaskModified,
+			  bool SkipNonWriteable)
 {
 	int r = -EPERM;
 	size_t fsize;
@@ -998,7 +1001,7 @@ static int LoadAttributes(const char *fname, const char *feedback_path,
 
 		if (ValidateFirst) {
 			r = Loader(kvp, fstr, pairs, false, MaskModified,
-				   &error_count);
+				   &error_count, SkipNonWriteable);
 
 			if (error_count != 0) {
 				/* Error occured during verification, no point
@@ -1010,7 +1013,8 @@ static int LoadAttributes(const char *fname, const char *feedback_path,
 		}
 		BREAK_ON_ERROR(r);
 
-		r = Loader(kvp, fstr, pairs, true, MaskModified, &error_count);
+		r = Loader(kvp, fstr, pairs, true, MaskModified, &error_count,
+			   SkipNonWriteable);
 
 	} while (0);
 
@@ -1043,7 +1047,8 @@ static int LoadAttributes(const char *fname, const char *feedback_path,
 }
 
 static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
-		  bool MaskModified, uint16_t *error_count)
+		  bool MaskModified, uint16_t *error_count,
+		  bool SkipNonWriteable)
 {
 	int r = -EPERM;
 	uint8_t bin[ATTR_MAX_HEX_SIZE];
@@ -1058,20 +1063,19 @@ static int Loader(param_kvp_t *kvp, char *fstr, size_t pairs, bool DoWrite,
 
 		if (!isValid(idx)) {
 			r = -EPERM;
-		} else if (DoWrite == false && !isWritable(idx)) {
-			/* This is a validation run which is used when importing
-			 * settings from a remote source, therefore in the
-			 * verification mode, report that we do not support
-			 * writing non-writable entries
+		} else if (SkipNonWriteable == true && !isWritable(idx)) {
+			/* This when importing settings from a remote source,
+			 * therefore in the verification mode, skip entries that
+			 * are not writeable
 			 */
-			r = -EPERM;
+			r = 0;
 		} else if (ConvertParameterType(idx) == PARAM_STR) {
 			r = vw(idx, ATTR_TYPE_STRING, kvp[i].keystr,
 			       kvp[i].length);
 		} else {
-			/* Attribute validators for numbers don't look at the length passed
-			 * into the function.  However, they do cast based on the size
-			 * of the parameter.
+			/* Attribute validators for numbers don't look at the
+			 * length passed into the function.  However, they do
+			 * cast based on the size of the parameter.
 			 */
 			memset(bin, 0, sizeof(bin));
 
