@@ -174,6 +174,11 @@ static int lock_set_cmd(const struct shell *shell, size_t argc, char **argv)
 		r = -EINVAL;
 	}
 
+#if defined(CONFIG_SHELL_SELECTIVE_HISTORY)
+	/* Do not save this command in the shell history */
+	shell->history->skip_current_line = true;
+#endif
+
 	return r;
 }
 
@@ -264,6 +269,11 @@ static int lock_unlock_cmd(const struct shell *shell, size_t argc, char **argv)
 		r = -EINVAL;
 	}
 
+#if defined(CONFIG_SHELL_SELECTIVE_HISTORY)
+	/* Do not save this command in the shell history */
+	shell->history->skip_current_line = true;
+#endif
+
 	return r;
 }
 
@@ -340,6 +350,11 @@ static int lock_remove_cmd(const struct shell *shell, size_t argc, char **argv)
 			r = -EINVAL;
 		}
 	}
+
+#if defined(CONFIG_SHELL_SELECTIVE_HISTORY)
+	/* Do not save this command in the shell history */
+	shell->history->skip_current_line = true;
+#endif
 
 	return r;
 }
