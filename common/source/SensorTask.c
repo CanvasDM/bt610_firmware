@@ -525,7 +525,7 @@ static DispatchResult_t MagnetStateMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 }
 
 static DispatchResult_t ReadPowerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					      FwkMsg_t *pMsg)
+					    FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
@@ -914,6 +914,8 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 					   power);
 			if (r >= 0) {
 				*result = AdcBt6_ConvertVoltage(channel, raw);
+				/* Convert to miliVolts */
+				*result = *result * 1000;
 			}
 			break;
 
