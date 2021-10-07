@@ -695,7 +695,16 @@ bool Attribute_CodedEnableCheck(void)
 
 bool Attribute_IsLocked(void)
 {
-	bool locked = (*((bool *)attrTable[ATTR_INDEX_lock].pData));
+	bool locked = true;
+
+	uint8_t lock_status =
+		  (*((uint8_t *)attrTable[ATTR_INDEX_lockStatus].pData));
+
+	if (lock_status == LOCK_STATUS_NOT_SETUP ||
+	    lock_status == LOCK_STATUS_SETUP_DISENGAGED) {
+		locked = false;
+	}
+
 	return locked;
 }
 

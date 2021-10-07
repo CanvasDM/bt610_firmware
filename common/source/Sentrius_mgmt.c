@@ -28,6 +28,7 @@
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 #include "FileAccess.h"
+#include "SensorTask.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -167,6 +168,26 @@ static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	[SENTRIUS_MGMT_ID_PREPARE_TEST_LOG] = {
 		.mh_write = Sentrius_mgmt_Prepare_Test_Log,
 		.mh_read = Sentrius_mgmt_Prepare_Test_Log,
+	},
+	[SENTRIUS_MGMT_ID_CHECK_LOCK_STATUS] = {
+		.mh_write = Sentrius_mgmt_Check_Lock_Status,
+		.mh_read = Sentrius_mgmt_Check_Lock_Status,
+	},
+	[SENTRIUS_MGMT_ID_SET_LOCK_CODE] = {
+		.mh_write = Sentrius_mgmt_Set_Lock_Code,
+		.mh_read = Sentrius_mgmt_Set_Lock_Code,
+	},
+	[SENTRIUS_MGMT_ID_LOCK] = {
+		.mh_write = Sentrius_mgmt_Lock,
+		.mh_read = Sentrius_mgmt_Lock,
+	},
+	[SENTRIUS_MGMT_ID_UNLOCK] = {
+		.mh_write = Sentrius_mgmt_Unlock,
+		.mh_read = Sentrius_mgmt_Unlock,
+	},
+	[SENTRIUS_MGMT_ID_GET_UNLOCK_ERROR_CODE] = {
+		.mh_write = Sentrius_mgmt_Get_Unlock_Error_Code,
+		.mh_read = Sentrius_mgmt_Get_Unlock_Error_Code,
 	},
 	/* pyend */
 };
@@ -853,6 +874,222 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "n");
 	err |= cbor_encode_text_string(&ctxt->encoder, n, strlen(n));
 	/* Exit with result */
+	return (err != 0) ? -ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Check_Lock_Status(struct mgmt_ctxt *ctxt)
+{
+	bool lock_enabled;
+	bool lock_active = false;
+	uint8_t lock_status;
+	int r = 0;
+
+	r = Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+
+	if (r >= 0) {
+		r = Attribute_Get(ATTR_INDEX_lockStatus, &lock_status,
+				  sizeof(lock_status));
+
+		if (r >= 0) {
+			if (lock_status == LOCK_STATUS_SETUP_ENGAGED) {
+				lock_active = true;
+			}
+
+			/* Completed successfully so return success result
+			 * code
+			 */
+			r = 0;
+		}
+	}
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Add if lock is enabled */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "p1");
+	err |= cbor_encode_boolean(&ctxt->encoder, lock_enabled);
+	/* Add if lock is engaged */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "p2");
+	err |= cbor_encode_boolean(&ctxt->encoder, lock_active);
+	/* Exit with result */
+	return (err != 0) ? -ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Set_Lock_Code(struct mgmt_ctxt *ctxt)
+{
+	long long unsigned int lock_code_tmp = ULLONG_MAX;
+	uint32_t lock_code;
+	int r = 0;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &lock_code_tmp,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return -EINVAL;
+	}
+
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	}
+
+	if (r == 0) {
+		lock_code = (uint32_t)lock_code_tmp;
+		r = Attribute_SetUint32(ATTR_INDEX_settingsPasscode,
+				    lock_code);
+	}
+
+	if (r == 0) {
+		r = Attribute_SetUint32(ATTR_INDEX_lock,
+				    true);
+	}
+
+	if (r == 0) {
+		/* This sets the lock ready to be engaged when the user
+		 * disconnects, when the module is rebooted or when the user
+		 * manually requests it with the lock command, but allows
+		 * further configuration changes to the unit until then
+		 */
+		r = Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				    LOCK_STATUS_SETUP_DISENGAGED);
+	}
+
+	if (r == 0) {
+		LoadSettingPasscode();
+	}
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
+	return (err != 0) ? -ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Lock(struct mgmt_ctxt *ctxt)
+{
+	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	int r = 0;
+
+	if (Attribute_IsLocked() == false) {
+		/* Load the new passcode */
+		LoadSettingPasscode();
+
+		/* Lock the settings */
+		Attribute_SetUint32(ATTR_INDEX_lock, true);
+		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				    LOCK_STATUS_SETUP_ENGAGED);
+		passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
+
+		/* Send feedback about the passcode */
+		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+				    passCodeStatus);
+	}
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
+	return (err != 0) ? -ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
+{
+	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	long long unsigned int lock_code_tmp = ULLONG_MAX;
+	uint32_t lock_code;
+	uint32_t real_lock_code;
+	bool permanent_unlock = false;
+	int r = 0;
+
+	struct cbor_attr_t params_attr[] = {
+		{ .attribute = "p1",
+		  .type = CborAttrUnsignedIntegerType,
+		  .addr.uinteger = &lock_code_tmp,
+		  .nodefault = true },
+		{ .attribute = "p2",
+		  .type = CborAttrBooleanType,
+		  .addr.boolean = &permanent_unlock,
+		  .nodefault = true },
+		{ .attribute = NULL }
+	};
+
+	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+		return -EINVAL;
+	}
+
+	if (Attribute_IsLocked() == true) {
+		Attribute_GetUint32(&real_lock_code,
+				    ATTR_INDEX_settingsPasscode);
+		lock_code = (uint32_t)lock_code_tmp;
+
+		/* Check if the passcode entered matches */
+		if (real_lock_code == lock_code) {
+			/* Unlock the settings */
+			Attribute_SetUint32(ATTR_INDEX_lockStatus,
+					    LOCK_STATUS_SETUP_DISENGAGED);
+			passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
+		} else {
+			passCodeStatus = SETTINGS_LOCK_ERROR_INVALID_CODE;
+			r = -EINVAL;
+		}
+
+		/* Send feedback to APP about the passcode */
+		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+				    passCodeStatus);
+	}
+
+	if (permanent_unlock == true && Attribute_IsLocked() == false &&
+	    r == 0) {
+		/* User has requested to remove the lock entirely */
+		Attribute_SetUint32(ATTR_INDEX_lock, false);
+		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				    LOCK_STATUS_NOT_SETUP);
+	}
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Exit with result */
+
+	return (err != 0) ? -ENOMEM : 0;
+}
+
+int Sentrius_mgmt_Get_Unlock_Error_Code(struct mgmt_ctxt *ctxt)
+{
+	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	int r = 0;
+
+	r = Attribute_Get(ATTR_INDEX_settingsPasscodeStatus, &passCodeStatus,
+			  sizeof(passCodeStatus));
+
+	if (r >= 0) {
+		/* Clear status */
+		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+				    SETTINGS_LOCK_ERROR_NO_STATUS);
+	}
+
+	/* Cbor encode result */
+	CborError err = 0;
+	/* Add result */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_int(&ctxt->encoder, r);
+	/* Add status */
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "p1");
+	err |= cbor_encode_int(&ctxt->encoder, passCodeStatus);
+	/* Exit with result */
+
 	return (err != 0) ? -ENOMEM : 0;
 }
 

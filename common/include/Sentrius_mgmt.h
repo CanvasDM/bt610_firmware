@@ -40,6 +40,11 @@ mgmt_handler_fn Sentrius_mgmt_Prepare_Log;
 mgmt_handler_fn Sentrius_mgmt_Ack_Log;
 mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
 mgmt_handler_fn Sentrius_mgmt_Prepare_Test_Log;
+mgmt_handler_fn Sentrius_mgmt_Check_Lock_Status;
+mgmt_handler_fn Sentrius_mgmt_Set_Lock_Code;
+mgmt_handler_fn Sentrius_mgmt_Lock;
+mgmt_handler_fn Sentrius_mgmt_Unlock;
+mgmt_handler_fn Sentrius_mgmt_Get_Unlock_Error_Code;
 /* pyend */
 
 /**
@@ -68,6 +73,11 @@ mgmt_handler_fn Sentrius_mgmt_Prepare_Test_Log;
 #define SENTRIUS_MGMT_ID_ACK_LOG                               12
 #define SENTRIUS_MGMT_ID_FACTORY_RESET                         13
 #define SENTRIUS_MGMT_ID_PREPARE_TEST_LOG                      18
+#define SENTRIUS_MGMT_ID_CHECK_LOCK_STATUS                     21
+#define SENTRIUS_MGMT_ID_SET_LOCK_CODE                         22
+#define SENTRIUS_MGMT_ID_LOCK                                  23
+#define SENTRIUS_MGMT_ID_UNLOCK                                24
+#define SENTRIUS_MGMT_ID_GET_UNLOCK_ERROR_CODE                 25
 /* pyend */
 /* clang-format on */
 

@@ -73,7 +73,7 @@ struct AttributeEntry {
 };
 
 /* pystart - attribute table size */
-#define ATTR_TABLE_SIZE 174
+#define ATTR_TABLE_SIZE 175
 
 /* pyend */
 
@@ -95,7 +95,7 @@ typedef enum
 	CONFIG_ANALOG_AC_CURRENT,
 	CONFIG_ULTRASONIC_PRESSURE,
 	CONFIG_SPI_I2C,
-}configType_t;
+} configType_t;
 
 typedef enum
 {
@@ -107,7 +107,7 @@ typedef enum
 	ANALOG_CURRENT20A,
 	ANALOG_CURRENT150A,
 	ANALOG_CURRENT500A,
-}analogConfigType_t;
+} analogConfigType_t;
 
 typedef enum
 {
@@ -115,7 +115,21 @@ typedef enum
 	BOOT_PHY_TYPE_1M,
 	BOOT_PHY_TYPE_CODED,
 	BOOT_PHY_TYPE_COUNT
-}bootPHYType_t;
+} bootPHYType_t;
+
+typedef enum
+{
+	LOCK_STATUS_NOT_SETUP = 0,
+	LOCK_STATUS_SETUP_ENGAGED,
+	LOCK_STATUS_SETUP_DISENGAGED,
+	LOCK_STATUS_COUNT
+} lockStatusType_t;
+
+typedef enum {
+        SETTINGS_LOCK_ERROR_NO_STATUS = 0,
+        SETTINGS_LOCK_ERROR_VALID_CODE,
+        SETTINGS_LOCK_ERROR_INVALID_CODE
+} settingsLockErrorType_t;
 
 /******************************************************************************/
 /* Indices                                                                    */
@@ -296,6 +310,7 @@ typedef enum
 #define ATTR_INDEX_blockDowngrades                       171
 #define ATTR_INDEX_securityRequest                       172
 #define ATTR_INDEX_securityLevel                         173
+#define ATTR_INDEX_lockStatus                            174
 /* pyend */
 /* clang-format on */
 

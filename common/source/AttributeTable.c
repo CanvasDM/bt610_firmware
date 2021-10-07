@@ -419,6 +419,7 @@ typedef struct RoAttributesTag {
 	uint8_t recoverSettingsCount;
 	bool securityRequest;
 	int8_t securityLevel;
+	uint8_t lockStatus;
 	/* pyend */
 } RoAttribute_t;
 
@@ -448,7 +449,7 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.magnetState = 0,
 	.paramPath = "/ext",
 	.batteryAge = 0,
-	.apiVersion = "1.87",
+	.apiVersion = "1.88",
 	.qrtc = 0,
 	.connectionTimeoutSec = 60,
 	.logFileStatus = 0,
@@ -505,7 +506,8 @@ static const RoAttribute_t DEFAULT_RO_ATTRIBUTE_VALUES = {
 	.settingsPasscodeStatus = 0,
 	.recoverSettingsCount = 0,
 	.securityRequest = 0,
-	.securityLevel = 0
+	.securityLevel = 0,
+	.lockStatus = 0
 	/* pyend */
 };
 
@@ -710,7 +712,8 @@ AttributeEntry_t attrTable[ATTR_TABLE_SIZE] = {
 	[170] = { RO_ATTRX(recoverSettingsCount)          , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 0.0        },
 	[171] = { RW_ATTRX(blockDowngrades)               , b  , y, y, y, y, n, n, n, AttributeValidator_blockDowngrades , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
 	[172] = { RO_ATTRX(securityRequest)               , b  , n, y, n, n, y, n, y, AttributeValidator_bool            , NULL                                      , .min.ux = 0.0       , .max.ux = 1.0        },
-	[173] = { RO_ATTRX(securityLevel)                 , i8 , n, n, y, n, n, n, n, AttributeValidator_int8            , AttributePrepare_securityLevel            , .min.sx = -1.0      , .max.sx = 4.0        }
+	[173] = { RO_ATTRX(securityLevel)                 , i8 , n, n, y, n, n, n, n, AttributeValidator_int8            , AttributePrepare_securityLevel            , .min.sx = -1.0      , .max.sx = 4.0        },
+	[174] = { RO_ATTRX(lockStatus)                    , u8 , n, n, y, n, n, n, n, AttributeValidator_uint8           , NULL                                      , .min.ux = 0.0       , .max.ux = 2.0        }
 	/* pyend */
 };
 /* clang-format on */

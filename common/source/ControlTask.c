@@ -211,6 +211,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
 	bool dataLogEnable;
+	bool lock_enabled;
 
 	/* Prevent 'lost' logs */
 	k_sleep(K_SECONDS(1));
@@ -218,6 +219,13 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	LOG_WRN("Version %s", VERSION_STRING);
 
 	Attribute_Init();
+
+	/* Check if settings lock is enabled and set it up */
+	Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+
+	Attribute_SetUint32(ATTR_INDEX_lockStatus,
+			    (lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED :
+						    LOCK_STATUS_NOT_SETUP));
 
 	/* Safe to read the data log enable flag after reading back all
 	 * attributes. We use this to determine whether to disable or enable

@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.87",
+    "version": "1.88",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -1135,6 +1135,324 @@
           ]
         }
       }
+    },
+    {
+      "name": "Check_Lock_Status",
+      "summary": "Check lock status of module",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 21,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Dummy",
+          "description": "Dummy",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": null,
+            "x-example": "0"
+          }
+        }
+      ],
+      "result": {
+        "name": "Check_Lock_Status_Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "p1",
+              "summary": "Lock Setup",
+              "description": "True if the lock has been setup, false otherwise",
+              "required": true,
+              "type": "bool",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-sequencenumber": 2,
+              "x-default": null,
+              "x-example": "1"
+            },
+            {
+              "name": "p2",
+              "summary": "Lock Currently Enabled",
+              "description": "True if the lock is currently engaged, false otherwise",
+              "required": true,
+              "type": "bool",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "x-ctype": "bool",
+              "x-sequencenumber": 3,
+              "x-default": null,
+              "x-example": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Set_Lock_Code",
+      "summary": "Set lock code of module",
+      "description": "If successful, will update the lock code and the lock will engage when the UART/BLE device disconnects",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 22,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Lock code",
+          "description": "LockCode",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 999999.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 1,
+            "x-default": null,
+            "x-example": "1"
+          }
+        }
+      ],
+      "result": {
+        "name": "Set_Lock_Code_Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Lock",
+      "summary": "Lock module configuration",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 23,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Parameter Id",
+          "description": "Dummy Parameter",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "x-ctype": "uint8_t",
+            "x-default": "0",
+            "x-example": "1",
+            "x-sequencenumber": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "Lock_Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Unlock",
+      "summary": "Unlock module configuration",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 24,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Unlock code",
+          "description": "",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 999999.0,
+            "x-ctype": "uint32_t",
+            "x-sequencenumber": 1,
+            "x-default": null,
+            "x-example": "1"
+          }
+        },
+        {
+          "name": "p2",
+          "summary": "Disable lock",
+          "description": "If set to true, will clear the lock entirely until it is manually re-enabled",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "x-ctype": "bool",
+            "x-sequencenumber": 1,
+            "x-default": null,
+            "x-example": "1"
+          }
+        }
+      ],
+      "result": {
+        "name": "Unlock_Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get_Unlock_Error_Code",
+      "summary": "Check last error code umlock error code (clears last error on read)",
+      "description": "",
+      "x-jsonmsgtype": "Request",
+      "x-interfaceserial": true,
+      "x-interfaceble": true,
+      "x-management-option": "ReadWrite",
+      "x-id": 25,
+      "x-groupid": 65,
+      "tags": [
+        {
+          "name": 65
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "summary": "Dummy",
+          "description": "Dummy",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimumlength": 0,
+            "maximumlength": 0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "x-ctype": "uint8_t",
+            "x-sequencenumber": 1,
+            "x-default": null,
+            "x-example": "0"
+          }
+        }
+      ],
+      "result": {
+        "name": "Get_Unlock_Error_Code_Result",
+        "schema": {
+          "items": [
+            {
+              "name": "r",
+              "type": "integer",
+              "summary": "Result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "x-ctype": "int32_t",
+              "x-example": "0",
+              "x-sequencenumber": 1
+            },
+            {
+              "name": "p1",
+              "summary": "Unlock error code",
+              "description": "Error code from last unlock attempt, 0 = no error, 1 = valid code, 2 = invalid code. Reset to 0 on read",
+              "required": true,
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "int8_t",
+              "x-sequencenumber": 2,
+              "x-default": null,
+              "x-example": "1"
+            }
+          ]
+        }
+      }
     }
   ],
   "components": {
@@ -1259,7 +1577,7 @@
           },
           {
             "name": "lock",
-            "summary": "false = unlock: Used by the mobile APP to indicate settings are locked\ntrue = locked",
+            "summary": "Lock enabled: false = lock not setup, true = lock setup. See lockStatus for details on if lock is active",
             "required": true,
             "x-id": 5,
             "x-groupid": 65,
@@ -3043,7 +3361,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.87",
+              "x-default": "1.88",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -4785,6 +5103,26 @@
               "x-readable": true,
               "x-broadcast": false,
               "x-prepare": true
+            }
+          },
+          {
+            "name": "lockStatus",
+            "summary": "Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged",
+            "required": true,
+            "x-id": 174,
+            "x-groupid": 65,
+            "schema": {
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 2.0,
+              "x-ctype": "uint8_t",
+              "x-default": "0",
+              "x-example": "0",
+              "x-savable": false,
+              "x-writeable": false,
+              "x-readable": true
             }
           }
         ]

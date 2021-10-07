@@ -2,7 +2,7 @@
  * @file BleTask.c
  * @brief Communication over the ble connection using Zephyr drivers
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -222,6 +222,11 @@ void BleTask_Initialize(void)
 				BLE_TASK_PRIORITY, 0, K_NO_WAIT);
 
 	k_thread_name_set(bto.msgTask.pTid, THIS_FILE);
+}
+
+bool ble_is_connected(void)
+{
+	return (bto.conn != NULL ? true : false);
 }
 
 bool ble_conn_last_was_le_coded(void)
@@ -633,6 +638,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
+	bool lock_enabled;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
@@ -652,6 +658,14 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	/* Start the advertisement again */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
+
+	/* Check if settings lock needs to be re-activated */
+	Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+
+	if (lock_enabled == true) {
+		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				    LOCK_STATUS_SETUP_ENGAGED);
+	}
 }
 
 /* Update name in Bluetooth stack.  Zephyr will handle updating name in

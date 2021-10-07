@@ -2,7 +2,7 @@
  * @file SensorTask.h
  * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2021 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,6 +15,7 @@
 #include <zephyr/types.h>
 #include <stddef.h>
 #include <drivers/spi.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,30 +23,24 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-//typedef enum {
+typedef enum {
+	THERM_CH_1 = 0,
+	THERM_CH_2,
+	THERM_CH_3,
+	THERM_CH_4,
+	TOTAL_THERM_CH
+} thermistor_channel_t;
 
-//} sensorType_t;
-enum { 
-    THERM_CH_1 = 0, 
-    THERM_CH_2,
-    THERM_CH_3, 
-    THERM_CH_4, 
-    TOTAL_THERM_CH };
-
-enum {
+typedef enum {
 	ANALOG_CH_1 = 0,
 	ANALOG_CH_2,
 	ANALOG_CH_3,
 	ANALOG_CH_4,
 	TOTAL_ANALOG_CH
-};
+} analog_channel_t;
 
 /* RTC timestamps are printed in HH:MM:SS format (extra character for NULL) */
 #define SENSOR_TASK_RTC_TIMESTAMP_SIZE 9
-
-/******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
 
 /******************************************************************************/
 /* Global Function Prototypes                                                 */
@@ -54,6 +49,11 @@ enum {
  * @brief The setup of the thread parameters
  */
 void SensorTask_Initialize(void);
+
+/**
+ * @brief Loads updated lock code from attribute to local object
+ */
+void LoadSettingPasscode(void);
 
 /**
  * @brief Converts the RTC time to a meaningful time string.

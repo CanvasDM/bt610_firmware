@@ -24,6 +24,7 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 #include "BspSupport.h"
 #include "Attribute.h"
 #include "AttributeTable.h"
+#include "BleTask.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -677,6 +678,8 @@ static void UART0CTSHandlerIsr(const struct device *port,
  */
 static void UART0WorkqHandler(struct k_work *item)
 {
+	bool lock_enabled;
+
 	if (uart0_dev) {
 		/* Ignoring the return code here - if it's non-zero the UART is
 		 * already off.
@@ -685,12 +688,24 @@ static void UART0WorkqHandler(struct k_work *item)
 			log_backend_deactivate(uart0LogBackend);
 		}
 
-
 		(void)gpio_pin_set(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
 				   BSP_SUPPORT_UART_RTS_INACTIVE);
 		(void)pm_device_state_set(
 			uart0_dev, PM_DEVICE_STATE_OFF, NULL,
 			NULL);
+
+		/* If we have no active Bluetooth connection, lock the settings
+		 * if it's setup that way
+		 */
+		if (ble_is_connected() == false) {
+			Attribute_Get(ATTR_INDEX_lock, &lock_enabled,
+				      sizeof(lock_enabled));
+
+			if (lock_enabled == true) {
+				Attribute_SetUint32(ATTR_INDEX_lockStatus,
+						    LOCK_STATUS_SETUP_ENGAGED);
+			}
+		}
 
 		uart0PinChangeStateActive = false;
 		uart0PinChanges = 0;
