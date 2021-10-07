@@ -111,64 +111,64 @@ static int FloatParameterExternalToInternal(CborType externalFormat,
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
-    /* pystart - mgmt handlers */
-    [SENTRIUS_MGMT_ID_GETPARAMETER] = {
-         .mh_write = Sentrius_mgmt_GetParameter,
-         .mh_read = Sentrius_mgmt_GetParameter,
-    },
-    [SENTRIUS_MGMT_ID_SETPARAMETER] = {
-         .mh_write = Sentrius_mgmt_SetParameter,
-         .mh_read = Sentrius_mgmt_SetParameter,
-    },
-    [SENTRIUS_MGMT_ID_REVECHO] = {
-         .mh_write = Sentrius_mgmt_RevEcho,
-         .mh_read = Sentrius_mgmt_RevEcho,
-    },
-    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
-         .mh_write = Sentrius_mgmt_CalibrateThermistor,
-         .mh_read = Sentrius_mgmt_CalibrateThermistor,
-    },
-    [SENTRIUS_MGMT_ID_TESTLED] = {
-         .mh_write = Sentrius_mgmt_TestLed,
-         .mh_read = Sentrius_mgmt_TestLed,
-    },
-    [SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
-         .mh_write = Sentrius_mgmt_CalibrateThermistor_Version2,
-         .mh_read = Sentrius_mgmt_CalibrateThermistor_Version2,
-    },
-    [SENTRIUS_MGMT_ID_SET_RTC] = {
-         .mh_write = Sentrius_mgmt_Set_Rtc,
-         .mh_read = Sentrius_mgmt_Set_Rtc,
-    },
-    [SENTRIUS_MGMT_ID_GET_RTC] = {
-         .mh_write = Sentrius_mgmt_Get_Rtc,
-         .mh_read = Sentrius_mgmt_Get_Rtc,
-    },
-    [SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
-         .mh_write = Sentrius_mgmt_Load_Parameter_File,
-         .mh_read = Sentrius_mgmt_Load_Parameter_File,
-    },
-    [SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
-         .mh_write = Sentrius_mgmt_Dump_Parameter_File,
-         .mh_read = Sentrius_mgmt_Dump_Parameter_File,
-    },
-    [SENTRIUS_MGMT_ID_PREPARE_LOG] = {
-         .mh_write = Sentrius_mgmt_Prepare_Log,
-         .mh_read = Sentrius_mgmt_Prepare_Log,
-    },
-    [SENTRIUS_MGMT_ID_ACK_LOG] = {
-         .mh_write = Sentrius_mgmt_Ack_Log,
-         .mh_read = Sentrius_mgmt_Ack_Log,
-    },
-    [SENTRIUS_MGMT_ID_FACTORY_RESET] = {
-         .mh_write = Sentrius_mgmt_Factory_Reset,
-         .mh_read = Sentrius_mgmt_Factory_Reset,
-    },
-    [SENTRIUS_MGMT_ID_PREPARE_TEST_LOG] = {
-         .mh_write = Sentrius_mgmt_Prepare_Test_Log,
-         .mh_read = Sentrius_mgmt_Prepare_Test_Log,
-    }
-    /* pyend */
+	/* pystart - mgmt handlers */
+	[SENTRIUS_MGMT_ID_GETPARAMETER] = {
+		.mh_write = Sentrius_mgmt_GetParameter,
+		.mh_read = Sentrius_mgmt_GetParameter,
+	},
+	[SENTRIUS_MGMT_ID_SETPARAMETER] = {
+		.mh_write = Sentrius_mgmt_SetParameter,
+		.mh_read = Sentrius_mgmt_SetParameter,
+	},
+	[SENTRIUS_MGMT_ID_REVECHO] = {
+		.mh_write = Sentrius_mgmt_RevEcho,
+		.mh_read = Sentrius_mgmt_RevEcho,
+	},
+	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
+		.mh_write = Sentrius_mgmt_CalibrateThermistor,
+		.mh_read = Sentrius_mgmt_CalibrateThermistor,
+	},
+	[SENTRIUS_MGMT_ID_TESTLED] = {
+		.mh_write = Sentrius_mgmt_TestLed,
+		.mh_read = Sentrius_mgmt_TestLed,
+	},
+	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
+		.mh_write = Sentrius_mgmt_CalibrateThermistor_Version2,
+		.mh_read = Sentrius_mgmt_CalibrateThermistor_Version2,
+	},
+	[SENTRIUS_MGMT_ID_SET_RTC] = {
+		.mh_write = Sentrius_mgmt_Set_Rtc,
+		.mh_read = Sentrius_mgmt_Set_Rtc,
+	},
+	[SENTRIUS_MGMT_ID_GET_RTC] = {
+		.mh_write = Sentrius_mgmt_Get_Rtc,
+		.mh_read = Sentrius_mgmt_Get_Rtc,
+	},
+	[SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
+		.mh_write = Sentrius_mgmt_Load_Parameter_File,
+		.mh_read = Sentrius_mgmt_Load_Parameter_File,
+	},
+	[SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
+		.mh_write = Sentrius_mgmt_Dump_Parameter_File,
+		.mh_read = Sentrius_mgmt_Dump_Parameter_File,
+	},
+	[SENTRIUS_MGMT_ID_PREPARE_LOG] = {
+		.mh_write = Sentrius_mgmt_Prepare_Log,
+		.mh_read = Sentrius_mgmt_Prepare_Log,
+	},
+	[SENTRIUS_MGMT_ID_ACK_LOG] = {
+		.mh_write = Sentrius_mgmt_Ack_Log,
+		.mh_read = Sentrius_mgmt_Ack_Log,
+	},
+	[SENTRIUS_MGMT_ID_FACTORY_RESET] = {
+		.mh_write = Sentrius_mgmt_Factory_Reset,
+		.mh_read = Sentrius_mgmt_Factory_Reset,
+	},
+	[SENTRIUS_MGMT_ID_PREPARE_TEST_LOG] = {
+		.mh_write = Sentrius_mgmt_Prepare_Test_Log,
+		.mh_read = Sentrius_mgmt_Prepare_Test_Log,
+	},
+	/* pyend */
 };
 
 static struct mgmt_group sentrius_mgmt_group = {

@@ -213,19 +213,19 @@ class attributes:
         struct = []
         for j in range(0, self.paramSizeList[mId]):
             if "uint" in self.ParamType[self.defineParameter]:
-                function = f"     long long unsigned int "
+                function = f"\tlong long unsigned int "
                 struct.append(function)
                 function = f"{self.ParamSummary[self.defineParameter]};\n"
             elif "int" in self.ParamType[self.defineParameter]:
-                function = f"     long long int "
+                function = f"\tlong long int "
                 struct.append(function)
                 function = f"{self.ParamSummary[self.defineParameter]};\n"
             elif "float" in self.ParamType[self.defineParameter]:
-                function = f"     float "
+                function = f"\tfloat "
                 struct.append(function)
                 function = f"{self.ParamSummary[self.defineParameter]};\n"
             elif "string" in self.ParamType[self.defineParameter]:
-                function = f"     char {self.ParamSummary[self.defineParameter]}{self._GetStringSize(self.ParamType[self.defineParameter], self.AttributeStringMax[self.defineParameter])};\n"
+                function = f"\tchar {self.ParamSummary[self.defineParameter]}{self._GetStringSize(self.ParamType[self.defineParameter], self.AttributeStringMax[self.defineParameter])};\n"
                 # struct.append(function)
 
             struct.append(function)
@@ -375,18 +375,18 @@ class attributes:
         struct = []
         for i in range(0, self.totalFunctions):
             name = self.functionNames[i]
-            result = f"    [{self.mgmtIdPrefex}{name.upper()}] = " + "{" + "\n"
+            result = f"\t[{self.mgmtIdPrefex}{name.upper()}] = " + "{" + "\n"
             struct.append(result)
             if "_ECHO" in result:
-                result = f"         {self.handlerFunctionName[i]}, {self.handlerFunctionName[i]}\n"
+                result = f"\t\t{self.handlerFunctionName[i]}, {self.handlerFunctionName[i]}\n"
                 struct.append(result)
             else:
-                result = f"         .mh_write = {self.handlerFunctionName[i]}," + "\n"
+                result = f"\t\t.mh_write = {self.handlerFunctionName[i]}," + "\n"
                 struct.append(result)
-                result = f"         .mh_read = {self.handlerFunctionName[i]}," + "\n"
+                result = f"\t\t.mh_read = {self.handlerFunctionName[i]}," + "\n"
                 struct.append(result)
 
-            result = "    }," + "\n"
+            result = "\t}," + "\n"
             struct.append(result)
 
         string = ''.join(struct)

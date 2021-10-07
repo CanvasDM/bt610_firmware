@@ -204,7 +204,7 @@ class attributes:
             deprecated = toyn(self.AttributeDeprecated[i])
             donotdump = toyn(self.AttributeDonotDump[i])
             i_hash = i
-            result = f"    [{i_hash:<3}] = " \
+            result = f"\t[{i_hash:<3}] = " \
                 + "{ " \
                 + f"{self._GetAttributeMacro(i_type, self.AttributeSavable[i], name):<40}, {self._GetType(i_type)}, {savable}, {writable}, {readable}, {lockable}, {broadcast}, {deprecated}, {donotdump}, {self._GetValidatorString(i_type, i):<35}, {self._GetPrepareString(name, i)}, {self._CreateMinMaxString(i_min, i_max, i_type)}" \
                 + " }," \
@@ -294,9 +294,9 @@ class attributes:
                 i_max = self.AttributeStringMax[i]
                 default = self.AttributeDefault[i]
                 if default_values:
-                    result = f"    .{name} = {self._GetDefault(i_type, default)}," + "\n"
+                    result = f"\t.{name} = {self._GetDefault(i_type, default)}," + "\n"
                 else:
-                    result = f"    {i_type} {name}{self._GetStringSize(i_type, i_max)};" + "\n"
+                    result = f"\t{i_type} {name}{self._GetStringSize(i_type, i_max)};" + "\n"
                 struct.append(result)
 
         string = ''.join(struct)
