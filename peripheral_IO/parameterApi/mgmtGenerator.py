@@ -25,6 +25,7 @@ class attributes:
         self.minName = 'minimum'
         self.maxName = 'maximum'
         self.mgmtIdPrefex = 'SENTRIUS_MGMT_ID_'
+        self.validGroupId = 65
 
         self.inputHeaderFileName = ""
         self.outputHeaderFileName = ""
@@ -71,16 +72,20 @@ class attributes:
             file_name = self.sourceFilePath + self.handlerfileName
             self.inputSourceHandlerfileName = file_name
             self.outputSourceHandlerfileName = file_name + ""
+            i = 0
 
-            for i in range(self.totalFunctions):
-                self.functionNames.append(self.methodList[i]['name'])
-                self.functionId.append(self.methodList[i]['x-id'])
+            for b in range(self.totalFunctions):
+                if (self.methodList[b]['x-groupid'] != self.validGroupId):
+                    # Group not relevant for this, skip
+                    continue
+                self.functionNames.append(self.methodList[b]['name'])
+                self.functionId.append(self.methodList[b]['x-id'])
 
                 # Parameter Data
-                self.paramList = self.methodList[i]['params']
+                self.paramList = self.methodList[b]['params']
                 self.paramSizeList.append(len(self.paramList))
                 # Result Data
-                self.resultList = self.methodList[i]['result']['schema']['items']
+                self.resultList = self.methodList[b]['result']['schema']['items']
                 self.resultSizeList = len(self.resultList)
                 if self.paramSizeList[i] > 0:
                     # Read Write because it is a set functions
@@ -129,7 +134,9 @@ class attributes:
                                 self.resultList[k]['x-lockable'])
                             self.AttributeBroadcast.append(
                                 self.resultList[k]['x-broadcast'])
+                i = i + 1
             pass
+        self.totalFunctions = i
 
     def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
         """Create the min/max portion of the attribute table entry"""
