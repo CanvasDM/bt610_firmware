@@ -8,7 +8,11 @@
  */
 
 #include <logging/log.h>
+#if !defined(CONFIG_MCUBOOT)
 LOG_MODULE_REGISTER(leds, CONFIG_UI_TASK_LOG_LEVEL);
+#else
+LOG_MODULE_REGISTER(leds, 0);
+#endif
 #define THIS_FILE "leds"
 
 /******************************************************************************/
