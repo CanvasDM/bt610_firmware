@@ -18,22 +18,22 @@ mcuboot_primary:
     - mcuboot_pad
     - app
   region: flash_primary
-  size: 0xEC000
+  size: 0xE4000
   span: *id001
 mcuboot_primary_app:
   address: 0xC200
   orig_span: &id002
     - app
   region: flash_primary
-  size: 0xEBE00
+  size: 0xE3E00
   span: *id002
 littlefs_storage:
-  address: 0xf8000
+  address: 0xf0000
   placement:
     before:
       - end
   region: flash_primary
-  size: 0x8000
+  size: 0x10000
 external_flash:
   address: 0x0
   region: external_flash
@@ -41,11 +41,12 @@ external_flash:
 mcuboot_secondary:
   address: 0x0
   region: external_flash
-  size: 0xEC000
+  size: 0xE4000
+# Scratch area is not used, can be repurposed in future
 scratch:
-  address: 0xEC000
+  address: 0xE4000
   region: external_flash
-  size: 0x4000
+  size: 0xC000
 customer:
   address: 0xf0000
   region: external_flash
