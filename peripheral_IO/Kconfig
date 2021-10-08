@@ -42,7 +42,7 @@ config ATTR_SHELL_ALLOW_DEBUG_COMMANDS
 
 menuconfig MINIMUM_FIRMWARE_VERSION_FOTA_CHECK
     bool "Enable minimum firmware version FOTA check"
-    default n
+    default y
 
 config MINIMUM_FIRMWARE_VERSION_MAJOR
     int "Major firmware version (a.x.x) which is the minimum allowed for FOTA"
