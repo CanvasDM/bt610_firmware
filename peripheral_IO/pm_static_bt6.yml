@@ -46,15 +46,15 @@ mcuboot_secondary:
 scratch:
   address: 0xE4000
   region: external_flash
-  size: 0xC000
+  size: 0x1C000
 customer:
-  address: 0xf0000
-  region: external_flash
-  size: 0x10000
-lfs_storage:
   address: 0x100000
   region: external_flash
-  size: 0x700000
+  size: 0x20000
+lfs_storage:
+  address: 0x120000
+  region: external_flash
+  size: 0x6e0000
 lcz_noinit_sram:
   address: 0x2003F800
   size: 0x800
