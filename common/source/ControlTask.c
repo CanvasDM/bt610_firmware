@@ -22,6 +22,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <img_mgmt/image.h>
 #include <img_mgmt/img_mgmt.h>
 #include <lcz_os_mgmt/os_mgmt_impl.h>
+#include <pm_config.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"
@@ -121,7 +122,7 @@ static int img_mgmt_vercmp(const struct image_version *a,
 			   const struct image_version *b);
 
 static int upload_start_check(uint32_t offset, uint32_t size,
-			      const struct image_version *ver, void *arg);
+			      const struct image_header *header, void *arg);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -497,7 +498,7 @@ static int img_mgmt_vercmp(const struct image_version *a,
 }
 
 static int upload_start_check(uint32_t offset, uint32_t size,
-			      const struct image_version *ver, void *arg)
+			      const struct image_header *header, void *arg)
 {
 	int rc;
 	struct image_version current_ver;
@@ -528,7 +529,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 		min_ver.iv_major = CONFIG_MINIMUM_FIRMWARE_VERSION_MAJOR;
 		min_ver.iv_minor = CONFIG_MINIMUM_FIRMWARE_VERSION_MINOR;
 		min_ver.iv_revision = CONFIG_MINIMUM_FIRMWARE_VERSION_REVISION;
-		if (img_mgmt_vercmp(&min_ver, ver) == 1) {
+		if (img_mgmt_vercmp(&min_ver, &header->ih_ver) == 1) {
 			/* Trying to downgrade to a pre-release firmware, block
 			 * this action
 			 */
@@ -537,6 +538,15 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 			return MGMT_ERR_EBADSTATE;
 		}
 #endif
+
+		/* Check if this will fit into the secondary slot */
+		if (header->ih_img_size > PM_MCUBOOT_SECONDARY_SIZE) {
+			/* The FOTA file is too large for the slot, deny */
+			LOG_ERR("Attempted too large firmware update "
+				"blocked (0x%x bytes)",
+				header->ih_img_size);
+			return MGMT_ERR_EMSGSIZE;
+		}
 
 		/* Are we blocking downgrades? If not, allow downgrade */
 		rc = Attribute_Get(ATTR_INDEX_blockDowngrades,
@@ -565,7 +575,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 			return MGMT_ERR_EUNKNOWN;
 		}
 
-		if (img_mgmt_vercmp(&current_ver, ver) == 1) {
+		if (img_mgmt_vercmp(&current_ver, &header->ih_ver) == 1) {
 			/* Current version is greater than new version, block
 			 * downgrade
 			 */
