@@ -233,7 +233,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
 		/* If simulation has been disabled we need to know
 		 * whether we need to update the live value.
 		 */
-		if ((result = Attribute_Get(ATTR_INDEX_magSwitchSimulatedValue,
+		if ((result = Attribute_Get(ATTR_INDEX_mag_switch_simulated_value,
 					    &last_simulated_state,
 					    sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
@@ -267,7 +267,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
 	const struct device *dev;
 
 	/* Simulation enabled? */
-	if ((result = Attribute_Get(ATTR_INDEX_magSwitchSimulated,
+	if ((result = Attribute_Get(ATTR_INDEX_mag_switch_simulated,
 				    &simulation_enabled,
 				    sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
@@ -302,7 +302,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
 		 * Get the last simulated value.
 		 */
 		if ((result = Attribute_Get(
-			     ATTR_INDEX_tamperSwitchSimulatedValue,
+			     ATTR_INDEX_tamper_switch_simulated_value,
 			     &last_simulated_state,
 			     sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
@@ -337,7 +337,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
 	const struct device *dev;
 
 	/* Simulation enabled? */
-	if ((result = Attribute_Get(ATTR_INDEX_tamperSwitchSimulated,
+	if ((result = Attribute_Get(ATTR_INDEX_tamper_switch_simulated,
 				    &simulation_enabled,
 				    sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
@@ -414,7 +414,7 @@ static void TamperSwitchStatus(void)
 	int v = BSP_PinGet(SW2_PIN);
 	uint8_t activeMode = 0;
 	if (v >= 0) {
-		Attribute_SetUint32(ATTR_INDEX_tamperSwitchStatus, (uint32_t)v);
+		Attribute_SetUint32(ATTR_INDEX_tamper_switch_status, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
 			SensorEventData_t eventTamper;
@@ -423,7 +423,7 @@ static void TamperSwitchStatus(void)
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
 
 			/* Only turn on LED when in active mode */
-			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
+			Attribute_Get(ATTR_INDEX_active_mode, &activeMode,
 				      sizeof(activeMode));
 			if (activeMode) {
 				led_blink(LED_COLOR_RED, LED_PATTERN_TAMPER);
@@ -499,7 +499,7 @@ static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	/* Set the Active Mode flag - all other activities are
 	 * handled by the Sensor Task.
 	 */
-	Attribute_SetUint32(ATTR_INDEX_activeMode, 1);
+	Attribute_SetUint32(ATTR_INDEX_active_mode, 1);
 
 	return DISPATCH_OK;
 }
@@ -510,7 +510,7 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t factoryResetEnabled = 0;
 	DispatchResult_t result;
-	Attribute_Get(ATTR_INDEX_factoryResetEnable, &factoryResetEnabled,
+	Attribute_Get(ATTR_INDEX_factory_reset_enable, &factoryResetEnabled,
 		      sizeof(factoryResetEnabled));
 	if (factoryResetEnabled == 1) {
 		/* Amber */

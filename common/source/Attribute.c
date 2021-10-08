@@ -688,7 +688,7 @@ int Attribute_Save_Now(void)
 bool Attribute_CodedEnableCheck(void)
 {
 	bool codedPhySelected;
-	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+	Attribute_Get(ATTR_INDEX_use_coded_phy, &codedPhySelected,
 		      sizeof(codedPhySelected));
 	return (codedPhySelected);
 }
@@ -698,7 +698,7 @@ bool Attribute_IsLocked(void)
 	bool locked = true;
 
 	uint8_t lock_status =
-		  (*((uint8_t *)attrTable[ATTR_INDEX_lockStatus].pData));
+		  (*((uint8_t *)attrTable[ATTR_INDEX_lock_status].pData));
 
 	if (lock_status == LOCK_STATUS_NOT_SETUP ||
 	    lock_status == LOCK_STATUS_SETUP_DISENGAGED) {
@@ -712,10 +712,10 @@ void Attribute_UpdateConfig(void)
 {
 	uint8_t config_version;
 
-	if (Attribute_Get(ATTR_INDEX_configVersion, &config_version,
+	if (Attribute_Get(ATTR_INDEX_config_version, &config_version,
 			  sizeof(config_version)) == sizeof(config_version)) {
 		config_version++;
-		(void)Attribute_SetUint32(ATTR_INDEX_configVersion,
+		(void)Attribute_SetUint32(ATTR_INDEX_config_version,
 					  (uint32_t)config_version);
 	}
 }
@@ -778,7 +778,7 @@ static int SaveAttributes(bool Immediately)
 		SaveAttributesWork(NULL);
 
 		/* We can return the status with an immediate run */
-		rc = Attribute_GetSigned32(&r, ATTR_INDEX_attrSaveErrorCode);
+		rc = Attribute_GetSigned32(&r, ATTR_INDEX_attr_save_error_code);
 		if (rc == 0) {
 			rc = (int)r;
 		}
@@ -872,7 +872,7 @@ static void SaveAttributesWork(struct k_work *item)
 
 	GIVE_MUTEX(attr_save_change_mutex);
 
-	Attribute_SetSigned32(ATTR_INDEX_attrSaveErrorCode, ((r < 0) ? r : 0));
+	Attribute_SetSigned32(ATTR_INDEX_attr_save_error_code, ((r < 0) ? r : 0));
 }
 
 static void Broadcast(void)
@@ -921,7 +921,7 @@ void Show(attr_idx_t Index)
 	char float_str[CONFIG_ATTR_FLOAT_MAX_STR_SIZE];
 
 	/* Passcode needs to be hidden all other IDs can be shown */
-	if (Index != ATTR_INDEX_settingsPasscode) {
+	if (Index != ATTR_INDEX_settings_passcode) {
 	switch (p->type) {
 	case ATTR_TYPE_U8:
 	case ATTR_TYPE_U16:
@@ -1269,10 +1269,10 @@ static int InitializeQuiet(void)
 
 		/* If file doesn't exists, generate default quiet settings. */
 		if (r < 0) {
-			quiet[ATTR_INDEX_batteryAge] = true;
-			quiet[ATTR_INDEX_upTime] = true;
+			quiet[ATTR_INDEX_battery_age] = true;
+			quiet[ATTR_INDEX_up_time] = true;
 			quiet[ATTR_INDEX_qrtc] = true;
-			quiet[ATTR_INDEX_securityLevel] = true;
+			quiet[ATTR_INDEX_security_level] = true;
 			r = fsu_write_abs(ATTR_QUIET_ABS_PATH, quiet,
 					  sizeof(quiet));
 

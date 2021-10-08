@@ -136,181 +136,181 @@ typedef enum {
 /******************************************************************************/
 /* clang-format off */
 /* pystart - attribute indices */
-#define ATTR_INDEX_sensorName                            0
-#define ATTR_INDEX_sensorLocation                        1
-#define ATTR_INDEX_advertisingInterval                   2
-#define ATTR_INDEX_advertisingDuration                   3
+#define ATTR_INDEX_sensor_name                           0
+#define ATTR_INDEX_sensor_location                       1
+#define ATTR_INDEX_advertising_interval                  2
+#define ATTR_INDEX_advertising_duration                  3
 #define ATTR_INDEX_passkey                               4
 #define ATTR_INDEX_lock                                  5
-#define ATTR_INDEX_powerSenseInterval                    6
-#define ATTR_INDEX_temperatureSenseInterval              7
-#define ATTR_INDEX_AggregationCount                      8
-#define ATTR_INDEX_digitalOutput1State                   9
-#define ATTR_INDEX_digitalOutput2State                   10
-#define ATTR_INDEX_firmwareVersion                       11
-#define ATTR_INDEX_resetReason                           12
-#define ATTR_INDEX_bluetoothAddress                      13
-#define ATTR_INDEX_resetCount                            14
-#define ATTR_INDEX_bootloaderVersion                     15
-#define ATTR_INDEX_upTime                                16
-#define ATTR_INDEX_highTemp1Thresh1                      17
-#define ATTR_INDEX_highTemp1Thresh2                      18
-#define ATTR_INDEX_lowTemp1Thresh1                       19
-#define ATTR_INDEX_lowTemp1Thresh2                       20
-#define ATTR_INDEX_temp1DeltaThresh                      21
-#define ATTR_INDEX_highTemp2Thresh1                      22
-#define ATTR_INDEX_highTemp2Thresh2                      23
-#define ATTR_INDEX_lowTemp2Thresh1                       24
-#define ATTR_INDEX_lowTemp2Thresh2                       25
-#define ATTR_INDEX_temp2DeltaThresh                      26
-#define ATTR_INDEX_highTemp3Thresh1                      27
-#define ATTR_INDEX_highTemp3Thresh2                      28
-#define ATTR_INDEX_lowTemp3Thresh1                       29
-#define ATTR_INDEX_lowTemp3Thresh2                       30
-#define ATTR_INDEX_temp3DeltaThresh                      31
-#define ATTR_INDEX_highTemp4Thresh1                      32
-#define ATTR_INDEX_highTemp4Thresh2                      33
-#define ATTR_INDEX_lowTemp4Thresh1                       34
-#define ATTR_INDEX_lowTemp4Thresh2                       35
-#define ATTR_INDEX_temp4DeltaThresh                      36
-#define ATTR_INDEX_highAnalog1Thresh1                    37
-#define ATTR_INDEX_highAnalog1Thresh2                    38
-#define ATTR_INDEX_lowAnalog1Thresh1                     39
-#define ATTR_INDEX_lowAnalog1Thresh2                     40
-#define ATTR_INDEX_analog1DeltaThresh                    41
-#define ATTR_INDEX_highAnalog2Thresh1                    42
-#define ATTR_INDEX_highAnalog2Thresh2                    43
-#define ATTR_INDEX_lowAnalog2Thresh1                     44
-#define ATTR_INDEX_lowAnalog2Thresh2                     45
-#define ATTR_INDEX_analog2DeltaThresh                    46
-#define ATTR_INDEX_highAnalog3Thresh1                    47
-#define ATTR_INDEX_highAnalog3Thresh2                    48
-#define ATTR_INDEX_lowAnalog3Thresh1                     49
-#define ATTR_INDEX_lowAnalog3Thresh2                     50
-#define ATTR_INDEX_analog3DeltaThresh                    51
-#define ATTR_INDEX_highAnalog4Thresh1                    52
-#define ATTR_INDEX_highAnalog4Thresh2                    53
-#define ATTR_INDEX_lowAnalog4Thresh1                     54
-#define ATTR_INDEX_lowAnalog4Thresh2                     55
-#define ATTR_INDEX_analog4DeltaThresh                    56
-#define ATTR_INDEX_activeMode                            57
-#define ATTR_INDEX_useCodedPhy                           58
-#define ATTR_INDEX_txPower                               59
-#define ATTR_INDEX_networkId                             60
-#define ATTR_INDEX_configVersion                         61
-#define ATTR_INDEX_configType                            62
-#define ATTR_INDEX_hardwareMinorVersion                  63
+#define ATTR_INDEX_power_sense_interval                  6
+#define ATTR_INDEX_temperature_sense_interval            7
+#define ATTR_INDEX_aggregation_count                     8
+#define ATTR_INDEX_digital_output_1_state                9
+#define ATTR_INDEX_digital_output_2_state                10
+#define ATTR_INDEX_firmware_version                      11
+#define ATTR_INDEX_reset_reason                          12
+#define ATTR_INDEX_bluetooth_address                     13
+#define ATTR_INDEX_reset_count                           14
+#define ATTR_INDEX_bootloader_version                    15
+#define ATTR_INDEX_up_time                               16
+#define ATTR_INDEX_high_temp_1_thresh_1                  17
+#define ATTR_INDEX_high_temp_1_thresh_2                  18
+#define ATTR_INDEX_low_temp_1_thresh_1                   19
+#define ATTR_INDEX_low_temp_1_thresh_2                   20
+#define ATTR_INDEX_temp_1_delta_thresh                   21
+#define ATTR_INDEX_high_temp_2_thresh_1                  22
+#define ATTR_INDEX_high_temp_2_thresh_2                  23
+#define ATTR_INDEX_low_temp_2_thresh_1                   24
+#define ATTR_INDEX_low_temp_2_thresh_2                   25
+#define ATTR_INDEX_temp_2_delta_thresh                   26
+#define ATTR_INDEX_high_temp_3_thresh_1                  27
+#define ATTR_INDEX_high_temp_3_thresh_2                  28
+#define ATTR_INDEX_low_temp_3_thresh_1                   29
+#define ATTR_INDEX_low_temp_3_thresh_2                   30
+#define ATTR_INDEX_temp_3_delta_thresh                   31
+#define ATTR_INDEX_high_temp_4_thresh_1                  32
+#define ATTR_INDEX_high_temp_4_thresh_2                  33
+#define ATTR_INDEX_low_temp_4_thresh_1                   34
+#define ATTR_INDEX_low_temp_4_thresh_2                   35
+#define ATTR_INDEX_temp_4_delta_thresh                   36
+#define ATTR_INDEX_high_analog_1_thresh_1                37
+#define ATTR_INDEX_high_analog_1_thresh_2                38
+#define ATTR_INDEX_low_analog_1_thresh_1                 39
+#define ATTR_INDEX_low_analog_1_thresh_2                 40
+#define ATTR_INDEX_analog_1_delta_thresh                 41
+#define ATTR_INDEX_high_analog_2_thresh_1                42
+#define ATTR_INDEX_high_analog_2_thresh_2                43
+#define ATTR_INDEX_low_analog_2_thresh_1                 44
+#define ATTR_INDEX_low_analog_2_thresh_2                 45
+#define ATTR_INDEX_analog_2_delta_thresh                 46
+#define ATTR_INDEX_high_analog_3_thresh_1                47
+#define ATTR_INDEX_high_analog_3_thresh_2                48
+#define ATTR_INDEX_low_analog_3_thresh_1                 49
+#define ATTR_INDEX_low_analog_3_thresh_2                 50
+#define ATTR_INDEX_analog_3_delta_thresh                 51
+#define ATTR_INDEX_high_analog_4_thresh_1                52
+#define ATTR_INDEX_high_analog_4_thresh_2                53
+#define ATTR_INDEX_low_analog_4_thresh_1                 54
+#define ATTR_INDEX_low_analog_4_thresh_2                 55
+#define ATTR_INDEX_analog_4_delta_thresh                 56
+#define ATTR_INDEX_active_mode                           57
+#define ATTR_INDEX_use_coded_phy                         58
+#define ATTR_INDEX_tx_power                              59
+#define ATTR_INDEX_network_id                            60
+#define ATTR_INDEX_config_version                        61
+#define ATTR_INDEX_config_type                           62
+#define ATTR_INDEX_hardware_minor_version                63
 #define ATTR_INDEX_ge                                    64
 #define ATTR_INDEX_oe                                    65
-#define ATTR_INDEX_oldCoefficientA                       66
-#define ATTR_INDEX_oldCoefficientB                       67
-#define ATTR_INDEX_oldCoefficientC                       68
-#define ATTR_INDEX_thermistorConfig                      69
-#define ATTR_INDEX_temperatureResult1                    70
-#define ATTR_INDEX_temperatureResult2                    71
-#define ATTR_INDEX_temperatureResult3                    72
-#define ATTR_INDEX_temperatureResult4                    73
-#define ATTR_INDEX_temperatureAlarms                     74
-#define ATTR_INDEX_powerVoltageMv                        75
-#define ATTR_INDEX_digitalInput                          76
-#define ATTR_INDEX_digitalAlarms                         77
-#define ATTR_INDEX_digitalInput1Config                   78
-#define ATTR_INDEX_digitalInput2Config                   79
-#define ATTR_INDEX_analogInput1                          80
-#define ATTR_INDEX_analogInput2                          81
-#define ATTR_INDEX_analogInput3                          82
-#define ATTR_INDEX_analogInput4                          83
-#define ATTR_INDEX_analogAlarms                          84
-#define ATTR_INDEX_analogInput1Type                      85
-#define ATTR_INDEX_analogInput2Type                      86
-#define ATTR_INDEX_analogInput3Type                      87
-#define ATTR_INDEX_analogInput4Type                      88
+#define ATTR_INDEX_old_coefficient_a                     66
+#define ATTR_INDEX_old_coefficient_b                     67
+#define ATTR_INDEX_old_coefficient_c                     68
+#define ATTR_INDEX_thermistor_config                     69
+#define ATTR_INDEX_temperature_result_1                  70
+#define ATTR_INDEX_temperature_result_2                  71
+#define ATTR_INDEX_temperature_result_3                  72
+#define ATTR_INDEX_temperature_result_4                  73
+#define ATTR_INDEX_temperature_alarms                    74
+#define ATTR_INDEX_power_voltage_mv                      75
+#define ATTR_INDEX_digital_input                         76
+#define ATTR_INDEX_digital_alarms                        77
+#define ATTR_INDEX_digital_input_1_config                78
+#define ATTR_INDEX_digital_input_2_config                79
+#define ATTR_INDEX_analog_input_1                        80
+#define ATTR_INDEX_analog_input_2                        81
+#define ATTR_INDEX_analog_input_3                        82
+#define ATTR_INDEX_analog_input_4                        83
+#define ATTR_INDEX_analog_alarms                         84
+#define ATTR_INDEX_analog_input_1_type                   85
+#define ATTR_INDEX_analog_input_2_type                   86
+#define ATTR_INDEX_analog_input_3_type                   87
+#define ATTR_INDEX_analog_input_4_type                   88
 #define ATTR_INDEX_flags                                 89
-#define ATTR_INDEX_magnetState                           90
-#define ATTR_INDEX_paramPath                             91
-#define ATTR_INDEX_batteryAge                            92
-#define ATTR_INDEX_apiVersion                            93
+#define ATTR_INDEX_magnet_state                          90
+#define ATTR_INDEX_param_path                            91
+#define ATTR_INDEX_battery_age                           92
+#define ATTR_INDEX_api_version                           93
 #define ATTR_INDEX_qrtc                                  94
-#define ATTR_INDEX_qrtcLastSet                           95
-#define ATTR_INDEX_shOffset                              96
-#define ATTR_INDEX_analogSenseInterval                   97
-#define ATTR_INDEX_tamperSwitchStatus                    98
-#define ATTR_INDEX_connectionTimeoutSec                  99
-#define ATTR_INDEX_settingsPasscode                      100
-#define ATTR_INDEX_therm1CoefficientA                    101
-#define ATTR_INDEX_therm2CoefficientA                    102
-#define ATTR_INDEX_therm3CoefficientA                    103
-#define ATTR_INDEX_therm4CoefficientA                    104
-#define ATTR_INDEX_therm1CoefficientB                    105
-#define ATTR_INDEX_therm2CoefficientB                    106
-#define ATTR_INDEX_therm3CoefficientB                    107
-#define ATTR_INDEX_therm4CoefficientB                    108
-#define ATTR_INDEX_therm1CoefficientC                    109
-#define ATTR_INDEX_therm2CoefficientC                    110
-#define ATTR_INDEX_therm3CoefficientC                    111
-#define ATTR_INDEX_therm4CoefficientC                    112
-#define ATTR_INDEX_dataloggingEnable                     113
-#define ATTR_INDEX_factoryResetEnable                    114
-#define ATTR_INDEX_logFileStatus                         115
-#define ATTR_INDEX_temperatureAlarmsEnable               116
-#define ATTR_INDEX_analogAlarmsEnable                    117
-#define ATTR_INDEX_adcPowerSimulated                     118
-#define ATTR_INDEX_adcPowerSimulatedCounts               119
-#define ATTR_INDEX_adcAnalogSensorSimulated              120
-#define ATTR_INDEX_adcAnalogSensorSimulatedCounts        121
-#define ATTR_INDEX_adcThermistorSimulated                122
-#define ATTR_INDEX_adcThermistorSimulatedCounts          123
-#define ATTR_INDEX_adcVRefSimulated                      124
-#define ATTR_INDEX_adcVRefSimulatedCounts                125
-#define ATTR_INDEX_voltage1Simulated                     126
-#define ATTR_INDEX_voltage1SimulatedValue                127
-#define ATTR_INDEX_voltage2Simulated                     128
-#define ATTR_INDEX_voltage2SimulatedValue                129
-#define ATTR_INDEX_voltage3Simulated                     130
-#define ATTR_INDEX_voltage3SimulatedValue                131
-#define ATTR_INDEX_voltage4Simulated                     132
-#define ATTR_INDEX_voltage4SimulatedValue                133
-#define ATTR_INDEX_ultrasonicSimulated                   134
-#define ATTR_INDEX_ultrasonicSimulatedValue              135
-#define ATTR_INDEX_pressureSimulated                     136
-#define ATTR_INDEX_pressureSimulatedValue                137
-#define ATTR_INDEX_current1Simulated                     138
-#define ATTR_INDEX_current1SimulatedValue                139
-#define ATTR_INDEX_current2Simulated                     140
-#define ATTR_INDEX_current2SimulatedValue                141
-#define ATTR_INDEX_current3Simulated                     142
-#define ATTR_INDEX_current3SimulatedValue                143
-#define ATTR_INDEX_current4Simulated                     144
-#define ATTR_INDEX_current4SimulatedValue                145
-#define ATTR_INDEX_vrefSimulated                         146
-#define ATTR_INDEX_vrefSimulatedValue                    147
-#define ATTR_INDEX_temperature1Simulated                 148
-#define ATTR_INDEX_temperature1SimulatedValue            149
-#define ATTR_INDEX_temperature2Simulated                 150
-#define ATTR_INDEX_temperature2SimulatedValue            151
-#define ATTR_INDEX_temperature3Simulated                 152
-#define ATTR_INDEX_temperature3SimulatedValue            153
-#define ATTR_INDEX_temperature4Simulated                 154
-#define ATTR_INDEX_temperature4SimulatedValue            155
-#define ATTR_INDEX_powermvSimulated                      156
-#define ATTR_INDEX_powermvSimulatedValue                 157
-#define ATTR_INDEX_digitalInput1Simulated                158
-#define ATTR_INDEX_digitalInput1SimulatedValue           159
-#define ATTR_INDEX_digitalInput2Simulated                160
-#define ATTR_INDEX_digitalInput2SimulatedValue           161
-#define ATTR_INDEX_magSwitchSimulated                    162
-#define ATTR_INDEX_magSwitchSimulatedValue               163
-#define ATTR_INDEX_tamperSwitchSimulated                 164
-#define ATTR_INDEX_tamperSwitchSimulatedValue            165
-#define ATTR_INDEX_bootPHY                               166
-#define ATTR_INDEX_mobileAppDisconnect                   167
-#define ATTR_INDEX_attrSaveErrorCode                     168
-#define ATTR_INDEX_settingsPasscodeStatus                169
-#define ATTR_INDEX_recoverSettingsCount                  170
-#define ATTR_INDEX_blockDowngrades                       171
-#define ATTR_INDEX_securityRequest                       172
-#define ATTR_INDEX_securityLevel                         173
-#define ATTR_INDEX_lockStatus                            174
+#define ATTR_INDEX_qrtc_last_set                         95
+#define ATTR_INDEX_sh_offset                             96
+#define ATTR_INDEX_analog_sense_interval                 97
+#define ATTR_INDEX_tamper_switch_status                  98
+#define ATTR_INDEX_connection_timeout_sec                99
+#define ATTR_INDEX_settings_passcode                     100
+#define ATTR_INDEX_therm_1_coefficient_a                 101
+#define ATTR_INDEX_therm_2_coefficient_a                 102
+#define ATTR_INDEX_therm_3_coefficient_a                 103
+#define ATTR_INDEX_therm_4_coefficient_a                 104
+#define ATTR_INDEX_therm_1_coefficient_b                 105
+#define ATTR_INDEX_therm_2_coefficient_b                 106
+#define ATTR_INDEX_therm_3_coefficient_b                 107
+#define ATTR_INDEX_therm_4_coefficient_b                 108
+#define ATTR_INDEX_therm_1_coefficient_c                 109
+#define ATTR_INDEX_therm_2_coefficient_c                 110
+#define ATTR_INDEX_therm_3_coefficient_c                 111
+#define ATTR_INDEX_therm_4_coefficient_c                 112
+#define ATTR_INDEX_data_logging_enable                   113
+#define ATTR_INDEX_factory_reset_enable                  114
+#define ATTR_INDEX_log_file_status                       115
+#define ATTR_INDEX_temperature_alarms_enable             116
+#define ATTR_INDEX_analog_alarms_enable                  117
+#define ATTR_INDEX_adc_power_simulated                   118
+#define ATTR_INDEX_adc_power_simulated_counts            119
+#define ATTR_INDEX_adc_analog_sensor_simulated           120
+#define ATTR_INDEX_adc_analog_sensor_simulated_counts    121
+#define ATTR_INDEX_adc_thermistor_simulated              122
+#define ATTR_INDEX_adc_thermistor_simulated_counts       123
+#define ATTR_INDEX_adc_vref_simulated                    124
+#define ATTR_INDEX_adc_vref_simulated_counts             125
+#define ATTR_INDEX_voltage_1_simulated                   126
+#define ATTR_INDEX_voltage_1_simulated_value             127
+#define ATTR_INDEX_voltage_2_simulated                   128
+#define ATTR_INDEX_voltage_2_simulated_value             129
+#define ATTR_INDEX_voltage_3_simulated                   130
+#define ATTR_INDEX_voltage_3_simulated_value             131
+#define ATTR_INDEX_voltage_4_simulated                   132
+#define ATTR_INDEX_voltage_4_simulated_value             133
+#define ATTR_INDEX_ultrasonic_simulated                  134
+#define ATTR_INDEX_ultrasonic_simulated_value            135
+#define ATTR_INDEX_pressure_simulated                    136
+#define ATTR_INDEX_pressure_simulated_value              137
+#define ATTR_INDEX_current_1_simulated                   138
+#define ATTR_INDEX_current_1_simulated_value             139
+#define ATTR_INDEX_current_2_simulated                   140
+#define ATTR_INDEX_current_2_simulated_value             141
+#define ATTR_INDEX_current_3_simulated                   142
+#define ATTR_INDEX_current_3_simulated_value             143
+#define ATTR_INDEX_current_4_simulated                   144
+#define ATTR_INDEX_current_4_simulated_value             145
+#define ATTR_INDEX_vref_simulated                        146
+#define ATTR_INDEX_vref_simulated_value                  147
+#define ATTR_INDEX_temperature_1_simulated               148
+#define ATTR_INDEX_temperature_1_simulated_value         149
+#define ATTR_INDEX_temperature_2_simulated               150
+#define ATTR_INDEX_temperature_2_simulated_value         151
+#define ATTR_INDEX_temperature_3_simulated               152
+#define ATTR_INDEX_temperature_3_simulated_value         153
+#define ATTR_INDEX_temperature_4_simulated               154
+#define ATTR_INDEX_temperature_4_simulated_value         155
+#define ATTR_INDEX_powermv_simulated                     156
+#define ATTR_INDEX_powermv_simulated_value               157
+#define ATTR_INDEX_digital_input_1_simulated             158
+#define ATTR_INDEX_digital_input_1_simulated_value       159
+#define ATTR_INDEX_digital_input_2_simulated             160
+#define ATTR_INDEX_digital_input_2_simulated_value       161
+#define ATTR_INDEX_mag_switch_simulated                  162
+#define ATTR_INDEX_mag_switch_simulated_value            163
+#define ATTR_INDEX_tamper_switch_simulated               164
+#define ATTR_INDEX_tamper_switch_simulated_value         165
+#define ATTR_INDEX_boot_phy                              166
+#define ATTR_INDEX_mobile_app_disconnect                 167
+#define ATTR_INDEX_attr_save_error_code                  168
+#define ATTR_INDEX_settings_passcode_status              169
+#define ATTR_INDEX_recover_settings_count                170
+#define ATTR_INDEX_block_downgrades                      171
+#define ATTR_INDEX_security_request                      172
+#define ATTR_INDEX_security_level                        173
+#define ATTR_INDEX_lock_status                           174
 /* pyend */
 /* clang-format on */
 
@@ -323,78 +323,78 @@ typedef enum {
  *
  * @retval Validators return negative error code, 0 on success
  */
-int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_string(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite);
+int attribute_validator_uint64(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite);
+int attribute_validator_uint32(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite);
+int attribute_validator_uint16(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite);
+int attribute_validator_bool(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite);
+int attribute_validator_uint8(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
-int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_int64(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
-int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_int32(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
-int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_int16(AttributeEntry_t *pEntry, void *pValue,
 			      size_t Length, bool DoWrite);
-int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_int8(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
-int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite);
-int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite);
-int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite);
-int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite);
-int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_float(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite);
+
+int attribute_validator_aic(AttributeEntry_t *pEntry, void *pValue,
 			    size_t Length, bool DoWrite);
-int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
+
+int attribute_validator_cp32(AttributeEntry_t *pEntry, void *pValue,
 			     size_t Length, bool DoWrite);
-
-int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
-			   size_t Length, bool DoWrite);
-
-int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			   bool DoWrite);
-int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			     bool DoWrite);
-int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			     bool DoWrite);
-int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_magsimen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_magsim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue, size_t Length,
-			    bool DoWrite);
-int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
-				       size_t Length, bool DoWrite);
+int attribute_validator_cp16(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite);
+int attribute_validator_cp8(AttributeEntry_t *pEntry, void *pValue,
+			    size_t Length, bool DoWrite);
+int attribute_validator_cpi32(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite);
+int attribute_validator_cpi16(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite);
+int attribute_validator_cpi8(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite);
+int attribute_validator_din1simen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite);
+int attribute_validator_din1sim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite);
+int attribute_validator_din2simen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite);
+int attribute_validator_din2sim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite);
+int attribute_validator_magsimen(AttributeEntry_t *pEntry, void *pValue,
+				 size_t Length, bool DoWrite);
+int attribute_validator_magsim(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite);
+int attribute_validator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite);
+int attribute_validator_tampsim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite);
+int attribute_validator_block_downgrades(AttributeEntry_t *pEntry, void *pValue,
+					 size_t Length, bool DoWrite);
 
 /* The weak implementations should be overridden application. */
 /* pystart - prepare for read */
-int AttributePrepare_upTime(void);
-int AttributePrepare_temperatureResult1(void);
-int AttributePrepare_temperatureResult2(void);
-int AttributePrepare_temperatureResult3(void);
-int AttributePrepare_temperatureResult4(void);
-int AttributePrepare_powerVoltageMv(void);
-int AttributePrepare_digitalInput(void);
-int AttributePrepare_analogInput1(void);
-int AttributePrepare_analogInput2(void);
-int AttributePrepare_analogInput3(void);
-int AttributePrepare_analogInput4(void);
-int AttributePrepare_logFileStatus(void);
-int AttributePrepare_securityLevel(void);
+int AttributePrepare_up_time(void);
+int AttributePrepare_temperature_result_1(void);
+int AttributePrepare_temperature_result_2(void);
+int AttributePrepare_temperature_result_3(void);
+int AttributePrepare_temperature_result_4(void);
+int AttributePrepare_power_voltage_mv(void);
+int AttributePrepare_digital_input(void);
+int AttributePrepare_analog_input_1(void);
+int AttributePrepare_analog_input_2(void);
+int AttributePrepare_analog_input_3(void);
+int AttributePrepare_analog_input_4(void);
+int AttributePrepare_log_file_status(void);
+int AttributePrepare_security_level(void);
 /* pyend */
 
 #ifdef __cplusplus

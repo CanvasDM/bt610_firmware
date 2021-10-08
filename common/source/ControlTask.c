@@ -189,13 +189,13 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 int AttributePrepare_upTime(void)
 {
 	int64_t uptimeMs = k_uptime_get();
-	return (Attribute_SetSigned64(ATTR_INDEX_upTime, uptimeMs));
+	return (Attribute_SetSigned64(ATTR_INDEX_up_time, uptimeMs));
 }
 
 int AttributePrepare_logFileStatus(void)
 {
 	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
-	return (Attribute_SetUint32(ATTR_INDEX_logFileStatus, logFileStatus));
+	return (Attribute_SetUint32(ATTR_INDEX_log_file_status, logFileStatus));
 }
 
 void app_prepare_for_reboot(void)
@@ -224,7 +224,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	/* Check if settings lock is enabled and set it up */
 	Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
 
-	Attribute_SetUint32(ATTR_INDEX_lockStatus,
+	Attribute_SetUint32(ATTR_INDEX_lock_status,
 			    (lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED :
 						    LOCK_STATUS_NOT_SETUP));
 
@@ -232,7 +232,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	 * attributes. We use this to determine whether to disable or enable
 	 * logging at startup.
 	 */
-	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
+	Attribute_Get(ATTR_INDEX_data_logging_enable, &dataLogEnable,
 		      sizeof(dataLogEnable));
 
 	RebootHandler();
@@ -271,7 +271,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static void RebootHandler(void)
 {
-	Attribute_SetString(ATTR_INDEX_firmwareVersion, VERSION_STRING,
+	Attribute_SetString(ATTR_INDEX_firmware_version, VERSION_STRING,
 			    strlen(VERSION_STRING));
 
 	uint32_t reset_reason = lbt_get_and_clear_nrf52_reset_reason_register();
@@ -351,9 +351,9 @@ static void RebootHandler(void)
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 
 	/* Update attributes */
-	Attribute_SetString(ATTR_INDEX_resetReason, s, strlen(s));
-	Attribute_SetUint32(ATTR_INDEX_resetCount, reset_count);
-	Attribute_SetUint32(ATTR_INDEX_recoverSettingsCount, recovery_count);
+	Attribute_SetString(ATTR_INDEX_reset_reason, s, strlen(s));
+	Attribute_SetUint32(ATTR_INDEX_reset_count, reset_count);
+	Attribute_SetUint32(ATTR_INDEX_recover_settings_count, recovery_count);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -364,7 +364,7 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	/* Any benefit of a writable battery age isn't worth the complexity. */
 	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
-	Attribute_SetUint32(ATTR_INDEX_batteryAge, pnird->battery_age);
+	Attribute_SetUint32(ATTR_INDEX_battery_age, pnird->battery_age);
 
 	/* Read value from system because it should have less error than
 	 * seconds maintained by this function.
@@ -452,7 +452,7 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 	/* Save the current PHY to the boot PHY attribute so it can be restored
 	 * after rebooting
 	 */
-	Attribute_SetUint32(ATTR_INDEX_bootPHY, (ble_conn_last_was_le_coded() ?
+	Attribute_SetUint32(ATTR_INDEX_boot_phy, (ble_conn_last_was_le_coded() ?
 							       BOOT_PHY_TYPE_CODED :
 							       BOOT_PHY_TYPE_1M));
 
@@ -549,7 +549,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 		}
 
 		/* Are we blocking downgrades? If not, allow downgrade */
-		rc = Attribute_Get(ATTR_INDEX_blockDowngrades,
+		rc = Attribute_Get(ATTR_INDEX_block_downgrades,
 				   &downgrade_blocked,
 				   sizeof(downgrade_blocked));
 		if (rc <= 0) {

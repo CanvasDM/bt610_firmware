@@ -160,11 +160,11 @@ class attributes:
         """Use custom validator if it exists.  Otherwise use validator based on type"""
         validator = self.AttributeValidator[index]
         if validator != "":
-            return "AttributeValidator_" + validator
+            return "attribute_validator_" + validator
         elif i_type == "string":
-            return "AttributeValidator_" + "string"
+            return "attribute_validator_" + "string"
         else:
-            return "AttributeValidator_" + (i_type).replace('_t', '')
+            return "attribute_validator_" + (i_type).replace('_t', '')
 
     def _CreateMinMaxString(self, imin: str, imax: str, i_type: str) -> str:
         """Create the min/max portion of the attribute table entry"""

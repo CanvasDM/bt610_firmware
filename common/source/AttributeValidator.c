@@ -36,8 +36,8 @@ static int validate_analog_input_config(void);
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
-int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
+int attribute_validator_string(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite)
 {
 	int r = -EPERM;
 
@@ -57,8 +57,8 @@ int AttributeValidator_string(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
+int attribute_validator_uint64(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	uint64_t value = *(uint64_t *)pValue;
@@ -71,8 +71,8 @@ int AttributeValidator_uint64(AttributeEntry_t *pEntry, void *pValue,
 	return 0;
 }
 
-int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
+int attribute_validator_uint32(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -91,8 +91,8 @@ int AttributeValidator_uint32(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
+int attribute_validator_uint16(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -110,8 +110,8 @@ int AttributeValidator_uint16(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+int attribute_validator_bool(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
 	/* Same as UINT8 */
 	ARG_UNUSED(Length);
@@ -130,8 +130,8 @@ int AttributeValidator_bool(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_uint8(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -149,8 +149,8 @@ int AttributeValidator_uint8(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_int64(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int64_t value = *(int64_t *)pValue;
@@ -163,8 +163,8 @@ int AttributeValidator_int64(AttributeEntry_t *pEntry, void *pValue,
 	return 0;
 }
 
-int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_int32(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -182,8 +182,8 @@ int AttributeValidator_int32(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_int16(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -201,8 +201,8 @@ int AttributeValidator_int16(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+int attribute_validator_int8(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -220,8 +220,8 @@ int AttributeValidator_int8(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_float(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -239,13 +239,13 @@ int AttributeValidator_float(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
-			   size_t Length, bool DoWrite)
+int attribute_validator_aic(AttributeEntry_t *pEntry, void *pValue,
+			    size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
 	uint8_t saved = *((uint8_t *)pEntry->pData);
-	r = AttributeValidator_uint8(pEntry, pValue, Length, false);
+	r = attribute_validator_uint8(pEntry, pValue, Length, false);
 	if (r == 0) {
 		/* Assume value is ok.  This makes secondary validation simpler
 		 * because it is independent of the channel being changed.
@@ -271,8 +271,8 @@ int AttributeValidator_aic(AttributeEntry_t *pEntry, void *pValue,
  * @brief Control Point Validators
  * Don't check if value is the same because this is a control point.
  */
-int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+int attribute_validator_cp32(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -290,8 +290,8 @@ int AttributeValidator_cp32(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+int attribute_validator_cp16(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -309,8 +309,8 @@ int AttributeValidator_cp16(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue,
-			   size_t Length, bool DoWrite)
+int attribute_validator_cp8(AttributeEntry_t *pEntry, void *pValue,
+			    size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -328,8 +328,8 @@ int AttributeValidator_cp8(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_cpi32(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -347,8 +347,8 @@ int AttributeValidator_cpi32(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue,
-			     size_t Length, bool DoWrite)
+int attribute_validator_cpi16(AttributeEntry_t *pEntry, void *pValue,
+			      size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -366,8 +366,8 @@ int AttributeValidator_cpi16(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+int attribute_validator_cpi8(AttributeEntry_t *pEntry, void *pValue,
+			     size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -385,8 +385,8 @@ int AttributeValidator_cpi8(AttributeEntry_t *pEntry, void *pValue,
 	return r;
 }
 
-int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue,
-				 size_t Length, bool DoWrite)
+int attribute_validator_din1simen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -404,14 +404,14 @@ int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue,
 		 * If we're changing to enabled, we apply this to the simulated
 		 * value to avoid getting any glitches on the input.
 		 */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input];
 		initial_input_state = *((uint8_t *)(attribute_entry->pData));
 		/* And the current simulation state. We need to know
 		 * this so we can determine if simulation is being enabled
 		 * If so we need to set the initial state of the simulated
 		 * digital input so it matches the live state.
 		 */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput1Simulated];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input_1_simulated];
 		last_enable_state = *((bool *)(attribute_entry->pData));
 		/* And the state requested to switch to. */
 		enable_state = *((bool *)(pValue));
@@ -424,14 +424,14 @@ int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue,
 			 * trigger the validator.
 			 */
 			attribute_entry =
-				&attrTable[ATTR_INDEX_digitalInput1SimulatedValue];
+				&attrTable[ATTR_INDEX_digital_input_1_simulated_value];
 			*((bool *)(attribute_entry->pData)) = start_input_state;
 		}
 		/* Update the Digital Input simulation status - note the order
 		 * how we do things here is important depending upon whether
 		 * simulation is being enabled or disabled.
                  */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput1Simulated];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input_1_simulated];
 		if (enable_state) {
 			/* If we're enabling simulation, we set the enable
 			 * flag last so we can store the last live input state
@@ -456,14 +456,14 @@ int AttributeValidator_din1simen(AttributeEntry_t *pEntry, void *pValue,
 		 * In this case, just call the standard validator for the
 		 * simulation enable type.
 		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return r;
 }
 
-int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue,
-			       size_t Length, bool DoWrite)
+int attribute_validator_din1sim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r;
@@ -474,7 +474,7 @@ int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue,
 	if (DoWrite) {
 		/* Get the current simulated state for use later */
 		attribute_entry =
-			&attrTable[ATTR_INDEX_digitalInput1SimulatedValue];
+			&attrTable[ATTR_INDEX_digital_input_1_simulated_value];
 		last_simulated_state = *((bool *)(attribute_entry->pData));
 		/* Set the simulated value */
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
@@ -486,14 +486,14 @@ int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue,
 		 * call to validate the data passed by the client. We
 		 * can call the standard type validator in this case.
 		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return r;
 }
 
-int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue,
-				 size_t Length, bool DoWrite)
+int attribute_validator_din2simen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r = -EPERM;
@@ -511,13 +511,13 @@ int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue,
 		 * If we're changing to enabled, we apply this to the simulated
 		 * value to avoid getting any glitches on the input.
 		 */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input];
 		initial_input_state = *((uint8_t *)(attribute_entry->pData));
 		/* And the current simulation state. We need to know
 		 * this so we can determine if we need to set the
 		 * initial state of the simulated digital input.
 		 */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput2Simulated];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input_2_simulated];
 		last_enable_state = *((bool *)(attribute_entry->pData));
 		/* And the state requested to switch to. */
 		enable_state = *((bool *)(pValue));
@@ -530,14 +530,14 @@ int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue,
 			 * trigger the validator.
 			 */
 			attribute_entry =
-				&attrTable[ATTR_INDEX_digitalInput2SimulatedValue];
+				&attrTable[ATTR_INDEX_digital_input_2_simulated_value];
 			*((bool *)(attribute_entry->pData)) = start_input_state;
 		}
 		/* Update the Digital Input simulation status so we can
 		 * determine or perform the behaviour needed when simulation is
 		 * disabled.
                  */
-		attribute_entry = &attrTable[ATTR_INDEX_digitalInput2Simulated];
+		attribute_entry = &attrTable[ATTR_INDEX_digital_input_2_simulated];
 		if (enable_state) {
 			/* If we're enabling simulation, we set the enable
 			 * flag last so we can store the last live input state
@@ -562,14 +562,14 @@ int AttributeValidator_din2simen(AttributeEntry_t *pEntry, void *pValue,
 		 * In this case, just call the standard validator for the
 		 * simulation enable type.
 		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return r;
 }
 
-int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue,
-			       size_t Length, bool DoWrite)
+int attribute_validator_din2sim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite)
 {
 	ARG_UNUSED(Length);
 	int r;
@@ -580,7 +580,7 @@ int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue,
 	if (DoWrite) {
 		/* Get the current simulated state for use later */
 		attribute_entry =
-			&attrTable[ATTR_INDEX_digitalInput2SimulatedValue];
+			&attrTable[ATTR_INDEX_digital_input_2_simulated_value];
 		last_simulated_state = *((bool *)(attribute_entry->pData));
 		/* Set the simulated value */
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
@@ -589,100 +589,13 @@ int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue,
 							  last_simulated_state);
 	} else {
 		/* Call standard validator for initial call */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return r;
 }
 
-int AttributeValidator_magsimen(AttributeEntry_t *pEntry, void *pValue,
-				size_t Length, bool DoWrite)
-{
-	int r = 0;
-	bool last_enable_state;
-	bool enable_state;
-	AttributeEntry_t *attribute_entry;
-	bool initial_switch_state;
-
-	/* If DoWrite is set, this is the second call of this function so we
-	 * can go ahead and apply changes
-	 */
-	if (DoWrite) {
-		/* Get the current simulation state so we can check for a
-		 * change in status.
-		 */
-		attribute_entry = &attrTable[ATTR_INDEX_magSwitchSimulated];
-		last_enable_state = *((bool *)(attribute_entry->pData));
-		/* Also the state requested to switch to */
-		enable_state = *((bool *)(pValue));
-		/* Is simulation being enabled? */
-		if ((!last_enable_state) && (enable_state)) {
-			/* If so, store the live value to avoid glitching */
-			attribute_entry = &attrTable[ATTR_INDEX_magnetState];
-			initial_switch_state =
-				*((bool *)(attribute_entry->pData));
-			attribute_entry =
-				&attrTable[ATTR_INDEX_magSwitchSimulatedValue];
-			*((bool *)(attribute_entry->pData)) =
-				initial_switch_state;
-		}
-		/* Update simulation status. */
-		attribute_entry = &attrTable[ATTR_INDEX_magSwitchSimulated];
-		/* If simulation is being enabled we update the status first so
-		 * we can store the live switch value.
-		 */
-		if (enable_state) {
-			UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
-				enable_state, last_enable_state);
-			*((bool *)(attribute_entry->pData)) = enable_state;
-		} else {
-			/* If simulation is being disabled, we update the
-			 * status last so the live switch value can be read.
-			 */
-			*((bool *)(attribute_entry->pData)) = enable_state;
-			UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
-				enable_state, last_enable_state);
-		}
-	} else {
-		/* If DoWrite is not set, this is the first call so we just
-		 * call the standard type validator to check its content.
-		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
-	}
-
-	return (r);
-}
-
-int AttributeValidator_magsim(AttributeEntry_t *pEntry, void *pValue,
-			      size_t Length, bool DoWrite)
-{
-	int r = 0;
-	bool last_simulated_value;
-	AttributeEntry_t *attribute_entry;
-
-	/* If DoWrite is set the data has been validated */
-	if (DoWrite) {
-		/* Get the current simulated value */
-		attribute_entry =
-			&attrTable[ATTR_INDEX_magSwitchSimulatedValue];
-		last_simulated_value = *((bool *)(attribute_entry->pData));
-		/* Update the data value */
-		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
-		/* Update the value in the User Interface */
-		r = UserInterfaceTask_UpdateMagSwitchSimulatedValue(
-			*((bool *)(pValue)), last_simulated_value);
-	} else {
-		/* If DoWrite is not set, we just call the
-		 * standard type validator to make sure the
-		 * data is OK.
-		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
-	}
-
-	return (r);
-}
-
-int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
+int attribute_validator_magsimen(AttributeEntry_t *pEntry, void *pValue,
 				 size_t Length, bool DoWrite)
 {
 	int r = 0;
@@ -698,7 +611,94 @@ int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
 		/* Get the current simulation state so we can check for a
 		 * change in status.
 		 */
-		attribute_entry = &attrTable[ATTR_INDEX_tamperSwitchSimulated];
+		attribute_entry = &attrTable[ATTR_INDEX_mag_switch_simulated];
+		last_enable_state = *((bool *)(attribute_entry->pData));
+		/* Also the state requested to switch to */
+		enable_state = *((bool *)(pValue));
+		/* Is simulation being enabled? */
+		if ((!last_enable_state) && (enable_state)) {
+			/* If so, store the live value to avoid glitching */
+			attribute_entry = &attrTable[ATTR_INDEX_magnet_state];
+			initial_switch_state =
+				*((bool *)(attribute_entry->pData));
+			attribute_entry =
+				&attrTable[ATTR_INDEX_mag_switch_simulated_value];
+			*((bool *)(attribute_entry->pData)) =
+				initial_switch_state;
+		}
+		/* Update simulation status. */
+		attribute_entry = &attrTable[ATTR_INDEX_mag_switch_simulated];
+		/* If simulation is being enabled we update the status first so
+		 * we can store the live switch value.
+		 */
+		if (enable_state) {
+			UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
+				enable_state, last_enable_state);
+			*((bool *)(attribute_entry->pData)) = enable_state;
+		} else {
+			/* If simulation is being disabled, we update the
+			 * status last so the live switch value can be read.
+			 */
+			*((bool *)(attribute_entry->pData)) = enable_state;
+			UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
+				enable_state, last_enable_state);
+		}
+	} else {
+		/* If DoWrite is not set, this is the first call so we just
+		 * call the standard type validator to check its content.
+		 */
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
+	}
+
+	return (r);
+}
+
+int attribute_validator_magsim(AttributeEntry_t *pEntry, void *pValue,
+			       size_t Length, bool DoWrite)
+{
+	int r = 0;
+	bool last_simulated_value;
+	AttributeEntry_t *attribute_entry;
+
+	/* If DoWrite is set the data has been validated */
+	if (DoWrite) {
+		/* Get the current simulated value */
+		attribute_entry =
+			&attrTable[ATTR_INDEX_mag_switch_simulated_value];
+		last_simulated_value = *((bool *)(attribute_entry->pData));
+		/* Update the data value */
+		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
+		/* Update the value in the User Interface */
+		r = UserInterfaceTask_UpdateMagSwitchSimulatedValue(
+			*((bool *)(pValue)), last_simulated_value);
+	} else {
+		/* If DoWrite is not set, we just call the
+		 * standard type validator to make sure the
+		 * data is OK.
+		 */
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
+	}
+
+	return (r);
+}
+
+int attribute_validator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
+				  size_t Length, bool DoWrite)
+{
+	int r = 0;
+	bool last_enable_state;
+	bool enable_state;
+	AttributeEntry_t *attribute_entry;
+	bool initial_switch_state;
+
+	/* If DoWrite is set, this is the second call of this function so we
+	 * can go ahead and apply changes
+	 */
+	if (DoWrite) {
+		/* Get the current simulation state so we can check for a
+		 * change in status.
+		 */
+		attribute_entry = &attrTable[ATTR_INDEX_tamper_switch_simulated];
 		last_enable_state = *((bool *)(attribute_entry->pData));
 		/* Also the state requested to switch to */
 		enable_state = *((bool *)(pValue));
@@ -706,16 +706,16 @@ int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
 		if ((!last_enable_state) && (enable_state)) {
 			/* If so, store the live value to avoid glitching */
 			attribute_entry =
-				&attrTable[ATTR_INDEX_tamperSwitchStatus];
+				&attrTable[ATTR_INDEX_tamper_switch_status];
 			initial_switch_state =
 				*((bool *)(attribute_entry->pData));
 			attribute_entry =
-				&attrTable[ATTR_INDEX_tamperSwitchSimulatedValue];
+				&attrTable[ATTR_INDEX_tamper_switch_simulated_value];
 			*((bool *)(attribute_entry->pData)) =
 				initial_switch_state;
 		}
 		/* Update simulation status. */
-		attribute_entry = &attrTable[ATTR_INDEX_tamperSwitchSimulated];
+		attribute_entry = &attrTable[ATTR_INDEX_tamper_switch_simulated];
 		/* If simulation is being enabled we update the status first so
 		 * we can store the live switch value.
 		 */
@@ -735,14 +735,14 @@ int AttributeValidator_tampsimen(AttributeEntry_t *pEntry, void *pValue,
 		/* If DoWrite is not set, this is the first call so we just
 		 * call the standard type validator to check its content.
 		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return (r);
 }
 
-int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
-			       size_t Length, bool DoWrite)
+int attribute_validator_tampsim(AttributeEntry_t *pEntry, void *pValue,
+				size_t Length, bool DoWrite)
 {
 	int r = 0;
 	bool last_simulated_value;
@@ -752,7 +752,7 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 	if (DoWrite) {
 		/* Get the current simulated value */
 		attribute_entry =
-			&attrTable[ATTR_INDEX_tamperSwitchSimulatedValue];
+			&attrTable[ATTR_INDEX_tamper_switch_simulated_value];
 		last_simulated_value = *((bool *)(attribute_entry->pData));
 		/* Update the data value */
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
@@ -764,14 +764,14 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 		 * standard type validator to make sure the
 		 * data is OK.
 		 */
-		r = AttributeValidator_bool(pEntry, pValue, Length, false);
+		r = attribute_validator_bool(pEntry, pValue, Length, false);
 	}
 
 	return (r);
 }
 
-int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
-				       size_t Length, bool DoWrite)
+int attribute_validator_block_downgrades(AttributeEntry_t *pEntry, void *pValue,
+					 size_t Length, bool DoWrite)
 {
 	/* Same as UINT8 */
 	ARG_UNUSED(Length);
@@ -808,8 +808,8 @@ static int validate_analog_input_config(void)
 	/* This assumes the 4 channels have consecutive IDs. */
 	for (i = 0; i < ANALOG_INPUT_NUMBER_OF_CHANNELS; i++) {
 		ch = 0;
-		memcpy(&ch, attrTable[ATTR_INDEX_analogInput1Type + i].pData,
-		       attrTable[ATTR_INDEX_analogInput1Type + i].size);
+		memcpy(&ch, attrTable[ATTR_INDEX_analog_input_1_type + i].pData,
+		       attrTable[ATTR_INDEX_analog_input_1_type + i].size);
 
 		switch (ch) {
 		case ANALOG_PRESSURE:

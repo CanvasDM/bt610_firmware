@@ -77,7 +77,7 @@ static int lock_check_cmd(const struct shell *shell, size_t argc, char **argv)
 	r = Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
 
 	if (r >= 0) {
-		r = Attribute_Get(ATTR_INDEX_lockStatus, &lock_status,
+		r = Attribute_Get(ATTR_INDEX_lock_status, &lock_status,
 				  sizeof(lock_status));
 
 		if (r >= 0) {
@@ -142,7 +142,7 @@ static int lock_set_cmd(const struct shell *shell, size_t argc, char **argv)
 
 			if (r == 0) {
 				r = Attribute_SetUint32(
-						ATTR_INDEX_settingsPasscode,
+						ATTR_INDEX_settings_passcode,
 						lock_code);
 			}
 
@@ -158,7 +158,7 @@ static int lock_set_cmd(const struct shell *shell, size_t argc, char **argv)
 				 * it with the lock command, but allows further
 				 * configuration changes to the unit until then
 				 */
-				r = Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				r = Attribute_SetUint32(ATTR_INDEX_lock_status,
 						    LOCK_STATUS_SETUP_DISENGAGED);
 			}
 
@@ -193,12 +193,12 @@ static int lock_lock_cmd(const struct shell *shell, size_t argc, char **argv)
 
 		/* Lock the settings */
 		Attribute_SetUint32(ATTR_INDEX_lock, true);
-		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_SETUP_ENGAGED);
 		passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
 
 		/* Send feedback about the passcode */
-		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
 				    passCodeStatus);
 
 		shell_print(shell, "Configuration lock has been engaged");
@@ -231,14 +231,14 @@ static int lock_unlock_cmd(const struct shell *shell, size_t argc, char **argv)
 				r = -EPERM;
 			} else {
 				Attribute_GetUint32(&real_lock_code,
-						    ATTR_INDEX_settingsPasscode);
+						    ATTR_INDEX_settings_passcode);
 				lock_code = strtoul(argv[1], NULL, 0);
 
 				/* Check if the passcode entered matches */
 				if (real_lock_code == lock_code) {
 					/* Unlock the settings */
 					Attribute_SetUint32(
-						ATTR_INDEX_lockStatus,
+						ATTR_INDEX_lock_status,
 						LOCK_STATUS_SETUP_DISENGAGED);
 					passCodeStatus =
 						SETTINGS_LOCK_ERROR_VALID_CODE;
@@ -260,7 +260,7 @@ static int lock_unlock_cmd(const struct shell *shell, size_t argc, char **argv)
 
 				/* Send feedback to APP about the passcode */
 				Attribute_SetUint32(
-					ATTR_INDEX_settingsPasscodeStatus,
+					ATTR_INDEX_settings_passcode_status,
 					passCodeStatus);
 			}
 		}
@@ -286,7 +286,7 @@ static int lock_remove_cmd(const struct shell *shell, size_t argc, char **argv)
 
 	if (Attribute_IsLocked() == false) {
 		Attribute_SetUint32(ATTR_INDEX_lock, false);
-		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_NOT_SETUP);
 	} else {
 		/* Configuration is locked, require lock key */
@@ -299,7 +299,7 @@ static int lock_remove_cmd(const struct shell *shell, size_t argc, char **argv)
 				r = -EINVAL;
 			} else {
 				Attribute_GetUint32(&real_lock_code,
-						    ATTR_INDEX_settingsPasscode);
+						    ATTR_INDEX_settings_passcode);
 				lock_code = strtoul(argv[1], NULL, 0);
 
 				if (!(lock_code >= LOCK_KEY_MIN_VALUE &&
@@ -317,7 +317,7 @@ static int lock_remove_cmd(const struct shell *shell, size_t argc, char **argv)
 						Attribute_SetUint32(
 							ATTR_INDEX_lock, false);
 						Attribute_SetUint32(
-							ATTR_INDEX_lockStatus,
+							ATTR_INDEX_lock_status,
 							LOCK_STATUS_NOT_SETUP);
 
 						shell_print(shell, "Configuration"
@@ -340,7 +340,7 @@ static int lock_remove_cmd(const struct shell *shell, size_t argc, char **argv)
 						 * the passcode
 						 */
 						Attribute_SetUint32(
-							ATTR_INDEX_settingsPasscodeStatus,
+							ATTR_INDEX_settings_passcode_status,
 							passCodeStatus);
 					}
 				}
@@ -364,12 +364,12 @@ static int lock_error_cmd(const struct shell *shell, size_t argc, char **argv)
 	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
 	int r = 0;
 
-	r = Attribute_Get(ATTR_INDEX_settingsPasscodeStatus, &passCodeStatus,
+	r = Attribute_Get(ATTR_INDEX_settings_passcode_status, &passCodeStatus,
 			  sizeof(passCodeStatus));
 
 	if (r >= 0) {
 		/* Clear status */
-		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
 				    SETTINGS_LOCK_ERROR_NO_STATUS);
 
 		shell_print(shell, "Lock last error: %d (%s)", passCodeStatus,

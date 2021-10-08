@@ -58,7 +58,7 @@ int AggregationTempHandler(size_t channel, float value)
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
-	r = Attribute_Get(ATTR_INDEX_AggregationCount, &aggCount,
+	r = Attribute_Get(ATTR_INDEX_aggregation_count, &aggCount,
 			  sizeof(aggCount));
 
 	if (r > 0) {
@@ -171,7 +171,7 @@ static SensorEventType_t AnalogConfigType(size_t channel)
 {
 	analogConfigType_t configType;
 	SensorEventType_t eventTypeReturn;
-	Attribute_Get((ATTR_INDEX_analogInput1Type + channel), &configType,
+	Attribute_Get((ATTR_INDEX_analog_input_1_type + channel), &configType,
 		      sizeof(uint8_t));
 
 	switch (configType) {

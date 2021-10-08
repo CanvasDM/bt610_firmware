@@ -125,7 +125,7 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static void SetDataloggerStatus(void)
 {
 	bool dataLogEnable;
-	Attribute_Get(ATTR_INDEX_dataloggingEnable, &dataLogEnable,
+	Attribute_Get(ATTR_INDEX_data_logging_enable, &dataLogEnable,
 		      sizeof(dataLogEnable));
 
 	lcz_event_manager_set_logging_state(dataLogEnable);
@@ -172,7 +172,7 @@ static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	size_t i;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
-		case ATTR_INDEX_dataloggingEnable:
+		case ATTR_INDEX_data_logging_enable:
 			SetDataloggerStatus();
 			break;
 		default:

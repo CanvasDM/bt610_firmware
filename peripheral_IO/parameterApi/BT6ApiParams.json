@@ -2,13 +2,13 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.89",
+    "version": "1.90",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
   "methods": [
     {
-      "name": "FileDownload",
+      "name": "file_download",
       "summary": "File Download",
       "description": "Request to download file from Zephyr file system.",
       "x-jsonmsgtype": "Request",
@@ -55,7 +55,7 @@
         }
       ],
       "result": {
-        "name": "FileDownloadResponse",
+        "name": "file_download_response",
         "schema": {
           "items": [
             {
@@ -103,7 +103,7 @@
       }
     },
     {
-      "name": "FileUpload",
+      "name": "file_upload",
       "summary": "File Upload",
       "description": "Request to upload file to Zephyr file system.",
       "x-jsonmsgtype": "Request",
@@ -180,7 +180,7 @@
         }
       ],
       "result": {
-        "name": "FileUploadResponse",
+        "name": "file_upload_response",
         "schema": {
           "items": [
             {
@@ -208,7 +208,7 @@
       }
     },
     {
-      "name": "GetParameter",
+      "name": "get_parameter",
       "summary": "Get Parameter",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -219,7 +219,7 @@
       "x-groupid": 65,
       "tags": [
         {
-          "name": "Parameter"
+          "name": "parameter"
         }
       ],
       "params": [
@@ -242,7 +242,7 @@
         }
       ],
       "result": {
-        "name": "GetParameterResult",
+        "name": "get_parameter_result",
         "schema": {
           "items": [
             {
@@ -265,7 +265,7 @@
       }
     },
     {
-      "name": "SetParameter",
+      "name": "set_parameter",
       "summary": "Set Parameter",
       "description": "Set an attribute",
       "x-jsonmsgtype": "Request",
@@ -276,7 +276,7 @@
       "x-groupid": 65,
       "tags": [
         {
-          "name": "Parameter"
+          "name": "parameter"
         }
       ],
       "params": [
@@ -316,7 +316,7 @@
         }
       ],
       "result": {
-        "name": "SetParameterResult",
+        "name": "set_parameter_result",
         "schema": {
           "items": [
             {
@@ -354,7 +354,7 @@
       }
     },
     {
-      "name": "RevEcho",
+      "name": "rev_echo",
       "summary": "Echo reversed string",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -388,7 +388,7 @@
         }
       ],
       "result": {
-        "name": "RevEchoResult",
+        "name": "rev_echo_result",
         "schema": {
           "items": [
             {
@@ -411,7 +411,7 @@
       }
     },
     {
-      "name": "CalibrateThermistor",
+      "name": "calibrate_thermistor",
       "summary": "Tell BT6xx to run thermistor calibration using provided calibration parameters",
       "description": "BT6xx will save results",
       "x-jsonmsgtype": "Request",
@@ -458,13 +458,13 @@
         }
       ],
       "result": {
-        "name": "CalibrateThermistorResult",
+        "name": "calibrate_thermistor_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -496,7 +496,7 @@
       }
     },
     {
-      "name": "TestLed",
+      "name": "test_led",
       "summary": "Turn green LED on, then red on, green off, and finally red off.",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -526,13 +526,13 @@
         }
       ],
       "result": {
-        "name": "TestLedResult",
+        "name": "test_led_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
@@ -544,7 +544,7 @@
       }
     },
     {
-      "name": "CalibrateThermistor_Version2",
+      "name": "calibrate_thermistor_version_2",
       "summary": "",
       "description": "Uses uint32_t for input parameters",
       "x-jsonmsgtype": "Request",
@@ -591,13 +591,13 @@
         }
       ],
       "result": {
-        "name": "CalibrateThermistorResult",
+        "name": "calibrate_thermistor_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -629,7 +629,7 @@
       }
     },
     {
-      "name": "Set_Rtc",
+      "name": "set_rtc",
       "summary": "Set the RTC in UTC",
       "description": "Time in seconds.  Reference is often Jan 1, 1970",
       "x-jsonmsgtype": "Request",
@@ -659,13 +659,13 @@
         }
       ],
       "result": {
-        "name": "Rtc",
+        "name": "rtc",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
@@ -687,7 +687,7 @@
       }
     },
     {
-      "name": "Get_Rtc",
+      "name": "get_rtc",
       "summary": "Get the current RTC value in UTC",
       "description": "Time in seconds.  Default reference is Jan 1, 1970",
       "x-jsonmsgtype": "Request",
@@ -717,13 +717,13 @@
         }
       ],
       "result": {
-        "name": "Rtc",
+        "name": "rtc",
         "schema": {
           "items": [
             {
               "name": "t",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "Time in seconds",
               "required": true,
               "x-example": "0",
@@ -735,7 +735,7 @@
       }
     },
     {
-      "name": "Load_Parameter_File",
+      "name": "load_parameter_file",
       "summary": "Load parameters from a file",
       "description": "Used in conjunction with file system commands",
       "x-jsonmsgtype": "Request",
@@ -765,13 +765,13 @@
         }
       ],
       "result": {
-        "name": "LoadResult",
+        "name": "load_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
@@ -793,7 +793,7 @@
       }
     },
     {
-      "name": "Dump_Parameter_File",
+      "name": "dump_parameter_file",
       "summary": "Dump chosen parameters to a file",
       "description": "Used in conjunction with file system commands",
       "x-jsonmsgtype": "Request",
@@ -825,13 +825,13 @@
         }
       ],
       "result": {
-        "name": "DumpResult",
+        "name": "dump_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, length of file in bytes on success",
               "required": true,
               "x-example": "0",
@@ -853,7 +853,7 @@
       }
     },
     {
-      "name": "Prepare_Log",
+      "name": "prepare_log",
       "summary": "Prepare logs for reading",
       "description": "Used in conjunction with file system commands to read logs",
       "x-jsonmsgtype": "Request",
@@ -883,13 +883,13 @@
         }
       ],
       "result": {
-        "name": "Result",
+        "name": "result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, return zero on success",
               "required": true,
               "x-example": "0",
@@ -921,7 +921,7 @@
       }
     },
     {
-      "name": "Ack_Log",
+      "name": "ack_log",
       "summary": "Acknowledge reception of log",
       "description": "Allows log to be freed",
       "x-jsonmsgtype": "Request",
@@ -951,13 +951,13 @@
         }
       ],
       "result": {
-        "name": "Result",
+        "name": "result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
@@ -969,7 +969,7 @@
       }
     },
     {
-      "name": "Factory_Reset",
+      "name": "factory_reset",
       "summary": "This will force a factory reset of the device.",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -999,13 +999,13 @@
         }
       ],
       "result": {
-        "name": "FactoryResetResult",
+        "name": "factory_reset_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
@@ -1017,7 +1017,7 @@
       }
     },
     {
-      "name": "Prepare_Test_Log",
+      "name": "prepare_test_log",
       "summary": "Prepare test logs for reading",
       "description": "Used in conjunction with file system commands to read logs",
       "x-jsonmsgtype": "Request",
@@ -1099,13 +1099,13 @@
         }
       ],
       "result": {
-        "name": "Result",
+        "name": "result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, number of log files to read on success",
               "required": true,
               "x-example": "0",
@@ -1137,7 +1137,7 @@
       }
     },
     {
-      "name": "Check_Lock_Status",
+      "name": "check_lock_status",
       "summary": "Check lock status of module",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -1171,13 +1171,13 @@
         }
       ],
       "result": {
-        "name": "Check_Lock_Status_Result",
+        "name": "check_lock_status_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -1219,7 +1219,7 @@
       }
     },
     {
-      "name": "Set_Lock_Code",
+      "name": "set_lock_code",
       "summary": "Set lock code of module",
       "description": "If successful, will update the lock code and the lock will engage when the UART/BLE device disconnects",
       "x-jsonmsgtype": "Request",
@@ -1253,13 +1253,13 @@
         }
       ],
       "result": {
-        "name": "Set_Lock_Code_Result",
+        "name": "set_lock_code_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -1271,7 +1271,7 @@
       }
     },
     {
-      "name": "Lock",
+      "name": "lock",
       "summary": "Lock module configuration",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -1301,13 +1301,13 @@
         }
       ],
       "result": {
-        "name": "Lock_Result",
+        "name": "lock_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -1319,7 +1319,7 @@
       }
     },
     {
-      "name": "Unlock",
+      "name": "unlock",
       "summary": "Unlock module configuration",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -1370,13 +1370,13 @@
         }
       ],
       "result": {
-        "name": "Unlock_Result",
+        "name": "unlock_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -1388,7 +1388,7 @@
       }
     },
     {
-      "name": "Get_Unlock_Error_Code",
+      "name": "get_unlock_error_code",
       "summary": "Check last error code umlock error code (clears last error on read)",
       "description": "",
       "x-jsonmsgtype": "Request",
@@ -1422,13 +1422,13 @@
         }
       ],
       "result": {
-        "name": "Get_Unlock_Error_Code_Result",
+        "name": "get_unlock_error_code_result",
         "schema": {
           "items": [
             {
               "name": "r",
               "type": "integer",
-              "summary": "Result",
+              "summary": "result",
               "description": "negative error code, 0 on success",
               "required": true,
               "x-ctype": "int32_t",
@@ -1458,16 +1458,16 @@
   "components": {
     "contentDescriptors": {
       "deviceParams": {
-        "name": "Device Parameters",
+        "name": "device parameters",
         "schema": {
-          "name": "Device Parameters List.",
+          "name": "device parameters list.",
           "type": "array",
           "summary": null,
           "description": "The following parameters are interfaceable on the device."
         },
         "x-deviceparameters": [
           {
-            "name": "sensorName",
+            "name": "sensor_name",
             "summary": "Sensor Name",
             "required": true,
             "x-id": 0,
@@ -1489,7 +1489,7 @@
             }
           },
           {
-            "name": "sensorLocation",
+            "name": "sensor_location",
             "summary": "Sensor Location",
             "required": true,
             "x-id": 1,
@@ -1510,7 +1510,7 @@
             }
           },
           {
-            "name": "advertisingInterval",
+            "name": "advertising_interval",
             "summary": "Advertising Interval in milliseconds. Must be 4x less than the Duration when the Duration is non-zero.",
             "required": true,
             "x-id": 2,
@@ -1532,7 +1532,7 @@
             }
           },
           {
-            "name": "advertisingDuration",
+            "name": "advertising_duration",
             "summary": "Advertising duration of an event in milliseconds. Must be 4x greater than the Interval.",
             "required": true,
             "x-id": 3,
@@ -1597,7 +1597,7 @@
             }
           },
           {
-            "name": "powerSenseInterval",
+            "name": "power_sense_interval",
             "summary": "Power Sense interval in seconds",
             "required": true,
             "x-id": 6,
@@ -1619,7 +1619,7 @@
             }
           },
           {
-            "name": "temperatureSenseInterval",
+            "name": "temperature_sense_interval",
             "summary": "Temperature Sense interval in seconds",
             "required": true,
             "x-id": 7,
@@ -1641,7 +1641,7 @@
             }
           },
           {
-            "name": "AggregationCount",
+            "name": "aggregation_count",
             "summary": "Aggregation value used on all the sensor data",
             "required": true,
             "x-id": 8,
@@ -1662,7 +1662,7 @@
             }
           },
           {
-            "name": "digitalOutput1State",
+            "name": "digital_output_1_state",
             "summary": "false = off\ntrue = on",
             "required": true,
             "x-id": 9,
@@ -1684,7 +1684,7 @@
             }
           },
           {
-            "name": "digitalOutput2State",
+            "name": "digital_output_2_state",
             "summary": "false = off\ntrue = on",
             "required": true,
             "x-id": 10,
@@ -1706,7 +1706,7 @@
             }
           },
           {
-            "name": "firmwareVersion",
+            "name": "firmware_version",
             "summary": "Firmware Version.\nFormat = Major.Minor.Build",
             "required": true,
             "x-id": 11,
@@ -1723,7 +1723,7 @@
             }
           },
           {
-            "name": "resetReason",
+            "name": "reset_reason",
             "summary": "For Development",
             "required": true,
             "x-id": 12,
@@ -1741,7 +1741,7 @@
             }
           },
           {
-            "name": "bluetoothAddress",
+            "name": "bluetooth_address",
             "summary": "Bluetooth MAC",
             "required": true,
             "x-id": 13,
@@ -1758,7 +1758,7 @@
             }
           },
           {
-            "name": "resetCount",
+            "name": "reset_count",
             "summary": "reset Count",
             "required": true,
             "x-id": 14,
@@ -1773,7 +1773,7 @@
             }
           },
           {
-            "name": "bootloaderVersion",
+            "name": "bootloader_version",
             "summary": "Bootloader Version\nFormat = Major.Minor",
             "required": true,
             "x-id": 15,
@@ -1792,7 +1792,7 @@
             }
           },
           {
-            "name": "upTime",
+            "name": "up_time",
             "summary": "Time in milliseconds since the last reboot",
             "required": true,
             "x-id": 16,
@@ -1808,7 +1808,7 @@
             }
           },
           {
-            "name": "highTemp1Thresh1",
+            "name": "high_temp_1_thresh_1",
             "summary": "High Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 17,
@@ -1830,7 +1830,7 @@
             }
           },
           {
-            "name": "highTemp1Thresh2",
+            "name": "high_temp_1_thresh_2",
             "summary": "High Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 18,
@@ -1852,7 +1852,7 @@
             }
           },
           {
-            "name": "lowTemp1Thresh1",
+            "name": "low_temp_1_thresh_1",
             "summary": "Low Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 19,
@@ -1874,7 +1874,7 @@
             }
           },
           {
-            "name": "lowTemp1Thresh2",
+            "name": "low_temp_1_thresh_2",
             "summary": "Low Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 20,
@@ -1896,7 +1896,7 @@
             }
           },
           {
-            "name": "temp1DeltaThresh",
+            "name": "temp_1_delta_thresh",
             "summary": "Delta Temperature Alarm Threshold in degrees C",
             "description": "Disabled when negative",
             "required": true,
@@ -1917,7 +1917,7 @@
             }
           },
           {
-            "name": "highTemp2Thresh1",
+            "name": "high_temp_2_thresh_1",
             "summary": "High Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 22,
@@ -1939,7 +1939,7 @@
             }
           },
           {
-            "name": "highTemp2Thresh2",
+            "name": "high_temp_2_thresh_2",
             "summary": "High Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 23,
@@ -1961,7 +1961,7 @@
             }
           },
           {
-            "name": "lowTemp2Thresh1",
+            "name": "low_temp_2_thresh_1",
             "summary": "Low Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 24,
@@ -1983,7 +1983,7 @@
             }
           },
           {
-            "name": "lowTemp2Thresh2",
+            "name": "low_temp_2_thresh_2",
             "summary": "Low Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 25,
@@ -2003,7 +2003,7 @@
             }
           },
           {
-            "name": "temp2DeltaThresh",
+            "name": "temp_2_delta_thresh",
             "summary": "Delta Temperature Alarm Threshold",
             "required": true,
             "x-id": 26,
@@ -2023,7 +2023,7 @@
             }
           },
           {
-            "name": "highTemp3Thresh1",
+            "name": "high_temp_3_thresh_1",
             "summary": "High Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 27,
@@ -2043,7 +2043,7 @@
             }
           },
           {
-            "name": "highTemp3Thresh2",
+            "name": "high_temp_3_thresh_2",
             "summary": "High Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 28,
@@ -2063,7 +2063,7 @@
             }
           },
           {
-            "name": "lowTemp3Thresh1",
+            "name": "low_temp_3_thresh_1",
             "summary": "Low Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 29,
@@ -2083,7 +2083,7 @@
             }
           },
           {
-            "name": "lowTemp3Thresh2",
+            "name": "low_temp_3_thresh_2",
             "summary": "Low Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 30,
@@ -2103,7 +2103,7 @@
             }
           },
           {
-            "name": "temp3DeltaThresh",
+            "name": "temp_3_delta_thresh",
             "summary": "Delta Temperature Alarm Threshold",
             "required": true,
             "x-id": 31,
@@ -2123,7 +2123,7 @@
             }
           },
           {
-            "name": "highTemp4Thresh1",
+            "name": "high_temp_4_thresh_1",
             "summary": "High Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 32,
@@ -2145,7 +2145,7 @@
             }
           },
           {
-            "name": "highTemp4Thresh2",
+            "name": "high_temp_4_thresh_2",
             "summary": "High Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 33,
@@ -2165,7 +2165,7 @@
             }
           },
           {
-            "name": "lowTemp4Thresh1",
+            "name": "low_temp_4_thresh_1",
             "summary": "Low Temperature Alarm Threshold 1 in degrees C",
             "required": true,
             "x-id": 34,
@@ -2185,7 +2185,7 @@
             }
           },
           {
-            "name": "lowTemp4Thresh2",
+            "name": "low_temp_4_thresh_2",
             "summary": "Low Temperature Alarm Threshold 2 in degrees C",
             "required": true,
             "x-id": 35,
@@ -2205,7 +2205,7 @@
             }
           },
           {
-            "name": "temp4DeltaThresh",
+            "name": "temp_4_delta_thresh",
             "summary": "Delta Temperature Alarm Threshold",
             "required": true,
             "x-id": 36,
@@ -2225,7 +2225,7 @@
             }
           },
           {
-            "name": "highAnalog1Thresh1",
+            "name": "high_analog_1_thresh_1",
             "summary": "High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 37,
@@ -2245,7 +2245,7 @@
             }
           },
           {
-            "name": "highAnalog1Thresh2",
+            "name": "high_analog_1_thresh_2",
             "summary": "High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 38,
@@ -2265,7 +2265,7 @@
             }
           },
           {
-            "name": "lowAnalog1Thresh1",
+            "name": "low_analog_1_thresh_1",
             "summary": "Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 39,
@@ -2285,7 +2285,7 @@
             }
           },
           {
-            "name": "lowAnalog1Thresh2",
+            "name": "low_analog_1_thresh_2",
             "summary": "Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 40,
@@ -2305,7 +2305,7 @@
             }
           },
           {
-            "name": "analog1DeltaThresh",
+            "name": "analog_1_delta_thresh",
             "summary": "Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 41,
@@ -2325,7 +2325,7 @@
             }
           },
           {
-            "name": "highAnalog2Thresh1",
+            "name": "high_analog_2_thresh_1",
             "summary": "High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 42,
@@ -2345,7 +2345,7 @@
             }
           },
           {
-            "name": "highAnalog2Thresh2",
+            "name": "high_analog_2_thresh_2",
             "summary": "High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 43,
@@ -2365,7 +2365,7 @@
             }
           },
           {
-            "name": "lowAnalog2Thresh1",
+            "name": "low_analog_2_thresh_1",
             "summary": "Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 44,
@@ -2385,7 +2385,7 @@
             }
           },
           {
-            "name": "lowAnalog2Thresh2",
+            "name": "low_analog_2_thresh_2",
             "summary": "Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 45,
@@ -2405,7 +2405,7 @@
             }
           },
           {
-            "name": "analog2DeltaThresh",
+            "name": "analog_2_delta_thresh",
             "summary": "Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 46,
@@ -2425,7 +2425,7 @@
             }
           },
           {
-            "name": "highAnalog3Thresh1",
+            "name": "high_analog_3_thresh_1",
             "summary": "High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 47,
@@ -2445,7 +2445,7 @@
             }
           },
           {
-            "name": "highAnalog3Thresh2",
+            "name": "high_analog_3_thresh_2",
             "summary": "High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 48,
@@ -2465,7 +2465,7 @@
             }
           },
           {
-            "name": "lowAnalog3Thresh1",
+            "name": "low_analog_3_thresh_1",
             "summary": "Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 49,
@@ -2485,7 +2485,7 @@
             }
           },
           {
-            "name": "lowAnalog3Thresh2",
+            "name": "low_analog_3_thresh_2",
             "summary": "Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 50,
@@ -2505,7 +2505,7 @@
             }
           },
           {
-            "name": "analog3DeltaThresh",
+            "name": "analog_3_delta_thresh",
             "summary": "Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 51,
@@ -2525,7 +2525,7 @@
             }
           },
           {
-            "name": "highAnalog4Thresh1",
+            "name": "high_analog_4_thresh_1",
             "summary": "High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 52,
@@ -2545,7 +2545,7 @@
             }
           },
           {
-            "name": "highAnalog4Thresh2",
+            "name": "high_analog_4_thresh_2",
             "summary": "High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 53,
@@ -2565,7 +2565,7 @@
             }
           },
           {
-            "name": "lowAnalog4Thresh1",
+            "name": "low_analog_4_thresh_1",
             "summary": "Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 54,
@@ -2585,7 +2585,7 @@
             }
           },
           {
-            "name": "lowAnalog4Thresh2",
+            "name": "low_analog_4_thresh_2",
             "summary": "Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 55,
@@ -2605,7 +2605,7 @@
             }
           },
           {
-            "name": "analog4DeltaThresh",
+            "name": "analog_4_delta_thresh",
             "summary": "Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 56,
@@ -2625,7 +2625,7 @@
             }
           },
           {
-            "name": "activeMode",
+            "name": "active_mode",
             "summary": "false = inactive (shelf mode)\ntrue = active (sample enabled)",
             "required": true,
             "x-id": 57,
@@ -2648,7 +2648,7 @@
             }
           },
           {
-            "name": "useCodedPhy",
+            "name": "use_coded_phy",
             "summary": "false = coded PHY not active\ntrue = Coded PHY on",
             "required": true,
             "x-id": 58,
@@ -2670,7 +2670,7 @@
             }
           },
           {
-            "name": "txPower",
+            "name": "tx_power",
             "summary": "Enumeration dbm:\n 0 = +8\n 1 = +7\n 2 = +6\n 3 = +5\n 4 = +4\n 5 = +3\n 6 = +2\n 7 = 0\n 8 = -4\n 9 = -8\n 10 = -12\n 11 = -16\n 12 = -20\n 13 = -40",
             "required": true,
             "x-id": 59,
@@ -2692,7 +2692,7 @@
             }
           },
           {
-            "name": "networkId",
+            "name": "network_id",
             "summary": "Network Id",
             "required": true,
             "x-id": 60,
@@ -2714,7 +2714,7 @@
             }
           },
           {
-            "name": "configVersion",
+            "name": "config_version",
             "summary": "Config Version",
             "description": "This is used for synchronization between clients (Bluegrass/Phone application).",
             "required": true,
@@ -2737,7 +2737,7 @@
             }
           },
           {
-            "name": "configType",
+            "name": "config_type",
             "summary": "0 = Not Configured\n1 = Analog\n2 = Digital\n3 = Temperature\n4 = Current\n5 = UltraSonic/Pressure\n6 = SPI/I2C",
             "description": "Writing this will cause other attributes to be set with the correct value.",
             "required": true,
@@ -2760,7 +2760,7 @@
             }
           },
           {
-            "name": "hardwareMinorVersion",
+            "name": "hardware_minor_version",
             "summary": "Hardware minor version set during production",
             "x-review": "should this just be Hardware Version, there aren't resistors on the board",
             "required": true,
@@ -2817,7 +2817,7 @@
             }
           },
           {
-            "name": "oldCoefficientA",
+            "name": "old_coefficient_a",
             "summary": "This is not used",
             "required": true,
             "x-id": 66,
@@ -2837,7 +2837,7 @@
             }
           },
           {
-            "name": "oldCoefficientB",
+            "name": "old_coefficient_b",
             "summary": "This is not used",
             "required": true,
             "x-id": 67,
@@ -2857,7 +2857,7 @@
             }
           },
           {
-            "name": "oldCoefficientC",
+            "name": "old_coefficient_c",
             "summary": "This is not used",
             "required": true,
             "x-id": 68,
@@ -2879,7 +2879,7 @@
             }
           },
           {
-            "name": "thermistorConfig",
+            "name": "thermistor_config",
             "summary": "Bitmask of Thermistor Inputs.  Bit 0 is thermistor 1.  1 is enabled, 0 is disabled",
             "required": true,
             "x-id": 69,
@@ -2899,7 +2899,7 @@
             }
           },
           {
-            "name": "temperatureResult1",
+            "name": "temperature_result_1",
             "summary": "Temperature in C",
             "required": true,
             "x-id": 70,
@@ -2917,7 +2917,7 @@
             }
           },
           {
-            "name": "temperatureResult2",
+            "name": "temperature_result_2",
             "summary": "Temperature in C",
             "required": true,
             "x-id": 71,
@@ -2935,7 +2935,7 @@
             }
           },
           {
-            "name": "temperatureResult3",
+            "name": "temperature_result_3",
             "summary": "Temperature in C",
             "required": true,
             "x-id": 72,
@@ -2953,7 +2953,7 @@
             }
           },
           {
-            "name": "temperatureResult4",
+            "name": "temperature_result_4",
             "summary": "Temperature in C",
             "required": true,
             "x-id": 73,
@@ -2971,7 +2971,7 @@
             }
           },
           {
-            "name": "temperatureAlarms",
+            "name": "temperature_alarms",
             "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa\n 1 = indicates active, 0 = no alarm triggered",
             "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
@@ -2991,7 +2991,7 @@
             }
           },
           {
-            "name": "powerVoltageMv",
+            "name": "power_voltage_mv",
             "summary": "Input power voltage in millivolts",
             "description": "Not a float to match previous system",
             "required": true,
@@ -3012,7 +3012,7 @@
             }
           },
           {
-            "name": "digitalInput",
+            "name": "digital_input",
             "summary": "Bit 0 is digital input 1, Bit 1 is digital input 2",
             "required": true,
             "x-id": 76,
@@ -3030,7 +3030,7 @@
             }
           },
           {
-            "name": "digitalAlarms",
+            "name": "digital_alarms",
             "summary": "Bitmask of alarms for Digital Inputs 1 and 2; Alarm is set when 1",
             "description": "Bit 0 = Input 1, Bit 1 = Input 2",
             "required": true,
@@ -3050,7 +3050,7 @@
             }
           },
           {
-            "name": "digitalInput1Config",
+            "name": "digital_input_1_config",
             "summary": "Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration:\n 0 = None\n 1 = falling edge\n 2 = rising edge\n 3 = both",
             "required": true,
             "x-id": 78,
@@ -3070,7 +3070,7 @@
             }
           },
           {
-            "name": "digitalInput2Config",
+            "name": "digital_input_2_config",
             "summary": "Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration:\n 0 = None\n 1 = falling edge\n 2 = rising edge\n 3 = both",
             "required": true,
             "x-id": 79,
@@ -3092,7 +3092,7 @@
             }
           },
           {
-            "name": "analogInput1",
+            "name": "analog_input_1",
             "summary": "Unit depends on Analog Input Configuration Type. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 80,
@@ -3110,7 +3110,7 @@
             }
           },
           {
-            "name": "analogInput2",
+            "name": "analog_input_2",
             "summary": "Unit depends on Analog Input Configuration Type. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 81,
@@ -3128,7 +3128,7 @@
             }
           },
           {
-            "name": "analogInput3",
+            "name": "analog_input_3",
             "summary": "Unit depends on Analog Input Configuration Type. Units will either be in  PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 82,
@@ -3146,7 +3146,7 @@
             }
           },
           {
-            "name": "analogInput4",
+            "name": "analog_input_4",
             "summary": "Unit depends on Analog Input Configuration Type. Units will either be in PSI, mm, mV, mA, or Amps if AC current is selected",
             "required": true,
             "x-id": 83,
@@ -3164,7 +3164,7 @@
             }
           },
           {
-            "name": "analogAlarms",
+            "name": "analog_alarms",
             "summary": "Bitmask for all 4 channels and each alarm.\n dddddcccccbbbbbaaaaa\n 1 = indicates active, 0 = no alarm triggered",
             "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
@@ -3184,7 +3184,7 @@
             }
           },
           {
-            "name": "analogInput1Type",
+            "name": "analog_input_1_type",
             "summary": "Analog Input Channel 1 configuration",
             "description": "Enumeration:\n 0 = Unused\n 1 = Voltage (0V - 10V DC)\n 2 = Current (4mA - 20mA)\n 3 = Pressure\n 4 = Ultrasonic\n 5 = ACCurrent20A\n 6 = ACCurrent150A\n 7 = ACCurrent500A\nIf changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.",
             "required": true,
@@ -3209,7 +3209,7 @@
             }
           },
           {
-            "name": "analogInput2Type",
+            "name": "analog_input_2_type",
             "summary": "Analog Input Channel 2 configuration",
             "required": true,
             "x-id": 86,
@@ -3232,7 +3232,7 @@
             }
           },
           {
-            "name": "analogInput3Type",
+            "name": "analog_input_3_type",
             "summary": "Analog Input Channel 3 configuration",
             "required": true,
             "x-id": 87,
@@ -3255,7 +3255,7 @@
             }
           },
           {
-            "name": "analogInput4Type",
+            "name": "analog_input_4_type",
             "summary": "Analog Input Channel 4 configuration",
             "required": true,
             "x-id": 88,
@@ -3300,7 +3300,7 @@
             }
           },
           {
-            "name": "magnetState",
+            "name": "magnet_state",
             "summary": "Magnet State:\nfalse = Magnet Near\ntrue = Magnet Far",
             "required": true,
             "x-id": 90,
@@ -3319,7 +3319,7 @@
             }
           },
           {
-            "name": "paramPath",
+            "name": "param_path",
             "summary": "Folder on file system used for Parse/Dump commands",
             "required": true,
             "x-id": 91,
@@ -3337,7 +3337,7 @@
             }
           },
           {
-            "name": "batteryAge",
+            "name": "battery_age",
             "summary": "Time in seconds that the battery has been in use",
             "required": true,
             "x-id": 92,
@@ -3352,7 +3352,7 @@
             }
           },
           {
-            "name": "apiVersion",
+            "name": "api_version",
             "summary": "The API version that the current firmware supports",
             "required": true,
             "x-id": 93,
@@ -3361,7 +3361,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.89",
+              "x-default": "1.90",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
@@ -3384,7 +3384,7 @@
             }
           },
           {
-            "name": "qrtcLastSet",
+            "name": "qrtc_last_set",
             "summary": "Last time the RTC was set",
             "required": true,
             "x-id": 95,
@@ -3401,7 +3401,7 @@
             }
           },
           {
-            "name": "shOffset",
+            "name": "sh_offset",
             "summary": "Steinhart-Hart Temperature Equation offset",
             "required": true,
             "x-id": 96,
@@ -3420,7 +3420,7 @@
             }
           },
           {
-            "name": "analogSenseInterval",
+            "name": "analog_sense_interval",
             "summary": "analog Sense interval in seconds",
             "required": true,
             "x-id": 97,
@@ -3442,7 +3442,7 @@
             }
           },
           {
-            "name": "tamperSwitchStatus",
+            "name": "tamper_switch_status",
             "summary": "Returns the current state of the tamper switch",
             "description": "false = Tamper switch inactive (pressed)\ntrue = Tamper switch active (not pressed).",
             "required": true,
@@ -3462,7 +3462,7 @@
             }
           },
           {
-            "name": "connectionTimeoutSec",
+            "name": "connection_timeout_sec",
             "summary": "How long is the device connected to the app in seconds \nSetting to 0 will disable",
             "required": true,
             "x-id": 99,
@@ -3483,7 +3483,7 @@
             }
           },
           {
-            "name": "settingsPasscode",
+            "name": "settings_passcode",
             "summary": "Six digit numeric passcode to unlock device settings.",
             "required": true,
             "x-id": 100,
@@ -3507,7 +3507,7 @@
             }
           },
           {
-            "name": "therm1CoefficientA",
+            "name": "therm_1_coefficient_a",
             "summary": "Steinhart-Hart Temperature Equation coefficient A",
             "required": true,
             "x-id": 101,
@@ -3526,7 +3526,7 @@
             }
           },
           {
-            "name": "therm2CoefficientA",
+            "name": "therm_2_coefficient_a",
             "summary": "Steinhart-Hart Temperature Equation coefficient A",
             "required": true,
             "x-id": 102,
@@ -3545,7 +3545,7 @@
             }
           },
           {
-            "name": "therm3CoefficientA",
+            "name": "therm_3_coefficient_a",
             "summary": "Steinhart-Hart Temperature Equation  coefficient A",
             "required": true,
             "x-id": 103,
@@ -3566,7 +3566,7 @@
             }
           },
           {
-            "name": "therm4CoefficientA",
+            "name": "therm_4_coefficient_a",
             "summary": "Steinhart-Hart Temperature Equation coefficient A",
             "required": true,
             "x-id": 104,
@@ -3585,7 +3585,7 @@
             }
           },
           {
-            "name": "therm1CoefficientB",
+            "name": "therm_1_coefficient_b",
             "summary": "Steinhart-Hart Temperature Equation coefficient B",
             "required": true,
             "x-id": 105,
@@ -3604,7 +3604,7 @@
             }
           },
           {
-            "name": "therm2CoefficientB",
+            "name": "therm_2_coefficient_b",
             "summary": "Steinhart-Hart Temperature Equation  coefficient B",
             "required": true,
             "x-id": 106,
@@ -3625,7 +3625,7 @@
             }
           },
           {
-            "name": "therm3CoefficientB",
+            "name": "therm_3_coefficient_b",
             "summary": "Steinhart-Hart Temperature Equation coefficient B",
             "required": true,
             "x-id": 107,
@@ -3644,7 +3644,7 @@
             }
           },
           {
-            "name": "therm4CoefficientB",
+            "name": "therm_4_coefficient_b",
             "summary": "Steinhart-Hart Temperature Equation coefficient B",
             "required": true,
             "x-id": 108,
@@ -3663,7 +3663,7 @@
             }
           },
           {
-            "name": "therm1CoefficientC",
+            "name": "therm_1_coefficient_c",
             "summary": "Steinhart-Hart Temperature Equation  coefficient C",
             "required": true,
             "x-id": 109,
@@ -3684,7 +3684,7 @@
             }
           },
           {
-            "name": "therm2CoefficientC",
+            "name": "therm_2_coefficient_c",
             "summary": "Steinhart-Hart Temperature Equation coefficient C",
             "required": true,
             "x-id": 110,
@@ -3703,7 +3703,7 @@
             }
           },
           {
-            "name": "therm3CoefficientC",
+            "name": "therm_3_coefficient_c",
             "summary": "Steinhart-Hart Temperature Equation coefficient C",
             "required": true,
             "x-id": 111,
@@ -3722,7 +3722,7 @@
             }
           },
           {
-            "name": "therm4CoefficientC",
+            "name": "therm_4_coefficient_c",
             "summary": "Steinhart-Hart Temperature Equation  coefficient C",
             "required": true,
             "x-id": 112,
@@ -3743,7 +3743,7 @@
             }
           },
           {
-            "name": "dataloggingEnable",
+            "name": "data_logging_enable",
             "summary": "false = disable\ntrue = enable ",
             "required": true,
             "x-id": 113,
@@ -3765,7 +3765,7 @@
             }
           },
           {
-            "name": "factoryResetEnable",
+            "name": "factory_reset_enable",
             "summary": "false = disable\ntrue = enable ",
             "required": true,
             "x-id": 114,
@@ -3786,7 +3786,7 @@
             }
           },
           {
-            "name": "logFileStatus",
+            "name": "log_file_status",
             "summary": "0 = waiting for prepare command, 1 = preparing, 2 - ready, 3 - failed",
             "required": true,
             "x-id": 115,
@@ -3808,7 +3808,7 @@
             }
           },
           {
-            "name": "temperatureAlarmsEnable",
+            "name": "temperature_alarms_enable",
             "summary": "Bitmask for all 4 channels and enable/disable each alarm.\n dddddcccccbbbbbaaaaa\n 1 = alarm is enabled\n0 = alarm is disabled",
             "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
@@ -3828,7 +3828,7 @@
             }
           },
           {
-            "name": "analogAlarmsEnable",
+            "name": "analog_alarms_enable",
             "summary": "Bitmask for all 4 channels and enable/disable each alarm.\n dddddcccccbbbbbaaaaa\n 1 = alarm is enabled\n0 = alarm is disabled",
             "description": "PORT1_H1_BITMASK = 1 \nPORT1_H2_BITMASK = 2 \nPORT1_L1_BITMASK = 4 \nPORT1_L2_BITMASK = 8 \nPORT1_DELTA_BITMASK = 16 \n\nPORT2_H1_BITMASK = 32 \nPORT2_H2_BITMASK = 64 \nPORT2_L1_BITMASK = 128 \nPORT2_L2_BITMASK = 256 \nPORT2_DELTA_BITMASK = 512 \n\nPORT3_H1_BITMASK = 1024 \nPORT3_H2_BITMASK = 2048 \nPORT3_L1_BITMASK = 4096 \nPORT3_L2_BITMASK = 8192 \nPORT3_DELTA_BITMASK = 16384 \n\nPORT4_H1_BITMASK = 32768 \nPORT4_H2_BITMASK = 65536 \nPORT4_L1_BITMASK = 131072 \n PORT4_L2_BITMASK = 262144 \nPORT4_DELTA_BITMASK = 524288",
             "required": true,
@@ -3848,7 +3848,7 @@
             }
           },
           {
-            "name": "adcPowerSimulated",
+            "name": "adc_power_simulated",
             "summary": "Enables simulated power ADC counts",
             "required": true,
             "x-id": 118,
@@ -3870,7 +3870,7 @@
             }
           },
           {
-            "name": "adcPowerSimulatedCounts",
+            "name": "adc_power_simulated_counts",
             "summary": "Simulated counts for Power ADC channel",
             "required": true,
             "x-id": 119,
@@ -3893,7 +3893,7 @@
             }
           },
           {
-            "name": "adcAnalogSensorSimulated",
+            "name": "adc_analog_sensor_simulated",
             "summary": "Enables simulated Analog Sensor ADC counts",
             "required": true,
             "x-id": 120,
@@ -3915,7 +3915,7 @@
             }
           },
           {
-            "name": "adcAnalogSensorSimulatedCounts",
+            "name": "adc_analog_sensor_simulated_counts",
             "summary": "Simulated counts for Analog Sensor ADC channel",
             "required": true,
             "x-id": 121,
@@ -3938,7 +3938,7 @@
             }
           },
           {
-            "name": "adcThermistorSimulated",
+            "name": "adc_thermistor_simulated",
             "summary": "Enables simulated Thermistor ADC counts",
             "required": true,
             "x-id": 122,
@@ -3960,7 +3960,7 @@
             }
           },
           {
-            "name": "adcThermistorSimulatedCounts",
+            "name": "adc_thermistor_simulated_counts",
             "summary": "Simulated counts for Thermistor ADC channel",
             "required": true,
             "x-id": 123,
@@ -3983,7 +3983,7 @@
             }
           },
           {
-            "name": "adcVRefSimulated",
+            "name": "adc_vref_simulated",
             "summary": "Enables simulated counts for VRef ADC counts",
             "required": true,
             "x-id": 124,
@@ -4005,7 +4005,7 @@
             }
           },
           {
-            "name": "adcVRefSimulatedCounts",
+            "name": "adc_vref_simulated_counts",
             "summary": "Simulated counts for VRef ADC channel",
             "required": true,
             "x-id": 125,
@@ -4028,7 +4028,7 @@
             }
           },
           {
-            "name": "voltage1Simulated",
+            "name": "voltage_1_simulated",
             "summary": "Enables simulated data for Voltage Input 1",
             "required": true,
             "x-id": 126,
@@ -4050,7 +4050,7 @@
             }
           },
           {
-            "name": "voltage1SimulatedValue",
+            "name": "voltage_1_simulated_value",
             "summary": "Simulated Voltage Input 1 value",
             "required": true,
             "x-id": 127,
@@ -4072,7 +4072,7 @@
             }
           },
           {
-            "name": "voltage2Simulated",
+            "name": "voltage_2_simulated",
             "summary": "Enables simulated data for Voltage Input 2",
             "required": true,
             "x-id": 128,
@@ -4094,7 +4094,7 @@
             }
           },
           {
-            "name": "voltage2SimulatedValue",
+            "name": "voltage_2_simulated_value",
             "summary": "Simulated Voltage Input 2 value",
             "required": true,
             "x-id": 129,
@@ -4116,7 +4116,7 @@
             }
           },
           {
-            "name": "voltage3Simulated",
+            "name": "voltage_3_simulated",
             "summary": "Enables simulated data for Voltage Input 3",
             "required": true,
             "x-id": 130,
@@ -4138,7 +4138,7 @@
             }
           },
           {
-            "name": "voltage3SimulatedValue",
+            "name": "voltage_3_simulated_value",
             "summary": "Simulated Voltage Input 3 value",
             "required": true,
             "x-id": 131,
@@ -4160,7 +4160,7 @@
             }
           },
           {
-            "name": "voltage4Simulated",
+            "name": "voltage_4_simulated",
             "summary": "Enables simulated data for Voltage Input 4",
             "required": true,
             "x-id": 132,
@@ -4182,7 +4182,7 @@
             }
           },
           {
-            "name": "voltage4SimulatedValue",
+            "name": "voltage_4_simulated_value",
             "summary": "Simulated Voltage Input 4 value",
             "required": true,
             "x-id": 133,
@@ -4204,7 +4204,7 @@
             }
           },
           {
-            "name": "ultrasonicSimulated",
+            "name": "ultrasonic_simulated",
             "summary": "Enables simulated data for the Ultrasonic sensor",
             "required": true,
             "x-id": 134,
@@ -4226,7 +4226,7 @@
             }
           },
           {
-            "name": "ultrasonicSimulatedValue",
+            "name": "ultrasonic_simulated_value",
             "summary": "Simulated Ultrasonic sensor value",
             "required": true,
             "x-id": 135,
@@ -4248,7 +4248,7 @@
             }
           },
           {
-            "name": "pressureSimulated",
+            "name": "pressure_simulated",
             "summary": "Enables simulated data for the Pressure sensor",
             "required": true,
             "x-id": 136,
@@ -4270,7 +4270,7 @@
             }
           },
           {
-            "name": "pressureSimulatedValue",
+            "name": "pressure_simulated_value",
             "summary": "Simulated Pressure sensor value",
             "required": true,
             "x-id": 137,
@@ -4292,7 +4292,7 @@
             }
           },
           {
-            "name": "current1Simulated",
+            "name": "current_1_simulated",
             "summary": "Enables simulated data for Current Input 1",
             "required": true,
             "x-id": 138,
@@ -4314,7 +4314,7 @@
             }
           },
           {
-            "name": "current1SimulatedValue",
+            "name": "current_1_simulated_value",
             "summary": "Simulated Current Input 1 value",
             "required": true,
             "x-id": 139,
@@ -4336,7 +4336,7 @@
             }
           },
           {
-            "name": "current2Simulated",
+            "name": "current_2_simulated",
             "summary": "Enables simulated data for Current Input 2",
             "required": true,
             "x-id": 140,
@@ -4358,7 +4358,7 @@
             }
           },
           {
-            "name": "current2SimulatedValue",
+            "name": "current_2_simulated_value",
             "summary": "Simulated Current Input 2 value",
             "required": true,
             "x-id": 141,
@@ -4380,7 +4380,7 @@
             }
           },
           {
-            "name": "current3Simulated",
+            "name": "current_3_simulated",
             "summary": "Enables simulated data for Current Input 3",
             "required": true,
             "x-id": 142,
@@ -4402,7 +4402,7 @@
             }
           },
           {
-            "name": "current3SimulatedValue",
+            "name": "current_3_simulated_value",
             "summary": "Simulated Current Input 3 value",
             "required": true,
             "x-id": 143,
@@ -4424,7 +4424,7 @@
             }
           },
           {
-            "name": "current4Simulated",
+            "name": "current_4_simulated",
             "summary": "Enables simulated data for Current Input 4",
             "required": true,
             "x-id": 144,
@@ -4446,7 +4446,7 @@
             }
           },
           {
-            "name": "current4SimulatedValue",
+            "name": "current_4_simulated_value",
             "summary": "Simulated Current Input 4 value",
             "required": true,
             "x-id": 145,
@@ -4468,7 +4468,7 @@
             }
           },
           {
-            "name": "vrefSimulated",
+            "name": "vref_simulated",
             "summary": "Enables simulated data for Vref",
             "required": true,
             "x-id": 146,
@@ -4490,7 +4490,7 @@
             }
           },
           {
-            "name": "vrefSimulatedValue",
+            "name": "vref_simulated_value",
             "summary": "Simulated Vref value",
             "required": true,
             "x-id": 147,
@@ -4512,7 +4512,7 @@
             }
           },
           {
-            "name": "temperature1Simulated",
+            "name": "temperature_1_simulated",
             "summary": "Enables simulated data for Temperature 1",
             "required": true,
             "x-id": 148,
@@ -4534,7 +4534,7 @@
             }
           },
           {
-            "name": "temperature1SimulatedValue",
+            "name": "temperature_1_simulated_value",
             "summary": "Simulated Temperature 1 value",
             "required": true,
             "x-id": 149,
@@ -4556,7 +4556,7 @@
             }
           },
           {
-            "name": "temperature2Simulated",
+            "name": "temperature_2_simulated",
             "summary": "Enables simulated data for Temperature 2",
             "required": true,
             "x-id": 150,
@@ -4578,7 +4578,7 @@
             }
           },
           {
-            "name": "temperature2SimulatedValue",
+            "name": "temperature_2_simulated_value",
             "summary": "Simulated Temperature 2 value",
             "required": true,
             "x-id": 151,
@@ -4600,7 +4600,7 @@
             }
           },
           {
-            "name": "temperature3Simulated",
+            "name": "temperature_3_simulated",
             "summary": "Enables simulated data for Temperature 3",
             "required": true,
             "x-id": 152,
@@ -4622,7 +4622,7 @@
             }
           },
           {
-            "name": "temperature3SimulatedValue",
+            "name": "temperature_3_simulated_value",
             "summary": "Simulated Temperature 3 value",
             "required": true,
             "x-id": 153,
@@ -4644,7 +4644,7 @@
             }
           },
           {
-            "name": "temperature4Simulated",
+            "name": "temperature_4_simulated",
             "summary": "Enables simulated data for Temperature 4",
             "required": true,
             "x-id": 154,
@@ -4666,7 +4666,7 @@
             }
           },
           {
-            "name": "temperature4SimulatedValue",
+            "name": "temperature_4_simulated_value",
             "summary": "Simulated Temperature 4 value",
             "required": true,
             "x-id": 155,
@@ -4688,7 +4688,7 @@
             }
           },
           {
-            "name": "powermvSimulated",
+            "name": "powermv_simulated",
             "summary": "Enables simulated data for power mv",
             "required": true,
             "x-id": 156,
@@ -4710,7 +4710,7 @@
             }
           },
           {
-            "name": "powermvSimulatedValue",
+            "name": "powermv_simulated_value",
             "summary": "Simulated power mv value",
             "required": true,
             "x-id": 157,
@@ -4733,7 +4733,7 @@
             }
           },
           {
-            "name": "digitalInput1Simulated",
+            "name": "digital_input_1_simulated",
             "summary": "Enables simulated data for Digital Input 1",
             "required": true,
             "x-id": 158,
@@ -4756,7 +4756,7 @@
             }
           },
           {
-            "name": "digitalInput1SimulatedValue",
+            "name": "digital_input_1_simulated_value",
             "summary": "Simulated data for Digital Input 1",
             "required": true,
             "x-id": 159,
@@ -4779,7 +4779,7 @@
             }
           },
           {
-            "name": "digitalInput2Simulated",
+            "name": "digital_input_2_simulated",
             "summary": "Enables simulated data for Digital Input 2",
             "required": true,
             "x-id": 160,
@@ -4802,7 +4802,7 @@
             }
           },
           {
-            "name": "digitalInput2SimulatedValue",
+            "name": "digital_input_2_simulated_value",
             "summary": "Simulated data for Digital Input 2",
             "required": true,
             "x-id": 161,
@@ -4825,7 +4825,7 @@
             }
           },
           {
-            "name": "magSwitchSimulated",
+            "name": "mag_switch_simulated",
             "summary": "Enables simulated data for the Mag Switch",
             "required": true,
             "x-id": 162,
@@ -4848,7 +4848,7 @@
             }
           },
           {
-            "name": "magSwitchSimulatedValue",
+            "name": "mag_switch_simulated_value",
             "summary": "Simulated data for the Mag Switch",
             "required": true,
             "x-id": 163,
@@ -4871,7 +4871,7 @@
             }
           },
           {
-            "name": "tamperSwitchSimulated",
+            "name": "tamper_switch_simulated",
             "summary": "Enables simulated data for the Tamper Switch",
             "required": true,
             "x-id": 164,
@@ -4894,7 +4894,7 @@
             }
           },
           {
-            "name": "tamperSwitchSimulatedValue",
+            "name": "tamper_switch_simulated_value",
             "summary": "Simulated data for the Tamper Switch",
             "required": true,
             "x-id": 165,
@@ -4917,7 +4917,7 @@
             }
           },
           {
-            "name": "bootPHY",
+            "name": "boot_phy",
             "summary": "The PHY to enable for 30s at bootup",
             "description": "Enumeration:\n 0 = Default\n 1 = 1M\n 2 = Coded",
             "required": true,
@@ -4940,7 +4940,7 @@
             }
           },
           {
-            "name": "mobileAppDisconnect",
+            "name": "mobile_app_disconnect",
             "summary": "This is used when the mobile app wants to disconnect, causing the BT6 to confirm the disconnect before forcing it",
             "description": "0 = do not disconnect, 1 = start disconnect after 2 seconds",
             "required": true,
@@ -4964,7 +4964,7 @@
             }
           },
           {
-            "name": "attrSaveErrorCode",
+            "name": "attr_save_error_code",
             "summary": "Result code from deferred settings saving",
             "description": "negative error code, 0 on success",
             "required": true,
@@ -4988,7 +4988,7 @@
             }
           },
           {
-            "name": "settingsPasscodeStatus",
+            "name": "settings_passcode_status",
             "summary": "Will return the status of current settings passcode entered",
             "description": "0 = undefined, 1 = vaild passcode, 2 = invaild passcode",
             "required": true,
@@ -5011,7 +5011,7 @@
             }
           },
           {
-            "name": "recoverSettingsCount",
+            "name": "recover_settings_count",
             "summary": "Used for recovering settings",
             "description": "A rolling count of number of times the module has been recovered",
             "required": true,
@@ -5034,7 +5034,7 @@
             }
           },
           {
-            "name": "blockDowngrades",
+            "name": "block_downgrades",
             "summary": "Allows FOTA downgrading of older firmwares to be disallowed",
             "description": "Will disallow receiving older firmware files via FOTA when set to 1",
             "required": true,
@@ -5054,11 +5054,11 @@
               "x-writeable": true,
               "x-readable": true,
               "x-broadcast": false,
-              "x-validator": "blockDowngrades"
+              "x-validator": "block_downgrades"
             }
           },
           {
-            "name": "securityRequest",
+            "name": "security_request",
             "summary": "Request sensor sends a Bluetooth security request to upgrade connection security",
             "description": "Write 1 to have sensor send a security request for pairing",
             "required": true,
@@ -5082,7 +5082,7 @@
             }
           },
           {
-            "name": "securityLevel",
+            "name": "security_level",
             "summary": "Current Bluetooth security level as seen by the sensor",
             "description": "-1 indicates error, otherwise value indicates level as per bt_security_t",
             "required": true,
@@ -5106,7 +5106,7 @@
             }
           },
           {
-            "name": "lockStatus",
+            "name": "lock_status",
             "summary": "Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged",
             "required": true,
             "x-id": 174,

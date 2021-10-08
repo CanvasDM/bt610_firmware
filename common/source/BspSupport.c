@@ -286,7 +286,7 @@ int BSP_UpdateDigitalInput1SimulatedStatus(bool simulation_enabled,
 		 * the input state.
 		 */
 		if ((result = Attribute_Get(
-			     ATTR_INDEX_digitalInput1SimulatedValue,
+			     ATTR_INDEX_digital_input_1_simulated_value,
 			     &last_simulated_state,
 			     sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
@@ -331,7 +331,7 @@ int BSP_UpdateDigitalInput2SimulatedStatus(bool simulation_enabled,
 		 * the input state.
 		 */
 		if ((result = Attribute_Get(
-			     ATTR_INDEX_digitalInput2SimulatedValue,
+			     ATTR_INDEX_digital_input_2_simulated_value,
 			     &last_simulated_state,
 			     sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
@@ -362,7 +362,7 @@ int BSP_UpdateDigitalInput1SimulatedValue(bool simulated_value,
 	bool fire_interrupt = false;
 	bool simulation_enabled = false;
 
-	if ((result = Attribute_Get(ATTR_INDEX_digitalInput1Simulated,
+	if ((result = Attribute_Get(ATTR_INDEX_digital_input_1_simulated,
 				    &simulation_enabled,
 				    sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
@@ -390,7 +390,7 @@ int BSP_UpdateDigitalInput2SimulatedValue(bool simulated_value,
 	bool fire_interrupt = false;
 	bool simulation_enabled = false;
 
-	if ((result = Attribute_Get(ATTR_INDEX_digitalInput2Simulated,
+	if ((result = Attribute_Get(ATTR_INDEX_digital_input_2_simulated,
 				    &simulation_enabled,
 				    sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
@@ -702,7 +702,7 @@ static void UART0WorkqHandler(struct k_work *item)
 				      sizeof(lock_enabled));
 
 			if (lock_enabled == true) {
-				Attribute_SetUint32(ATTR_INDEX_lockStatus,
+				Attribute_SetUint32(ATTR_INDEX_lock_status,
 						    LOCK_STATUS_SETUP_ENGAGED);
 			}
 		}
@@ -744,12 +744,12 @@ static bool MagSwitchIsSimulated(int *simulated_value)
 	/* First check we can read back the simulation enabled state and
 	 * that it's enabled.
 	 */
-	if (Attribute_Get(ATTR_INDEX_magSwitchSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_mag_switch_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_magSwitchSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_mag_switch_simulated_value,
 					  &mag_switch_state,
 					  sizeof(mag_switch_state)) ==
 			    sizeof(mag_switch_state)) {
@@ -772,12 +772,12 @@ static bool TamperSwitchIsSimulated(int *simulated_value)
 	/* First check we can read back the simulation enabled state and
 	 * that it's enabled.
 	 */
-	if (Attribute_Get(ATTR_INDEX_tamperSwitchSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_tamper_switch_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_tamperSwitchSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_tamper_switch_simulated_value,
 					  &tamper_switch_state,
 					  sizeof(tamper_switch_state)) ==
 			    sizeof(tamper_switch_state)) {
@@ -800,12 +800,12 @@ static bool DigitalInput1IsSimulated(int *simulated_value)
 	/* First check we can read back the simulation enabled state and
 	 * that it's enabled.
 	 */
-	if (Attribute_Get(ATTR_INDEX_digitalInput1Simulated,
+	if (Attribute_Get(ATTR_INDEX_digital_input_1_simulated,
 			  &simulation_enabled, sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_digitalInput1SimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_digital_input_1_simulated_value,
 					  &simulated_input_state,
 					  sizeof(simulated_input_state)) ==
 			    sizeof(simulated_input_state)) {
@@ -825,12 +825,12 @@ static bool DigitalInput2IsSimulated(int *simulated_value)
 	bool simulation_enabled = false;
 	bool simulated_input_state;
 
-	if (Attribute_Get(ATTR_INDEX_digitalInput2Simulated,
+	if (Attribute_Get(ATTR_INDEX_digital_input_2_simulated,
 			  &simulation_enabled, sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_digitalInput2SimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_digital_input_2_simulated_value,
 					  &simulated_input_state,
 					  sizeof(simulated_input_state)) ==
 			    sizeof(simulated_input_state)) {

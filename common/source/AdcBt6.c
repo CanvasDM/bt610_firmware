@@ -485,15 +485,15 @@ float AdcBt6_ConvertThermToTemperature(size_t channel, int32_t raw)
 
 	if (!TemperatureIsSimulated(channel,&temperature)) {
 		calibrated = AdcBt6_ApplyThermistorCalibration(raw);
-		uint16_t coefficientA = ATTR_INDEX_therm1CoefficientA + channel;
-		uint16_t coefficientB = ATTR_INDEX_therm1CoefficientB + channel;
-		uint16_t coefficientC = ATTR_INDEX_therm1CoefficientC + channel;
+		uint16_t coefficientA = ATTR_INDEX_therm_1_coefficient_a + channel;
+		uint16_t coefficientB = ATTR_INDEX_therm_1_coefficient_b + channel;
+		uint16_t coefficientC = ATTR_INDEX_therm_1_coefficient_c + channel;
 		temperature = Steinhart_Hart(
 			       calibrated,
 			       Attribute_AltGetFloat(coefficientA, THERMISTOR_S_H_A),
 			       Attribute_AltGetFloat(coefficientB, THERMISTOR_S_H_B),
 			       Attribute_AltGetFloat(coefficientC, THERMISTOR_S_H_C)) -
-		       Attribute_AltGetFloat(ATTR_INDEX_shOffset,
+		       Attribute_AltGetFloat(ATTR_INDEX_sh_offset,
 					     THERMISTOR_S_H_OFFSET);
 	}
 	return(temperature);
@@ -553,7 +553,7 @@ int AdcBt6_ConfigAinSelects(void)
 	size_t i;
 	analogConfigType_t config;
 	for (i = 0; i < ANALOG_INPUT_NUMBER_OF_CHANNELS; i++) {
-		config = Attribute_AltGetUint32(ATTR_INDEX_analogInput1Type + i,
+		config = Attribute_AltGetUint32(ATTR_INDEX_analog_input_1_type + i,
 						0);
 		if (config == ANALOG_CURRENT) {
 			adcObj.expander.bits.ain_sel |= (1 << i);
@@ -772,15 +772,15 @@ static bool ADCChannelIsSimulated(AnalogChannel_t channel,
 	const uint8_t channel_map[] = { POWER_ADC_CH, ANALOG_SENSOR_1_CH,
 					THERMISTOR_SENSOR_2_CH, VREF_5_CH };
 
-	const uint8_t enable_map[] = { ATTR_INDEX_adcPowerSimulated,
-				       ATTR_INDEX_adcAnalogSensorSimulated,
-				       ATTR_INDEX_adcThermistorSimulated,
-				       ATTR_INDEX_adcVRefSimulated };
+	const uint8_t enable_map[] = { ATTR_INDEX_adc_power_simulated,
+				       ATTR_INDEX_adc_analog_sensor_simulated,
+				       ATTR_INDEX_adc_thermistor_simulated,
+				       ATTR_INDEX_adc_vref_simulated };
 
-	const uint8_t value_map[] = { ATTR_INDEX_adcPowerSimulatedCounts,
-				      ATTR_INDEX_adcAnalogSensorSimulatedCounts,
-				      ATTR_INDEX_adcThermistorSimulatedCounts,
-				      ATTR_INDEX_adcVRefSimulatedCounts };
+	const uint8_t value_map[] = { ATTR_INDEX_adc_power_simulated_counts,
+				      ATTR_INDEX_adc_analog_sensor_simulated_counts,
+				      ATTR_INDEX_adc_thermistor_simulated_counts,
+				      ATTR_INDEX_adc_vref_simulated_counts };
 
 	/* AD channels don't have incremental values so use a look up
 	 * to find the index of the one being accessed.
@@ -821,15 +821,15 @@ static bool VoltageIsSimulated(size_t channel, float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	const uint8_t enable_map[] = { ATTR_INDEX_voltage1Simulated,
-				       ATTR_INDEX_voltage2Simulated,
-				       ATTR_INDEX_voltage3Simulated,
-				       ATTR_INDEX_voltage4Simulated };
+	const uint8_t enable_map[] = { ATTR_INDEX_voltage_1_simulated,
+				       ATTR_INDEX_voltage_2_simulated,
+				       ATTR_INDEX_voltage_3_simulated,
+				       ATTR_INDEX_voltage_4_simulated };
 
-	const uint8_t value_map[] = { ATTR_INDEX_voltage1SimulatedValue,
-				      ATTR_INDEX_voltage2SimulatedValue,
-				      ATTR_INDEX_voltage3SimulatedValue,
-				      ATTR_INDEX_voltage4SimulatedValue };
+	const uint8_t value_map[] = { ATTR_INDEX_voltage_1_simulated_value,
+				      ATTR_INDEX_voltage_2_simulated_value,
+				      ATTR_INDEX_voltage_3_simulated_value,
+				      ATTR_INDEX_voltage_4_simulated_value };
 
 	if (channel < TOTAL_ANALOG_CH) {
 		/* Check if the voltage is being simulated */
@@ -857,12 +857,12 @@ static bool UltrasonicIsSimulated(float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (Attribute_Get(ATTR_INDEX_ultrasonicSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_ultrasonic_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_ultrasonicSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_ultrasonic_simulated_value,
 					  simulated_value,
 					  sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {
@@ -880,12 +880,12 @@ static bool PressureIsSimulated(float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (Attribute_Get(ATTR_INDEX_pressureSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_pressure_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_pressureSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_pressure_simulated_value,
 					  simulated_value,
 					  sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {
@@ -903,15 +903,15 @@ static bool CurrentIsSimulated(size_t channel, float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	const uint8_t enable_map[] = { ATTR_INDEX_current1Simulated,
-				       ATTR_INDEX_current2Simulated,
-				       ATTR_INDEX_current3Simulated,
-				       ATTR_INDEX_current4Simulated };
+	const uint8_t enable_map[] = { ATTR_INDEX_current_1_simulated,
+				       ATTR_INDEX_current_2_simulated,
+				       ATTR_INDEX_current_3_simulated,
+				       ATTR_INDEX_current_4_simulated };
 
-	const uint8_t value_map[] = { ATTR_INDEX_current1SimulatedValue,
-				      ATTR_INDEX_current2SimulatedValue,
-				      ATTR_INDEX_current3SimulatedValue,
-				      ATTR_INDEX_current4SimulatedValue };
+	const uint8_t value_map[] = { ATTR_INDEX_current_1_simulated_value,
+				      ATTR_INDEX_current_2_simulated_value,
+				      ATTR_INDEX_current_3_simulated_value,
+				      ATTR_INDEX_current_4_simulated_value };
 
 	if (channel < TOTAL_ANALOG_CH) {
 		/* Check if the current is being simulated */
@@ -939,12 +939,12 @@ static bool VrefIsSimulated(float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (Attribute_Get(ATTR_INDEX_vrefSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_vref_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_vrefSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_vref_simulated_value,
 					  simulated_value,
 					  sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {
@@ -962,15 +962,15 @@ static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	const uint8_t enable_map[] = { ATTR_INDEX_temperature1Simulated,
-				       ATTR_INDEX_temperature2Simulated,
-				       ATTR_INDEX_temperature3Simulated,
-				       ATTR_INDEX_temperature4Simulated };
+	const uint8_t enable_map[] = { ATTR_INDEX_temperature_1_simulated,
+				       ATTR_INDEX_temperature_2_simulated,
+				       ATTR_INDEX_temperature_3_simulated,
+				       ATTR_INDEX_temperature_4_simulated };
 
-	const uint8_t value_map[] = { ATTR_INDEX_temperature1SimulatedValue,
-				      ATTR_INDEX_temperature2SimulatedValue,
-				      ATTR_INDEX_temperature3SimulatedValue,
-				      ATTR_INDEX_temperature4SimulatedValue };
+	const uint8_t value_map[] = { ATTR_INDEX_temperature_1_simulated_value,
+				      ATTR_INDEX_temperature_2_simulated_value,
+				      ATTR_INDEX_temperature_3_simulated_value,
+				      ATTR_INDEX_temperature_4_simulated_value };
 
 	if (channel < TOTAL_ANALOG_CH) {
 		/* Check if the temperature is being simulated */
@@ -998,12 +998,12 @@ static bool PowermvIsSimulated(int32_t *simulated_value)
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (Attribute_Get(ATTR_INDEX_powermvSimulated, &simulation_enabled,
+	if (Attribute_Get(ATTR_INDEX_powermv_simulated, &simulation_enabled,
 			  sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (Attribute_Get(ATTR_INDEX_powermvSimulatedValue,
+			if (Attribute_Get(ATTR_INDEX_powermv_simulated_value,
 					  simulated_value,
 					  sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {

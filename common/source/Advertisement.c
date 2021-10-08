@@ -153,7 +153,7 @@ int Advertisement_Init(void)
 	bt_addr_le_t addr;
 	char addr_str[BT_ADDR_LE_STR_LEN] = { 0 };
 	char bd_addr[BT_ADDR_LE_STR_LEN];
-	size_t size = Attribute_GetSize(ATTR_INDEX_bluetoothAddress);
+	size_t size = Attribute_GetSize(ATTR_INDEX_bluetooth_address);
 
 	bt_id_get(&addr, &count);
 	if (count < 1) {
@@ -175,7 +175,7 @@ int Advertisement_Init(void)
 		}
 	}
 	bd_addr[j] = 0;
-	Attribute_SetString(ATTR_INDEX_bluetoothAddress, bd_addr, size - 1);
+	Attribute_SetString(ATTR_INDEX_bluetooth_address, bd_addr, size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;
@@ -222,7 +222,7 @@ int Advertisement_IntervalUpdate(void)
 	int r = 0;
 	uint32_t advetInterval = 0;
 
-	Attribute_Get(ATTR_INDEX_advertisingInterval, &advetInterval,
+	Attribute_Get(ATTR_INDEX_advertising_interval, &advetInterval,
 		      sizeof(advetInterval));
 
 	advetInterval = MSEC_TO_UNITS(advetInterval, UNIT_0_625_MS);
@@ -264,7 +264,7 @@ int Advertisement_IntervalDefault(void)
 	int r = 0;
 	uint16_t advertIntervalDefault = 0;
 
-	Attribute_GetDefault(ATTR_INDEX_advertisingInterval,
+	Attribute_GetDefault(ATTR_INDEX_advertising_interval,
 			     &advertIntervalDefault,
 			     sizeof(advertIntervalDefault));
 
@@ -371,7 +371,7 @@ void TestEventMsg(uint16_t event)
 	current.event.type = event;
 
 	Attribute_Get(ATTR_INDEX_qrtc, &timeStamp, sizeof(timeStamp));
-	Attribute_Get(ATTR_INDEX_batteryAge, &dataValue, sizeof(dataValue));
+	Attribute_Get(ATTR_INDEX_battery_age, &dataValue, sizeof(dataValue));
 
 	current.event.timestamp = timeStamp;
 
@@ -441,7 +441,7 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	uint8_t codedPhySelected = 0;
 	int r = 0;
 
-	Attribute_Get(ATTR_INDEX_networkId, &networkId, sizeof(networkId));
+	Attribute_Get(ATTR_INDEX_network_id, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
 
@@ -453,11 +453,11 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 		ad.data = ad_update->sensor_event.event.data;
 	}
 
-	Attribute_Get(ATTR_INDEX_configVersion, &configVersion,
+	Attribute_Get(ATTR_INDEX_config_version, &configVersion,
 		      sizeof(configVersion));
 	rsp.rsp.configVersion = configVersion;
 
-	Attribute_Get(ATTR_INDEX_useCodedPhy, &codedPhySelected,
+	Attribute_Get(ATTR_INDEX_use_coded_phy, &codedPhySelected,
 		      sizeof(codedPhySelected));
 
 	ext.ad = ad;

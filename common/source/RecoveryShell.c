@@ -116,10 +116,10 @@ static int rec_request_cmd(const struct shell *shell, size_t argc, char **argv)
 	 * and the number of times the unit has been recovered
 	 */
 	sprintf(buffer, REQUEST_CODE_PREFIX);
-	r = Attribute_Get(ATTR_INDEX_bluetoothAddress, &buffer[strlen(buffer)],
+	r = Attribute_Get(ATTR_INDEX_bluetooth_address, &buffer[strlen(buffer)],
 			  sizeof(buffer) - strlen(buffer));
 	if (r > 0) {
-		r = Attribute_Get(ATTR_INDEX_recoverSettingsCount,
+		r = Attribute_Get(ATTR_INDEX_recover_settings_count,
 				  &recover_settings_count,
 				  sizeof(recover_settings_count));
 	}
@@ -173,12 +173,12 @@ static int rec_perform_cmd(const struct shell *shell, size_t argc, char **argv)
 			 * verification code
 			 */
 			sprintf(buffer, RECOVERY_CODE_PREFIX);
-			r = Attribute_Get(ATTR_INDEX_bluetoothAddress,
+			r = Attribute_Get(ATTR_INDEX_bluetooth_address,
 					  &buffer[strlen(buffer)],
 					  sizeof(buffer) - strlen(buffer));
 			if (r > 0) {
 				r = Attribute_Get(
-					ATTR_INDEX_recoverSettingsCount,
+					ATTR_INDEX_recover_settings_count,
 					&recover_settings_count,
 					sizeof(recover_settings_count));
 			}
@@ -288,11 +288,11 @@ static void recovery_work_handler(struct k_work *item)
 	uint8_t recover_settings_count = 0;
 
 	/* Increment recovery code and save to filesystem */
-	r = Attribute_Get(ATTR_INDEX_recoverSettingsCount,
+	r = Attribute_Get(ATTR_INDEX_recover_settings_count,
 			  &recover_settings_count,
 			  sizeof(recover_settings_count));
 	++recover_settings_count;
-	Attribute_SetUint32(ATTR_INDEX_recoverSettingsCount,
+	Attribute_SetUint32(ATTR_INDEX_recover_settings_count,
 			    recover_settings_count);
 	fsu_write_abs(CONFIG_RECOVERY_FILE_PATH, &recover_settings_count,
 		      sizeof(recover_settings_count));

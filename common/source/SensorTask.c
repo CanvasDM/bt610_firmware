@@ -223,7 +223,7 @@ int AttributePrepare_powerVoltageMv(void)
 	int r = AdcBt6_ReadPowerMv(&raw, &mv);
 
 	if (r >= 0) {
-		r = Attribute_SetSigned32(ATTR_INDEX_powerVoltageMv, mv);
+		r = Attribute_SetSigned32(ATTR_INDEX_power_voltage_mv, mv);
 		if (mv > POWER_BAD_VOLTAGE) {
 			eventAlarm.s32 = mv;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
@@ -304,7 +304,7 @@ void SensorTask_GetTimeString(uint8_t *time_string)
 	uint32_t savedRTCSeconds = 0;
 	time_t time;
 
-	Attribute_Get(ATTR_INDEX_qrtcLastSet, &savedRTCSeconds,
+	Attribute_Get(ATTR_INDEX_qrtc_last_set, &savedRTCSeconds,
 		      sizeof(savedRTCSeconds));
 	time = (time_t)(savedRTCSeconds);
 
@@ -320,11 +320,11 @@ void LoadSettingPasscode(void)
 	 * to use to compare to what the user enters
 	 */
 	uint32_t passCode = 0;
-	Attribute_GetUint32(&passCode, ATTR_INDEX_settingsPasscode);
+	Attribute_GetUint32(&passCode, ATTR_INDEX_settings_passcode);
 	sensorTaskObject.savedPasscode = passCode;
 
 	/* Turn off the display on the terminal of the passcode */
-	Attribute_SetQuiet(ATTR_INDEX_settingsPasscode, true);
+	Attribute_SetQuiet(ATTR_INDEX_settings_passcode, true);
 }
 
 /******************************************************************************/
@@ -365,67 +365,67 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
-		case ATTR_INDEX_powerSenseInterval:
+		case ATTR_INDEX_power_sense_interval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_READ_POWER);
 			break;
 
-		case ATTR_INDEX_temperatureSenseInterval:
+		case ATTR_INDEX_temperature_sense_interval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_TEMPERATURE_MEASURE);
 			break;
-		case ATTR_INDEX_analogSenseInterval:
+		case ATTR_INDEX_analog_sense_interval:
 			FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK,
 						      FWK_ID_SENSOR_TASK,
 						      FMC_ANALOG_MEASURE);
 			break;
-		case ATTR_INDEX_digitalInput1Config:
-		case ATTR_INDEX_digitalInput2Config:
+		case ATTR_INDEX_digital_input_1_config:
+		case ATTR_INDEX_digital_input_2_config:
 			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
 						   FMC_DIGITAL_IN_CONFIG);
 			break;
-		case ATTR_INDEX_thermistorConfig:
+		case ATTR_INDEX_thermistor_config:
 			StartTemperatureInterval();
 			break;
-		case ATTR_INDEX_analogInput1Type:
-		case ATTR_INDEX_analogInput2Type:
-		case ATTR_INDEX_analogInput3Type:
-		case ATTR_INDEX_analogInput4Type:
+		case ATTR_INDEX_analog_input_1_type:
+		case ATTR_INDEX_analog_input_2_type:
+		case ATTR_INDEX_analog_input_3_type:
+		case ATTR_INDEX_analog_input_4_type:
 			updateAnalogInterval = true;
 			break;
-		case ATTR_INDEX_configType:
+		case ATTR_INDEX_config_type:
 			SensorConfigChange(false);
 			break;
 
-		case ATTR_INDEX_qrtcLastSet:
+		case ATTR_INDEX_qrtc_last_set:
 			printRTCTime();
 			/* RTC was set by external device */
 			Flags_Set(FLAG_TIME_WAS_SET, 1);
 			break;
 
-		case ATTR_INDEX_digitalOutput1State:
+		case ATTR_INDEX_digital_output_1_state:
 			SensorOutput1Control();
 			break;
-		case ATTR_INDEX_digitalOutput2State:
+		case ATTR_INDEX_digital_output_2_state:
 			SensorOutput2Control();
 			break;
-		case ATTR_INDEX_activeMode:
+		case ATTR_INDEX_active_mode:
 			/* This is to handle direct calls from remote clients
 			 * but also when set via the local interfaces. In the
 			 * case of local interfaces, it only ever gets set to
 			 * true, and so always routed to the Enter Active
 			 * handler.
 			 */
-			Attribute_Get(ATTR_INDEX_activeMode, &activeMode,
+			Attribute_Get(ATTR_INDEX_active_mode, &activeMode,
 				      sizeof(activeMode));
 			FRAMEWORK_MSG_CREATE_AND_SEND(
 				FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
 				(!activeMode ? FMC_ENTER_SHELF_MODE :
 						     FMC_ENTER_ACTIVE_MODE));
 			break;
-		case ATTR_INDEX_settingsPasscode:
+		case ATTR_INDEX_settings_passcode:
 			SaveSettingPasscode();
 			break;
 		default:
@@ -452,14 +452,14 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
 		/* Alarm from interrupt */
-		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 0, 1);
+		Attribute_SetMask32(ATTR_INDEX_digital_alarms, 0, 1);
 
 	} else if ((pSensorMsg->pin == DIN2_MCU_PIN) &&
 		   (sensorTaskObject.digitalIn2Enabled == 1)) {
 		UpdateDin2();
-		Attribute_SetMask32(ATTR_INDEX_digitalAlarms, 1, 1);
+		Attribute_SetMask32(ATTR_INDEX_digital_alarms, 1, 1);
 	}
-	Attribute_Get(ATTR_INDEX_digitalAlarms, &digitalAlarm,
+	Attribute_Get(ATTR_INDEX_digital_alarms, &digitalAlarm,
 		      sizeof(digitalAlarm));
 	eventAlarm.u32 = digitalAlarm;
 	SendEvent(SENSOR_EVENT_DIGITAL_ALARM, eventAlarm);
@@ -476,7 +476,7 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	gpio_flags_t edgeTypeDin2;
 
 	/* Digital Input 1 */
-	Attribute_Get(ATTR_INDEX_digitalInput1Config, &input1Config,
+	Attribute_Get(ATTR_INDEX_digital_input_1_config, &input1Config,
 		      sizeof(input1Config));
 	sensorTaskObject.input1Alarm = input1Config & DIGITAL_IN_ALARM_MASK;
 	input1Config = (input1Config & DIGITAL_IN_ENABLE_MASK);
@@ -494,7 +494,7 @@ SensorTaskDigitalInConfigMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	}
 
 	/* Digital Input 2 */
-	Attribute_Get(ATTR_INDEX_digitalInput2Config, &input2Config,
+	Attribute_Get(ATTR_INDEX_digital_input_2_config, &input2Config,
 		      sizeof(input2Config));
 	sensorTaskObject.input2Alarm = input2Config & DIGITAL_IN_ALARM_MASK;
 	input2Config = (input2Config & DIGITAL_IN_ENABLE_MASK);
@@ -627,20 +627,20 @@ static void SaveSettingPasscode(void)
 	bool lockStatus = false;
 	uint32_t passCode = 0;
 	Attribute_Get(ATTR_INDEX_lock, &lockStatus, sizeof(lockStatus));
-	Attribute_GetUint32(&passCode, ATTR_INDEX_settingsPasscode);
+	Attribute_GetUint32(&passCode, ATTR_INDEX_settings_passcode);
 
 	if (lockStatus == true) {
 		/* Check if the passcode entered matches */
 		if (passCode == sensorTaskObject.savedPasscode) {
 			/* Unlock the settings */
-			Attribute_SetUint32(ATTR_INDEX_lockStatus,
+			Attribute_SetUint32(ATTR_INDEX_lock_status,
 					    LOCK_STATUS_SETUP_DISENGAGED);
 
 			passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
 		} else {
 			/* Reset the passcode to last saved passcode */
 			Attribute_SetNoBroadcastUint32(
-				ATTR_INDEX_settingsPasscode,
+				ATTR_INDEX_settings_passcode,
 				sensorTaskObject.savedPasscode);
 
 			passCodeStatus = SETTINGS_LOCK_ERROR_INVALID_CODE;
@@ -650,14 +650,14 @@ static void SaveSettingPasscode(void)
 		sensorTaskObject.savedPasscode = passCode;
 		/* Lock the settings */
 		Attribute_SetUint32(ATTR_INDEX_lock, true);
-		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_SETUP_ENGAGED);
 
 		passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
 	}
 
 	/* Send feedback to APP about the passcode */
-	Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus, passCodeStatus);
+	Attribute_SetUint32(ATTR_INDEX_settings_passcode_status, passCodeStatus);
 }
 
 static void LoadSensorConfiguration(void)
@@ -669,7 +669,7 @@ static void LoadSensorConfiguration(void)
 static void SensorConfigChange(bool bootup)
 {
 	uint32_t configurationType;
-	Attribute_GetUint32(&configurationType, ATTR_INDEX_configType);
+	Attribute_GetUint32(&configurationType, ATTR_INDEX_config_type);
 
 	if ((bootup == false) || (configurationType == CONFIG_UNDEFINED)) {
 		/* Clear the Aggregation queue on event type change */
@@ -686,7 +686,7 @@ static void SensorConfigChange(bool bootup)
 static void SensorOutput1Control(void)
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput1State, &outputStatus,
+	Attribute_Get(ATTR_INDEX_digital_output_1_state, &outputStatus,
 		      sizeof(outputStatus));
 
 	BSP_PinSet(DO1_PIN, (outputStatus));
@@ -695,7 +695,7 @@ static void SensorOutput1Control(void)
 static void SensorOutput2Control(void)
 {
 	uint8_t outputStatus = 0;
-	Attribute_Get(ATTR_INDEX_digitalOutput2State, &outputStatus,
+	Attribute_Get(ATTR_INDEX_digital_output_2_state, &outputStatus,
 		      sizeof(outputStatus));
 
 	BSP_PinSet(DO2_PIN, (outputStatus));
@@ -717,7 +717,7 @@ static void UpdateDin1(void)
 	int v = BSP_PinGet(DIN1_MCU_PIN);
 
 	if (v >= 0) {
-		Attribute_SetMask32(ATTR_INDEX_digitalInput, 0, v);
+		Attribute_SetMask32(ATTR_INDEX_digital_input, 0, v);
 		Flags_Set(FLAG_DIGITAL_IN1_STATE, v);
 	}
 }
@@ -727,7 +727,7 @@ static void UpdateDin2(void)
 	int v = BSP_PinGet(DIN2_MCU_PIN);
 
 	if (v >= 0) {
-		Attribute_SetMask32(ATTR_INDEX_digitalInput, 1, v);
+		Attribute_SetMask32(ATTR_INDEX_digital_input, 1, v);
 		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
 }
@@ -735,9 +735,9 @@ static void UpdateDin2(void)
 static void DisableDigitalIO(void)
 {
 	/* Disable the digital inputs */
-	Attribute_SetUint32(ATTR_INDEX_digitalInput1Config,
+	Attribute_SetUint32(ATTR_INDEX_digital_input_1_config,
 			    DIGITAL_IN_DISABLE_MASK);
-	Attribute_SetUint32(ATTR_INDEX_digitalInput2Config,
+	Attribute_SetUint32(ATTR_INDEX_digital_input_2_config,
 			    DIGITAL_IN_DISABLE_MASK);
 
 	/* Disable the digital outputs */
@@ -774,7 +774,7 @@ static void UpdateMagnet(void)
 
 	if (v >= 0) {
 		/* NEAR = 0 and FAR = 1 */
-		Attribute_SetUint32(ATTR_INDEX_magnetState, v);
+		Attribute_SetUint32(ATTR_INDEX_magnet_state, v);
 		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
 }
@@ -804,16 +804,16 @@ static void StartAnalogInterval(void)
 	uint8_t activeModeStatus = 0;
 	uint32_t analogTimer = 0;
 
-	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+	Attribute_Get(ATTR_INDEX_active_mode, &activeModeStatus,
 		      sizeof(activeModeStatus));
 
-	Attribute_Get(ATTR_INDEX_analogInput1Type, &analog1ConfigEnable,
+	Attribute_Get(ATTR_INDEX_analog_input_1_type, &analog1ConfigEnable,
 		      sizeof(analog1ConfigEnable));
-	Attribute_Get(ATTR_INDEX_analogInput2Type, &analog2ConfigEnable,
+	Attribute_Get(ATTR_INDEX_analog_input_2_type, &analog2ConfigEnable,
 		      sizeof(analog2ConfigEnable));
-	Attribute_Get(ATTR_INDEX_analogInput3Type, &analog3ConfigEnable,
+	Attribute_Get(ATTR_INDEX_analog_input_3_type, &analog3ConfigEnable,
 		      sizeof(analog3ConfigEnable));
-	Attribute_Get(ATTR_INDEX_analogInput4Type, &analog4ConfigEnable,
+	Attribute_Get(ATTR_INDEX_analog_input_4_type, &analog4ConfigEnable,
 		      sizeof(analog4ConfigEnable));
 	/* Check if the timer is already running */
 	analogTimer = k_timer_remaining_get(&analogReadTimer);
@@ -823,7 +823,7 @@ static void StartAnalogInterval(void)
 	     (analog3ConfigEnable > 0) || (analog4ConfigEnable > 0))) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_analogSenseInterval);
+				    ATTR_INDEX_analog_sense_interval);
 		if (intervalSeconds != 0) {
 			k_timer_start(&analogReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
@@ -837,9 +837,9 @@ static void StartTemperatureInterval(void)
 	uint8_t activeModeStatus = 0;
 	uint32_t tempTimer = 0;
 
-	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+	Attribute_Get(ATTR_INDEX_active_mode, &activeModeStatus,
 		      sizeof(activeModeStatus));
-	Attribute_Get(ATTR_INDEX_thermistorConfig, &thermConfigEnable,
+	Attribute_Get(ATTR_INDEX_thermistor_config, &thermConfigEnable,
 		      sizeof(thermConfigEnable));
 
 	/* Check if the timer is already running */
@@ -848,7 +848,7 @@ static void StartTemperatureInterval(void)
 	    (tempTimer == 0)) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_temperatureSenseInterval);
+				    ATTR_INDEX_temperature_sense_interval);
 		if (intervalSeconds != 0) {
 			k_timer_start(&temperatureReadTimer,
 				      K_SECONDS(intervalSeconds), K_NO_WAIT);
@@ -860,13 +860,13 @@ static void StartPowerInterval(void)
 {
 	uint8_t activeModeStatus = 0;
 
-	Attribute_Get(ATTR_INDEX_activeMode, &activeModeStatus,
+	Attribute_Get(ATTR_INDEX_active_mode, &activeModeStatus,
 		      sizeof(activeModeStatus));
 
 	if (activeModeStatus == true) {
 		uint32_t intervalSeconds = 0;
 		Attribute_GetUint32(&intervalSeconds,
-				    ATTR_INDEX_powerSenseInterval);
+				    ATTR_INDEX_power_sense_interval);
 		if (intervalSeconds != 0) {
 			k_timer_start(&powerTimer, K_SECONDS(intervalSeconds),
 				      K_NO_WAIT);
@@ -878,10 +878,10 @@ static void StartPowerInterval(void)
 
 static void DisableAnalogReadings(void)
 {
-	Attribute_SetUint32(ATTR_INDEX_analogInput1Type, ANALOG_UNUSED);
-	Attribute_SetUint32(ATTR_INDEX_analogInput2Type, ANALOG_UNUSED);
-	Attribute_SetUint32(ATTR_INDEX_analogInput3Type, ANALOG_UNUSED);
-	Attribute_SetUint32(ATTR_INDEX_analogInput4Type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analog_input_1_type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analog_input_2_type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analog_input_3_type, ANALOG_UNUSED);
+	Attribute_SetUint32(ATTR_INDEX_analog_input_4_type, ANALOG_UNUSED);
 	/* Turn off the timer */
 	k_timer_stop(&analogReadTimer);
 }
@@ -889,7 +889,7 @@ static void DisableAnalogReadings(void)
 static void DisableThermistorReadings(void)
 {
 	uint32_t thermistorsConfig = 0;
-	Attribute_SetUint32(ATTR_INDEX_thermistorConfig, thermistorsConfig);
+	Attribute_SetUint32(ATTR_INDEX_thermistor_config, thermistorsConfig);
 	/* Turn off the timer */
 	k_timer_stop(&temperatureReadTimer);
 }
@@ -904,7 +904,7 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 	/* Setup the AIN SEL pins on the multiplexer for the Analog pin config */
 	r = AdcBt6_ConfigAinSelects();
 	if (r == 0) {
-		attr_idx_t base = ATTR_INDEX_analogInput1Type;
+		attr_idx_t base = ATTR_INDEX_analog_input_1_type;
 		analogConfigType_t config =
 			Attribute_AltGetUint32(base + channel, 0);
 
@@ -982,7 +982,7 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 
 		if (r >= 0) {
 			r = Attribute_SetFloat(
-				ATTR_INDEX_analogInput1 + channel, *result);
+				ATTR_INDEX_analog_input_1 + channel, *result);
 
 			sensorTaskObject.magnitudeOfAnalogDifference[channel] =
 				abs(*result -
@@ -1005,7 +1005,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 	*result = 0.0;
 
 	uint32_t config =
-		Attribute_AltGetUint32(ATTR_INDEX_thermistorConfig, 0);
+		Attribute_AltGetUint32(ATTR_INDEX_thermistor_config, 0);
 
 	if (config & BIT(channel)) {
 		r = AdcBt6_Measure(&raw, channel, ADC_TYPE_THERMISTOR, power);
@@ -1024,7 +1024,7 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 	}
 
 	if (r >= 0) {
-		r = Attribute_SetFloat(ATTR_INDEX_temperatureResult1 + channel,
+		r = Attribute_SetFloat(ATTR_INDEX_temperature_result_1 + channel,
 				       *result);
 	}
 

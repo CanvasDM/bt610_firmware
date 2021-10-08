@@ -127,7 +127,7 @@ static int ats_set_cmd(const struct shell *shell, size_t argc, char **argv)
 		idx = get_index(argv[1]);
 
 #if defined(CONFIG_SHELL_SELECTIVE_HISTORY)
-		if (idx == ATTR_INDEX_settingsPasscode) {
+		if (idx == ATTR_INDEX_settings_passcode) {
 			/* Do not save this command in the shell history */
 			shell->history->skip_current_line = true;
 		}
@@ -360,7 +360,7 @@ static int ats_qrtc_cmd(const struct shell *shell, size_t argc, char **argv)
 		} else {
 			qrtc = MAX((int)strtol(argv[1], NULL, 0), 0);
 			result = lcz_qrtc_set_epoch(qrtc);
-			r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, qrtc);
+			r = Attribute_SetUint32(ATTR_INDEX_qrtc_last_set, qrtc);
 			if (qrtc != result || r < 0) {
 				shell_error(shell, "Unable to set qrtc");
 			} else {

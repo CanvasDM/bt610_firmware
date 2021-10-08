@@ -621,7 +621,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 	}
 
 	if (r == 0 && epoch < UINT32_MAX) {
-		r = Attribute_SetUint32(ATTR_INDEX_qrtcLastSet, epoch);
+		r = Attribute_SetUint32(ATTR_INDEX_qrtc_last_set, epoch);
 		t = lcz_qrtc_set_epoch(epoch);
 	} else if (r == 0 && epoch >= UINT32_MAX) {
 		r = -EINVAL;
@@ -784,7 +784,7 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	}
 
 	if (r == 0) {
-	        Attribute_Get(ATTR_INDEX_factoryResetEnable, &factoryResetEnabled,
+	        Attribute_Get(ATTR_INDEX_factory_reset_enable, &factoryResetEnabled,
 			     sizeof(factoryResetEnabled));
 
 		if (factoryResetEnabled == 0) {
@@ -887,7 +887,7 @@ int Sentrius_mgmt_Check_Lock_Status(struct mgmt_ctxt *ctxt)
 	r = Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
 
 	if (r >= 0) {
-		r = Attribute_Get(ATTR_INDEX_lockStatus, &lock_status,
+		r = Attribute_Get(ATTR_INDEX_lock_status, &lock_status,
 				  sizeof(lock_status));
 
 		if (r >= 0) {
@@ -941,7 +941,7 @@ int Sentrius_mgmt_Set_Lock_Code(struct mgmt_ctxt *ctxt)
 
 	if (r == 0) {
 		lock_code = (uint32_t)lock_code_tmp;
-		r = Attribute_SetUint32(ATTR_INDEX_settingsPasscode,
+		r = Attribute_SetUint32(ATTR_INDEX_settings_passcode,
 				    lock_code);
 	}
 
@@ -956,7 +956,7 @@ int Sentrius_mgmt_Set_Lock_Code(struct mgmt_ctxt *ctxt)
 		 * manually requests it with the lock command, but allows
 		 * further configuration changes to the unit until then
 		 */
-		r = Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		r = Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_SETUP_DISENGAGED);
 	}
 
@@ -984,12 +984,12 @@ int Sentrius_mgmt_Lock(struct mgmt_ctxt *ctxt)
 
 		/* Lock the settings */
 		Attribute_SetUint32(ATTR_INDEX_lock, true);
-		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_SETUP_ENGAGED);
 		passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
 
 		/* Send feedback about the passcode */
-		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
 				    passCodeStatus);
 	}
 
@@ -1029,13 +1029,13 @@ int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
 
 	if (Attribute_IsLocked() == true) {
 		Attribute_GetUint32(&real_lock_code,
-				    ATTR_INDEX_settingsPasscode);
+				    ATTR_INDEX_settings_passcode);
 		lock_code = (uint32_t)lock_code_tmp;
 
 		/* Check if the passcode entered matches */
 		if (real_lock_code == lock_code) {
 			/* Unlock the settings */
-			Attribute_SetUint32(ATTR_INDEX_lockStatus,
+			Attribute_SetUint32(ATTR_INDEX_lock_status,
 					    LOCK_STATUS_SETUP_DISENGAGED);
 			passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
 		} else {
@@ -1044,7 +1044,7 @@ int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
 		}
 
 		/* Send feedback to APP about the passcode */
-		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
 				    passCodeStatus);
 	}
 
@@ -1052,7 +1052,7 @@ int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
 	    r == 0) {
 		/* User has requested to remove the lock entirely */
 		Attribute_SetUint32(ATTR_INDEX_lock, false);
-		Attribute_SetUint32(ATTR_INDEX_lockStatus,
+		Attribute_SetUint32(ATTR_INDEX_lock_status,
 				    LOCK_STATUS_NOT_SETUP);
 	}
 
@@ -1071,12 +1071,12 @@ int Sentrius_mgmt_Get_Unlock_Error_Code(struct mgmt_ctxt *ctxt)
 	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
 	int r = 0;
 
-	r = Attribute_Get(ATTR_INDEX_settingsPasscodeStatus, &passCodeStatus,
+	r = Attribute_Get(ATTR_INDEX_settings_passcode_status, &passCodeStatus,
 			  sizeof(passCodeStatus));
 
 	if (r >= 0) {
 		/* Clear status */
-		Attribute_SetUint32(ATTR_INDEX_settingsPasscodeStatus,
+		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
 				    SETTINGS_LOCK_ERROR_NO_STATUS);
 	}
 
