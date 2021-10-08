@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #include <logging/log.h>
-LOG_MODULE_REGISTER(attrval, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(attrval, CONFIG_ATTR_VALID_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -479,8 +479,8 @@ int AttributeValidator_din1sim(AttributeEntry_t *pEntry, void *pValue,
 		/* Set the simulated value */
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
 		/* And update the system */
-		r = BSP_UpdateDigitalInput1SimulatedValue(
-			     *((bool *)(pValue)), last_simulated_state);
+		r = BSP_UpdateDigitalInput1SimulatedValue(*((bool *)(pValue)),
+							  last_simulated_state);
 	} else {
 		/* If DoWrite is not set, this is the initial validator
 		 * call to validate the data passed by the client. We
@@ -585,8 +585,8 @@ int AttributeValidator_din2sim(AttributeEntry_t *pEntry, void *pValue,
 		/* Set the simulated value */
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
 		/* Then update the system */
-		r = BSP_UpdateDigitalInput2SimulatedValue(
-			     *((bool *)(pValue)), last_simulated_state);
+		r = BSP_UpdateDigitalInput2SimulatedValue(*((bool *)(pValue)),
+							  last_simulated_state);
 	} else {
 		/* Call standard validator for initial call */
 		r = AttributeValidator_bool(pEntry, pValue, Length, false);
@@ -670,7 +670,7 @@ int AttributeValidator_magsim(AttributeEntry_t *pEntry, void *pValue,
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
 		/* Update the value in the User Interface */
 		r = UserInterfaceTask_UpdateMagSwitchSimulatedValue(
-			     *((bool *)(pValue)), last_simulated_value);
+			*((bool *)(pValue)), last_simulated_value);
 	} else {
 		/* If DoWrite is not set, we just call the
 		 * standard type validator to make sure the
@@ -758,7 +758,7 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 		*((bool *)(attribute_entry->pData)) = *((bool *)(pValue));
 		/* Then the value in the User Interface */
 		r = UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
-			     *((bool *)(pValue)), last_simulated_value);
+			*((bool *)(pValue)), last_simulated_value);
 	} else {
 		/* If DoWrite is not set, we just call the
 		 * standard type validator to make sure the
@@ -771,7 +771,7 @@ int AttributeValidator_tampsim(AttributeEntry_t *pEntry, void *pValue,
 }
 
 int AttributeValidator_blockDowngrades(AttributeEntry_t *pEntry, void *pValue,
-			    size_t Length, bool DoWrite)
+				       size_t Length, bool DoWrite)
 {
 	/* Same as UINT8 */
 	ARG_UNUSED(Length);

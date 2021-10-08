@@ -33,6 +33,31 @@ config SENSOR_TASK_LOG_LEVEL
     int "Log level for Sensor Task"
     range 0 4
     default 3
+    
+config ATTR_VALID_LOG_LEVEL
+    int "Log level for Attribute Validator"
+    range 0 4
+    default 3
+
+config AGGREGATION_LOG_LEVEL
+    int "Log level for Aggregation Count"
+    range 0 4
+    default 3
+
+config ADVERTISEMENT_LOG_LEVEL
+    int "Log level for Advertisement"
+    range 0 4
+    default 3
+
+config ALARM_CONTROL_LOG_LEVEL
+    int "Log level for Alarm Control"
+    range 0 4
+    default 3
+
+config EVENT_TASK_LOG_LEVEL
+    int "Log level for Event Task"
+    range 0 4
+    default 3    
 
 config ADVERTISEMENT_DISABLE
     bool "Disable advertisements for easier debug"

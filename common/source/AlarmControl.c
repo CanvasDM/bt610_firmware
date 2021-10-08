@@ -8,7 +8,7 @@
  */
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(AlarmControl, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(AlarmControl, CONFIG_ALARM_CONTROL_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */

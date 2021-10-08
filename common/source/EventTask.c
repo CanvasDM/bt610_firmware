@@ -8,7 +8,7 @@
  */
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(EventTask, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #define THIS_FILE "Event"
 
 /******************************************************************************/
@@ -63,7 +63,7 @@ static uint32_t event_task_event_id = 0;
 static void EventTaskThread(void *, void *, void *);
 static void SetDataloggerStatus(void);
 static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg);
+						    FwkMsg_t *pMsg);
 static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg);
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,

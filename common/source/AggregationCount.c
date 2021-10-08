@@ -8,7 +8,7 @@
  */
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(AggregationCount, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(AggregationCount, CONFIG_ATTR_VALID_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -181,7 +181,7 @@ static SensorEventType_t AnalogConfigType(size_t channel)
 	case ANALOG_CURRENT:
 		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
-	case ANALOG_ULTRASONIC:	
+	case ANALOG_ULTRASONIC:
 	case ANALOG_PRESSURE:
 		eventTypeReturn = SENSOR_EVENT_ULTRASONIC_1 + (channel);
 		break;

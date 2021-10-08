@@ -8,7 +8,7 @@
  */
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(Advertisement, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -133,17 +133,15 @@ static struct bt_conn_cb connection_callbacks = {
 /* As the callback locations are not changed at runtime, these reside in ROM  */
 /* to protect against corruption and hard faulting.                           */
 /******************************************************************************/
-const struct bt_conn_auth_cb auth_callback = {
-	.passkey_display = NULL,
-	.passkey_entry = NULL,
-	.passkey_confirm = NULL,
-	.oob_data_request = NULL,
-	.cancel = NULL,
-	.pairing_confirm = NULL,
-	.pairing_complete = NULL,
-	.pairing_failed = NULL,
-	.bond_deleted = NULL
-};
+const struct bt_conn_auth_cb auth_callback = { .passkey_display = NULL,
+					       .passkey_entry = NULL,
+					       .passkey_confirm = NULL,
+					       .oob_data_request = NULL,
+					       .cancel = NULL,
+					       .pairing_confirm = NULL,
+					       .pairing_complete = NULL,
+					       .pairing_failed = NULL,
+					       .bond_deleted = NULL };
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -485,10 +483,10 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 
 	if (extendPhyEnbled == true) {
 		r = bt_le_ext_adv_set_data(extendedAdv, bt_extAd,
-						ARRAY_SIZE(bt_extAd), NULL, 0);
+					   ARRAY_SIZE(bt_extAd), NULL, 0);
 	} else {
 		r = bt_le_ext_adv_set_data(adv, bt_ad, ARRAY_SIZE(bt_ad),
-						   bt_rsp, ARRAY_SIZE(bt_rsp));
+					   bt_rsp, ARRAY_SIZE(bt_rsp));
 	}
 
 	LOG_INF("update advertising data (%d)", r);
