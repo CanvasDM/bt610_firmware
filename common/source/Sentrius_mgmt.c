@@ -113,81 +113,80 @@ static int FloatParameterExternalToInternal(CborType externalFormat,
 /******************************************************************************/
 static const struct mgmt_handler sentrius_mgmt_handlers[] = {
 	/* pystart - mgmt handlers */
-	[SENTRIUS_MGMT_ID_GETPARAMETER] = {
-		.mh_write = Sentrius_mgmt_GetParameter,
-		.mh_read = Sentrius_mgmt_GetParameter,
+	[SENTRIUS_MGMT_ID_GET_PARAMETER] = {
+		.mh_write = Sentrius_mgmt_get_parameter,
+		.mh_read = Sentrius_mgmt_get_parameter,
 	},
-	[SENTRIUS_MGMT_ID_SETPARAMETER] = {
-		.mh_write = Sentrius_mgmt_SetParameter,
-		.mh_read = Sentrius_mgmt_SetParameter,
+	[SENTRIUS_MGMT_ID_SET_PARAMETER] = {
+		.mh_write = Sentrius_mgmt_set_parameter,
+		.mh_read = Sentrius_mgmt_set_parameter,
 	},
-	[SENTRIUS_MGMT_ID_REVECHO] = {
-		.mh_write = Sentrius_mgmt_RevEcho,
-		.mh_read = Sentrius_mgmt_RevEcho,
+	[SENTRIUS_MGMT_ID_REV_ECHO] = {
+		Sentrius_mgmt_rev_echo, Sentrius_mgmt_rev_echo
 	},
-	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR] = {
-		.mh_write = Sentrius_mgmt_CalibrateThermistor,
-		.mh_read = Sentrius_mgmt_CalibrateThermistor,
+	[SENTRIUS_MGMT_ID_CALIBRATE_THERMISTOR] = {
+		.mh_write = Sentrius_mgmt_calibrate_thermistor,
+		.mh_read = Sentrius_mgmt_calibrate_thermistor,
 	},
-	[SENTRIUS_MGMT_ID_TESTLED] = {
-		.mh_write = Sentrius_mgmt_TestLed,
-		.mh_read = Sentrius_mgmt_TestLed,
+	[SENTRIUS_MGMT_ID_TEST_LED] = {
+		.mh_write = Sentrius_mgmt_test_led,
+		.mh_read = Sentrius_mgmt_test_led,
 	},
-	[SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2] = {
-		.mh_write = Sentrius_mgmt_CalibrateThermistor_Version2,
-		.mh_read = Sentrius_mgmt_CalibrateThermistor_Version2,
+	[SENTRIUS_MGMT_ID_CALIBRATE_THERMISTOR_VERSION_2] = {
+		.mh_write = Sentrius_mgmt_calibrate_thermistor_version_2,
+		.mh_read = Sentrius_mgmt_calibrate_thermistor_version_2,
 	},
 	[SENTRIUS_MGMT_ID_SET_RTC] = {
-		.mh_write = Sentrius_mgmt_Set_Rtc,
-		.mh_read = Sentrius_mgmt_Set_Rtc,
+		.mh_write = Sentrius_mgmt_set_rtc,
+		.mh_read = Sentrius_mgmt_set_rtc,
 	},
 	[SENTRIUS_MGMT_ID_GET_RTC] = {
-		.mh_write = Sentrius_mgmt_Get_Rtc,
-		.mh_read = Sentrius_mgmt_Get_Rtc,
+		.mh_write = Sentrius_mgmt_get_rtc,
+		.mh_read = Sentrius_mgmt_get_rtc,
 	},
 	[SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE] = {
-		.mh_write = Sentrius_mgmt_Load_Parameter_File,
-		.mh_read = Sentrius_mgmt_Load_Parameter_File,
+		.mh_write = Sentrius_mgmt_load_parameter_file,
+		.mh_read = Sentrius_mgmt_load_parameter_file,
 	},
 	[SENTRIUS_MGMT_ID_DUMP_PARAMETER_FILE] = {
-		.mh_write = Sentrius_mgmt_Dump_Parameter_File,
-		.mh_read = Sentrius_mgmt_Dump_Parameter_File,
+		.mh_write = Sentrius_mgmt_dump_parameter_file,
+		.mh_read = Sentrius_mgmt_dump_parameter_file,
 	},
 	[SENTRIUS_MGMT_ID_PREPARE_LOG] = {
-		.mh_write = Sentrius_mgmt_Prepare_Log,
-		.mh_read = Sentrius_mgmt_Prepare_Log,
+		.mh_write = Sentrius_mgmt_prepare_log,
+		.mh_read = Sentrius_mgmt_prepare_log,
 	},
 	[SENTRIUS_MGMT_ID_ACK_LOG] = {
-		.mh_write = Sentrius_mgmt_Ack_Log,
-		.mh_read = Sentrius_mgmt_Ack_Log,
+		.mh_write = Sentrius_mgmt_ack_log,
+		.mh_read = Sentrius_mgmt_ack_log,
 	},
 	[SENTRIUS_MGMT_ID_FACTORY_RESET] = {
-		.mh_write = Sentrius_mgmt_Factory_Reset,
-		.mh_read = Sentrius_mgmt_Factory_Reset,
+		.mh_write = Sentrius_mgmt_factory_reset,
+		.mh_read = Sentrius_mgmt_factory_reset,
 	},
 	[SENTRIUS_MGMT_ID_PREPARE_TEST_LOG] = {
-		.mh_write = Sentrius_mgmt_Prepare_Test_Log,
-		.mh_read = Sentrius_mgmt_Prepare_Test_Log,
+		.mh_write = Sentrius_mgmt_prepare_test_log,
+		.mh_read = Sentrius_mgmt_prepare_test_log,
 	},
 	[SENTRIUS_MGMT_ID_CHECK_LOCK_STATUS] = {
-		.mh_write = Sentrius_mgmt_Check_Lock_Status,
-		.mh_read = Sentrius_mgmt_Check_Lock_Status,
+		.mh_write = Sentrius_mgmt_check_lock_status,
+		.mh_read = Sentrius_mgmt_check_lock_status,
 	},
 	[SENTRIUS_MGMT_ID_SET_LOCK_CODE] = {
-		.mh_write = Sentrius_mgmt_Set_Lock_Code,
-		.mh_read = Sentrius_mgmt_Set_Lock_Code,
+		.mh_write = Sentrius_mgmt_set_lock_code,
+		.mh_read = Sentrius_mgmt_set_lock_code,
 	},
 	[SENTRIUS_MGMT_ID_LOCK] = {
-		.mh_write = Sentrius_mgmt_Lock,
-		.mh_read = Sentrius_mgmt_Lock,
+		.mh_write = Sentrius_mgmt_lock,
+		.mh_read = Sentrius_mgmt_lock,
 	},
 	[SENTRIUS_MGMT_ID_UNLOCK] = {
-		.mh_write = Sentrius_mgmt_Unlock,
-		.mh_read = Sentrius_mgmt_Unlock,
+		.mh_write = Sentrius_mgmt_unlock,
+		.mh_read = Sentrius_mgmt_unlock,
 	},
 	[SENTRIUS_MGMT_ID_GET_UNLOCK_ERROR_CODE] = {
-		.mh_write = Sentrius_mgmt_Get_Unlock_Error_Code,
-		.mh_read = Sentrius_mgmt_Get_Unlock_Error_Code,
+		.mh_write = Sentrius_mgmt_get_unlock_error_code,
+		.mh_read = Sentrius_mgmt_get_unlock_error_code,
 	},
 	/* pyend */
 };
@@ -216,7 +215,7 @@ void Sentrius_mgmt_register_group(void)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
@@ -292,25 +291,25 @@ int Sentrius_mgmt_GetParameter(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_rev_echo(struct mgmt_ctxt *ctxt)
 {
 	char echo_buf[SENTRIUS_MGMT_REV_ECHO_BUFFER_SIZE] = { 0 };
 	char rev_buf[SENTRIUS_MGMT_REV_ECHO_BUFFER_SIZE] = { 0 };
 	size_t echo_len = 0;
 
-	const struct cbor_attr_t attrs[
-		SENTRIUS_MGMT_NUM_PARAMETERS_REV_ECHO] = {
-        [SENTRIUS_MGMT_P0_INDEX] = {
-            .attribute = "d",
-            .type = CborAttrTextStringType,
-            .addr.string = echo_buf,
-            .len = sizeof echo_buf,
-            .nodefault = true,
-        },
-        [SENTRIUS_MGMT_P1_INDEX] = {
-            .attribute = NULL
-        }
-    };
+	const struct cbor_attr_t attrs[SENTRIUS_MGMT_NUM_PARAMETERS_REV_ECHO] =
+	{
+		[SENTRIUS_MGMT_P0_INDEX] = {
+			.attribute = "d",
+			.type = CborAttrTextStringType,
+			.addr.string = echo_buf,
+			.len = sizeof(echo_buf),
+			.nodefault = true,
+		},
+		[SENTRIUS_MGMT_P1_INDEX] = {
+			.attribute = NULL
+		}
+	};
 
 	echo_buf[0] = '\0';
 
@@ -331,7 +330,7 @@ int Sentrius_mgmt_RevEcho(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
 	int readCbor = 0;
@@ -434,7 +433,7 @@ int Sentrius_mgmt_SetParameter(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_test_led(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 	long long unsigned int duration = ULLONG_MAX;
@@ -462,7 +461,7 @@ int Sentrius_mgmt_TestLed(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 	float c1 = 0.0;
@@ -555,7 +554,7 @@ int Sentrius_mgmt_CalibrateThermistor(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 	long long unsigned int c1 = 0;
@@ -598,7 +597,7 @@ int Sentrius_mgmt_CalibrateThermistor_Version2(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_set_rtc(struct mgmt_ctxt *ctxt)
 {
 	int r = 0;
 	int t = 0;
@@ -618,6 +617,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 
 	if (Attribute_IsLocked() == true) {
 		r = -EPERM;
+		t = lcz_qrtc_get_epoch();
 	}
 
 	if (r == 0 && epoch < UINT32_MAX) {
@@ -625,6 +625,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 		t = lcz_qrtc_set_epoch(epoch);
 	} else if (r == 0 && epoch >= UINT32_MAX) {
 		r = -EINVAL;
+		t = lcz_qrtc_get_epoch();
 	}
 
 	CborError err = 0;
@@ -636,7 +637,7 @@ int Sentrius_mgmt_Set_Rtc(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_get_rtc(struct mgmt_ctxt *ctxt)
 {
 	int t = lcz_qrtc_get_epoch();
 
@@ -647,7 +648,7 @@ int Sentrius_mgmt_Get_Rtc(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 {
 	int r = 0;
 
@@ -689,7 +690,7 @@ int Sentrius_mgmt_Load_Parameter_File(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_dump_parameter_file(struct mgmt_ctxt *ctxt)
 {
 	int r = -EPERM;
 	long long unsigned int type = ULLONG_MAX;
@@ -732,7 +733,7 @@ int Sentrius_mgmt_Dump_Parameter_File(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_prepare_log(struct mgmt_ctxt *ctxt)
 {
 	uint8_t n[LCZ_EVENT_MANAGER_FILENAME_SIZE];
 	int r = -EINVAL;
@@ -759,7 +760,7 @@ int Sentrius_mgmt_Prepare_Log(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_ack_log(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 
@@ -774,7 +775,7 @@ int Sentrius_mgmt_Ack_Log(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_factory_reset(struct mgmt_ctxt *ctxt)
 {
 	int r = 0;
 	uint8_t factoryResetEnabled = 0;
@@ -784,8 +785,9 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	}
 
 	if (r == 0) {
-	        Attribute_Get(ATTR_INDEX_factory_reset_enable, &factoryResetEnabled,
-			     sizeof(factoryResetEnabled));
+		Attribute_Get(ATTR_INDEX_factory_reset_enable,
+			      &factoryResetEnabled,
+			      sizeof(factoryResetEnabled));
 
 		if (factoryResetEnabled == 0) {
 			r = -EPERM;
@@ -807,7 +809,7 @@ int Sentrius_mgmt_Factory_Reset(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_prepare_test_log(struct mgmt_ctxt *ctxt)
 {
 	uint8_t n[LCZ_EVENT_MANAGER_FILENAME_SIZE];
 	uint32_t s = 0;
@@ -877,7 +879,7 @@ int Sentrius_mgmt_Prepare_Test_Log(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Check_Lock_Status(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_check_lock_status(struct mgmt_ctxt *ctxt)
 {
 	bool lock_enabled;
 	bool lock_active = false;
@@ -917,7 +919,7 @@ int Sentrius_mgmt_Check_Lock_Status(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Set_Lock_Code(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int lock_code_tmp = ULLONG_MAX;
 	uint32_t lock_code;
@@ -973,7 +975,7 @@ int Sentrius_mgmt_Set_Lock_Code(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Lock(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_lock(struct mgmt_ctxt *ctxt)
 {
 	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
 	int r = 0;
@@ -1002,7 +1004,7 @@ int Sentrius_mgmt_Lock(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 {
 	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
 	long long unsigned int lock_code_tmp = ULLONG_MAX;
@@ -1066,7 +1068,7 @@ int Sentrius_mgmt_Unlock(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-int Sentrius_mgmt_Get_Unlock_Error_Code(struct mgmt_ctxt *ctxt)
+int Sentrius_mgmt_get_unlock_error_code(struct mgmt_ctxt *ctxt)
 {
 	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
 	int r = 0;

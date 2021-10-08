@@ -26,25 +26,25 @@ extern "C" {
 #define MGMT_GROUP_ID_SENTRIUS 65
 
 /* pystart - mgmt handler function defines */
-mgmt_handler_fn Sentrius_mgmt_GetParameter;
-mgmt_handler_fn Sentrius_mgmt_SetParameter;
-mgmt_handler_fn Sentrius_mgmt_RevEcho;
-mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor;
-mgmt_handler_fn Sentrius_mgmt_TestLed;
-mgmt_handler_fn Sentrius_mgmt_CalibrateThermistor_Version2;
-mgmt_handler_fn Sentrius_mgmt_Set_Rtc;
-mgmt_handler_fn Sentrius_mgmt_Get_Rtc;
-mgmt_handler_fn Sentrius_mgmt_Load_Parameter_File;
-mgmt_handler_fn Sentrius_mgmt_Dump_Parameter_File;
-mgmt_handler_fn Sentrius_mgmt_Prepare_Log;
-mgmt_handler_fn Sentrius_mgmt_Ack_Log;
-mgmt_handler_fn Sentrius_mgmt_Factory_Reset;
-mgmt_handler_fn Sentrius_mgmt_Prepare_Test_Log;
-mgmt_handler_fn Sentrius_mgmt_Check_Lock_Status;
-mgmt_handler_fn Sentrius_mgmt_Set_Lock_Code;
-mgmt_handler_fn Sentrius_mgmt_Lock;
-mgmt_handler_fn Sentrius_mgmt_Unlock;
-mgmt_handler_fn Sentrius_mgmt_Get_Unlock_Error_Code;
+mgmt_handler_fn Sentrius_mgmt_get_parameter;
+mgmt_handler_fn Sentrius_mgmt_set_parameter;
+mgmt_handler_fn Sentrius_mgmt_rev_echo;
+mgmt_handler_fn Sentrius_mgmt_calibrate_thermistor;
+mgmt_handler_fn Sentrius_mgmt_test_led;
+mgmt_handler_fn Sentrius_mgmt_calibrate_thermistor_version_2;
+mgmt_handler_fn Sentrius_mgmt_set_rtc;
+mgmt_handler_fn Sentrius_mgmt_get_rtc;
+mgmt_handler_fn Sentrius_mgmt_load_parameter_file;
+mgmt_handler_fn Sentrius_mgmt_dump_parameter_file;
+mgmt_handler_fn Sentrius_mgmt_prepare_log;
+mgmt_handler_fn Sentrius_mgmt_ack_log;
+mgmt_handler_fn Sentrius_mgmt_factory_reset;
+mgmt_handler_fn Sentrius_mgmt_prepare_test_log;
+mgmt_handler_fn Sentrius_mgmt_check_lock_status;
+mgmt_handler_fn Sentrius_mgmt_set_lock_code;
+mgmt_handler_fn Sentrius_mgmt_lock;
+mgmt_handler_fn Sentrius_mgmt_unlock;
+mgmt_handler_fn Sentrius_mgmt_get_unlock_error_code;
 /* pyend */
 
 /**
@@ -59,12 +59,12 @@ mgmt_handler_fn Sentrius_mgmt_Get_Unlock_Error_Code;
  */
 /* clang-format off */
 /* pystart - mgmt function indices */
-#define SENTRIUS_MGMT_ID_GETPARAMETER                          1
-#define SENTRIUS_MGMT_ID_SETPARAMETER                          2
-#define SENTRIUS_MGMT_ID_REVECHO                               3
-#define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR                   4
-#define SENTRIUS_MGMT_ID_TESTLED                               5
-#define SENTRIUS_MGMT_ID_CALIBRATETHERMISTOR_VERSION2          6
+#define SENTRIUS_MGMT_ID_GET_PARAMETER                         1
+#define SENTRIUS_MGMT_ID_SET_PARAMETER                         2
+#define SENTRIUS_MGMT_ID_REV_ECHO                              3
+#define SENTRIUS_MGMT_ID_CALIBRATE_THERMISTOR                  4
+#define SENTRIUS_MGMT_ID_TEST_LED                              5
+#define SENTRIUS_MGMT_ID_CALIBRATE_THERMISTOR_VERSION_2        6
 #define SENTRIUS_MGMT_ID_SET_RTC                               7
 #define SENTRIUS_MGMT_ID_GET_RTC                               8
 #define SENTRIUS_MGMT_ID_LOAD_PARAMETER_FILE                   9

@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.90",
+    "version": "1.91",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -225,8 +225,8 @@
       "params": [
         {
           "name": "p1",
-          "summary": "Parameter Id",
-          "description": "ParameterId",
+          "summary": "Parameter ID",
+          "description": "Parameter ID",
           "required": true,
           "schema": {
             "type": "integer",
@@ -246,6 +246,21 @@
         "schema": {
           "items": [
             {
+              "name": "id",
+              "summary": "Parameter ID",
+              "description": "Parameter ID",
+              "required": true,
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 65535.0,
+              "x-ctype": "uint16_t",
+              "x-sequencenumber": 1,
+              "x-default": null,
+              "x-example": "1"
+            },
+            {
               "name": "r1",
               "summary": "Value",
               "description": "Value",
@@ -256,9 +271,24 @@
               "minimum": 0.0,
               "maximum": 0.0,
               "x-ctype": "string",
-              "x-sequencenumber": 1,
+              "x-sequencenumber": 2,
               "x-default": null,
-              "x-example": "1"
+              "x-example": "NULL"
+            },
+            {
+              "name": "r",
+              "summary": "result",
+              "description": "negative error code, 0 on success",
+              "required": true,
+              "type": "integer",
+              "minimumlength": 0,
+              "maximumlength": 0,
+              "minimum": 0.0,
+              "maximum": 0.0,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 3,
+              "x-default": null,
+              "x-example": "0"
             }
           ]
         }
@@ -282,8 +312,8 @@
       "params": [
         {
           "name": "p1",
-          "summary": "Parameter Id",
-          "description": "ParameterId",
+          "summary": "Parameter ID",
+          "description": "Parameter ID",
           "required": true,
           "schema": {
             "type": "integer",
@@ -300,7 +330,7 @@
         {
           "name": "p2",
           "summary": "Parameter Value",
-          "description": "ParameterValue",
+          "description": "Parameter Value",
           "required": true,
           "schema": {
             "type": "string",
@@ -328,15 +358,15 @@
               "minimumlength": 0,
               "maximumlength": 0,
               "minimum": 0.0,
-              "maximum": 0.0,
-              "x-ctype": "uint8_t",
+              "maximum": 65535.0,
+              "x-ctype": "uint16_t",
               "x-sequencenumber": 1,
               "x-default": null,
               "x-example": "0"
             },
             {
-              "name": "result",
-              "summary": "Result status of setting the value. Will return 0 if successful, negitive if error",
+              "name": "r",
+              "summary": "Result status of setting the value. Will return 0 if successful, negative if error",
               "description": "",
               "required": true,
               "type": "integer",
@@ -344,8 +374,8 @@
               "maximumlength": 0,
               "minimum": 0.0,
               "maximum": 0.0,
-              "x-ctype": "uint8_t",
-              "x-sequencenumber": 1,
+              "x-ctype": "int32_t",
+              "x-sequencenumber": 2,
               "x-default": null,
               "x-example": "0"
             }
@@ -392,7 +422,7 @@
         "schema": {
           "items": [
             {
-              "name": "r1",
+              "name": "r",
               "summary": "Value",
               "description": "Value",
               "required": true,
@@ -890,7 +920,7 @@
               "name": "r",
               "type": "integer",
               "summary": "result",
-              "description": "negative error code, return zero on success",
+              "description": "negative error code, 0 on success",
               "required": true,
               "x-example": "0",
               "x-ctype": "int32_t",
@@ -1288,7 +1318,7 @@
       "params": [
         {
           "name": "p1",
-          "summary": "Parameter Id",
+          "summary": "Dummy Parameter",
           "description": "Dummy Parameter",
           "required": false,
           "schema": {
@@ -1363,7 +1393,7 @@
             "minimum": 0.0,
             "maximum": 1.0,
             "x-ctype": "bool",
-            "x-sequencenumber": 1,
+            "x-sequencenumber": 2,
             "x-default": null,
             "x-example": "1"
           }
@@ -3361,7 +3391,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.90",
+              "x-default": "1.91",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
