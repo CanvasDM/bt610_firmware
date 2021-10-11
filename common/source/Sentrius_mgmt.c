@@ -1123,7 +1123,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	case ATTR_TYPE_U64:
 		paramUint = ULLONG_MAX;
 		attrs->type = CborAttrUnsignedIntegerType;
-		attrs->addr.integer = &paramUint;
+		attrs->addr.uinteger = &paramUint;
 		break;
 	case ATTR_TYPE_STRING:
 		memset(paramString, 0, ATTR_MAX_STR_SIZE);
