@@ -285,7 +285,7 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
 	}
 
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
 	return (err != 0) ? -ENOMEM : 0;
@@ -423,7 +423,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	/* If no error update the device configuration id */
@@ -910,10 +910,10 @@ int Sentrius_mgmt_check_lock_status(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 	/* Add if lock is enabled */
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "p1");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
 	err |= cbor_encode_boolean(&ctxt->encoder, lock_enabled);
 	/* Add if lock is engaged */
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "p2");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r2");
 	err |= cbor_encode_boolean(&ctxt->encoder, lock_active);
 	/* Exit with result */
 	return (err != 0) ? -ENOMEM : 0;
@@ -1088,7 +1088,7 @@ int Sentrius_mgmt_get_unlock_error_code(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
 	/* Add status */
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "p1");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r1");
 	err |= cbor_encode_int(&ctxt->encoder, passCodeStatus);
 	/* Exit with result */
 
