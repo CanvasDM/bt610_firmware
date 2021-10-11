@@ -285,7 +285,7 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
 	}
 
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
 	return (err != 0) ? -ENOMEM : 0;
@@ -423,7 +423,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	/* If no error update the device configuration id */
@@ -672,7 +672,8 @@ int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 	}
 
 	if (r == 0) {
-		r = Attribute_Load(paramString, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
+		r = Attribute_Load(paramString,
+				   SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
 	}
 
 	CborError err = 0;
@@ -944,12 +945,11 @@ int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 	if (r == 0) {
 		lock_code = (uint32_t)lock_code_tmp;
 		r = Attribute_SetUint32(ATTR_INDEX_settings_passcode,
-				    lock_code);
+					lock_code);
 	}
 
 	if (r == 0) {
-		r = Attribute_SetUint32(ATTR_INDEX_lock,
-				    true);
+		r = Attribute_SetUint32(ATTR_INDEX_lock, true);
 	}
 
 	if (r == 0) {
@@ -959,7 +959,7 @@ int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 		 * further configuration changes to the unit until then
 		 */
 		r = Attribute_SetUint32(ATTR_INDEX_lock_status,
-				    LOCK_STATUS_SETUP_DISENGAGED);
+					LOCK_STATUS_SETUP_DISENGAGED);
 	}
 
 	if (r == 0) {
@@ -1146,8 +1146,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 }
 
 static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
-			      struct cbor_attr_t *attrs,
-			      bool *modified)
+			      struct cbor_attr_t *attrs, bool *modified)
 {
 	int status = -EINVAL;
 
