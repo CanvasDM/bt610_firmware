@@ -215,7 +215,7 @@ void SensorTask_Initialize(void)
 	k_thread_name_set(sensorTaskObject.msgTask.pTid, THIS_FILE);
 }
 
-int AttributePrepare_powerVoltageMv(void)
+int AttributePrepare_power_voltage_mv(void)
 {
 	int16_t raw = 0;
 	int32_t mv = 0;
@@ -238,59 +238,59 @@ int AttributePrepare_powerVoltageMv(void)
 	return r;
 }
 
-int AttributePrepare_analogInput1(void)
+int AttributePrepare_analog_input_1(void)
 {
 	float dummyResult;
 	return MeasureAnalogInput(ANALOG_CH_1, ADC_PWR_SEQ_SINGLE,
 				  &dummyResult);
 }
 
-int AttributePrepare_analogInput2(void)
+int AttributePrepare_analog_input_2(void)
 {
 	float dummyResult;
 	return MeasureAnalogInput(ANALOG_CH_2, ADC_PWR_SEQ_SINGLE,
 				  &dummyResult);
 }
 
-int AttributePrepare_analogInput3(void)
+int AttributePrepare_analog_input_3(void)
 {
 	float dummyResult;
 	return MeasureAnalogInput(ANALOG_CH_3, ADC_PWR_SEQ_SINGLE,
 				  &dummyResult);
 }
 
-int AttributePrepare_analogInput4(void)
+int AttributePrepare_analog_input_4(void)
 {
 	float dummyResult;
 	return MeasureAnalogInput(ANALOG_CH_4, ADC_PWR_SEQ_SINGLE,
 				  &dummyResult);
 }
 
-int AttributePrepare_temperatureResult1(void)
+int AttributePrepare_temperature_result_1(void)
 {
 	float dummyResult;
 	return MeasureThermistor(THERM_CH_1, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
-int AttributePrepare_temperatureResult2(void)
+int AttributePrepare_temperature_result_2(void)
 {
 	float dummyResult;
 	return MeasureThermistor(THERM_CH_2, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
-int AttributePrepare_temperatureResult3(void)
+int AttributePrepare_temperature_result_3(void)
 {
 	float dummyResult;
 	return MeasureThermistor(THERM_CH_3, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
-int AttributePrepare_temperatureResult4(void)
+int AttributePrepare_temperature_result_4(void)
 {
 	float dummyResult;
 	return MeasureThermistor(THERM_CH_4, ADC_PWR_SEQ_SINGLE, &dummyResult);
 }
 
-int AttributePrepare_digitalInput(void)
+int AttributePrepare_digital_input(void)
 {
 	UpdateDin1();
 	UpdateDin2();
@@ -345,7 +345,7 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	SensorOutput1Control();
 	SensorOutput2Control();
 
-	AttributePrepare_powerVoltageMv();
+	AttributePrepare_power_voltage_mv();
 	InitializeIntervalTimers();
 	UpdateMagnet();
 	LoadSettingPasscode();
@@ -529,7 +529,7 @@ static DispatchResult_t ReadPowerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
-	AttributePrepare_powerVoltageMv();
+	AttributePrepare_power_voltage_mv();
 	StartPowerInterval();
 
 	return DISPATCH_OK;

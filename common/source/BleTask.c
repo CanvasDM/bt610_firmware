@@ -253,7 +253,7 @@ int lcz_param_file_mount_fs(void)
 	return r;
 }
 
-int AttributePrepare_securityLevel(void)
+int AttributePrepare_security_level(void)
 {
 	int level = -1;
 	if (bto.conn != NULL) {
