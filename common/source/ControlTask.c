@@ -205,6 +205,12 @@ void app_prepare_for_reboot(void)
 	non_init_save_data();
 }
 
+void sys_reboot_notification(int type)
+{
+	ARG_UNUSED(type);
+	app_prepare_for_reboot();
+}
+
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
