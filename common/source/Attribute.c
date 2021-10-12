@@ -1525,6 +1525,7 @@ static void systemWorkqShowHandler(struct k_work *item)
 
 	TAKE_MUTEX(attr_mutex);
 	for (i = 0; i < ATTR_TABLE_SIZE; i++) {
+		PrepareForRead(i);
 		Show(i);
 		k_sleep(K_MSEC(CONFIG_ATTR_SHELL_SHOW_ALL_DELAY_MS));
 	}
