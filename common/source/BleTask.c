@@ -461,13 +461,15 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 			/* Skip sending a request if the link is already
 			 * encrypted otherwise it will just cause a disconnect
 			 */
-			if (tmp_val && bt_conn_get_security(bto.conn) <=
-			    BT_SECURITY_L1) {
+			if (tmp_val && bto.conn != NULL &&
+			    bt_conn_get_security(bto.conn) <= BT_SECURITY_L1) {
 				/* Send security request */
 				if (bto.conn != NULL) {
 					(void)bt_smp_start_security(bto.conn);
 				}
+			}
 
+			if (tmp_val) {
 				/* Reset value back to 0 */
 				Attribute_SetNoBroadcastUint32(
 					ATTR_INDEX_security_request, 0);
