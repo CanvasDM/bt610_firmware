@@ -89,8 +89,8 @@ int HighTempAlarmCheck(size_t channel, float value)
 					ATTR_INDEX_temperature_alarms,
 					high1TempBit, 0);
 			}
-
-		} else if (value >= highTempAlarm2) {
+		}
+		if (value >= highTempAlarm2) {
 			if (highTempAlarmEnable & BIT(high2TempBit)) {
 				AlarmTypeHandler(
 					SENSOR_EVENT_TEMPERATURE_ALARM);
@@ -156,8 +156,8 @@ int LowTempAlarmCheck(size_t channel, float value)
 					ATTR_INDEX_temperature_alarms,
 					low1TempBit, 0);
 			}
-
-		} else if (value <= lowTempAlarm2) {
+		}
+		if (value <= lowTempAlarm2) {
 			if (lowTempAlarmEnable & BIT(low2TempBit)) {
 				AlarmTypeHandler(
 					SENSOR_EVENT_TEMPERATURE_ALARM);
@@ -254,8 +254,8 @@ int HighAnalogAlarmCheck(size_t channel, float value)
 				Attribute_SetMask32(ATTR_INDEX_analog_alarms,
 						    high1AnalogBit, 0);
 			}
-
-		} else if (value >= highAnalogAlarm2) {
+		}
+		if (value >= highAnalogAlarm2) {
 			if (highAnalogAlarmEnable & BIT(high2AnalogBit)) {
 				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
@@ -312,8 +312,8 @@ int LowAnalogAlarmCheck(size_t channel, float value)
 				Attribute_SetMask32(ATTR_INDEX_analog_alarms,
 						    low1AnalogBit, 0);
 			}
-
-		} else if (value <= lowAnalogAlarm2) {
+		}
+		if (value <= lowAnalogAlarm2) {
 			if (lowAnalogAlarmEnable & BIT(low2AnalogBit)) {
 				AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 
