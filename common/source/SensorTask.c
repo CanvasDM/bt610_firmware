@@ -553,6 +553,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfTempDifference[index]);
+			TempAlarmFlagCheck(index);
 			AggregationTempHandler(index, temperature);
 		}
 	}
@@ -578,6 +579,7 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 				index,
 				sensorTaskObject
 					.magnitudeOfAnalogDifference[index]);
+			AnalogAlarmFlagCheck(index);
 			AggregationAnalogHandler(index, analogValue);
 		}
 	}
@@ -657,7 +659,8 @@ static void SaveSettingPasscode(void)
 	}
 
 	/* Send feedback to APP about the passcode */
-	Attribute_SetUint32(ATTR_INDEX_settings_passcode_status, passCodeStatus);
+	Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
+			    passCodeStatus);
 }
 
 static void LoadSensorConfiguration(void)
@@ -1024,8 +1027,8 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 	}
 
 	if (r >= 0) {
-		r = Attribute_SetFloat(ATTR_INDEX_temperature_result_1 + channel,
-				       *result);
+		r = Attribute_SetFloat(
+			ATTR_INDEX_temperature_result_1 + channel, *result);
 	}
 
 	return r;
