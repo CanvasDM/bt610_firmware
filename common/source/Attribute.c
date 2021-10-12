@@ -1187,11 +1187,9 @@ static bool isWritable(attr_idx_t Index)
 	bool r = false;
 	AttributeEntry_t *p = &attrTable[Index];
 
-	bool locked = (*((bool *)attrTable[ATTR_INDEX_lock].pData));
-
 	if (p->writable) {
 		if (p->lockable) {
-			if (!locked) {
+			if (Attribute_IsLocked() == false) {
 				r = true;
 			}
 		} else {
