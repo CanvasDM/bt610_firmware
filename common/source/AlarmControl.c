@@ -363,7 +363,7 @@ int AnalogAlarmFlagCheck(size_t channel)
 	uint32_t analogAlarms = 0;
 	uint8_t flagAnalogBit = 0;
 
-	flagAnalogBit = FLAG_TEMP_ALARM_START_BIT + channel;
+	flagAnalogBit = FLAG_ANALOG_ALARM_START_BIT + channel;
 
 	Attribute_GetUint32(&analogAlarms, ATTR_INDEX_analog_alarms);
 
