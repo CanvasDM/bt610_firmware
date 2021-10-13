@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "BT6 API",
-    "version": "1.92",
+    "version": "1.93",
     "x-serialbleuuid": null,
     "x-smpgroupid": 0
   },
@@ -1934,7 +1934,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": -1.0e+0,
+              "minimum": 0,
               "maximum": 2.55e+2,
               "x-ctype": "float",
               "x-default": "0",
@@ -2040,7 +2040,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": -1.0e+0,
+              "minimum": 0,
               "maximum": 2.55e+2,
               "x-ctype": "float",
               "x-default": "0",
@@ -2140,7 +2140,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": -1.0e+0,
+              "minimum": 0,
               "maximum": 2.55e+2,
               "x-ctype": "float",
               "x-default": "0",
@@ -2242,7 +2242,7 @@
             "x-groupid": 65,
             "schema": {
               "type": "integer",
-              "minimum": -1.0e+0,
+              "minimum": 0,
               "maximum": 2.55e+2,
               "x-ctype": "float",
               "x-default": "0",
@@ -3391,7 +3391,7 @@
               "type": "string",
               "maximumlength": 11,
               "x-ctype": "string",
-              "x-default": "1.92",
+              "x-default": "1.93",
               "x-example": "123.456.789",
               "x-lockable": false,
               "x-readable": true,
