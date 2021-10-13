@@ -182,7 +182,7 @@ int Advertisement_Init(void)
 	ad.networkId = 0;
 	ad.flags = 0;
 	memcpy(&ad.addr, &addr.a, sizeof(bt_addr_t));
-	ad.recordType = SENSOR_EVENT_RESET;
+	ad.recordType = SENSOR_EVENT_RESERVED;
 	ad.resetCount = 0;
 
 	rsp.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;

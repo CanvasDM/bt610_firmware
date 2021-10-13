@@ -81,7 +81,7 @@ int HighTempAlarmCheck(size_t channel, float value)
 			 * if it was set
 			 */
 			Attribute_SetMask32(ATTR_INDEX_temperature_alarms,
-					    highBIT_SETTempBit, BIT_CLEAR);
+					    high1TempBit, BIT_CLEAR);
 		}
 
 		if ((value >= highTempAlarm2) &&
