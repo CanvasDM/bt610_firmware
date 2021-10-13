@@ -540,20 +540,20 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
-	uint8_t index = 0;
-	uint8_t r;
+	size_t index = 0;
+	int r;
 	float temperature = 0.0;
 
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE, &temperature);
+		/* Still need to check the alarms to clear even if disabled input */
+		HighTempAlarmCheck(index, temperature);
+		LowTempAlarmCheck(index, temperature);
+		DeltaTempAlarmCheck(
+			index,
+			sensorTaskObject.magnitudeOfTempDifference[index]);
+		TempAlarmFlagCheck(index);
 		if (r == 0) {
-			HighTempAlarmCheck(index, temperature);
-			LowTempAlarmCheck(index, temperature);
-			DeltaTempAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfTempDifference[index]);
-			TempAlarmFlagCheck(index);
 			AggregationTempHandler(index, temperature);
 		}
 	}
@@ -570,16 +570,17 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	uint8_t index = 0;
 	uint8_t r;
 	float analogValue = 0.0;
+
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
 		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE, &analogValue);
+		/* Still need to check the alarms to clear even if disabled input */
+		HighAnalogAlarmCheck(index, analogValue);
+		LowAnalogAlarmCheck(index, analogValue);
+		DeltaAnalogAlarmCheck(
+			index,
+			sensorTaskObject.magnitudeOfAnalogDifference[index]);
+		AnalogAlarmFlagCheck(index);
 		if (r == 0) {
-			HighAnalogAlarmCheck(index, analogValue);
-			LowAnalogAlarmCheck(index, analogValue);
-			DeltaAnalogAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfAnalogDifference[index]);
-			AnalogAlarmFlagCheck(index);
 			AggregationAnalogHandler(index, analogValue);
 		}
 	}
