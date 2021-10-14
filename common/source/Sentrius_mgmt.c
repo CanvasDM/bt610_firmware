@@ -463,7 +463,7 @@ int Sentrius_mgmt_test_led(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 {
-	int r = -EINVAL;
+	int r = 0;
 	float c1 = 0.0;
 	float c2 = 0.0;
 	float ge = 0.0;
@@ -475,70 +475,78 @@ int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 	floatContainer_t floatContainerP2;
 	int result;
 
-	/* This is global so reset before use */
-	paramTypeList.typeIndex = 0;
-
-	/* Pull back the element types of the CBOR message */
-	err = GetMessageElementTypes(&localCtxt.it, 0, ATTR_MAX_STR_SIZE,
-				     &paramTypeList);
-
-	/* Don't proceed if the values weren't extracted OK */
-	if (err != 0) {
-		return -EINVAL;
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
 	}
 
-	/* Set up the intended parameters structure */
-	struct cbor_attr_t params_attr[] = { { .attribute = "p1",
-					       .type = CborAttrFloatType,
-					       .addr.fval = &c1,
-					       .nodefault = true },
-					     { .attribute = "p2",
-					       .type = CborAttrFloatType,
-					       .addr.fval = &c2,
-					       .nodefault = true },
-					     { .attribute = NULL } };
+	if (r == 0) {
+		/* This is global so reset before use */
+		paramTypeList.typeIndex = 0;
 
-	/* Override it with the actual content of the CBOR message */
-	result = FloatParameterExternalValueType(
-		paramTypeList.typeList[SENTRIUS_MGMT_P0_VALUE_INDEX],
-		params_attr, &floatContainerP1);
+		/* Pull back the element types of the CBOR message */
+		err = GetMessageElementTypes(&localCtxt.it, 0,
+					     ATTR_MAX_STR_SIZE,
+					     &paramTypeList);
 
-	if (result != 0) {
-		return -EINVAL;
+		/* Don't proceed if the values weren't extracted OK */
+		if (err != 0) {
+			return -EINVAL;
+		}
+
+		/* Set up the intended parameters structure */
+		struct cbor_attr_t params_attr[] = { { .attribute = "p1",
+						       .type = CborAttrFloatType,
+						       .addr.fval = &c1,
+						       .nodefault = true },
+						     { .attribute = "p2",
+						       .type = CborAttrFloatType,
+						       .addr.fval = &c2,
+						       .nodefault = true },
+						     { .attribute = NULL } };
+
+		/* Override it with the actual content of the CBOR message */
+		result = FloatParameterExternalValueType(
+			paramTypeList.typeList[SENTRIUS_MGMT_P0_VALUE_INDEX],
+			params_attr, &floatContainerP1);
+
+		if (result != 0) {
+			return -EINVAL;
+		}
+
+		result = FloatParameterExternalValueType(
+			paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
+			&params_attr[SENTRIUS_MGMT_P1_INDEX], &floatContainerP2);
+
+		if (result != 0) {
+			return -EINVAL;
+		}
+
+		/* Read the values */
+		if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+			return -EINVAL;
+		}
+
+		/* Now convert them back again */
+		result = FloatParameterExternalToInternal(
+			paramTypeList.typeList[SENTRIUS_MGMT_P0_VALUE_INDEX],
+			ATTR_TYPE_FLOAT, params_attr, &floatContainerP1, &c1);
+
+		if (result != 0) {
+			return -EINVAL;
+		}
+
+		result = FloatParameterExternalToInternal(
+			paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
+			ATTR_TYPE_FLOAT, &params_attr[SENTRIUS_MGMT_P1_INDEX],
+			&floatContainerP2, &c2);
+
+		if (result != 0) {
+			return -EINVAL;
+		}
+
+		/* Then perform the calibration */
+		r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
 	}
-
-	result = FloatParameterExternalValueType(
-		paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
-		&params_attr[SENTRIUS_MGMT_P1_INDEX], &floatContainerP2);
-
-	if (result != 0) {
-		return -EINVAL;
-	}
-
-	/* Read the values */
-	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
-	}
-
-	/* Now convert them back again */
-	result = FloatParameterExternalToInternal(
-		paramTypeList.typeList[SENTRIUS_MGMT_P0_VALUE_INDEX],
-		ATTR_TYPE_FLOAT, params_attr, &floatContainerP1, &c1);
-
-	if (result != 0) {
-		return -EINVAL;
-	}
-
-	result = FloatParameterExternalToInternal(
-		paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
-		ATTR_TYPE_FLOAT, &params_attr[SENTRIUS_MGMT_P1_INDEX],
-		&floatContainerP2, &c2);
-
-	if (result != 0) {
-		return -EINVAL;
-	}
-	/* Then perform the calibration */
-	r = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, r);
@@ -548,7 +556,7 @@ int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
 	/* If no error update the device configuration id */
-	if (!err) {
+	if (!err && r == 0) {
 		Attribute_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;
@@ -578,9 +586,14 @@ int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	r = AdcBt6_CalibrateThermistor(
-		((float)c1 / SENTRIUS_MGMT_CALIBRATION_SCALER),
-		((float)c2 / SENTRIUS_MGMT_CALIBRATION_SCALER), &ge, &oe);
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	} else {
+		r = AdcBt6_CalibrateThermistor(
+			((float)c1 / SENTRIUS_MGMT_CALIBRATION_SCALER),
+			((float)c2 / SENTRIUS_MGMT_CALIBRATION_SCALER), &ge,
+			&oe);
+	}
 
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
@@ -591,7 +604,7 @@ int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType, &oe);
 
 	/* If no error update the device configuration id */
-	if (!err) {
+	if (!err && r == 0) {
 		Attribute_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;
