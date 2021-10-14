@@ -288,7 +288,7 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 		err |= cbor_encode_text_stringz(&ctxt->encoder, "NULL");
 	}
 
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, getResult);
 
 	return (err != 0) ? -ENOMEM : 0;
@@ -426,7 +426,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
 	err |= cbor_encode_uint(&ctxt->encoder, paramID);
-	err |= cbor_encode_text_stringz(&ctxt->encoder, "result");
+	err |= cbor_encode_text_stringz(&ctxt->encoder, "r");
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	/* If no error update the device configuration id */
