@@ -861,25 +861,33 @@ int Sentrius_mgmt_prepare_test_log(struct mgmt_ctxt *ctxt)
 		{ .attribute = NULL }
 	};
 
-	if (cbor_read_object(&ctxt->it, params_attr) != 0) {
-		return -EINVAL;
+	if (Attribute_IsLocked() == true) {
+		r = -EPERM;
+	} else {
+		if (cbor_read_object(&ctxt->it, params_attr) != 0) {
+			return -EINVAL;
+		}
+
+		dummy_log_file_properties.start_time_stamp =
+			((uint32_t)(start_time_stamp));
+		dummy_log_file_properties.update_rate =
+			((uint32_t)(update_rate));
+		dummy_log_file_properties.event_type =
+			((uint8_t)(event_type));
+		dummy_log_file_properties.event_count =
+			((uint32_t)(event_count));
+		dummy_log_file_properties.event_data_type =
+			((uint8_t)(event_data_type));
+
+		/* Check if we can prepare the log file OK */
+		r = lcz_event_manager_prepare_test_log_file(
+				&dummy_log_file_properties, n, &s);
+		if (r != 0) {
+			/* If not, blank the file path */
+			n[0] = 0;
+		}
 	}
 
-	dummy_log_file_properties.start_time_stamp =
-		((uint32_t)(start_time_stamp));
-	dummy_log_file_properties.update_rate = ((uint32_t)(update_rate));
-	dummy_log_file_properties.event_type = ((uint8_t)(event_type));
-	dummy_log_file_properties.event_count = ((uint32_t)(event_count));
-	dummy_log_file_properties.event_data_type =
-		((uint8_t)(event_data_type));
-
-	/* Check if we can prepare the log file OK */
-	r = lcz_event_manager_prepare_test_log_file(&dummy_log_file_properties,
-						    n, &s);
-	if (r != 0) {
-		/* If not, blank the file path */
-		n[0] = 0;
-	}
 	/* Cbor encode result */
 	CborError err = 0;
 	/* Add result of log prepare */
