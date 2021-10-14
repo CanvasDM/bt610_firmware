@@ -601,6 +601,11 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_BLE_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 
+	/* Start sensor reading */
+	StartPowerInterval();
+	StartTemperatureInterval();
+	StartAnalogInterval();
+
 	return DISPATCH_OK;
 }
 
