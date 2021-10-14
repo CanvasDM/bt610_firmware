@@ -84,6 +84,9 @@ const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
 #define THERMISTOR_S_H_C 8.780e-8
 #define THERMISTOR_S_H_OFFSET 273.15
 
+/* Used to convert incoming simulated voltage values to millivolts */
+#define ADC_BT6_VOLTS_TO_MILLIVOLTS 1000.0f
+
 struct expander_bits {
 	uint8_t ain_sel : 4;
 	/* controls analog and thermistor muxes */
@@ -844,6 +847,12 @@ static bool VoltageIsSimulated(size_t channel, float *simulated_value)
 				    sizeof(*simulated_value)) {
 					/* Only apply the value if safe to do so */
 					is_simulated = true;
+					/* And scale it down for correction by the
+					 * MeasureAnalogInput function call in the
+					 * Sensor Task.
+					 */
+					*simulated_value /=
+						ADC_BT6_VOLTS_TO_MILLIVOLTS;
 				}
 			}
 		}
