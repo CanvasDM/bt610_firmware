@@ -660,14 +660,32 @@ int Attribute_SetQuiet(attr_idx_t Index, bool Value)
 	return r;
 }
 
-int Attribute_Load(const char *abs_path, const char *feedback_path)
+int Attribute_Load(const char *abs_path, const char *feedback_path,
+		   bool *modified)
 {
 	int r = -EPERM;
+
+	if (modified != NULL) {
+		*modified = false;
+	}
 
 	TAKE_MUTEX(attr_mutex);
 	do {
 		r = LoadAttributes(abs_path, feedback_path, true, false, true);
 		BREAK_ON_ERROR(r);
+
+		if (modified != NULL) {
+			/* See if any attributes were modified prior to save */
+			uint16_t i = 0;
+			while (i < ATTR_TABLE_SIZE) {
+				if (attrTable[i].modified) {
+					*modified = true;
+					break;
+				}
+
+				++i;
+			}
+		}
 
 		r = SaveAttributes(true);
 		BREAK_ON_ERROR(r);

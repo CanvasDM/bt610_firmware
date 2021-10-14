@@ -427,7 +427,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 	err |= cbor_encode_int(&ctxt->encoder, setResult);
 
 	/* If no error update the device configuration id */
-	if (!err && update_config) {
+	if (!err && update_config && !setResult) {
 		Attribute_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;
@@ -651,6 +651,7 @@ int Sentrius_mgmt_get_rtc(struct mgmt_ctxt *ctxt)
 int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 {
 	int r = 0;
+	bool modified;
 
 	/* The input file is an optional parameter. */
 	strncpy(paramString, SENTRIUS_MGMT_PARAMETER_FILE_PATH,
@@ -673,7 +674,8 @@ int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 
 	if (r == 0) {
 		r = Attribute_Load(paramString,
-				   SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH);
+				   SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
+				   &modified);
 	}
 
 	CborError err = 0;
@@ -685,7 +687,7 @@ int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 		&ctxt->encoder, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
 		strlen(SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH));
 	/* If no error update the device configuration id */
-	if (r == 0 && !err) {
+	if (r == 0 && !err && modified) {
 		Attribute_UpdateConfig();
 	}
 	return (err != 0) ? -ENOMEM : 0;

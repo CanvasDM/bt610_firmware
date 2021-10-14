@@ -365,10 +365,12 @@ int Attribute_SetQuiet(attr_idx_t Index, bool Value);
  *
  * @param abs_path Absolute file name
  * @param feedback_path Absolute path of feedback file
+ * @param modified Will be true if an attribute was updated, false othewise
  *
  * @param negative error code, number of parameters on success
  */
-int Attribute_Load(const char *abs_path, const char *feedback_path);
+int Attribute_Load(const char *abs_path, const char *feedback_path,
+		   bool *modified);
 
 /**
  * @brief Immediately save data to params.txt
