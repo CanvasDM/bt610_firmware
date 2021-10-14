@@ -38,6 +38,8 @@
 
 #define FLOAT_MAX 3.4028235E38
 
+#define LOCK_INVALID_WAIT_TIME_MS 1500
+
 /* These are used to index CBOR message elements. Messages received from
  * clients are divided into Key Value pairs called parameters, with the first
  * parameter being called P0, the second P1, etc.
@@ -243,6 +245,7 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 	if (readCbor != 0) {
 		return -EINVAL;
 	}
+
 	/* Just need the type from p1 look up id don't need the params_value
 	 * structure
 	 */
@@ -1079,6 +1082,11 @@ int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 		} else {
 			passCodeStatus = SETTINGS_LOCK_ERROR_INVALID_CODE;
 			r = -EINVAL;
+
+			/* Sleep for 1.5 seconds to slow down possible
+			 * attacks
+			 */
+			k_sleep(K_MSEC(LOCK_INVALID_WAIT_TIME_MS));
 		}
 
 		/* Send feedback to APP about the passcode */
