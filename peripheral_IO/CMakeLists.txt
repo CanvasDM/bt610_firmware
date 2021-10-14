@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.13.1)
 
+# Enable floating point support in MCU MGR. Needs to be enabled here
+# for visibility in underlying MCU MGR files.
+add_definitions(-DFLOAT_SUPPORT=1)
+
 # Prepend the additional boards directory but still allow the original Zephyr
 # boards directory to be used with lower priority
 list(PREPEND BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../)
