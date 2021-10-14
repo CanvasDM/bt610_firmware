@@ -59,6 +59,30 @@ static uint32_t alarmChannelMask[NUMBER_OF_CHANNELS] = {
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
+void DeactivateTempAlarm(size_t channel)
+{
+	uint32_t tempAlarmsEnabled = 0;
+	uint32_t tempAlarmFlags = 0;
+
+	LOG_DBG("turn off Temp alarm %x", ~alarmChannelMask[channel]);
+
+	/* Turn off the enabled alarm */
+	Attribute_GetUint32(&tempAlarmsEnabled,
+			    ATTR_INDEX_temperature_alarms_enable);
+	tempAlarmsEnabled = tempAlarmsEnabled & ~alarmChannelMask[channel];
+	Attribute_SetUint32(ATTR_INDEX_temperature_alarms_enable,
+			    tempAlarmsEnabled);
+
+	/* Clear the alarm flags if they were on */
+	Attribute_GetUint32(&tempAlarmFlags, ATTR_INDEX_temperature_alarms);
+	tempAlarmFlags = tempAlarmFlags & ~alarmChannelMask[channel];
+	Attribute_SetUint32(ATTR_INDEX_temperature_alarms, tempAlarmFlags);
+
+	/* Turn off the channel alarm flag */
+	Flags_Set(ANALOG_ALARM_MASK, (FLAG_ANALOG_ALARM_START_BIT + channel),
+		  BIT_CLEAR);
+}
+
 int HighTempAlarmCheck(size_t channel, float value)
 {
 	float highTempAlarm1 = 0;
@@ -193,6 +217,30 @@ int TempAlarmFlagCheck(size_t channel)
 	return 0;
 }
 
+void DeactivateAnalogAlarm(size_t channel)
+{
+	uint32_t analogAlarmsEnabled = 0;
+	uint32_t analogAlarmFlags = 0;
+
+	LOG_DBG("turn off Analog alarm %x", ~alarmChannelMask[channel]);
+
+	/* Turn off the enabled alarm */
+	Attribute_GetUint32(&analogAlarmsEnabled,
+			    ATTR_INDEX_analog_alarms_enable);
+	analogAlarmsEnabled = analogAlarmsEnabled & ~alarmChannelMask[channel];
+	Attribute_SetUint32(ATTR_INDEX_analog_alarms_enable,
+			    analogAlarmsEnabled);
+
+	/* Clear the alarm flags if they were on */
+	Attribute_GetUint32(&analogAlarmFlags, ATTR_INDEX_analog_alarms);
+	analogAlarmFlags = analogAlarmFlags & ~alarmChannelMask[channel];
+	Attribute_SetUint32(ATTR_INDEX_analog_alarms, analogAlarmFlags);
+
+	/* Turn off the channel alarm flag */
+	Flags_Set(ANALOG_ALARM_MASK, (FLAG_ANALOG_ALARM_START_BIT + channel),
+		  BIT_CLEAR);
+}
+
 int HighAnalogAlarmCheck(size_t channel, float value)
 {
 	float highAnalogAlarm1 = 0;
@@ -209,6 +257,7 @@ int HighAnalogAlarmCheck(size_t channel, float value)
 
 	r = Attribute_GetUint32(&highAnalogAlarmEnable,
 				ATTR_INDEX_analog_alarms_enable);
+	LOG_DBG("high Enabled 1 %x", highAnalogAlarmEnable);
 
 	if (r == 0) {
 		uint8_t high1AnalogBit =
