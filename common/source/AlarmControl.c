@@ -40,11 +40,22 @@ typedef enum {
 
 #define BIT_SET (1)
 #define BIT_CLEAR (0)
+#define NUMBER_OF_CHANNELS (4)
+#define CHANNEL_0_MASK (0x1F)
+#define CHANNEL_1_MASK (0x3E0)
+#define CHANNEL_2_MASK (0x7C00)
+#define CHANNEL_3_MASK (0xF8000)
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
 static void AlarmTypeHandler(SensorEventType_t alarmType);
 
+/******************************************************************************/
+/* Local Data Definitions                                                     */
+/******************************************************************************/
+static uint32_t alarmChannelMask[NUMBER_OF_CHANNELS] = {
+	CHANNEL_0_MASK, CHANNEL_1_MASK, CHANNEL_2_MASK, CHANNEL_3_MASK
+};
 /******************************************************************************/
 /* Global Function Definitions                                                */
 /******************************************************************************/
@@ -303,7 +314,7 @@ int AnalogAlarmFlagCheck(size_t channel)
 
 	Attribute_GetUint32(&analogAlarms, ATTR_INDEX_analog_alarms);
 
-	if (analogAlarms > 0) {
+	if (analogAlarms & alarmChannelMask[channel]) {
 		Flags_Set(ANALOG_ALARM_MASK, flagAnalogBit, BIT_SET);
 		AlarmTypeHandler(SENSOR_EVENT_ANALOG_ALARM);
 	} else {
