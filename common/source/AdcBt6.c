@@ -219,8 +219,9 @@ int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv)
 int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
 		   AdcPwrSequence_t power)
 {
-	int rc = -EPERM;
+	int rc = -EINVAL;
 	if (adcObj.dev == NULL) {
+		rc = -EIO;
 		return rc;
 	}
 
@@ -272,7 +273,7 @@ int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
 
 int AdcBt6_CalibrateThermistor(float c1, float c2, float *ge, float *oe)
 {
-	int rc = -EPERM;
+	int rc = -EINVAL;
 
 	float divisor = c2 - c1;
 	if (divisor == 0) {
@@ -339,7 +340,7 @@ const char *AdcBt6_GetTypeString(AdcMeasurementType_t type)
 
 int AdcBt6_FiveVoltEnable(void)
 {
-	int rc = -EPERM;
+	int rc = -EINVAL;
 	if (!adcObj.bPlusEnabled) {
 		rc = BSP_PinSet(FIVE_VOLT_ENABLE_PIN, 1);
 	} else {
@@ -355,7 +356,7 @@ int AdcBt6_FiveVoltEnable(void)
 
 int AdcBt6_FiveVoltDisable(void)
 {
-	int rc = -EPERM;
+	int rc = -EINVAL;
 	if (!adcObj.bPlusEnabled) {
 		rc = BSP_PinSet(FIVE_VOLT_ENABLE_PIN, 0);
 	} else {
@@ -379,7 +380,7 @@ int AdcBt6_BplusEnable(void)
 
 int AdcBt6_BplusDisable(void)
 {
-	int rc = -EPERM;
+	int rc = -EINVAL;
 	if (adcObj.fiveEnabled) {
 		rc = BSP_PinSet(BATT_OUT_ENABLE_PIN, 0);
 	} else {
@@ -543,7 +544,7 @@ void AdcBt6_DisablePower(void)
  */
 int AdcBt6_ConfigAinSelects(void)
 {
-	int rc = -EPERM;
+	int rc = -EIO;
 
 	if (adcObj.i2c == NULL) {
 		return rc;
@@ -564,7 +565,6 @@ int AdcBt6_ConfigAinSelects(void)
 	uint8_t cmd[] = { TCA9538_REG_OUTPUT, adcObj.expander.byte };
 	if (i2c_write(adcObj.i2c, cmd, sizeof(cmd), EXPANDER_ADDRESS) < 0) {
 		LOG_ERR("I2C Failure");
-		rc = -EIO;
 	} else {
 		rc = 0;
 	}
@@ -595,7 +595,7 @@ static AnalogChannel_t GetChannel(AdcMeasurementType_t type)
  */
 static int SampleChannel(int16_t *raw, AnalogChannel_t channel)
 {
-	int rc = -EPERM;
+	int rc = -EIO;
 	const struct adc_sequence sequence = {
 		.options = NULL,
 		.channels = BIT(channel),
@@ -662,7 +662,7 @@ static int ConfigureChannel(AnalogChannel_t channel)
 
 static int InitExpander(void)
 {
-	int rc = -EPERM;
+	int rc = -EIO;
 	adcObj.i2c = device_get_binding(I2C_DEV_NAME);
 	if (adcObj.i2c == NULL) {
 		LOG_ERR("Cannot get I2C device");
@@ -689,7 +689,7 @@ static int InitExpander(void)
  */
 static int ConfigMux(MuxInput_t input)
 {
-	int rc = -EPERM;
+	int rc = -EIO;
 	if (adcObj.i2c == NULL) {
 		return rc;
 	}

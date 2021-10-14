@@ -376,14 +376,14 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static int InitializeButtons(void)
 {
-	int r = -EPERM;
+	int r = -EIO;
 	const struct device *dev;
 	size_t i;
 
 	for (i = 0; i < CONFIG_UI_NUMBER_OF_BUTTONS; i++) {
 		dev = device_get_binding(BUTTON_CFG[i].label);
 		if (dev == NULL) {
-			r = -EPERM;
+			r = -EIO;
 			break;
 		}
 
