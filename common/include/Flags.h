@@ -39,7 +39,7 @@ extern "C" {
 #define FLAG_TAMPER_SWITCH_STATE       0x1, 14
 #define FLAG_MAGNET_STATE              0x1, 15
 
-#define ANY_ALARM_MASK    0x00007F10
+#define ANY_ALARM_MASK    0x00000FF8
 #define TEMP_ALARM_MASK   0x1
 #define ANALOG_ALARM_MASK 0x1
 /******************************************************************************/

@@ -46,6 +46,8 @@ void Flags_Set(uint32_t Mask, uint32_t Position, uint32_t Value)
 	SetFlag(Mask, Position, Value);
 	if ((flags.data & ANY_ALARM_MASK) != 0) {
 		SetFlag(FLAG_ANY_ALARM, 1);
+	} else {
+		SetFlag(FLAG_ANY_ALARM, 0);
 	}
 	k_mutex_unlock(&flags_mutex);
 	/* The flags are used in the advertisment and shadowed in the
