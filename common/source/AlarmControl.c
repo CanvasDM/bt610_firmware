@@ -79,7 +79,7 @@ void DeactivateTempAlarm(size_t channel)
 	Attribute_SetUint32(ATTR_INDEX_temperature_alarms, tempAlarmFlags);
 
 	/* Turn off the channel alarm flag */
-	Flags_Set(ANALOG_ALARM_MASK, (FLAG_ANALOG_ALARM_START_BIT + channel),
+	Flags_Set(TEMP_ALARM_MASK, (FLAG_TEMP_ALARM_START_BIT + channel),
 		  BIT_CLEAR);
 }
 
