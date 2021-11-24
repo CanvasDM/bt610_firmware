@@ -21,9 +21,11 @@ extern "C" {
 #include "FrameworkMsg.h"
 #include "FrameworkMacros.h"
 
-#include "FrameworkIds.h"
-#include "FrameworkMsgCodes.h"
 #include "FrameworkMsgTypes.h"
+
+/* Automatically generated file */
+#include "framework_ids.h"
+#include "framework_msgcodes.h"
 
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
