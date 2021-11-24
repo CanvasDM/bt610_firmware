@@ -280,9 +280,9 @@ static void RebootHandler(void)
 	Attribute_SetString(ATTR_INDEX_firmware_version, VERSION_STRING,
 			    strlen(VERSION_STRING));
 
-	uint32_t reset_reason = lbt_get_and_clear_nrf52_reset_reason_register();
+	uint32_t reset_reason = lcz_nrf_reset_reason_get_and_clear_register();
 	const char *s =
-		lbt_get_nrf52_reset_reason_string_from_register(reset_reason);
+		lcz_nrf_reset_reason_get_string(reset_reason);
 	LOG_WRN("reset reason: %s (%08X)", s, reset_reason);
 
 	if (reset_reason ==
