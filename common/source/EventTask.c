@@ -20,7 +20,7 @@ LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #include "FrameworkIncludes.h"
 #include "EventTask.h"
 #include "Flags.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "Advertisement.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
@@ -125,8 +125,8 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static void SetDataloggerStatus(void)
 {
 	bool dataLogEnable;
-	Attribute_Get(ATTR_INDEX_data_logging_enable, &dataLogEnable,
-		      sizeof(dataLogEnable));
+	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable,
+		 sizeof(dataLogEnable));
 
 	lcz_event_manager_set_logging_state(dataLogEnable);
 }
@@ -168,11 +168,11 @@ static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						   FwkMsg_t *pMsg)
 {
 	UNUSED_PARAMETER(pMsgRxer);
-	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
 	size_t i;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
-		case ATTR_INDEX_data_logging_enable:
+		case ATTR_ID_data_logging_enable:
 			SetDataloggerStatus();
 			break;
 		default:

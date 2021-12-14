@@ -36,7 +36,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "NonInit.h"
 #include "file_system_utilities.h"
 #include "lcz_bluetooth.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "lcz_qrtc.h"
 #include "Flags.h"
 #include "EventTask.h"
@@ -186,22 +186,22 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 	}
 }
 
-int AttributePrepare_up_time(void)
+int attr_prepare_up_time(void)
 {
 	int64_t uptimeMs = k_uptime_get();
-	return (Attribute_SetSigned64(ATTR_INDEX_up_time, uptimeMs));
+	return (attr_set_signed64(ATTR_ID_up_time, uptimeMs));
 }
 
-int AttributePrepare_log_file_status(void)
+int attr_prepare_log_file_status(void)
 {
 	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
-	return (Attribute_SetUint32(ATTR_INDEX_log_file_status, logFileStatus));
+	return (attr_set_uint32(ATTR_ID_log_file_status, logFileStatus));
 }
 
 void app_prepare_for_reboot(void)
 {
 	/* Save attributes */
-	(void)Attribute_Save_Now();
+	(void)attr_force_save();
 	non_init_save_data();
 }
 
@@ -225,12 +225,10 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	LOG_WRN("Version %s", VERSION_STRING);
 
-	Attribute_Init();
-
 	/* Check if settings lock is enabled and set it up */
-	Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+	attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
 
-	Attribute_SetUint32(ATTR_INDEX_lock_status,
+	attr_set_uint32(ATTR_ID_lock_status,
 			    (lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED :
 						    LOCK_STATUS_NOT_SETUP));
 
@@ -238,8 +236,8 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	 * attributes. We use this to determine whether to disable or enable
 	 * logging at startup.
 	 */
-	Attribute_Get(ATTR_INDEX_data_logging_enable, &dataLogEnable,
-		      sizeof(dataLogEnable));
+	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable,
+		 sizeof(dataLogEnable));
 
 	RebootHandler();
 
@@ -277,8 +275,8 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static void RebootHandler(void)
 {
-	Attribute_SetString(ATTR_INDEX_firmware_version, VERSION_STRING,
-			    strlen(VERSION_STRING));
+	attr_set_string(ATTR_ID_firmware_version, VERSION_STRING,
+			strlen(VERSION_STRING));
 
 	uint32_t reset_reason = lcz_nrf_reset_reason_get_and_clear_register();
 	const char *s =
@@ -343,7 +341,7 @@ static void RebootHandler(void)
 				pnird->attribute_save_pending = false;
 			}
 
-			Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
+			attr_set_uint32(ATTR_ID_qrtc, pnird->qrtc);
 		}
 	} else {
 		LOG_WRN("No init ram data is not valid");
@@ -357,9 +355,9 @@ static void RebootHandler(void)
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 
 	/* Update attributes */
-	Attribute_SetString(ATTR_INDEX_reset_reason, s, strlen(s));
-	Attribute_SetUint32(ATTR_INDEX_reset_count, reset_count);
-	Attribute_SetUint32(ATTR_INDEX_recover_settings_count, recovery_count);
+	attr_set_string(ATTR_ID_reset_reason, s, strlen(s));
+	attr_set_uint32(ATTR_ID_reset_count, reset_count);
+	attr_set_uint32(ATTR_ID_recover_settings_count, recovery_count);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
@@ -370,7 +368,7 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 	/* Any benefit of a writable battery age isn't worth the complexity. */
 	pnird->battery_age += CONFIG_HEARTBEAT_SECONDS;
-	Attribute_SetUint32(ATTR_INDEX_battery_age, pnird->battery_age);
+	attr_set_uint32(ATTR_ID_battery_age, pnird->battery_age);
 
 	/* Read value from system because it should have less error than
 	 * seconds maintained by this function.
@@ -378,7 +376,7 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 */
 	if (cto.factoryResetFlag == false) {
 		pnird->qrtc = lcz_qrtc_get_epoch();
-		Attribute_SetUint32(ATTR_INDEX_qrtc, pnird->qrtc);
+		attr_set_uint32(ATTR_ID_qrtc, pnird->qrtc);
 	}
 	lcz_no_init_ram_var_update_header(pnird, SIZE_OF_NIRD);
 
@@ -390,7 +388,7 @@ static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						FwkMsg_t *pMsg)
 {
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
-	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
 	size_t i;
 
 	pObj->broadcastCount += 1;
@@ -414,7 +412,7 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsg);
 	LOG_WRN("Factory Reset");
 	cto.factoryResetFlag = true;
-	Attribute_FactoryReset();
+	attr_factory_reset();
 	lcz_event_manager_factory_reset();
 	/* Need reset to init all the values */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
@@ -458,9 +456,9 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 	/* Save the current PHY to the boot PHY attribute so it can be restored
 	 * after rebooting
 	 */
-	Attribute_SetUint32(ATTR_INDEX_boot_phy, (ble_conn_last_was_le_coded() ?
-							       BOOT_PHY_TYPE_CODED :
-							       BOOT_PHY_TYPE_1M));
+	attr_set_uint32(ATTR_ID_boot_phy, (ble_conn_last_was_le_coded() ?
+							ADVERTISING_PHY_CODED :
+							ADVERTISING_PHY_1M));
 
 	app_prepare_for_reboot();
 }
@@ -516,7 +514,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 	/* Only check the first chunk */
 	if (offset == 0) {
 		/* Check if configuration is locked */
-		if (Attribute_IsLocked() == true) {
+		if (attr_is_locked() == true) {
 			/* Configuration is locked, deny firmware update request
 			 * until the device has been unlocked to prevent
 			 * unauthorised upgrading or downgrading of firmware.
@@ -555,9 +553,8 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 		}
 
 		/* Are we blocking downgrades? If not, allow downgrade */
-		rc = Attribute_Get(ATTR_INDEX_block_downgrades,
-				   &downgrade_blocked,
-				   sizeof(downgrade_blocked));
+		rc = attr_get(ATTR_ID_block_downgrades, &downgrade_blocked,
+			      sizeof(downgrade_blocked));
 		if (rc <= 0) {
 			/* Failed to query, deny request  */
 			LOG_ERR("Failed to query block downgrade status");

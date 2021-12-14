@@ -83,7 +83,6 @@ config HEARTBEAT_SECONDS
         Update rate for increasing battery age counter and qrtc in attributes.
 
 rsource "Kconfig.adc_bt6"
-rsource "Kconfig.attribute"
 rsource "Kconfig.ui"
 rsource "Kconfig.event_log"
 

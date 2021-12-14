@@ -21,7 +21,7 @@ LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
 #include "lcz_bluetooth.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "Advertisement.h"
 #include "EventTask.h"
 #include "Flags.h"
@@ -153,7 +153,7 @@ int Advertisement_Init(void)
 	bt_addr_le_t addr;
 	char addr_str[BT_ADDR_LE_STR_LEN] = { 0 };
 	char bd_addr[BT_ADDR_LE_STR_LEN];
-	size_t size = Attribute_GetSize(ATTR_INDEX_bluetooth_address);
+	size_t size = attr_get_size(ATTR_ID_bluetooth_address);
 
 	bt_id_get(&addr, &count);
 	if (count < 1) {
@@ -175,7 +175,7 @@ int Advertisement_Init(void)
 		}
 	}
 	bd_addr[j] = 0;
-	Attribute_SetString(ATTR_INDEX_bluetooth_address, bd_addr, size - 1);
+	attr_set_string(ATTR_ID_bluetooth_address, bd_addr, size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;
@@ -222,8 +222,8 @@ int Advertisement_IntervalUpdate(void)
 	int r = 0;
 	uint32_t advetInterval = 0;
 
-	Attribute_Get(ATTR_INDEX_advertising_interval, &advetInterval,
-		      sizeof(advetInterval));
+	attr_get(ATTR_ID_advertising_interval, &advetInterval,
+		 sizeof(advetInterval));
 
 	advetInterval = MSEC_TO_UNITS(advetInterval, UNIT_0_625_MS);
 	bt_param.interval_max = advetInterval + BT_GAP_ADV_FAST_INT_MAX_1;
@@ -264,9 +264,9 @@ int Advertisement_IntervalDefault(void)
 	int r = 0;
 	uint16_t advertIntervalDefault = 0;
 
-	Attribute_GetDefault(ATTR_INDEX_advertising_interval,
-			     &advertIntervalDefault,
-			     sizeof(advertIntervalDefault));
+	attr_get_default(ATTR_ID_advertising_interval,
+			 &advertIntervalDefault,
+			 sizeof(advertIntervalDefault));
 
 	advertIntervalDefault =
 		MSEC_TO_UNITS(advertIntervalDefault, UNIT_0_625_MS);
@@ -370,8 +370,8 @@ void TestEventMsg(uint16_t event)
 	idTest = idTest + 1;
 	current.event.type = event;
 
-	Attribute_Get(ATTR_INDEX_qrtc, &timeStamp, sizeof(timeStamp));
-	Attribute_Get(ATTR_INDEX_battery_age, &dataValue, sizeof(dataValue));
+	attr_get(ATTR_ID_qrtc, &timeStamp, sizeof(timeStamp));
+	attr_get(ATTR_ID_battery_age, &dataValue, sizeof(dataValue));
 
 	current.event.timestamp = timeStamp;
 
@@ -383,12 +383,16 @@ void TestEventMsg(uint16_t event)
 /******************************************************************************/
 void CreateAdvertisingParm(void)
 {
-	if (Attribute_CodedEnableCheck() == true) {
-		CreateAdvertisingExtendedParm();
-		extendPhyEnbled = true;
-	} else {
+	uint8_t advertising_phy;
+	attr_get(ATTR_ID_advertising_phy, &advertising_phy,
+		 sizeof(advertising_phy));
+
+	if (advertising_phy == ADVERTISING_PHY_1M) {
 		CreateAdvertisingStandardParm();
 		extendPhyEnbled = false;
+	} else {
+		CreateAdvertisingExtendedParm();
+		extendPhyEnbled = true;
 	}
 }
 
@@ -441,7 +445,7 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	uint8_t codedPhySelected = 0;
 	int r = 0;
 
-	Attribute_Get(ATTR_INDEX_network_id, &networkId, sizeof(networkId));
+	attr_get(ATTR_ID_network_id, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
 	ad.flags = Flags_Get();
 
@@ -453,12 +457,12 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 		ad.data = ad_update->sensor_event.event.data;
 	}
 
-	Attribute_Get(ATTR_INDEX_config_version, &configVersion,
-		      sizeof(configVersion));
+	attr_get(ATTR_ID_config_version, &configVersion,
+		 sizeof(configVersion));
 	rsp.rsp.configVersion = configVersion;
 
-	Attribute_Get(ATTR_INDEX_use_coded_phy, &codedPhySelected,
-		      sizeof(codedPhySelected));
+	attr_get(ATTR_ID_advertising_phy, &codedPhySelected,
+		 sizeof(codedPhySelected));
 
 	ext.ad = ad;
 

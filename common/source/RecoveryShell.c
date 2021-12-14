@@ -17,7 +17,7 @@
 #include <ctype.h>
 #include <tinycrypt/sha256.h>
 
-#include "Attribute.h"
+#include "attr.h"
 #include "file_system_utilities.h"
 #include "FrameworkIncludes.h"
 
@@ -116,12 +116,12 @@ static int rec_request_cmd(const struct shell *shell, size_t argc, char **argv)
 	 * and the number of times the unit has been recovered
 	 */
 	sprintf(buffer, REQUEST_CODE_PREFIX);
-	r = Attribute_Get(ATTR_INDEX_bluetooth_address, &buffer[strlen(buffer)],
-			  sizeof(buffer) - strlen(buffer));
+	r = attr_get(ATTR_ID_bluetooth_address, &buffer[strlen(buffer)],
+		     sizeof(buffer) - strlen(buffer));
 	if (r > 0) {
-		r = Attribute_Get(ATTR_INDEX_recover_settings_count,
-				  &recover_settings_count,
-				  sizeof(recover_settings_count));
+		r = attr_get(ATTR_ID_recover_settings_count,
+			     &recover_settings_count,
+			     sizeof(recover_settings_count));
 	}
 
 	if (r > 0) {
@@ -173,14 +173,13 @@ static int rec_perform_cmd(const struct shell *shell, size_t argc, char **argv)
 			 * verification code
 			 */
 			sprintf(buffer, RECOVERY_CODE_PREFIX);
-			r = Attribute_Get(ATTR_INDEX_bluetooth_address,
-					  &buffer[strlen(buffer)],
-					  sizeof(buffer) - strlen(buffer));
+			r = attr_get(ATTR_ID_bluetooth_address,
+				     &buffer[strlen(buffer)],
+				     sizeof(buffer) - strlen(buffer));
 			if (r > 0) {
-				r = Attribute_Get(
-					ATTR_INDEX_recover_settings_count,
-					&recover_settings_count,
-					sizeof(recover_settings_count));
+				r = attr_get(ATTR_ID_recover_settings_count,
+					     &recover_settings_count,
+					     sizeof(recover_settings_count));
 			}
 
 			if (r <= 0) {
@@ -288,12 +287,10 @@ static void recovery_work_handler(struct k_work *item)
 	uint8_t recover_settings_count = 0;
 
 	/* Increment recovery code and save to filesystem */
-	r = Attribute_Get(ATTR_INDEX_recover_settings_count,
-			  &recover_settings_count,
-			  sizeof(recover_settings_count));
+	r = attr_get(ATTR_ID_recover_settings_count, &recover_settings_count,
+		     sizeof(recover_settings_count));
 	++recover_settings_count;
-	Attribute_SetUint32(ATTR_INDEX_recover_settings_count,
-			    recover_settings_count);
+	attr_set_uint32(ATTR_ID_recover_settings_count, recover_settings_count);
 	fsu_write_abs(CONFIG_RECOVERY_FILE_PATH, &recover_settings_count,
 		      sizeof(recover_settings_count));
 

@@ -15,9 +15,14 @@
 #include <logging/log_ctrl.h>
 #include <limits.h>
 #include <string.h>
+#include <Framework.h>
+#include <FrameworkMacros.h>
+#include <FrameworkMsgTypes.h>
+#include <framework_ids.h>
+#include <framework_msgcodes.h>
 #include "cborattr/cborattr.h"
 #include "mgmt/mgmt.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "UserInterfaceTask.h"
 #include "AdcBt6.h"
 #include "lcz_qrtc.h"
@@ -94,10 +99,12 @@ typedef union _floatContainer_t {
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
-static CborAttrType ParameterValueType(attr_idx_t paramID,
+static void increment_config_version(void);
+
+static CborAttrType ParameterValueType(attr_id_t paramID,
 				       struct cbor_attr_t *attrs);
 
-static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
+static int SaveParameterValue(attr_id_t id, CborAttrType dataType,
 			      struct cbor_attr_t *attrs, bool *modified);
 
 static int FloatParameterExternalValueType(CborType cborType,
@@ -105,7 +112,7 @@ static int FloatParameterExternalValueType(CborType cborType,
 					   floatContainer_t *floatContainer);
 
 static int FloatParameterExternalToInternal(CborType externalFormat,
-					    AttrType_t internalFormat,
+					    enum attr_type internalFormat,
 					    struct cbor_attr_t *attrs,
 					    floatContainer_t *floatContainer,
 					    float *outData);
@@ -217,6 +224,18 @@ void Sentrius_mgmt_register_group(void)
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
+static void increment_config_version(void)
+{
+	uint8_t config_version;
+
+	if (attr_get(ATTR_ID_config_version, &config_version,
+		     sizeof(config_version)) == sizeof(config_version)) {
+		config_version++;
+		(void)attr_set_uint32(ATTR_ID_config_version,
+				      (uint32_t)config_version);
+	}
+}
+
 int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 {
 	long long unsigned int paramID = ATTR_TABLE_SIZE + 1;
@@ -250,7 +269,7 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 	 * structure
 	 */
 	parameterDataType =
-		ParameterValueType((attr_idx_t)paramID, params_value);
+		ParameterValueType((attr_id_t)paramID, params_value);
 	/* Encode the response. */
 	CborError err = 0;
 	err |= cbor_encode_text_stringz(&ctxt->encoder, "id");
@@ -260,26 +279,26 @@ int Sentrius_mgmt_get_parameter(struct mgmt_ctxt *ctxt)
 	/* Get the value */
 	switch (parameterDataType) {
 	case CborAttrIntegerType:
-		getResult = Attribute_Get(paramID, &intData, sizeof(intData));
+		getResult = attr_get(paramID, &intData, sizeof(intData));
 		err |= cbor_encode_int(&ctxt->encoder, intData);
 		break;
 	case CborAttrUnsignedIntegerType:
-		getResult = Attribute_Get(paramID, &uintData, sizeof(uintData));
+		getResult = attr_get(paramID, &uintData, sizeof(uintData));
 		err |= cbor_encode_uint(&ctxt->encoder, uintData);
 		break;
 	case CborAttrTextStringType:
 		getResult =
-			Attribute_Get(paramID, bufferData, ATTR_MAX_STR_LENGTH);
+			attr_get(paramID, bufferData, ATTR_MAX_STR_LENGTH);
 		err |= cbor_encode_text_stringz(&ctxt->encoder, bufferData);
 		break;
 	case CborAttrFloatType:
 		getResult =
-			Attribute_Get(paramID, &floatData, sizeof(floatData));
+			attr_get(paramID, &floatData, sizeof(floatData));
 		err |= cbor_encode_floating_point(&ctxt->encoder, CborFloatType,
 						  &floatData);
 		break;
 	case CborAttrBooleanType:
-		getResult = Attribute_Get(paramID, &boolData, sizeof(boolData));
+		getResult = attr_get(paramID, &boolData, sizeof(boolData));
 		err |= cbor_encode_boolean(&ctxt->encoder, boolData);
 		break;
 	default:
@@ -376,12 +395,12 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 
 	/* Type from p1 look up id number match to type */
 	parameterDataType =
-		ParameterValueType((attr_idx_t)paramID, params_value);
+		ParameterValueType((attr_id_t)paramID, params_value);
 
 	/* Now check if the expected parameter type can be modified by CBOR to
 	 * save space.
 	 */
-	if (Attribute_GetType(paramID) == ATTR_TYPE_FLOAT) {
+	if (attr_get_type(paramID) == ATTR_TYPE_FLOAT) {
 		/* If it can, we need to remap the params_value structure so we
 		 * can convert the data to internal format
 		 */
@@ -401,7 +420,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 	}
 
 	/* Convert it back if needed */
-	if (Attribute_GetType(paramID) == ATTR_TYPE_FLOAT) {
+	if (attr_get_type(paramID) == ATTR_TYPE_FLOAT) {
 		result = FloatParameterExternalToInternal(
 			paramTypeList.typeList[SENTRIUS_MGMT_P1_VALUE_INDEX],
 			ATTR_TYPE_FLOAT, params_value, &floatContainer,
@@ -414,12 +433,12 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 	}
 
 	/* Is this a known attribute? */
-	if (Attribute_GetType(paramID) == ATTR_TYPE_UNKNOWN) {
+	if (attr_get_type(paramID) == ATTR_TYPE_UNKNOWN) {
 		/* No, so don't write anything and exit with an error code */
 		setResult = -EINVAL;
 	} else {
 		/* OK to write the parameter value */
-		setResult = SaveParameterValue((attr_idx_t)paramID,
+		setResult = SaveParameterValue((attr_id_t)paramID,
 					       parameterDataType, params_value,
 					       &update_config);
 	}
@@ -431,7 +450,7 @@ int Sentrius_mgmt_set_parameter(struct mgmt_ctxt *ctxt)
 
 	/* If no error update the device configuration id */
 	if (!err && update_config && !setResult) {
-		Attribute_UpdateConfig();
+		increment_config_version();
 	}
 	return (err != 0) ? -ENOMEM : 0;
 }
@@ -449,7 +468,7 @@ int Sentrius_mgmt_test_led(struct mgmt_ctxt *ctxt)
 		{ .attribute = NULL }
 	};
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	} else {
 		if (cbor_read_object(&ctxt->it, params_attr) != 0) {
@@ -482,7 +501,7 @@ int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 	floatContainer_t floatContainerP2;
 	int result;
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	}
 
@@ -564,7 +583,7 @@ int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt)
 
 	/* If no error update the device configuration id */
 	if (!err && r == 0) {
-		Attribute_UpdateConfig();
+		increment_config_version();
 	}
 	return (err != 0) ? -ENOMEM : 0;
 }
@@ -593,7 +612,7 @@ int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	} else {
 		r = AdcBt6_CalibrateThermistor(
@@ -612,7 +631,7 @@ int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt)
 
 	/* If no error update the device configuration id */
 	if (!err && r == 0) {
-		Attribute_UpdateConfig();
+		increment_config_version();
 	}
 	return (err != 0) ? -ENOMEM : 0;
 }
@@ -635,13 +654,13 @@ int Sentrius_mgmt_set_rtc(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 		t = lcz_qrtc_get_epoch();
 	}
 
 	if (r == 0 && epoch < UINT32_MAX) {
-		r = Attribute_SetUint32(ATTR_INDEX_qrtc_last_set, epoch);
+		r = attr_set_uint32(ATTR_ID_qrtc_last_set, epoch);
 		t = lcz_qrtc_set_epoch(epoch);
 	} else if (r == 0 && epoch >= UINT32_MAX) {
 		r = -EINVAL;
@@ -688,14 +707,14 @@ int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	}
 
 	if (r == 0) {
-		r = Attribute_Load(paramString,
-				   SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
-				   &modified);
+		r = attr_load(paramString,
+			      SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH,
+			      &modified);
 	}
 
 	CborError err = 0;
@@ -708,7 +727,7 @@ int Sentrius_mgmt_load_parameter_file(struct mgmt_ctxt *ctxt)
 		strlen(SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH));
 	/* If no error update the device configuration id */
 	if (r == 0 && !err && modified) {
-		Attribute_UpdateConfig();
+		increment_config_version();
 	}
 	return (err != 0) ? -ENOMEM : 0;
 }
@@ -733,7 +752,7 @@ int Sentrius_mgmt_dump_parameter_file(struct mgmt_ctxt *ctxt)
 	fsu_delete_abs(SENTRIUS_MGMT_PARAMETER_DUMP_PATH);
 	/* This will malloc a string as large as maximum parameter file size. */
 	if (type < UINT8_MAX) {
-		r = Attribute_Dump(&fstr, type);
+		r = attr_prepare_then_dump(&fstr, type);
 		if (r >= 0) {
 			/* OK to set the file path now */
 			strncpy(paramString, SENTRIUS_MGMT_PARAMETER_DUMP_PATH,
@@ -762,7 +781,7 @@ int Sentrius_mgmt_prepare_log(struct mgmt_ctxt *ctxt)
 	int r = -EINVAL;
 	uint32_t s = 0;
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	} else {
 		/* Check if we can prepare the log file OK */
@@ -792,7 +811,7 @@ int Sentrius_mgmt_ack_log(struct mgmt_ctxt *ctxt)
 {
 	int r = -EINVAL;
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	} else {
 		r = lcz_event_manager_delete_log_file();
@@ -812,14 +831,13 @@ int Sentrius_mgmt_factory_reset(struct mgmt_ctxt *ctxt)
 	int r = 0;
 	uint8_t factoryResetEnabled = 0;
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	}
 
 	if (r == 0) {
-		Attribute_Get(ATTR_INDEX_factory_reset_enable,
-			      &factoryResetEnabled,
-			      sizeof(factoryResetEnabled));
+		attr_get(ATTR_ID_factory_reset_enable, &factoryResetEnabled,
+			 sizeof(factoryResetEnabled));
 
 		if (factoryResetEnabled == 0) {
 			r = -EPERM;
@@ -877,7 +895,7 @@ int Sentrius_mgmt_prepare_test_log(struct mgmt_ctxt *ctxt)
 		{ .attribute = NULL }
 	};
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	} else {
 		if (cbor_read_object(&ctxt->it, params_attr) != 0) {
@@ -926,11 +944,11 @@ int Sentrius_mgmt_check_lock_status(struct mgmt_ctxt *ctxt)
 	uint8_t lock_status;
 	int r = 0;
 
-	r = Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+	r = attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
 
 	if (r >= 0) {
-		r = Attribute_Get(ATTR_INDEX_lock_status, &lock_status,
-				  sizeof(lock_status));
+		r = attr_get(ATTR_ID_lock_status, &lock_status,
+			     sizeof(lock_status));
 
 		if (r >= 0) {
 			if (lock_status == LOCK_STATUS_SETUP_ENGAGED) {
@@ -977,18 +995,17 @@ int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (Attribute_IsLocked() == true) {
+	if (attr_is_locked() == true) {
 		r = -EPERM;
 	}
 
 	if (r == 0) {
 		lock_code = (uint32_t)lock_code_tmp;
-		r = Attribute_SetUint32(ATTR_INDEX_settings_passcode,
-					lock_code);
+		r = attr_set_uint32(ATTR_ID_settings_passcode, lock_code);
 	}
 
 	if (r == 0) {
-		r = Attribute_SetUint32(ATTR_INDEX_lock, true);
+		r = attr_set_uint32(ATTR_ID_lock, true);
 	}
 
 	if (r == 0) {
@@ -997,8 +1014,8 @@ int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 		 * manually requests it with the lock command, but allows
 		 * further configuration changes to the unit until then
 		 */
-		r = Attribute_SetUint32(ATTR_INDEX_lock_status,
-					LOCK_STATUS_SETUP_DISENGAGED);
+		r = attr_set_uint32(ATTR_ID_lock_status,
+				    LOCK_STATUS_SETUP_DISENGAGED);
 	}
 
 	if (r == 0) {
@@ -1016,22 +1033,22 @@ int Sentrius_mgmt_set_lock_code(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_lock(struct mgmt_ctxt *ctxt)
 {
-	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	enum settings_passcode_status passCodeStatus = SETTINGS_PASSCODE_STATUS_UNDEFINED;
 	int r = 0;
 
-	if (Attribute_IsLocked() == false) {
+	if (attr_is_locked() == false) {
 		/* Load the new passcode */
 		LoadSettingPasscode();
 
 		/* Lock the settings */
-		Attribute_SetUint32(ATTR_INDEX_lock, true);
-		Attribute_SetUint32(ATTR_INDEX_lock_status,
-				    LOCK_STATUS_SETUP_ENGAGED);
-		passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
+		attr_set_uint32(ATTR_ID_lock, true);
+		attr_set_uint32(ATTR_ID_lock_status,
+				LOCK_STATUS_SETUP_ENGAGED);
+		passCodeStatus = SETTINGS_PASSCODE_STATUS_VALID_CODE;
 
 		/* Send feedback about the passcode */
-		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
-				    passCodeStatus);
+		attr_set_uint32(ATTR_ID_settings_passcode_status,
+				passCodeStatus);
 	}
 
 	/* Cbor encode result */
@@ -1045,7 +1062,7 @@ int Sentrius_mgmt_lock(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 {
-	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	enum settings_passcode_status passCodeStatus = SETTINGS_PASSCODE_STATUS_UNDEFINED;
 	long long unsigned int lock_code_tmp = ULLONG_MAX;
 	uint32_t lock_code;
 	uint32_t real_lock_code;
@@ -1068,19 +1085,18 @@ int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 		return -EINVAL;
 	}
 
-	if (Attribute_IsLocked() == true) {
-		Attribute_GetUint32(&real_lock_code,
-				    ATTR_INDEX_settings_passcode);
+	if (attr_is_locked() == true) {
+		attr_copy_uint32(&real_lock_code, ATTR_ID_settings_passcode);
 		lock_code = (uint32_t)lock_code_tmp;
 
 		/* Check if the passcode entered matches */
 		if (real_lock_code == lock_code) {
 			/* Unlock the settings */
-			Attribute_SetUint32(ATTR_INDEX_lock_status,
-					    LOCK_STATUS_SETUP_DISENGAGED);
-			passCodeStatus = SETTINGS_LOCK_ERROR_VALID_CODE;
+			attr_set_uint32(ATTR_ID_lock_status,
+					LOCK_STATUS_SETUP_DISENGAGED);
+			passCodeStatus = SETTINGS_PASSCODE_STATUS_VALID_CODE;
 		} else {
-			passCodeStatus = SETTINGS_LOCK_ERROR_INVALID_CODE;
+			passCodeStatus = SETTINGS_PASSCODE_STATUS_INVALID_CODE;
 			r = -EINVAL;
 
 			/* Sleep for 1.5 seconds to slow down possible
@@ -1090,16 +1106,16 @@ int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 		}
 
 		/* Send feedback to APP about the passcode */
-		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
-				    passCodeStatus);
+		attr_set_uint32(ATTR_ID_settings_passcode_status,
+				passCodeStatus);
 	}
 
-	if (permanent_unlock == true && Attribute_IsLocked() == false &&
+	if (permanent_unlock == true && attr_is_locked() == false &&
 	    r == 0) {
 		/* User has requested to remove the lock entirely */
-		Attribute_SetUint32(ATTR_INDEX_lock, false);
-		Attribute_SetUint32(ATTR_INDEX_lock_status,
-				    LOCK_STATUS_NOT_SETUP);
+		attr_set_uint32(ATTR_ID_lock, false);
+		attr_set_uint32(ATTR_ID_lock_status,
+				LOCK_STATUS_NOT_SETUP);
 	}
 
 	/* Cbor encode result */
@@ -1114,16 +1130,16 @@ int Sentrius_mgmt_unlock(struct mgmt_ctxt *ctxt)
 
 int Sentrius_mgmt_get_unlock_error_code(struct mgmt_ctxt *ctxt)
 {
-	settingsLockErrorType_t passCodeStatus = SETTINGS_LOCK_ERROR_NO_STATUS;
+	enum settings_passcode_status passCodeStatus = SETTINGS_PASSCODE_STATUS_UNDEFINED;
 	int r = 0;
 
-	r = Attribute_Get(ATTR_INDEX_settings_passcode_status, &passCodeStatus,
-			  sizeof(passCodeStatus));
+	r = attr_get(ATTR_ID_settings_passcode_status, &passCodeStatus,
+		     sizeof(passCodeStatus));
 
 	if (r >= 0) {
 		/* Clear status */
-		Attribute_SetUint32(ATTR_INDEX_settings_passcode_status,
-				    SETTINGS_LOCK_ERROR_NO_STATUS);
+		attr_set_uint32(ATTR_ID_settings_passcode_status,
+				SETTINGS_PASSCODE_STATUS_UNDEFINED);
 	}
 
 	/* Cbor encode result */
@@ -1139,10 +1155,10 @@ int Sentrius_mgmt_get_unlock_error_code(struct mgmt_ctxt *ctxt)
 	return (err != 0) ? -ENOMEM : 0;
 }
 
-static CborAttrType ParameterValueType(attr_idx_t paramID,
+static CborAttrType ParameterValueType(attr_id_t paramID,
 				       struct cbor_attr_t *attrs)
 {
-	AttrType_t parameterType = Attribute_GetType(paramID);
+	enum attr_type parameterType = attr_get_type(paramID);
 
 	attrs->attribute = "p2";
 	attrs->nodefault = true;
@@ -1189,7 +1205,7 @@ static CborAttrType ParameterValueType(attr_idx_t paramID,
 	return (attrs->type);
 }
 
-static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
+static int SaveParameterValue(attr_id_t id, CborAttrType dataType,
 			      struct cbor_attr_t *attrs, bool *modified)
 {
 	int status = -EINVAL;
@@ -1198,7 +1214,7 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 	case CborAttrIntegerType:
 		if (*attrs->addr.integer >= INT32_MIN &&
 		    *attrs->addr.integer <= INT32_MAX) {
-			status = Attribute_Set(id, Attribute_GetType(id),
+			status = attr_set(id, attr_get_type(id),
 					       attrs->addr.integer,
 					       sizeof(int32_t), modified);
 		}
@@ -1206,26 +1222,26 @@ static int SaveParameterValue(attr_idx_t id, CborAttrType dataType,
 	case CborAttrUnsignedIntegerType:
 		if (*attrs->addr.uinteger >= 0 &&
 		    *attrs->addr.uinteger <= UINT32_MAX) {
-			status = Attribute_Set(id, Attribute_GetType(id),
+			status = attr_set(id, attr_get_type(id),
 					       attrs->addr.uinteger,
 					       sizeof(uint32_t), modified);
 		}
 		break;
 
 	case CborAttrTextStringType:
-		status = Attribute_Set(id, Attribute_GetType(id),
+		status = attr_set(id, attr_get_type(id),
 				       attrs->addr.string,
 				       strlen(attrs->addr.string), modified);
 		break;
 
 	case CborAttrFloatType:
-		status = Attribute_Set(id, Attribute_GetType(id),
+		status = attr_set(id, attr_get_type(id),
 				       attrs->addr.fval, sizeof(float),
 				       modified);
 		break;
 
 	case CborAttrBooleanType:
-		status = Attribute_Set(id, Attribute_GetType(id),
+		status = attr_set(id, attr_get_type(id),
 				       attrs->addr.boolean, sizeof(bool),
 				       modified);
 		break;
@@ -1278,7 +1294,7 @@ static int FloatParameterExternalValueType(CborType cborType,
  * @retval A Zephyr error code, 0 for success.
  */
 static int FloatParameterExternalToInternal(CborType externalFormat,
-					    AttrType_t internalFormat,
+					    enum attr_type internalFormat,
 					    struct cbor_attr_t *attrs,
 					    floatContainer_t *floatContainer,
 					    float *outData)

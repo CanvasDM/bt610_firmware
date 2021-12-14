@@ -13,7 +13,7 @@ LOG_MODULE_REGISTER(Flags, LOG_LEVEL_DBG);
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
-#include "Attribute.h"
+#include "attr.h"
 #include "Flags.h"
 #include "SensorTask.h"
 
@@ -53,7 +53,7 @@ void Flags_Set(uint32_t Mask, uint32_t Position, uint32_t Value)
 	/* The flags are used in the advertisment and shadowed in the
 	 * attribute table.
 	 */
-	Attribute_SetUint32(ATTR_INDEX_flags, flags.data);
+	attr_set_uint32(ATTR_ID_flags, flags.data);
 }
 
 uint32_t Flags_Get(void)

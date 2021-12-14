@@ -18,7 +18,7 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include <drivers/gpio.h>
 
 #include "FrameworkIncludes.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "BspSupport.h"
 #include "Flags.h"
 #include "Advertisement.h"
@@ -233,9 +233,9 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
 		/* If simulation has been disabled we need to know
 		 * whether we need to update the live value.
 		 */
-		if ((result = Attribute_Get(ATTR_INDEX_mag_switch_simulated_value,
-					    &last_simulated_state,
-					    sizeof(last_simulated_state))) ==
+		if ((result = attr_get(ATTR_ID_mag_switch_simulated_value,
+				       &last_simulated_state,
+				       sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
 			/* Has there been a change in the live mag switch state? */
 			live_input_state = (bool)BSP_PinGet(MAGNET_MCU_PIN);
@@ -267,9 +267,9 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
 	const struct device *dev;
 
 	/* Simulation enabled? */
-	if ((result = Attribute_Get(ATTR_INDEX_mag_switch_simulated,
-				    &simulation_enabled,
-				    sizeof(simulation_enabled))) ==
+	if ((result = attr_get(ATTR_ID_mag_switch_simulated,
+			       &simulation_enabled,
+			       sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* Change in value? */
@@ -301,10 +301,9 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
 		/* If so, has there been a change in tamper switch state?
 		 * Get the last simulated value.
 		 */
-		if ((result = Attribute_Get(
-			     ATTR_INDEX_tamper_switch_simulated_value,
-			     &last_simulated_state,
-			     sizeof(last_simulated_state))) ==
+		if ((result = attr_get(ATTR_ID_tamper_switch_simulated_value,
+				       &last_simulated_state,
+				       sizeof(last_simulated_state))) ==
 		    sizeof(last_simulated_state)) {
 			/* First check if the live input state has changed */
 			live_input_state = (bool)BSP_PinGet(SW2_PIN);
@@ -337,9 +336,9 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
 	const struct device *dev;
 
 	/* Simulation enabled? */
-	if ((result = Attribute_Get(ATTR_INDEX_tamper_switch_simulated,
-				    &simulation_enabled,
-				    sizeof(simulation_enabled))) ==
+	if ((result = attr_get(ATTR_ID_tamper_switch_simulated,
+			       &simulation_enabled,
+			       sizeof(simulation_enabled))) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* Change in value? */
@@ -414,7 +413,7 @@ static void TamperSwitchStatus(void)
 	int v = BSP_PinGet(SW2_PIN);
 	uint8_t activeMode = 0;
 	if (v >= 0) {
-		Attribute_SetUint32(ATTR_INDEX_tamper_switch_status, (uint32_t)v);
+		attr_set_uint32(ATTR_ID_tamper_switch_status, (uint32_t)v);
 		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
 			SensorEventData_t eventTamper;
@@ -423,8 +422,8 @@ static void TamperSwitchStatus(void)
 			SendUIEvent(SENSOR_EVENT_TAMPER, eventTamper);
 
 			/* Only turn on LED when in active mode */
-			Attribute_Get(ATTR_INDEX_active_mode, &activeMode,
-				      sizeof(activeMode));
+			attr_get(ATTR_ID_active_mode, &activeMode,
+				 sizeof(activeMode));
 			if (activeMode) {
 				led_blink(LED_COLOR_RED, LED_PATTERN_TAMPER);
 			}
@@ -499,7 +498,7 @@ static Dispatch_t EnterActiveModeMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	/* Set the Active Mode flag - all other activities are
 	 * handled by the Sensor Task.
 	 */
-	Attribute_SetUint32(ATTR_INDEX_active_mode, 1);
+	attr_set_uint32(ATTR_ID_active_mode, 1);
 
 	return DISPATCH_OK;
 }
@@ -510,8 +509,8 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	uint8_t factoryResetEnabled = 0;
 	DispatchResult_t result;
-	Attribute_Get(ATTR_INDEX_factory_reset_enable, &factoryResetEnabled,
-		      sizeof(factoryResetEnabled));
+	attr_get(ATTR_ID_factory_reset_enable, &factoryResetEnabled,
+		 sizeof(factoryResetEnabled));
 	if (factoryResetEnabled == 1) {
 		/* Amber */
 		led_blink(LED_COLOR_AMBER, LED_PATTERN_FACTORY_RESET);

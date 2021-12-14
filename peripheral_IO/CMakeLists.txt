@@ -38,9 +38,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/Advertisement.c
     ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
     ${CMAKE_SOURCE_DIR}/../common/source/AlarmControl.c
-    ${CMAKE_SOURCE_DIR}/../common/source/AttributeTable.c
-    ${CMAKE_SOURCE_DIR}/../common/source/Attribute.c
-    ${CMAKE_SOURCE_DIR}/../common/source/AttributeValidator.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
@@ -50,7 +47,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/Flags.c
     ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/LEDs.c
-    ${CMAKE_SOURCE_DIR}/../common/source/LockShell.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/NonInit.c
     ${CMAKE_SOURCE_DIR}/../common/source/RecoveryShell.c
@@ -63,11 +59,5 @@ target_sources(app PRIVATE
 if(CONFIG_TEST_MENU)
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/TestMenu.c
-)
-endif()
-
-if(CONFIG_ATTR_SHELL)
-target_sources(app PRIVATE
-    ${CMAKE_SOURCE_DIR}/../common/source/AttributeShell.c
 )
 endif()

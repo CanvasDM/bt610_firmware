@@ -15,13 +15,18 @@ LOG_MODULE_REGISTER(AggregationCount, CONFIG_ATTR_VALID_LOG_LEVEL);
 /******************************************************************************/
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
+#include <Framework.h>
+#include <FrameworkMacros.h>
+#include <FrameworkMsgTypes.h>
+#include <framework_ids.h>
+#include <framework_msgcodes.h>
 
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
 #include "lcz_bluetooth.h"
 #include "Advertisement.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "AggregationCount.h"
 #include "SensorTask.h"
 #include "EventTask.h"
@@ -58,8 +63,7 @@ int AggregationTempHandler(size_t channel, float value)
 	static uint8_t currentAggregationNumber = 0;
 	int r = -EPERM;
 
-	r = Attribute_Get(ATTR_INDEX_aggregation_count, &aggCount,
-			  sizeof(aggCount));
+	r = attr_get(ATTR_ID_aggregation_count, &aggCount, sizeof(aggCount));
 
 	if (r > 0) {
 		if (aggCount > 1) {
@@ -169,25 +173,25 @@ static void AggregationEventTrigger(SensorMsg_t *sensor_event)
 
 static SensorEventType_t AnalogConfigType(size_t channel)
 {
-	analogConfigType_t configType;
+	enum analog_input_1_type configType;
 	SensorEventType_t eventTypeReturn;
-	Attribute_Get((ATTR_INDEX_analog_input_1_type + channel), &configType,
-		      sizeof(uint8_t));
+	attr_get((ATTR_ID_analog_input_1_type + channel), &configType,
+		  sizeof(uint8_t));
 
 	switch (configType) {
-	case ANALOG_VOLTAGE:
+	case ANALOG_INPUT_1_TYPE_VOLTAGE_0V_TO_10V_DC:
 		eventTypeReturn = SENSOR_EVENT_VOLTAGE_1 + channel;
 		break;
-	case ANALOG_CURRENT:
+	case ANALOG_INPUT_1_TYPE_CURRENT_4MA_TO_20MA:
 		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
-	case ANALOG_ULTRASONIC:
-	case ANALOG_PRESSURE:
+	case ANALOG_INPUT_1_TYPE_PRESSURE:
+	case ANALOG_INPUT_1_TYPE_ULTRASONIC:
 		eventTypeReturn = SENSOR_EVENT_ULTRASONIC_1 + (channel);
 		break;
-	case ANALOG_CURRENT20A:
-	case ANALOG_CURRENT150A:
-	case ANALOG_CURRENT500A:
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_20A:
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_150A:
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_500A:
 		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
 		break;
 	default:

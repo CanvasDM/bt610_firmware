@@ -30,7 +30,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "FrameworkIncludes.h"
 #include "lcz_bluetooth.h"
 #include "Advertisement.h"
-#include "Attribute.h"
+#include "attr.h"
 #include "BleTask.h"
 #include "EventTask.h"
 #include "Flags.h"
@@ -253,13 +253,13 @@ int lcz_param_file_mount_fs(void)
 	return r;
 }
 
-int AttributePrepare_security_level(void)
+int attr_prepare_security_level(void)
 {
 	int level = -1;
 	if (bto.conn != NULL) {
 		level = bt_conn_get_security(bto.conn);
 	}
-        return (Attribute_SetSigned32(ATTR_INDEX_security_level, level));
+        return (attr_set_signed32(ATTR_ID_security_level, level));
 }
 
 /******************************************************************************/
@@ -317,7 +317,7 @@ static int BluetoothInit(void)
 static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	int r;
-	uint8_t force_phy;
+	uint8_t force_phy = BOOT_PHY_DEFAULT;
 	BleTaskObj_t *pObj = (BleTaskObj_t *)pArg1;
 
 	k_timer_init(&durationTimer, DurationTimerCallbackIsr, NULL);
@@ -328,32 +328,31 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		     upgrade_advert_phy_timer_callback_isr, NULL);
 	k_timer_init(&mobileAppDisconnectTimer, AppDisconnectCallbackIsr, NULL);
 
-	force_phy = BOOT_PHY_TYPE_DEFAULT;
 	r = BluetoothInit();
 	while (r != 0) {
 		k_sleep(K_SECONDS(1));
 	}
 
 	/* Initialise PHY and Shelf/Active state */
-	Attribute_Get(ATTR_INDEX_active_mode, &bto.activeModeStatus,
+	attr_get(ATTR_ID_active_mode, &bto.activeModeStatus,
 		      sizeof(bto.activeModeStatus));
 	Flags_Set(FLAG_ACTIVE_MODE, bto.activeModeStatus);
 
-	Attribute_Get(ATTR_INDEX_use_coded_phy, &bto.codedPHYBroadcast,
+	attr_get(ATTR_ID_advertising_phy, &bto.codedPHYBroadcast,
 		      sizeof(bto.codedPHYBroadcast));
 
-	Attribute_Get(ATTR_INDEX_boot_phy, &force_phy, sizeof(force_phy));
+	attr_get(ATTR_ID_boot_phy, &force_phy, sizeof(force_phy));
 
-	if (force_phy != BOOT_PHY_TYPE_DEFAULT) {
+	if (force_phy != BOOT_PHY_DEFAULT) {
 		/* If a firmware update has taken place, re-advertise in PHY
 		 * that was used prior to upgrade, then clear it
 		 */
-		Advertisement_ExtendedSet((force_phy == BOOT_PHY_TYPE_CODED));
+		Advertisement_ExtendedSet((force_phy == BOOT_PHY_CODED));
 		Advertisement_Start();
 		k_timer_start(&upgrade_advert_phy_timer,
 			      K_SECONDS(BOOTUP_ADVERTISMENT_TIME_S), K_NO_WAIT);
 
-		Attribute_SetUint32(ATTR_INDEX_boot_phy, BOOT_PHY_TYPE_DEFAULT);
+		attr_set_uint32(ATTR_ID_boot_phy, BOOT_PHY_DEFAULT);
 	} else if (bto.activeModeStatus == false) {
 		/* If not in Active Mode, advertise for
 		 * BOOTUP_ADVERTISMENT_TIME_MS in 1M
@@ -420,32 +419,32 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	SensorMsg_t dummy_event = { .event.type = SENSOR_EVENT_RESERVED };
 
 	UNUSED_PARAMETER(pMsgRxer);
-	AttrChangedMsg_t *pb = (AttrChangedMsg_t *)pMsg;
+	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
 	size_t i;
 	uint8_t updateData = false;
 	uint32_t tmp_val = 0;
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
-		case ATTR_INDEX_sensor_name:
+		case ATTR_ID_sensor_name:
 			UpdateName();
 			updateData = true;
 			break;
-		case ATTR_INDEX_advertising_interval:
+		case ATTR_ID_advertising_interval:
 			Advertisement_IntervalUpdate();
 			break;
-		case ATTR_INDEX_tx_power:
+		case ATTR_ID_tx_power:
 			TransmitPower();
 			break;
-		case ATTR_INDEX_mobile_app_disconnect:
+		case ATTR_ID_mobile_app_disconnect:
 			StartDisconnectTimer();
 			break;
-		case ATTR_INDEX_network_id:
-		case ATTR_INDEX_config_version:
-		case ATTR_INDEX_flags:
+		case ATTR_ID_network_id:
+		case ATTR_ID_config_version:
+		case ATTR_ID_flags:
 			updateData = true;
 			break;
-		case ATTR_INDEX_use_coded_phy:
-			Attribute_Get(ATTR_INDEX_use_coded_phy,
+		case ATTR_ID_advertising_phy:
+			attr_get(ATTR_ID_advertising_phy,
 				      &bto.codedPHYBroadcast,
 				      sizeof(bto.codedPHYBroadcast));
 			/* Don't switch PHYs if in Shelf mode */
@@ -454,9 +453,8 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 					bto.codedPHYBroadcast);
 			}
 			break;
-		case ATTR_INDEX_security_request:
-			Attribute_GetUint32(&tmp_val,
-					    ATTR_INDEX_security_request);
+		case ATTR_ID_security_request:
+			attr_copy_uint32(&tmp_val, ATTR_ID_security_request);
 
 			/* Skip sending a request if the link is already
 			 * encrypted otherwise it will just cause a disconnect
@@ -471,8 +469,8 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 
 			if (tmp_val) {
 				/* Reset value back to 0 */
-				Attribute_SetNoBroadcastUint32(
-					ATTR_INDEX_security_request, 0);
+				attr_set_no_broadcast_uint32(
+					ATTR_ID_security_request, 0);
 			}
 			break;
 		default:
@@ -662,10 +660,10 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 				      FMC_BLE_START_ADVERTISING);
 
 	/* Check if settings lock needs to be re-activated */
-	Attribute_Get(ATTR_INDEX_lock, &lock_enabled, sizeof(lock_enabled));
+	attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
 
 	if (lock_enabled == true) {
-		Attribute_SetUint32(ATTR_INDEX_lock_status,
+		attr_set_uint32(ATTR_ID_lock_status,
 				    LOCK_STATUS_SETUP_ENGAGED);
 	}
 }
@@ -678,7 +676,7 @@ static int UpdateName(void)
 	int r = -EPERM;
 	char name[ATTR_MAX_STR_SIZE] = { 0 };
 
-	Attribute_Get(ATTR_INDEX_sensor_name, name, ATTR_MAX_STR_LENGTH);
+	attr_get(ATTR_ID_sensor_name, name, ATTR_MAX_STR_LENGTH);
 	r = bt_set_name(name);
 	if (r < 0) {
 		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
@@ -693,7 +691,7 @@ static void TransmitPower(void)
 	uint16_t connectionHandle = 0;
 	int r = 0;
 
-	Attribute_Get(ATTR_INDEX_tx_power, &txPower, sizeof(txPower));
+	attr_get(ATTR_ID_tx_power, &txPower, sizeof(txPower));
 
 	switch (txPower) {
 	case POWER_LEVEL_PLUS_8:
@@ -798,7 +796,7 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 static void StartDisconnectTimer(void)
 {
 	bool disconnectFlag = false;
-	Attribute_Get(ATTR_INDEX_mobile_app_disconnect, &disconnectFlag,
+	attr_get(ATTR_ID_mobile_app_disconnect, &disconnectFlag,
 		      sizeof(disconnectFlag));
 
 	if (disconnectFlag == true) {
@@ -812,7 +810,7 @@ static void ResetAppDisconnectParam(void)
 {
 	bool disconnectFlag = 0;
 
-	Attribute_SetUint32(ATTR_INDEX_mobile_app_disconnect, disconnectFlag);
+	attr_set_uint32(ATTR_ID_mobile_app_disconnect, disconnectFlag);
 }
 
 static void RequestDisconnect(struct bt_conn *ConnectionHandle)
@@ -834,10 +832,10 @@ static uint32_t GetAdvertisingDuration(void)
 	uint16_t advertising_interval;
 	bool get_failed = true;
 
-	if (Attribute_Get(ATTR_INDEX_advertising_duration, &advertising_duration,
+	if (attr_get(ATTR_ID_advertising_duration, &advertising_duration,
 			  sizeof(advertising_duration)) ==
 	    sizeof(advertising_duration)) {
-		if (Attribute_Get(ATTR_INDEX_advertising_interval,
+		if (attr_get(ATTR_ID_advertising_interval,
 				  &advertising_interval,
 				  sizeof(advertising_interval)) ==
 		    sizeof(advertising_interval)) {

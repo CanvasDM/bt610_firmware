@@ -19,7 +19,7 @@ LOG_MODULE_REGISTER(FileAccess, CONFIG_FILE_ACCESS_LOG_LEVEL);
 #include <lcz_fs_mgmt/fs_mgmt_impl.h>
 
 #include "FileAccess.h"
-#include "Attribute.h"
+#include "attr.h"
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -49,7 +49,7 @@ int fs_mgmt_impl_app_access_check(uint8_t access_type, const char *path)
 		/* Write: allow access to parameter upload file only */
 		if (strcmp(path, SENTRIUS_MGMT_PARAMETER_FILE_PATH) == 0) {
 			/* But do not allow if the settings lock is engaged */
-			if (Attribute_IsLocked() == false) {
+			if (attr_is_locked() == false) {
 				rc = 0;
 			}
 		}
