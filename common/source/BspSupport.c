@@ -625,8 +625,7 @@ static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id)
 				if (uart0_dev) {
 					(void)pm_device_state_set(
 						uart0_dev,
-						PM_DEVICE_STATE_ACTIVE, NULL,
-						NULL);
+						PM_DEVICE_STATE_ACTIVE);
 					(void)gpio_pin_set(port0,
 							   GPIO_PIN_MAP(
 							   UART_0_RTS_PIN),
@@ -688,9 +687,7 @@ static void UART0WorkqHandler(struct k_work *item)
 
 		(void)gpio_pin_set(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
 				   BSP_SUPPORT_UART_RTS_INACTIVE);
-		(void)pm_device_state_set(
-			uart0_dev, PM_DEVICE_STATE_OFF, NULL,
-			NULL);
+		(void)pm_device_state_set(uart0_dev, PM_DEVICE_STATE_OFF);
 
 		/* If we have no active Bluetooth connection, lock the settings
 		 * if it's setup that way
@@ -727,9 +724,7 @@ static void UART1Initialise(void)
 		/* Ignoring the return code here - if it's non-zero the UART is
 		 * already off.
 		 */
-		(void)pm_device_state_set(
-			uart1_dev, PM_DEVICE_STATE_OFF, NULL,
-			NULL);
+		(void)pm_device_state_set(uart1_dev, PM_DEVICE_STATE_OFF);
 	}
 }
 

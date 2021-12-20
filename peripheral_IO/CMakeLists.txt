@@ -20,12 +20,6 @@ add_definitions(-DNDEBUG=1)
 # boards directory to be used with lower priority
 list(PREPEND BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../)
 
-# Use static partition layout to ensure consistency between builds.
-# This is to ensure settings storage will be at the same location after the DFU.
-set(PM_STATIC_YML_FILE
-  ${CMAKE_SOURCE_DIR}/pm_static_bt6.yml
-)
-
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
 
