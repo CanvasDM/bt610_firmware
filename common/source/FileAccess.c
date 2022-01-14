@@ -35,19 +35,19 @@ int fs_mgmt_impl_app_access_check(uint8_t access_type, const char *path)
 		 */
 		if (strcmp(path, EVENT_MANAGER_FILE_OUT_PATH) == 0) {
 			rc = 0;
-		} else if (strcmp(path, SENTRIUS_MGMT_PARAMETER_DUMP_PATH) ==
+		} else if (strcmp(path, attr_get_quasi_static(ATTR_ID_dump_path)) ==
 			   0) {
 			rc = 0;
-		} else if (strcmp(path, SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH)
+		} else if (strcmp(path, CONFIG_ATTRIBUTE_MGMT_FEEDBACK_FILE)
 			   == 0) {
 			rc = 0;
-		} else if (strcmp(path, ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH)
+		} else if (strcmp(path, CONFIG_ATTR_SHELL_FEEDBACK_FILE)
 			   == 0) {
 			rc = 0;
 		}
 	} else if (access_type == ACCESS_TYPE_WRITE) {
 		/* Write: allow access to parameter upload file only */
-		if (strcmp(path, SENTRIUS_MGMT_PARAMETER_FILE_PATH) == 0) {
+		if (strcmp(path, attr_get_quasi_static(ATTR_ID_load_path)) == 0) {
 			/* But do not allow if the settings lock is engaged */
 			if (attr_is_locked() == false) {
 				rc = 0;

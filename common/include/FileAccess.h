@@ -21,10 +21,6 @@ extern "C" {
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
 #define EVENT_MANAGER_FILE_OUT_PATH "/ext/event_file_out"
-#define SENTRIUS_MGMT_PARAMETER_DUMP_PATH "/ext/dump.txt"
-#define SENTRIUS_MGMT_PARAMETER_FEEDBACK_PATH "/ext/load_bt_feedback.txt"
-#define SENTRIUS_MGMT_PARAMETER_FILE_PATH "/ext/params.txt"
-#define ATTRIBUTE_SHELL_PARAMETER_FEEDBACK_PATH "/ext/load_shell_feedback.txt"
 
 #ifdef __cplusplus
 }
