@@ -221,9 +221,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	bool dataLogEnable;
 	bool lock_enabled;
 
-	/* Prevent 'lost' logs */
-	k_sleep(K_SECONDS(1));
-
 	LOG_WRN("Version %s", VERSION_STRING);
 
 	/* Check if settings lock is enabled and set it up */
