@@ -290,7 +290,7 @@ static void RebootHandler(void)
 	}
 
 	uint32_t reset_count = 0;
-	uint8_t recovery_count = 0;
+
 	if (fsu_lfs_mount() == 0) {
 		fsu_read_abs(RESET_COUNT_FNAME, &reset_count,
 			     sizeof(reset_count));
@@ -311,9 +311,6 @@ static void RebootHandler(void)
 		(void)fsu_delete_abs(CONFIG_SETTINGS_FS_FILE);
 	}
 #endif
-
-	fsu_read_abs(CONFIG_RECOVERY_FILE_PATH, &recovery_count,
-		     sizeof(recovery_count));
 
 	bool valid = lcz_no_init_ram_var_is_valid(pnird, SIZE_OF_NIRD);
 	if (valid) {
@@ -358,7 +355,6 @@ static void RebootHandler(void)
 	/* Update attributes */
 	attr_set_string(ATTR_ID_reset_reason, s, strlen(s));
 	attr_set_uint32(ATTR_ID_reset_count, reset_count);
-	attr_set_uint32(ATTR_ID_recover_settings_count, recovery_count);
 }
 
 static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
