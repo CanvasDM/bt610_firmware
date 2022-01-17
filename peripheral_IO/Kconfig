@@ -31,10 +31,6 @@ config FILE_ACCESS_LOG_LEVEL
     range 0 4
     default 0
 
-config RECOVERY_FILE_PATH
-    string "File name (including path) of where the recovery count file is stored"
-    default "/lfs/recovery_count"
-
 config ATTR_SHELL_ALLOW_DEBUG_COMMANDS
     bool "Enables shell functions that can modify, dump and load data"
     help
@@ -70,44 +66,6 @@ config MAX_SETTINGS_FILE_SIZE
     help
         A setting of 0 will not purge the file, purge size must be greater than
 	256 to be valid.
-
-menuconfig WDT
-    bool "Config Watchdog Timer"
-    imply WATCHDOG
-    default y
-    help
-        Enable-to-Disable requires power cycle or watchdog reset.
-        Watchdog cannot be stopped once started.
-        It can be reconfigured after a reset.
-        If a watchdog reset occurs, then it won't cause another
-        reset unless it is re-enabled.
-
-if WDT
-
-config WDT_INIT_PRIORITY
-    int "System init priority (Application)"
-    default 0
-
-config WDT_LOG_LEVEL
-    int "Log level for BLE watchdog module"
-    range 0 4
-    default 3
-
-config WDT_TIMEOUT_MILLISECONDS
-    int "Rate in milliseconds for watchdog"
-    range 18000 1200000
-    default 600000
-    help
-        Default timeout is 10 minutes
-
-config WDT_WORK_QUEUE_STACK_SIZE
-    int
-    default 320
-
-config WDT_TEST
-    bool "Force the watchdog to timeout (set during initialization)"
-
-endif # WDT
 
 endif # USER_APPLICATION
 
