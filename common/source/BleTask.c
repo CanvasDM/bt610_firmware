@@ -269,13 +269,6 @@ static int BluetoothInit(void)
 {
 	int r = 0;
 	do {
-		if (IS_ENABLED(CONFIG_BT_SETTINGS)) {
-			r = lcz_param_file_mount_fs();
-			if (r != 0) {
-				break;
-			}
-		}
-
 		r = bt_enable(NULL);
 		if (r != 0) {
 			LOG_ERR("Bluetooth init: %d", r);
