@@ -23,6 +23,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include <img_mgmt/img_mgmt.h>
 #include <lcz_os_mgmt/os_mgmt_impl.h>
 #include <pm_config.h>
+#include <lcz_nrf_reset_reason.h>
 
 #include "FrameworkIncludes.h"
 #include "BleTask.h"

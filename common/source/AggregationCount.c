@@ -20,6 +20,7 @@ LOG_MODULE_REGISTER(AggregationCount, CONFIG_ATTR_VALID_LOG_LEVEL);
 #include <FrameworkMsgTypes.h>
 #include <framework_ids.h>
 #include <framework_msgcodes.h>
+#include <BufferPool.h>
 
 #include "Version.h"
 #include "lcz_sensor_adv_format.h"
