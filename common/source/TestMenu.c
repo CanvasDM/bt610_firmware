@@ -2,7 +2,7 @@
  * @file TestMenu.c
  * @brief These are shell commands are used for testing
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2022 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -25,6 +25,7 @@ LOG_MODULE_REGISTER(TestMenu);
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <attr.h>
 
 #include "AdcBt6.h"
 #include "BspSupport.h"
@@ -54,32 +55,43 @@ static int delay = 1;
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
-static int batteryMeasurement(const struct shell *shell, size_t argc,
-			      char **argv)
+static int battery_measurement(const struct shell *shell, size_t argc,
+			       char **argv)
 {
 	ARG_UNUSED(argc);
 	ARG_UNUSED(argv);
-	int16_t raw = 0;
-	int32_t mv = 0;
-	int32_t avg_raw = 0;
-	int32_t avg_mv = 0;
-	int status;
-	size_t i;
-	for (i = 0; i < samples; i++) {
-		status = AdcBt6_ReadPowerMv(&raw, &mv);
-		shell_print(shell, "[%u] status: %d raw: %d mv: %d", i, status,
-			    raw, mv);
-		if (status != 0) {
-			break;
+
+	int result = -EPERM;
+
+	if (attr_is_locked() == false) {
+		int16_t raw = 0;
+		int32_t mv = 0;
+		int32_t avg_raw = 0;
+		int32_t avg_mv = 0;
+		int status;
+		size_t i;
+
+		for (i = 0; i < samples; i++) {
+			status = AdcBt6_ReadPowerMv(&raw, &mv);
+			shell_print(shell, "[%u] status: %d raw: %d mv: %d", i,
+				    status, raw, mv);
+			if (status != 0) {
+				break;
+			}
+			avg_raw += raw;
+			avg_mv += mv;
+			k_sleep(K_MSEC(delay));
 		}
-		avg_raw += raw;
-		avg_mv += mv;
-		k_sleep(K_MSEC(delay));
+		avg_raw /= samples;
+		avg_mv /= samples;
+		shell_print(shell, "averages: raw: %d mv: %d", avg_raw, avg_mv);
+		result = 0;
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
-	avg_raw /= samples;
-	avg_mv /= samples;
-	shell_print(shell, "averages: raw: %d mv: %d", avg_raw, avg_mv);
-	return 0;
+
+	return result;
 }
 
 static int sample_with_channel(const struct shell *shell, int channel,
@@ -148,185 +160,269 @@ static int convert_channel(const char *str)
 
 static int vin(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_VIN_ARG_COUNT) {
-		shell_print(shell, "Please enter a channel from 1 - 4");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_VIN_ARG_COUNT) {
+			shell_print(shell, "Please enter a channel from 1 - 4");
+			result = -EINVAL;
+		} else {
+			int ch = convert_channel(argv[1]);
+			AdcMeasurementType_t type = ADC_TYPE_VOLTAGE;
+			shell_print(shell, "ch: %d type: %s", ch,
+				    AdcBt6_GetTypeString(type));
+			result = sample_with_channel(shell, ch - 1, type,
+						     AdcBt6_ConvertVoltage);
+		}
 	} else {
-		int ch = convert_channel(argv[1]);
-		AdcMeasurementType_t type = ADC_TYPE_VOLTAGE;
-		shell_print(shell, "ch: %d type: %s", ch,
-			    AdcBt6_GetTypeString(type));
-		result = sample_with_channel(shell, ch - 1, type,
-					     AdcBt6_ConvertVoltage);
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
 static int cin(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_CIN_ARG_COUNT) {
-		shell_print(shell, "Please enter a channel from 1 - 4");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_CIN_ARG_COUNT) {
+			shell_print(shell, "Please enter a channel from 1 - 4");
+			result = -EINVAL;
+		} else {
+			int ch = convert_channel(argv[1]);
+			AdcMeasurementType_t type = ADC_TYPE_CURRENT;
+			shell_print(shell, "ch: %d type: %s", ch,
+				    AdcBt6_GetTypeString(type));
+			result = sample_with_channel(shell, ch - 1, type,
+						     AdcBt6_ConvertCurrent);
+		}
 	} else {
-		int ch = convert_channel(argv[1]);
-		AdcMeasurementType_t type = ADC_TYPE_CURRENT;
-		shell_print(shell, "ch: %d type: %s", ch,
-			    AdcBt6_GetTypeString(type));
-		result = sample_with_channel(shell, ch - 1, type,
-					     AdcBt6_ConvertCurrent);
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
 static int therm(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_THERM_ARG_COUNT) {
-		shell_print(shell, "Please enter a channel from 1 - 4");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_THERM_ARG_COUNT) {
+			shell_print(shell, "Please enter a channel from 1 - 4");
+			result = -EINVAL;
+		} else {
+			int ch = convert_channel(argv[1]);
+			AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
+			shell_print(shell, "ch: %d type: %s", ch,
+				    AdcBt6_GetTypeString(type));
+			result = sample_no_channel(shell, type,
+					AdcBt6_ApplyThermistorCalibration);
+		}
 	} else {
-		int ch = convert_channel(argv[1]);
-		AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
-		shell_print(shell, "ch: %d type: %s", ch,
-			    AdcBt6_GetTypeString(type));
-		result = sample_no_channel(shell, type,
-					   AdcBt6_ApplyThermistorCalibration);
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
 static int temp(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_TEMP_ARG_COUNT) {
-		shell_print(shell, "Please enter a channel from 1 - 4");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_TEMP_ARG_COUNT) {
+			shell_print(shell, "Please enter a channel from 1 - 4");
+			result = -EINVAL;
+		} else {
+			int ch = convert_channel(argv[1]);
+			AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
+			shell_print(shell, "ch: %d type: %s", ch,
+				    AdcBt6_GetTypeString(type));
+			result = sample_with_channel(shell, ch - 1, type,
+					AdcBt6_ConvertThermToTemperature);
+		}
 	} else {
-		int ch = convert_channel(argv[1]);
-		AdcMeasurementType_t type = ADC_TYPE_THERMISTOR;
-		shell_print(shell, "ch: %d type: %s", ch,
-			    AdcBt6_GetTypeString(type));
-		result = sample_with_channel(shell, ch - 1, type,
-					     AdcBt6_ConvertThermToTemperature);
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
 static int vref(const struct shell *shell, size_t argc, char **argv)
 {
 	ARG_UNUSED(argc);
-	AdcMeasurementType_t type = ADC_TYPE_VREF;
-	shell_print(shell, "type: %s", AdcBt6_GetTypeString(type));
-	return sample_no_channel(shell, type, AdcBt6_ConvertVref);
+	int result = -EPERM;
+
+	if (attr_is_locked() == false) {
+		AdcMeasurementType_t type = ADC_TYPE_VREF;
+		shell_print(shell, "type: %s", AdcBt6_GetTypeString(type));
+		result = sample_no_channel(shell, type, AdcBt6_ConvertVref);
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
+	}
+
+	return result;
 }
 
 static int configure(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_CONFIGURE_ARG_COUNT) {
-		shell_print(shell,
-			    "Please enter a sample count and delay time");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_CONFIGURE_ARG_COUNT) {
+			shell_print(shell,
+				    "Please enter a sample count and delay time");
+			result = -EINVAL;
+		} else {
+			samples = MAX(1, atoi(argv[1]));
+			delay = MAX(1, atoi(argv[2]));
+			shell_print(shell, "samples: %d delay (ms): %d", samples,
+				    delay);
+			result = 0;
+		}
 	} else {
-		samples = MAX(1, atoi(argv[1]));
-		delay = MAX(1, atoi(argv[2]));
-		shell_print(shell, "samples: %d delay (ms): %d", samples,
-			    delay);
-		result = 0;
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
-static int fiveSet(const struct shell *shell, size_t argc, char **argv)
+static int five_set(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_FIVE_SET_ARG_COUNT) {
-		shell_print(shell, "Please enter 0 for off or 1 for on");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_FIVE_SET_ARG_COUNT) {
+			shell_print(shell, "Please enter 0 for off or 1 for on");
+			result = -EINVAL;
+		} else {
+			int value = atoi(argv[1]);
+			int rc = (value == 0) ? AdcBt6_FiveVoltDisable() :
+						      AdcBt6_FiveVoltEnable();
+			shell_print(shell, "Set 5V: %d status: %d", value, rc);
+			result = 0;
+		}
 	} else {
-		int value = atoi(argv[1]);
-		int rc = (value == 0) ? AdcBt6_FiveVoltDisable() :
-					      AdcBt6_FiveVoltEnable();
-		shell_print(shell, "Set 5V: %d status: %d", value, rc);
-		result = 0;
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
-static int batterySet(const struct shell *shell, size_t argc, char **argv)
+static int battery_set(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_BATTERY_SET_ARG_COUNT) {
-		shell_print(shell, "Please enter 0 for off or 1 for on");
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_BATTERY_SET_ARG_COUNT) {
+			shell_print(shell, "Please enter 0 for off or 1 for on");
+			result = -EINVAL;
+		} else {
+			int value = atoi(argv[1]);
+			int rc = (value == 0) ? AdcBt6_BplusDisable() :
+						      AdcBt6_BplusEnable();
+			shell_print(shell, "Set Battery Enable: %d status: %d",
+				    value, rc);
+			result = 0;
+		}
 	} else {
-		int value = atoi(argv[1]);
-		int rc = (value == 0) ? AdcBt6_BplusDisable() :
-					      AdcBt6_BplusEnable();
-		shell_print(shell, "Set Battery Enable: %d status: %d", value,
-			    rc);
-		result = 0;
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
-static int DigitalOutputToggle(const struct shell *shell, size_t argc,
-			       char **argv)
+static int digital_output_toggle(const struct shell *shell, size_t argc,
+				 char **argv)
 {
 	ARG_UNUSED(argc);
-	int status1 = BSP_PinToggle(DO1_PIN);
-	int status2 = BSP_PinToggle(DO2_PIN);
-	shell_print(shell, "Toggle DO1 and DO2 status: %d %d", status1,
-		    status2);
-	return 0;
-}
 
-static int digitalEnable(const struct shell *shell, size_t argc, char **argv)
-{
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_DIGITAL_ENABLE_ARG_COUNT) {
-		shell_print(shell, "Please enter 0 for off or 1 for on");
-	} else {
-		int value = atoi(argv[1]);
-		int status1 = BSP_PinSet(DIN1_ENABLE_PIN, value);
-		int status2 = BSP_PinSet(DIN2_ENABLE_PIN, value);
-		shell_print(shell, "Set To DIN_EN: %d %d %d", value, status1,
+	if (attr_is_locked() == false) {
+		int status1 = BSP_PinToggle(DO1_PIN);
+		int status2 = BSP_PinToggle(DO2_PIN);
+		shell_print(shell, "Toggle DO1 and DO2 status: %d %d", status1,
 			    status2);
 		result = 0;
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
+	return result;
+}
+
+static int digital_enable(const struct shell *shell, size_t argc, char **argv)
+{
+	int result = -EPERM;
+
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_DIGITAL_ENABLE_ARG_COUNT) {
+			shell_print(shell, "Please enter 0 for off or 1 for on");
+			result = -EINVAL;
+		} else {
+			int value = atoi(argv[1]);
+			int status1 = BSP_PinSet(DIN1_ENABLE_PIN, value);
+			int status2 = BSP_PinSet(DIN2_ENABLE_PIN, value);
+			shell_print(shell, "Set To DIN_EN: %d %d %d", value,
+				    status1, status2);
+			result = 0;
+		}
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
+	}
+
 	return result;
 }
 
 static int cal(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_CAL_ARG_COUNT) {
-		shell_print(shell, "Please enter c1 and c2 constants values");
-	} else {
-		float c1 = atof(argv[1]);
-		float c2 = atof(argv[2]);
-		shell_print(shell, "c1 set to %.4e", c1);
-		shell_print(shell, "c2 set to %.4e", c2);
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_CAL_ARG_COUNT) {
+			shell_print(shell,
+				    "Please enter c1 and c2 constants values");
+			result = -EINVAL;
+		} else {
+			float c1 = atof(argv[1]);
+			float c2 = atof(argv[2]);
+			shell_print(shell, "c1 set to %.4e", c1);
+			shell_print(shell, "c2 set to %.4e", c2);
 
-		float ge;
-		float oe;
-		int status;
-		size_t i;
-		for (i = 0; i < samples; i++) {
-			status = AdcBt6_CalibrateThermistor(c1, c2, &ge, &oe);
-			if (status != 0) {
-				shell_print(shell, "error: %d", status);
-				break;
+			float ge;
+			float oe;
+			int status;
+			size_t i;
+			for (i = 0; i < samples; i++) {
+				status = AdcBt6_CalibrateThermistor(c1, c2, &ge,
+								    &oe);
+				if (status != 0) {
+					shell_print(shell, "error: %d", status);
+					break;
+				}
+				shell_print(shell, "ge: %.4e oe: %.4e", ge, oe);
+				k_sleep(K_MSEC(delay));
 			}
-			shell_print(shell, "ge: %.4e oe: %.4e", ge, oe);
-			k_sleep(K_MSEC(delay));
+			result = 0;
 		}
-		result = 0;
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
@@ -335,34 +431,53 @@ static int advertise(const struct shell *shell, size_t argc, char **argv)
 	ARG_UNUSED(argc);
 	ARG_UNUSED(argv);
 
-	shell_print(shell, "Starting advertising . . .\n");
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_USER_IF_TASK,
-				      FMC_ENTER_ACTIVE_MODE);
-	return 0;
+	int result = -EPERM;
+
+	if (attr_is_locked() == false) {
+		shell_print(shell, "Starting advertising . . .\n");
+		FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK,
+					      FWK_ID_USER_IF_TASK,
+					      FMC_ENTER_ACTIVE_MODE);
+		result = 0;
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
+	}
+
+	return result;
 }
 
 static int i2cpull(const struct shell *shell, size_t argc, char **argv)
 {
-	int result = -EINVAL;
+	int result = -EPERM;
 
-	if (argc < TEST_MENU_I2C_PULL_ARG_COUNT) {
-		shell_print(shell, "Please enter 0 for off or 1 for on");
-	} else {
-		int state = atoi(argv[1]);
-
-		if (state) {
-			shell_print(shell, "Enabling I2C pullups . . .\n");
-			NRF_P0->PIN_CNF[26] &= ~0xC;
-			NRF_P0->PIN_CNF[26] |= 0xC;
-			NRF_P0->PIN_CNF[27] &= ~0xC;
-			NRF_P0->PIN_CNF[27] |= 0xC;
+	if (attr_is_locked() == false) {
+		if (argc < TEST_MENU_I2C_PULL_ARG_COUNT) {
+			shell_print(shell, "Please enter 0 for off or 1 for on");
+			result = -EINVAL;
 		} else {
-			shell_print(shell, "Disabling I2C pullups . . .\n");
-			NRF_P0->PIN_CNF[26] &= ~0xC;
-			NRF_P0->PIN_CNF[27] &= ~0xC;
+			int state = atoi(argv[1]);
+
+			if (state) {
+				shell_print(shell,
+					    "Enabling I2C pullups . . .\n");
+				NRF_P0->PIN_CNF[26] &= ~0xC;
+				NRF_P0->PIN_CNF[26] |= 0xC;
+				NRF_P0->PIN_CNF[27] &= ~0xC;
+				NRF_P0->PIN_CNF[27] |= 0xC;
+			} else {
+				shell_print(shell,
+					    "Disabling I2C pullups . . .\n");
+				NRF_P0->PIN_CNF[26] &= ~0xC;
+				NRF_P0->PIN_CNF[27] &= ~0xC;
+			}
+			result = 0;
 		}
-		result = 0;
+	} else {
+		shell_error(shell, "Configuration lock is engaged, "
+				   "test functions are unavailable");
 	}
+
 	return result;
 }
 
@@ -371,25 +486,25 @@ static int i2cpull(const struct shell *shell, size_t argc, char **argv)
 /******************************************************************************/
 SHELL_STATIC_SUBCMD_SET_CREATE(
 	sub_inputs,
-	SHELL_CMD(battery, NULL, "Battery Measurement", batteryMeasurement),
+	SHELL_CMD(battery, NULL, "Battery Measurement", battery_measurement),
 	SHELL_CMD(
-		vin, NULL,
-		"Read analog voltage <channel 1-4>\n"
-		"Set channel to voltage sense using 'attr set analogInput<1-4>Type 1'",
-		vin),
+		  vin, NULL,
+		  "Read analog voltage <channel 1-4>\n"
+		  "Set channel to voltage sense using 'attr set analogInput<1-4>Type 1'",
+		  vin),
 	SHELL_CMD(
-		cin, NULL,
-		"Read current <channel 1-4>\n"
-		"Set channel to current sense using 'attr set analogInput<1-4>Type 2'",
-		cin),
+		  cin, NULL,
+		  "Read current <channel 1-4>\n"
+		  "Set channel to current sense using 'attr set analogInput<1-4>Type 2'",
+		  cin),
 	SHELL_CMD(therm, NULL, "Read thermistor <channel 1-4>", therm),
 	SHELL_CMD(temp, NULL, "Get temperature (therm) <channel 1-4>", temp),
 	SHELL_CMD(vref, NULL, "Read vref", vref),
-	SHELL_CMD(five, NULL, "Set 5V", fiveSet),
-	SHELL_CMD(b_plus, NULL, "Set Battery Out", batterySet),
-	SHELL_CMD(toggleDO, NULL, "Toggle DO1 and DO2", DigitalOutputToggle),
-	SHELL_CMD(dinEnable, NULL, "Set DIN1_EN and DIN2_EN value",
-		  digitalEnable),
+	SHELL_CMD(five, NULL, "Set 5V", five_set),
+	SHELL_CMD(b_plus, NULL, "Set Battery Out", battery_set),
+	SHELL_CMD(toggledo, NULL, "Toggle DO1 and DO2", digital_output_toggle),
+	SHELL_CMD(dinenable, NULL, "Set DIN1_EN and DIN2_EN value",
+		  digital_enable),
 	SHELL_CMD(cal, NULL,
 		  "Calibrate Thermistor <c1 float> <c2 float>\n"
 		  "Example: test cal 220.7351 3.98e3",
