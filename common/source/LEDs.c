@@ -31,14 +31,14 @@ LOG_MODULE_REGISTER(leds, 0);
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
+#define LED0_NODE DT_ALIAS(led0)
 #define LED1_NODE DT_ALIAS(led1)
-#define LED2_NODE DT_ALIAS(led2)
 
 /* clang-format off */
+#define LED0_DEV  DT_GPIO_LABEL(LED0_NODE, gpios)
+#define LED0      DT_GPIO_PIN(LED0_NODE, gpios)
 #define LED1_DEV  DT_GPIO_LABEL(LED1_NODE, gpios)
 #define LED1      DT_GPIO_PIN(LED1_NODE, gpios)
-#define LED2_DEV  DT_GPIO_LABEL(LED2_NODE, gpios)
-#define LED2      DT_GPIO_PIN(LED2_NODE, gpios)
 /* clang-format on */
 
 #define ADVERTISE_30SEC_TIMER 30
@@ -65,13 +65,13 @@ static const lcz_led_configuration_t LED_CONFIGURATION[] = {
 #if defined(CONFIG_MCUBOOT)
 /* For the bootloader, set LED polarities to be opposite so they alternate */
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED2_DEV, LED2, LED_ACTIVE_HIGH },
-	{ RED_LED, LED1_DEV, LED1, LED_ACTIVE_LOW }
+	{ GREEN_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH },
+	{ RED_LED, LED0_DEV, LED0, LED_ACTIVE_LOW }
 };
 #else
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED2_DEV, LED2, LED_ACTIVE_HIGH },
-	{ RED_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH }
+	{ GREEN_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH },
+	{ RED_LED, LED0_DEV, LED0, LED_ACTIVE_HIGH }
 };
 #endif
 #endif

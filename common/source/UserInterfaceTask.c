@@ -58,9 +58,9 @@ typedef enum {
 /******************************************************************************/
 /* Button Configuration                                                       */
 /******************************************************************************/
+#define BUTTON0_NODE DT_ALIAS(sw0)
 #define BUTTON1_NODE DT_ALIAS(sw1)
 #define BUTTON2_NODE DT_ALIAS(sw2)
-#define BUTTON3_NODE DT_ALIAS(sw3)
 
 #define FLAGS_OR_ZERO(node)                                                    \
 	COND_CODE_1(DT_PHA_HAS_CELL(node, gpios, flags),                       \
@@ -98,13 +98,13 @@ static int InitializeButtons(void);
 static void TamperSwitchStatus(void);
 static void SendUIEvent(SensorEventType_t type, SensorEventData_t data);
 
+static void Button0HandlerIsr(const struct device *dev,
+			      struct gpio_callback *cb, uint32_t pins);
+
 static void Button1HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins);
 
 static void Button2HandlerIsr(const struct device *dev,
-			      struct gpio_callback *cb, uint32_t pins);
-
-static void Button3HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins);
 
 static Dispatch_t AliveMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
@@ -133,19 +133,19 @@ K_MSGQ_DEFINE(userIfTaskQueue, FWK_QUEUE_ENTRY_SIZE, USER_IF_TASK_QUEUE_DEPTH,
 	      FWK_QUEUE_ALIGNMENT);
 
 static const struct button_cfg BUTTON_CFG[] = {
+#if DT_HAS_BUTTON_NODE(0)
+	BUTTON_CFG(0, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
+#endif
 #if DT_HAS_BUTTON_NODE(1)
 	BUTTON_CFG(1, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
 #endif
 #if DT_HAS_BUTTON_NODE(2)
-	BUTTON_CFG(2, (GPIO_INPUT | GPIO_PULL_UP), GPIO_INT_EDGE_BOTH),
-#endif
-#if DT_HAS_BUTTON_NODE(3)
-	BUTTON_CFG(3, GPIO_INPUT, GPIO_INT_EDGE_BOTH),
+	BUTTON_CFG(2, GPIO_INPUT, GPIO_INT_EDGE_BOTH),
 #endif
 };
 BUILD_ASSERT(
 	ARRAY_SIZE(BUTTON_CFG) == CONFIG_UI_NUMBER_OF_BUTTONS,
-	"Unsupported board: sw1, sw2, and sw3 devicetree aliases must be defined");
+	"Unsupported board: sw0, sw1, and sw2 devicetree aliases must be defined");
 
 BUILD_ASSERT(
 	CONFIG_UI_MAX_ALIVE_MS < CONFIG_UI_PAIR_MIN_MS,
@@ -160,7 +160,7 @@ static int64_t amrEventTime;
 static bool mag_switch_last_state = false;
 static bool tamper_switch_last_state = false;
 
-static bool button1_pressed = false;
+static bool button0_pressed = false;
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -253,7 +253,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
 			/* Update needed to the system */
 			dev = device_get_binding(
 				BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
-			Button3HandlerIsr(dev, NULL, 0);
+			Button2HandlerIsr(dev, NULL, 0);
 		}
 	}
 	return (result);
@@ -276,7 +276,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
 			if (simulated_value != last_simulated_value) {
 				dev = device_get_binding(
 					BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
-				Button3HandlerIsr(dev, NULL, 0);
+				Button2HandlerIsr(dev, NULL, 0);
 			}
 		}
 	}
@@ -322,7 +322,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
 			/* Yes, so we need to update the system */
 			dev = device_get_binding(
 				BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
-			Button2HandlerIsr(dev, NULL, 0);
+			Button1HandlerIsr(dev, NULL, 0);
 		}
 	}
 	return (result);
@@ -345,7 +345,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
 			if (simulated_value != last_simulated_value) {
 				dev = device_get_binding(
 					BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
-				Button2HandlerIsr(dev, NULL, 0);
+				Button1HandlerIsr(dev, NULL, 0);
 			}
 		}
 	}
@@ -529,7 +529,7 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */
 /******************************************************************************/
-static void Button1HandlerIsr(const struct device *dev,
+static void Button0HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins)
 {
 	ARG_UNUSED(cb);
@@ -538,7 +538,7 @@ static void Button1HandlerIsr(const struct device *dev,
 
 	if (gpio_pin_get(dev, BUTTON_CFG[0].pin)) {
 		delta = k_uptime_delta(&swEventTime);
-		if (button1_pressed == true) {
+		if (button0_pressed == true) {
 			LOG_DBG("Rising for %lld", delta);
 
 			/* Sorted by longest to shortest */
@@ -560,24 +560,24 @@ static void Button1HandlerIsr(const struct device *dev,
 							FMC_ALIVE);
 			}
 		} else {
-			LOG_ERR("Button1 was released and ignored, no press "
+			LOG_ERR("Button0 was released and ignored, no press "
 				"was detected. Delta: %lld", delta);
 		}
 	} else {
 		LOG_DBG("Falling");
 		(void)k_uptime_delta(&swEventTime);
-		button1_pressed = true;
+		button0_pressed = true;
 	}
 }
 
-static void Button2HandlerIsr(const struct device *dev,
+static void Button1HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins)
 {
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_USER_IF_TASK, FWK_ID_USER_IF_TASK,
 				      FMC_TAMPER);
 }
 
-static void Button3HandlerIsr(const struct device *dev,
+static void Button2HandlerIsr(const struct device *dev,
 			      struct gpio_callback *cb, uint32_t pins)
 {
 	ARG_UNUSED(cb);
