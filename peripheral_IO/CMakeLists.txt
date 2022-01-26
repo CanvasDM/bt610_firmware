@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.13.1)
 
-set(FWK_ID_FILE_LIST
+set(FWK_APP_ID_FILE_LIST
     ${CMAKE_SOURCE_DIR}/../common/framework_config/framework_ids_list.h
 )
 
-set(FWK_MSG_FILE_LIST
+set(FWK_APP_MSG_FILE_LIST
     ${CMAKE_SOURCE_DIR}/../common/framework_config/framework_msg_codes_list.h
 )
 
