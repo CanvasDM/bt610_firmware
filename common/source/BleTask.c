@@ -15,6 +15,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 /* Includes                                                                   */
 /******************************************************************************/
 #include <zephyr.h>
+#include <sys/byteorder.h>
 #include "settings/settings.h"
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
@@ -765,7 +766,7 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 	}
 
 	cp = net_buf_add(buf, sizeof(*cp));
-	cp->handle = handle;
+	cp->handle = sys_cpu_to_le16(handle);
 	cp->handle_type = handle_type;
 	cp->tx_power_level = tx_pwr_lvl;
 
