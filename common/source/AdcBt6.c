@@ -21,6 +21,8 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <locking_defs.h>
+#include <locking.h>
 
 #include "BspSupport.h"
 #include "laird_utility_macros.h"
@@ -124,11 +126,6 @@ typedef struct AdcObj {
 #define F_FMT CONFIG_ATTR_FLOAT_FMT
 
 /******************************************************************************/
-/* Global Data Definitions                                                    */
-/******************************************************************************/
-K_MUTEX_DEFINE(adcMutex);
-
-/******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 static AdcObj_t adcObj;
@@ -205,7 +202,7 @@ int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv)
 	int rc = 0;
 
 	if (!PowermvIsSimulated(mv)) {
-		k_mutex_lock(&adcMutex, K_FOREVER);
+		locking_take(LOCKING_ID_adc, K_FOREVER);
 
 		rc = SampleChannel(raw, POWER_ADC_CH);
 		if (rc >= 0) {
@@ -214,7 +211,7 @@ int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv)
 						   ADC_RESOLUTION, mv);
 		}
 
-		k_mutex_unlock(&adcMutex);
+		locking_give(LOCKING_ID_adc);
 	}
 	return rc;
 }
@@ -238,7 +235,7 @@ int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
 	/** @ref Hardware Sensor Measurement Procedures.docx */
 
 	if (type < NUMBER_OF_ADC_TYPES) {
-		k_mutex_lock(&adcMutex, K_FOREVER);
+		locking_take(LOCKING_ID_adc, K_FOREVER);
 
 		if (power == ADC_PWR_SEQ_SINGLE || power == ADC_PWR_SEQ_START) {
 			AdcBt6_ConfigPower(type);
@@ -266,8 +263,7 @@ int AdcBt6_Measure(int16_t *raw, MuxInput_t input, AdcMeasurementType_t type,
 			UltrasonicOrPressureDisablePower(type);
 		}
 
-		k_mutex_unlock(&adcMutex);
-
+		locking_give(LOCKING_ID_adc);
 	} else {
 		LOG_ERR("Invalid measurement type");
 	}
