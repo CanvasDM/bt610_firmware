@@ -19,6 +19,7 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 #include <device.h>
 #include <drivers/gpio.h>
 #include <sys/util.h>
+#include <pm/device.h>
 
 #include "FrameworkIncludes.h"
 #include "BspSupport.h"
@@ -623,9 +624,9 @@ static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id)
 				k_timer_stop(&uart0CTSCheckTimer);
 
 				if (uart0_dev) {
-					(void)pm_device_state_set(
+					(void)pm_device_action_run(
 						uart0_dev,
-						PM_DEVICE_STATE_ACTIVE);
+						PM_DEVICE_ACTION_RESUME);
 					(void)gpio_pin_set(port0,
 							   GPIO_PIN_MAP(
 							   UART_0_RTS_PIN),
@@ -687,7 +688,7 @@ static void UART0WorkqHandler(struct k_work *item)
 
 		(void)gpio_pin_set(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
 				   BSP_SUPPORT_UART_RTS_INACTIVE);
-		(void)pm_device_state_set(uart0_dev, PM_DEVICE_STATE_OFF);
+		(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_SUSPEND);
 
 		/* If we have no active Bluetooth connection, lock the settings
 		 * if it's setup that way
@@ -724,7 +725,7 @@ static void UART1Initialise(void)
 		/* Ignoring the return code here - if it's non-zero the UART is
 		 * already off.
 		 */
-		(void)pm_device_state_set(uart1_dev, PM_DEVICE_STATE_OFF);
+		(void)pm_device_action_run(uart1_dev, PM_DEVICE_ACTION_SUSPEND);
 	}
 }
 

@@ -26,10 +26,10 @@ extern "C" {
 #define MGMT_GROUP_ID_SENTRIUS 65
 
 /* pystart - mgmt handler function defines */
-mgmt_handler_fn Sentrius_mgmt_rev_echo;
-mgmt_handler_fn Sentrius_mgmt_calibrate_thermistor;
-mgmt_handler_fn Sentrius_mgmt_test_led;
-mgmt_handler_fn Sentrius_mgmt_calibrate_thermistor_version_2;
+int Sentrius_mgmt_rev_echo(struct mgmt_ctxt *ctxt);
+int Sentrius_mgmt_calibrate_thermistor(struct mgmt_ctxt *ctxt);
+int Sentrius_mgmt_test_led(struct mgmt_ctxt *ctxt);
+int Sentrius_mgmt_calibrate_thermistor_version_2(struct mgmt_ctxt *ctxt);
 /* pyend */
 
 /**

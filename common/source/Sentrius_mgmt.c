@@ -11,7 +11,7 @@
 /* Includes                                                                   */
 /******************************************************************************/
 #include <zephyr.h>
-#include <power/reboot.h>
+#include <sys/reboot.h>
 #include <logging/log_ctrl.h>
 #include <limits.h>
 #include <string.h>
