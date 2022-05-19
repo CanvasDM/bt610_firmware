@@ -65,26 +65,26 @@ static int battery_measurement(const struct shell *shell, size_t argc,
 
 	if (attr_is_locked() == false) {
 		int16_t raw = 0;
-		int32_t mv = 0;
+		float volts = 0;
 		int32_t avg_raw = 0;
-		int32_t avg_mv = 0;
+		float avg_volts = 0;
 		int status;
 		size_t i;
 
 		for (i = 0; i < samples; i++) {
-			status = AdcBt6_ReadPowerMv(&raw, &mv);
-			shell_print(shell, "[%u] status: %d raw: %d mv: %d", i,
-				    status, raw, mv);
+			status = AdcBt6_read_power_volts(&raw, &volts);
+			shell_print(shell, "[%u] status: %d raw: %d volts: %d", i,
+				    status, raw, volts);
 			if (status != 0) {
 				break;
 			}
 			avg_raw += raw;
-			avg_mv += mv;
+			avg_volts += volts;
 			k_sleep(K_MSEC(delay));
 		}
 		avg_raw /= samples;
-		avg_mv /= samples;
-		shell_print(shell, "averages: raw: %d mv: %d", avg_raw, avg_mv);
+		avg_volts /= samples;
+		shell_print(shell, "averages: raw: %d volts: %d", avg_raw, avg_volts);
 		result = 0;
 	} else {
 		shell_error(shell, "Configuration lock is engaged, "

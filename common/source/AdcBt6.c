@@ -152,7 +152,7 @@ static bool PressureIsSimulated(float *simulated_value);
 static bool CurrentIsSimulated(size_t channel, float *simulated_value);
 static bool VrefIsSimulated(float *simulated_value);
 static bool TemperatureIsSimulated(size_t channel, float *simulated_value);
-static bool PowermvIsSimulated(int32_t *simulated_value);
+static bool power_volt_is_simulated(int32_t *simulated_value);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -197,18 +197,16 @@ int AdcBt6_Init(void)
 	return status;
 }
 
-int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv)
+int AdcBt6_read_power_volts(int16_t *raw, float *v)
 {
 	int rc = 0;
 
-	if (!PowermvIsSimulated(mv)) {
+	if (!power_volt_is_simulated(v)) {
 		locking_take(LOCKING_ID_adc, K_FOREVER);
 
 		rc = SampleChannel(raw, POWER_ADC_CH);
 		if (rc >= 0) {
-			*mv = (int32_t)*raw;
-			rc = adc_raw_to_millivolts(adcObj.ref, pcfg->gain,
-						   ADC_RESOLUTION, mv);
+			*v = AdcBt6_ConvertVref(*raw);
 		}
 
 		locking_give(LOCKING_ID_adc);
@@ -997,17 +995,17 @@ static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
 	return (is_simulated);
 }
 
-static bool PowermvIsSimulated(int32_t *simulated_value)
+static bool power_volt_is_simulated(int32_t *simulated_value)
 {
 	bool is_simulated = false;
 	bool simulation_enabled = false;
 
-	if (attr_get(ATTR_ID_powermv_simulated, &simulation_enabled,
+	if (attr_get(ATTR_ID_power_volts_simulated, &simulation_enabled,
 		     sizeof(simulation_enabled)) ==
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (attr_get(ATTR_ID_powermv_simulated_value,
+			if (attr_get(ATTR_ID_power_volts_simulated_value,
 				     simulated_value,
 				     sizeof(*simulated_value)) ==
 			    sizeof(*simulated_value)) {

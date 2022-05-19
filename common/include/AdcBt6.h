@@ -80,11 +80,11 @@ int AdcBt6_Init(void);
  * @brief Read power voltage
  *
  * @param pointer to raw
- * @param pointer to millivolts
+ * @param pointer to volts
  *
  * @retval 0 on success, negative otherwise
  */
-int AdcBt6_ReadPowerMv(int16_t *raw, int32_t *mv);
+int AdcBt6_read_power_volts(int16_t *raw, float *v);
 
 /**
  * @brief Measure analog input or thermistor input

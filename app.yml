@@ -1,0 +1,18 @@
+---
+openrpc: 1.2.6
+info:
+  title: Project_Index
+  version: 0.0.1
+methods: []
+components:
+  contentDescriptors:
+    device_params:
+      name: device_parameters
+      schema:
+        type: array
+      x-device-parameters:
+        - $ref: ./app/attributes/app_params.yml
+    aux_components:
+      name: aux_components
+      schema:
+        type: array

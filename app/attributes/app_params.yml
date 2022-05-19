@@ -1,0 +1,2731 @@
+---
+sensor_name:
+  name: sensor_name
+  required: true
+  schema:
+    minLength: 1
+    maxLength: 23
+    type: string
+    x-ctype: string
+  x-broadcast: true
+  x-default: ""
+  x-example: BT610
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Sensor Name used by the device
+location:
+  name: location
+  required: true
+  schema:
+    minLength: 0
+    maxLength: 32
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: NA
+  x-example: myRoom
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Device Location
+advertising_interval:
+  name: advertising_interval
+  required: true
+  schema:
+    minimum: 500
+    maximum: 10000
+    type: integer
+    x-ctype: uint16_t
+  x-broadcast: true
+  x-default: "1000"
+  x-example: "1000"
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Advertising Interval in milliseconds
+advertising_duration:
+  name: advertising_duration
+  required: true
+  schema:
+    minimum: 0
+    maximum: 65535
+    type: integer
+    x-ctype: uint16_t
+  x-broadcast: true
+  x-default: "15000"
+  x-example: "15000"
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Advertising duration of an event in milliseconds. Must be 4x greater
+    than the Interval.
+lock:
+  name: lock
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: false
+  summary:
+    "Lock enabled: false = lock not setup, true = lock setup. See lock_status
+    for details on if lock is active"
+power_sense_interval:
+  name: power_sense_interval
+  required: true
+  schema:
+    minimum: 0
+    maximum: 86400
+    type: integer
+    x-ctype: uint32_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 60
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Power Sense interval in seconds
+temperture_sense_interval:
+  name: temperature_sense_interval
+  required: true
+  schema:
+    minimum: 0
+    maximum: 86400
+    type: integer
+    x-ctype: uint32_t
+  x-broadcast: true
+  x-default: 60
+  x-example: 10
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Temperature Sense interval in seconds
+aggregation_count:
+  name: aggregation_count
+  required: true
+  schema:
+    minimum: 1
+    maximum: 32
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: false
+  x-default: "1"
+  x-deprecated: true
+  x-example: "5"
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Aggregation value used on all the sensor data
+digital_output_1_state:
+  name: digital_output_1_state
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: false = off, true - on
+digital_output_2_state:
+  name: digital_output_2_state
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: false = off, true - on
+firmware_version:
+  name: firmware_version
+  required: true
+  schema:
+    minLength: 3
+    maxLength: 11
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: 0.0.0
+  x-example: 1.0.0
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: "Firmware Version. Format = Major.Minor.Build"
+reset_reason:
+  name: reset_reason
+  required: true
+  schema:
+    minLength: 0
+    maxLength: 12
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: RESETPIN
+  x-example: DOG
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: For Development
+bluetooth_address:
+  name: bluetooth_address
+  required: true
+  schema:
+    minLength: 12
+    maxLength: 12
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: "0"
+  x-example: "010203040506"
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Bluetooth MAC address
+reset_count:
+  name: reset_count
+  required: true
+  schema:
+    minLength: 0
+    maxLength: 0
+    type: integer
+    x-ctype: uint32_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: reset Count
+uptime:
+  name: uptime
+  required: true
+  schema:
+    minimum: 0
+    maximum: 0
+    type: number
+    x-ctype: int64_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Time in milliseconds since the last reboot
+high_temp_1_thresh_1:
+  name: high_temp_1_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 1 in degrees C
+high_temp_1_thresh_2:
+  name: high_temp_1_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 2 in degrees C
+low_temp_1_thresh_1:
+  name: low_temp_1_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 1 in degrees C
+low_temp_1_thresh_2:
+  name: low_temp_1_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 2 in degrees C
+temp_1_delta_thresh:
+  name: temp_1_delta_thresh
+  required: true
+  schema:
+    minimum: 0
+    maximum: 255
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 2e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Temperature Alarm Threshold in degrees C
+high_temp_2_thresh_1:
+  name: high_temp_2_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 1 in degrees C
+high_temp_2_thresh_2:
+  name: high_temp_2_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1.2e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 2 in degrees C
+low_temp_2_thresh_1:
+  name: low_temp_2_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 1 in degrees C
+low_temp_2_thresh_2:
+  name: low_temp_2_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 2 in degrees C
+temp_2_delta_thresh:
+  name: temp_2_delta_thresh
+  required: true
+  schema:
+    minimum: 0
+    maximum: 255
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 2e+2
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Temperature Alarm Threshold
+high_temp_3_thresh_1:
+  name: high_temp_3_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 1 in degrees C
+high_temp_3_thresh_2:
+  name: high_temp_3_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1.2e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 2 in degrees C
+low_temp_3_thresh_1:
+  name: low_temp_3_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 1 in degrees C
+low_temp_3_thresh_2:
+  name: low_temp_3_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 2 in degrees C
+temp_3_delta_thresh:
+  name: temp_3_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 255.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 2e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Temperature Alarm Threshold
+high_temp_4_thresh_1:
+  name: high_temp_4_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 1 in degrees C
+high_temp_4_thresh_2:
+  name: high_temp_4_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 1.27e+2
+  x-example: 1.2e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Temperature Alarm Threshold 2 in degrees C
+low_temp_4_thresh_1:
+  name: low_temp_4_thresh_1
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 1 in degrees C
+low_temp_4_thresh_2:
+  name: low_temp_4_thresh_2
+  required: true
+  schema:
+    minimum: -128.0
+    maximum: 127.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: -1.28e+2
+  x-example: -4e+1
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Temperature Alarm Threshold 2 in degrees C
+temp_4_delta_thresh:
+  name: temp_4_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 255.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 2e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Temperature Alarm Threshold
+high_analog_1_thresh_1:
+  name: high_analog_1_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_1_thresh_2:
+  name: high_analog_1_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_1_thresh_1:
+  name: low_analog_1_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_1_thresh_2:
+  name: low_analog_1_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+analog_1_delta_thresh:
+  name: analog_1_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_2_thresh_1:
+  name: high_analog_2_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_2_thresh_2:
+  name: high_analog_2_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_2_thresh_1:
+  name: low_analog_2_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_2_thresh_2:
+  name: low_analog_2_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+analog_2_delta_thresh:
+  name: analog_2_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_3_thresh_1:
+  name: high_analog_3_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_3_thresh_2:
+  name: high_analog_3_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_3_thresh_1:
+  name: low_analog_3_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_3_thresh_2:
+  name: low_analog_3_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+analog_3_delta_thresh:
+  name: analog_3_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_4_thresh_1:
+  name: high_analog_4_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+high_analog_4_thresh_2:
+  name: high_analog_4_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_4_thresh_1:
+  name: low_analog_4_thresh_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+low_analog_4_thresh_2:
+  name: low_analog_4_thresh_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+analog_4_delta_thresh:
+  name: analog_4_delta_thresh
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: true
+  x-default: 0.0
+  x-example: 1e+2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
+    mA, or Amps if AC current is selected
+active_mode:
+  name: active_mode
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-validator: cp8
+  x-writable: true
+  summary: "0 = inactive (shelf mode). 1 = active (sample enabled)"
+advertising_phy:
+  name: advertising_phy
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    enum:
+      CODED: 0
+      1M: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 1
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Advertising Phy Value
+tx_power:
+  name: tx_power
+  required: false
+  schema:
+    minimum: -40
+    maximum: 8
+    type: integer
+    x-ctype: int8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 8
+  x-readable: true
+  x-savable: true
+  x-lockable: true
+  x-validator: tx_power
+  x-writable: true
+  summary: Bluetooth Tx Power (dBm)
+network_id:
+  name: network_id
+  required: true
+  schema:
+    minimum: 0
+    maximum: 65535
+    type: integer
+    x-ctype: uint16_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 100
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Network Id used in advertisement.
+config_version:
+  name: config_version
+  required: true
+  schema:
+    minimum: 0
+    maximum: 255
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 10
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Tracker for when settings change
+  description: This is used for synchronization between clients (Bluegrass/Phone application).
+config_type:
+  name: config_type
+  required: true
+  schema:
+    minimum: 0
+    maximum: 6
+    enum:
+      NOT_CONFIGURED: 0
+      ANALOG: 1
+      DIGITAL: 2
+      TEMPERATURE: 3
+      CURRENT: 4
+      ULTRASONIC_PRESSURE: 5
+      SPI_OR_I2C: 6
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 2
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Predetermined configurations (modes of operation)
+ge:
+  name: ge
+  required: true
+  schema:
+    minimum: -5.0
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 1e+0
+  x-example: 9.98e-1
+  x-lockable: true
+  x-readable: true
+  summary: ADC Calibrated Thermistor Gain Error
+oe:
+  name: oe
+  required: true
+  schema:
+    minimum: -16.0
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: -1.22e+1
+  x-lockable: true
+  x-readable: true
+  summary: ADC calibrated offset error
+thermistor_config:
+  name: thermistor_config
+  required: true
+  schema:
+    minimum: 0
+    maximum: 15
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Bitmask of Thermistor Inputs.  Bit 0 is thermistor 1.  1 is enabled, 0 is disabled
+temperature_result_1:
+  name: temperature_result_1
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: integer
+    x-ctype: float
+  x-default: 0.0
+  x-example: 0.0
+  x-notify-if-unchanged: true
+  x-prepare: true
+  x-readable: true
+  summary: Temperature in C
+temperature_result_2:
+  name: temperature_result_2
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: integer
+    x-ctype: float
+  x-default: 0.0
+  x-example: 0.0
+  x-notify-if-unchanged: true
+  x-prepare: true
+  x-readable: true
+  summary: Temperature in C
+temperature_result_3:
+  name: temperature_result_3
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: integer
+    x-ctype: float
+  x-default: 0.0
+  x-example: 0.0
+  x-notify-if-unchanged: true
+  x-prepare: true
+  x-readable: true
+  summary: Temperature in C
+temperature_result_4:
+  name: temperature_result_4
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: integer
+    x-ctype: float
+  x-default: 0.0
+  x-example: 0.0
+  x-notify-if-unchanged: true
+  x-prepare: true
+  x-readable: true
+  summary: Temperature in C
+power_voltage:
+  name: power_voltage
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4.0
+    type: integer
+    x-ctype: float
+  x-default: 0
+  x-example: 3.2
+  x-prepare: true
+  x-readable: true
+  summary: Input power voltage in volts
+  description: This is the voltage measured by the device at VDD
+digital_input:
+  name: digital_input
+  required: true
+  schema:
+    minimum: 0
+    maximum: 3
+    enum:
+      PORT1_BITMASK: 1
+      PORT2_BITMASK: 2
+    type: integer
+    x-ctype: uint8_t
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-prepare: true
+  x-readable: true
+  summary: Bit 0 is digital input 1, Bit 1 is digital input 2
+  description: Bit 0 = Input 1, Bit 1 = Input 2
+digital_input_1_config:
+  name: digital_input_1_config
+  required: true
+  schema:
+    minimum: 0
+    maximum: 131
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 128
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: "Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration: 0 = None, 1 = falling edge, 2 = rising edge, 3 = both"
+digital_input_2_config:
+  name: digital_input_2_config
+  required: true
+  schema:
+    minimum: 0
+    maximum: 131
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 128
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: "Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration: 0 = None, 1 = falling edge, 2 = rising edge, 3 = both"
+analog_input_1:
+  name: analog_input_1
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: false
+  x-default: 0.0
+  x-example: 0.0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Unit depends on Analog Input Configuration Type. Units will either
+    be in PSI, mm, mV, mA, or Amps if AC current is selected
+analog_input_2:
+  name: analog_input_2
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: false
+  x-default: 0.0
+  x-example: 0.0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Unit depends on Analog Input Configuration Type. Units will either
+    be in PSI, mm, mV, mA, or Amps if AC current is selected
+analog_input_3:
+  name: analog_input_3
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: false
+  x-default: 0.0
+  x-example: 0.0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Unit depends on Analog Input Configuration Type. Units will either
+    be in  PSI, mm, mV, mA, or Amps if AC current is selected
+analog_input_4:
+  name: analog_input_4
+  required: true
+  schema:
+    minimum: 0.0
+    maximum: 15000.0
+    type: integer
+    x-ctype: float
+  x-broadcast: false
+  x-default: 0.0
+  x-example: 0.0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Unit depends on Analog Input Configuration Type. Units will either
+    be in PSI, mm, mV, mA, or Amps if AC current is selected
+analog_input_1_type:
+  name: analog_input_1_type
+  required: true
+  schema:
+    minimum: 0
+    maximum: 7
+    enum:
+      UNUSED: 0
+      VOLTAGE_0V_TO_10V_DC: 1
+      CURRENT_4MA_TO_20MA: 2
+      PRESSURE: 3
+      ULTRASONIC: 4
+      AC_CURRENT_20A: 5
+      AC_CURRENT_150A: 6
+      AC_CURRENT_500A: 7
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-validator: aic
+  x-writable: true
+  summary: Analog Input Channel 1 configuration
+  description: If changing a pressure sensor port, then any active pressure sensor ports must be first set to 0.
+analog_input_2_type:
+  name: analog_input_2_type
+  required: true
+  schema:
+    minimum: 0
+    maximum: 7
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-validator: aic
+  x-writable: true
+  summary: Analog Input Channel 2 configuration
+analog_input_3_type:
+  name: analog_input_3_type
+  required: true
+  schema:
+    minimum: 0
+    maximum: 7
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-validator: aic
+  x-writable: true
+  summary: Analog Input Channel 3 configuration
+analog_input_4_type:
+  name: analog_input_4_type
+  required: true
+  schema:
+    minimum: 0
+    maximum: 7
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-validator: aic
+  x-writable: true
+  summary: Analog Input Channel 4 configuration
+magnet_state:
+  name: magnet_state
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    enum:
+      FAR: true
+      NEAR: false
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 1
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Proximity of magnet to sensor used to activate sensor and start advertising when near
+param_path:
+  name: param_path
+  required: true
+  schema:
+    minLength: 2
+    maxLength: 8
+    type: string
+    x-ctype: string
+  x-default: /ext
+  x-example: /lfs1
+  x-lockable: false
+  x-readable: true
+  x-savable: false
+  summary: Folder on file system used for Parse/Dump commands
+battery_age:
+  name: battery_age
+  required: true
+  schema:
+    minimum: 0
+    maximum: 0
+    type: number
+    x-ctype: uint32_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Time in seconds that the battery has been in use
+api_version:
+  name: api_version
+  required: true
+  schema:
+    minLength: 6
+    maxLength: 11
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: 0.5.0
+  x-example: 123.456.789
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: The API attribute version that the firmware supports
+qrtc:
+  name: qrtc
+  required: true
+  schema:
+    minimum: 0
+    maximum: 0
+    type: number
+    x-ctype: uint32_t
+  x-default: 0
+  x-example: 0
+  x-prepare: true
+  x-readable: true
+  summary: Quasi-RTC (epoch, Seconds from Jan 1, 1970)
+qrtc_last_set:
+  name: qrtc_last_set
+  required: false
+  schema:
+    minimum: 0
+    maximum: 0
+    type: number
+    x-ctype: uint32_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 0
+  x-prepare: true
+  x-readable: true
+  x-savable: true
+  summary: Last time the RTC was set
+sh_offset:
+  name: sh_offset
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "2.7315e+2"
+  x-example: "2.7315e+2"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation offset
+analog_sense_interval:
+  name: analog_sense_interval
+  required: true
+  schema:
+    minimum: 0
+    maximum: 86400
+    type: integer
+    x-ctype: uint32_t
+  x-broadcast: true
+  x-default: "60"
+  x-example: "10"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: analog Sense interval in seconds
+tamper_switch_status:
+  name: tamper_switch_status
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    enum:
+      ACTIVE_NOT_PRESSED: true
+      INACTIVE_PRESSED: false
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-readable: true
+  x-savable: false
+  summary: Returns the current state of the tamper switch
+  description: 1 = Tamper switch active (not pressed) 0 = Tamper switch inactive (pressed).
+settings_passcode:
+  name: settings_passcode
+  required: true
+  schema:
+    minimum: 0
+    maximum: 999999
+    type: integer
+    x-ctype: uint32_t
+  x-backup: true
+  x-broadcast: true
+  x-default: "123456"
+  x-example: "987654"
+  x-hide-in-dump: true
+  x-lockable: false
+  x-obscure-in-show: true
+  x-readable: false
+  x-savable: true
+  x-validator: cp32
+  x-writable: false
+  summary: Six digit numeric passcode to unlock device settings.
+therm_1_coefficient_a:
+  name: therm_1_coefficient_a
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "1.132e-3"
+  x-example: "1.132e-3"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient A
+therm_2_coefficient_a:
+  name: therm_2_coefficient_a
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "1.132e-3"
+  x-example: "1.132e-3"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient A
+therm_3_coefficient_a:
+  name: therm_3_coefficient_a
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "1.132e-3"
+  x-example: "1.132e-3"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation  coefficient A
+therm_4_coefficient_a:
+  name: therm_4_coefficient_a
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "1.132e-3"
+  x-example: "1.132e-3"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient A
+therm_1_coefficient_b:
+  name: therm_1_coefficient_b
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "2.338e-4"
+  x-example: "2.338e-4"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient B
+therm_2_coefficient_b:
+  name: therm_2_coefficient_b
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "2.338e-4"
+  x-example: "2.338e-4"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation  coefficient B
+therm_3_coefficient_b:
+  name: therm_3_coefficient_b
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "2.338e-4"
+  x-example: "2.338e-4"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient B
+therm_4_coefficient_b:
+  name: therm_4_coefficient_b
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "2.338e-4"
+  x-example: "2.338e-4"
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient B
+therm_1_coefficient_c:
+  name: therm_1_coefficient_c
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 8.780e-8
+  x-example: 8.780e-8
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation  coefficient C
+therm_2_coefficient_c:
+  name: therm_2_coefficient_c
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 8.780e-8
+  x-example: 8.780e-8
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient C
+therm_3_coefficient_c:
+  name: therm_3_coefficient_c
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 8.780e-8
+  x-example: 8.780e-8
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation coefficient C
+therm_4_coefficient_c:
+  name: therm_4_coefficient_c
+  required: true
+  schema:
+    minimum: 1.2e-38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 8.780e-8
+  x-example: 8.780e-8
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: Steinhart-Hart Temperature Equation  coefficient C
+data_logging_enable:
+  name: data_logging_enable
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 1
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: "0 = disable, 1 = enable"
+factory_reset_enable:
+  name: factory_reset_enable
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 1
+  x-example: 0
+  x-lockable: true
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: "false = disable, true = enable"
+log_file_status:
+  name: log_file_status
+  required: true
+  schema:
+    enum:
+      WAITING_FOR_PREPARE_COMMAND: 0
+      PREPARING: 1
+      READY: 2
+      FAILED: 3
+    minimum: 0
+    maximum: 3
+    type: integer
+    x-ctype: uint8_t
+  x-default: 0
+  x-example: 1
+  x-prepare: true
+  x-readable: true
+  summary: Status of log operation
+adc_power_simulated:
+  name: adc_power_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated power ADC counts
+adc_power_simulated_counts:
+  name: adc_power_simulated_counts
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4095
+    type: integer
+    x-ctype: int16_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1000
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated counts for Power ADC channel
+adc_analog_sensor_simulated:
+  name: adc_analog_sensor_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated Analog Sensor ADC counts
+adc_analog_sensor_simulated_counts:
+  name: adc_analog_sensor_simulated_counts
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4095
+    type: integer
+    x-ctype: int16_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1000
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated counts for Analog Sensor ADC channel
+adc_thermistor_simulated:
+  name: adc_thermistor_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated Thermistor ADC counts
+adc_thermistor_simulated_counts:
+  name: adc_thermistor_simulated_counts
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4095
+    type: integer
+    x-ctype: int16_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1000
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated counts for Thermistor ADC channel
+adc_vref_simulated:
+  name: adc_vref_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated counts for VRef ADC counts
+adc_vref_simulated_counts:
+  name: adc_vref_simulated_counts
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4095
+    type: integer
+    x-ctype: int16_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1000
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated counts for VRef ADC channel
+voltage_1_simulated:
+  name: voltage_1_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Voltage Input 1
+voltage_1_simulated_value:
+  name: voltage_1_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Voltage Input 1 value
+voltage_2_simulated:
+  name: voltage_2_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Voltage Input 2
+voltage_2_simulated_value:
+  name: voltage_2_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Voltage Input 2 value
+voltage_3_simulated:
+  name: voltage_3_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Voltage Input 3
+voltage_3_simulated_value:
+  name: voltage_3_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Voltage Input 3 value
+voltage_4_simulated:
+  name: voltage_4_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Voltage Input 4
+voltage_4_simulated_value:
+  name: voltage_4_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Voltage Input 4 value
+ultrasonic_simulated:
+  name: ultrasonic_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for the Ultrasonic sensor
+ultrasonic_simulated_value:
+  name: ultrasonic_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Ultrasonic sensor value
+pressure_simulated:
+  name: pressure_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for the Pressure sensor
+pressure_simulated_value:
+  name: pressure_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Pressure sensor value
+current_1_simulated:
+  name: current_1_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Current Input 1
+current_1_simulated_value:
+  name: current_1_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Current Input 1 value
+current_2_simulated:
+  name: current_2_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Current Input 2
+current_2_simulated_value:
+  name: current_2_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Current Input 2 value
+current_3_simulated:
+  name: current_3_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Current Input 3
+current_3_simulated_value:
+  name: current_3_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Current Input 3 value
+current_4_simulated:
+  name: current_4_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Current Input 4
+current_4_simulated_value:
+  name: current_4_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Current Input 4 value
+vref_simulated:
+  name: vref_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Vref
+vref_simulated_value:
+  name: vref_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Vref value
+temperature_1_simulated:
+  name: temperature_1_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Temperature 1
+temperature_1_simulated_value:
+  name: temperature_1_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Temperature 1 value
+temperature_2_simulated:
+  name: temperature_2_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Temperature 2
+temperature_2_simulated_value:
+  name: temperature_2_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "0.0"
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Temperature 2 value
+temperature_3_simulated:
+  name: temperature_3_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Temperature 3
+temperature_3_simulated_value:
+  name: temperature_3_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: "0.0"
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Temperature 3 value
+temperature_4_simulated:
+  name: temperature_4_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for Temperature 4
+temperature_4_simulated_value:
+  name: temperature_4_simulated_value
+  required: true
+  schema:
+    minimum: -3.4e+38
+    maximum: 3.4e+38
+    type: number
+    x-ctype: float
+  x-default: 0.0
+  x-example: 8.780e-8
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated Temperature 4 value
+power_volts_simulated:
+  name: power_volts_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Enables simulated data for power mv
+power_volts_simulated_value:
+  name: power_volts_simulated_value
+  required: true
+  schema:
+    minimum: 0
+    maximum: 4.00
+    type: integer
+    x-ctype: int32_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1.00
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: Simulated power mv value
+digital_input_1_simulated:
+  name: digital_input_1_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-readable: true
+  x-savable: false
+  x-validator: din1simen
+  x-writable: true
+  summary: Enables simulated data for Digital Input 1
+digital_input_1_simulated_value:
+  name: digital_input_1_simulated_value
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: din1sim
+  x-writable: true
+  summary: Simulated data for Digital Input 1
+digital_input_2_simulated:
+  name: digital_input_2_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: din2simen
+  x-writable: true
+  summary: Enables simulated data for Digital Input 2
+digital_input_2_simulated_value:
+  name: digital_input_2_simulated_value
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: din2sim
+  x-writable: true
+  summary: Simulated data for Digital Input 2
+mag_switch_simulated:
+  name: mag_switch_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: magsimen
+  x-writable: true
+  summary: Enables simulated data for the Mag Switch
+mag_switch_simulated_value:
+  name: mag_switch_simulated_value
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: magsim
+  x-writable: true
+  summary: Simulated data for the Mag Switch
+tamper_switch_simulated:
+  name: tamper_switch_simulated
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: tampsimen
+  x-writable: true
+  summary: Enables simulated data for the Tamper Switch
+tamper_switch_simulated_value:
+  name: tamper_switch_simulated_value
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-validator: tampsim
+  x-writable: true
+  summary: Simulated data for the Tamper Switch
+boot_phy:
+  name: boot_phy
+  required: true
+  schema:
+    enum:
+      DEFAULT: 0
+      CODED: 1
+      1M: 2
+    minimum: 0
+    maximum: 2
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-hide-in-dump: true
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: true
+  summary: The PHY to enable for 30s at bootup
+  description: "Enumeration: 0 = Default, 1 = 1M, 2 = Coded"
+mobile_app_disconnect:
+  name: mobile_app_disconnect
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-hide-in-dump: true
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: true
+  summary: This is used when the mobile app wants to disconnect, causing the BT6 to confirm the disconnect before forcing it
+  description: 0 = do not disconnect, 1 = start disconnect after 2 seconds
+attr_save_error_code:
+  name: attr_save_error_code
+  required: true
+  schema:
+    minimum: 0
+    maximum: 0
+    type: integer
+    x-ctype: int32_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-hide-in-dump: true
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Result code from deferred settings saving
+  description: negative error code, 0 on success
+recover_settings_count:
+  name: recover_settings_count
+  required: true
+  schema:
+    minimum: 0
+    maximum: 0
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: false
+  x-default: 0
+  x-deprecated: false
+  x-example: 0
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Used for recovering settings
+  description: A rolling count of number of times the module has been recovered
+block_downgrades:
+  name: block_downgrades
+  required: true
+  schema:
+    minimum: 0
+    maximum: 1
+    type: integer
+    x-ctype: bool
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: true
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-validator: block_downgrades
+  x-writable: true
+  summary: Allows FOTA downgrading of older firmwares to be disallowed
+  description: Will disallow receiving older firmware files via FOTA when set to 1
+security_level:
+  name: security_level
+  required: true
+  schema:
+    minimum: -1
+    maximum: 4
+    type: integer
+    x-ctype: int8_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: false
+  x-prepare: true
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Current Bluetooth security level as seen by the sensor
+  description: -1 indicates error, otherwise value indicates level as per bt_security_t
+load_path:
+  name: load_path
+  required: true
+  schema:
+    minLength: 0
+    maxLength: 32
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: /lfs1/params.txt
+  x-example: /lfs1/params.txt
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: true
+  x-writable: false
+  summary: (Default) Absolute file name for load parameters command
+dump_path:
+  name: dump_path
+  required: true
+  schema:
+    minLength: 0
+    maxLength: 32
+    type: string
+    x-ctype: string
+  x-broadcast: false
+  x-default: /lfs1/dump.txt
+  x-example: /lfs1/dump.txt
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: (Default) Absolute file name for dump command
+settings_passcode_status:
+  name: settings_passcode_status
+  required: true
+  schema:
+    enum:
+      UNDEFINED: 0
+      VALID_CODE: 1
+      INVALID_CODE: 2
+    minimum: 0
+    maximum: 2
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 1
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Will return the status of current settings passcode entered
+lock_status:
+  name: lock_status
+  required: true
+  schema:
+    enum:
+      NOT_SETUP: 0
+      SETUP_ENGAGED: 1
+      SETUP_DISENGAGED: 2
+    minimum: 0
+    maximum: 2
+    type: integer
+    x-ctype: uint8_t
+  x-broadcast: false
+  x-default: 0
+  x-example: 0
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  summary: Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged

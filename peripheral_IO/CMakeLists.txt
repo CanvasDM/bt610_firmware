@@ -20,6 +20,9 @@ add_definitions(-DNDEBUG=1)
 # boards directory to be used with lower priority
 list(PREPEND BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../)
 
+# The component-generated files for attributes
+set(ATTR_CUSTOM_PATH_BASE ${CMAKE_SOURCE_DIR}/../components/attributes)
+
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
 
@@ -31,14 +34,12 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
     ${CMAKE_SOURCE_DIR}/../common/source/Advertisement.c
     ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
-    ${CMAKE_SOURCE_DIR}/../common/source/AlarmControl.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
-    ${CMAKE_SOURCE_DIR}/../common/source/Flags.c
     ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/LEDs.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
@@ -46,7 +47,7 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
-)
+    )
 
 if(CONFIG_TEST_MENU)
 target_sources(app PRIVATE

@@ -52,7 +52,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #define SENSOR_TASK_QUEUE_DEPTH 32
 #endif
 
-#define POWER_BAD_VOLTAGE (3000)
+#define POWER_BAD_VOLTAGE (3.00)
 #define DIGITAL_IN_ALARM_MASK (0x03)
 #define DIGITAL_IN_ENABLE_MASK (0x80)
 #define DIGITAL_IN_DISABLE_MASK (0x00)
@@ -215,22 +215,22 @@ void SensorTask_Initialize(void)
 	k_thread_name_set(sensorTaskObject.msgTask.pTid, THIS_FILE);
 }
 
-int attr_prepare_power_voltage_mv(void)
+int attr_prepare_power_voltage(void)
 {
 	int16_t raw = 0;
-	int32_t mv = 0;
+	float volts = 0;
 	SensorEventData_t eventAlarm;
-	int r = AdcBt6_ReadPowerMv(&raw, &mv);
+	int r = AdcBt6_ReadPowerMv(&raw, &volts);
 
 	if (r >= 0) {
-		r = attr_set_signed32(ATTR_ID_power_voltage_mv, mv);
-		if (mv > POWER_BAD_VOLTAGE) {
-			eventAlarm.s32 = mv;
+		r = attr_set_signed32(ATTR_ID_power_voltage_mv, volts);
+		if (volts > POWER_BAD_VOLTAGE) {
+			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
 
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
 		} else {
-			eventAlarm.s32 = mv;
+			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_BAD, eventAlarm);
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
 		}
@@ -345,7 +345,7 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	SensorOutput1Control();
 	SensorOutput2Control();
 
-	attr_prepare_power_voltage_mv();
+	attr_prepare_power_voltage();
 	InitializeIntervalTimers();
 	UpdateMagnet();
 	LoadSettingPasscode();
@@ -527,7 +527,7 @@ static DispatchResult_t ReadPowerMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 {
 	ARG_UNUSED(pMsg);
 	ARG_UNUSED(pMsgRxer);
-	attr_prepare_power_voltage_mv();
+	attr_prepare_power_voltage();
 	StartPowerInterval();
 
 	return DISPATCH_OK;
