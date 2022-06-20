@@ -12,10 +12,6 @@ set(FWK_APP_MSG_FILE_LIST
 # for visibility in underlying MCU MGR files.
 add_definitions(-DFLOAT_SUPPORT=1)
 
-# Set NDEBUG (No Debug) to prevent CBOR asserting when the wrong data type is
-# processed. Workaround for bug #20164 but does not fix the underlying issue
-add_definitions(-DNDEBUG=1)
-
 # Prepend the additional boards directory but still allow the original Zephyr
 # boards directory to be used with lower priority
 list(PREPEND BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../)
@@ -36,7 +32,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
-    ${CMAKE_SOURCE_DIR}/../common/source/CBORSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
