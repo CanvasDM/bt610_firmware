@@ -24,3 +24,5 @@ components:
       name: aux_components
       schema:
         type: array
+      x-flag-component:
+        - $ref: ./components/flags/input/flag_defines.yml
