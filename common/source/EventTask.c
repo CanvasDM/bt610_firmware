@@ -19,7 +19,6 @@ LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 
 #include "FrameworkIncludes.h"
 #include "EventTask.h"
-#include "Flags.h"
 #include "attr.h"
 #include "Advertisement.h"
 #include "lcz_sensor_event.h"

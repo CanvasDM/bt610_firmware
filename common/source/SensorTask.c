@@ -17,6 +17,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include <zephyr.h>
 #include <device.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <drivers/gpio.h>
 #include <sys/util.h>
 #include <sys/printk.h>
@@ -31,11 +32,10 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "AnalogInput.h"
 #include "AlarmControl.h"
 #include "SensorTask.h"
-#include "Flags.h"
+#include "attr_custom_validator.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 #include "AggregationCount.h"
-#include <stdio.h>
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -220,19 +220,18 @@ int attr_prepare_power_voltage(void)
 	int16_t raw = 0;
 	float volts = 0;
 	SensorEventData_t eventAlarm;
-	int r = AdcBt6_ReadPowerMv(&raw, &volts);
+	int r = AdcBt6_read_power_volts(&raw, &volts);
 
 	if (r >= 0) {
-		r = attr_set_signed32(ATTR_ID_power_voltage_mv, volts);
+		r = attr_set_signed32(ATTR_ID_power_voltage, volts);
 		if (volts > POWER_BAD_VOLTAGE) {
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
-
-			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
+			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_LOW_BATTERY_ALARM_BITMASK);
 		} else {
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_BAD, eventAlarm);
-			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_LOW_BATTERY_ALARM_BITMASK);
 		}
 	}
 	return r;
@@ -402,7 +401,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_ID_qrtc_last_set:
 			printRTCTime();
 			/* RTC was set by external device */
-			Flags_Set(FLAG_TIME_WAS_SET, 1);
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_TIME_WAS_SET_BITMASK);
 			break;
 
 		case ATTR_ID_digital_output_1_state:
@@ -448,17 +447,16 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	SensorEventData_t eventAlarm;
 	uint32_t digitalAlarm = 0;
 
+#warning "Bug #21857 Add in alarm component function calls to BT610"
 	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
 		/* Alarm from interrupt */
-		attr_set_mask32(ATTR_ID_digital_alarms, 0, 1);
 	} else if ((pSensorMsg->pin == DIN2_MCU_PIN) &&
 		   (sensorTaskObject.digitalIn2Enabled == 1)) {
 		UpdateDin2();
-		attr_set_mask32(ATTR_ID_digital_alarms, 1, 1);
 	}
-	attr_get(ATTR_ID_digital_alarms, &digitalAlarm, sizeof(digitalAlarm));
+
 	eventAlarm.u32 = digitalAlarm;
 	SendEvent(SENSOR_EVENT_DIGITAL_ALARM, eventAlarm);
 
@@ -542,20 +540,13 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int r;
 	float temperature = 0.0;
 
+#warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE, &temperature);
 		if (r == 0) {
-			HighTempAlarmCheck(index, temperature);
-			LowTempAlarmCheck(index, temperature);
-			DeltaTempAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfTempDifference[index]);
-			TempAlarmFlagCheck(index);
 			AggregationTempHandler(index, temperature);
 		} else {
 			/* Clear the alarm enable and flags */
-			DeactivateTempAlarm(index);
 		}
 	}
 	StartTemperatureInterval();
@@ -572,21 +563,13 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int r;
 	float analogValue = 0.0;
 
+#warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
 		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE, &analogValue);
 		if (r == 0) {
-			HighAnalogAlarmCheck(index, analogValue);
-			LowAnalogAlarmCheck(index, analogValue);
-			DeltaAnalogAlarmCheck(
-				index,
-				sensorTaskObject
-					.magnitudeOfAnalogDifference[index]);
-
-			AnalogAlarmFlagCheck(index);
 			AggregationAnalogHandler(index, analogValue);
 		} else {
 			/* Clear the alarm enable and flags */
-			DeactivateAnalogAlarm(index);
 		}
 	}
 	StartAnalogInterval();
@@ -602,7 +585,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	/* This handler triggers a change to 1M PHY. This
 	 * may be ignored if a connection is already active.
 	 */
-	Flags_Set(FLAG_ACTIVE_MODE, 1);
+	attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_BLE_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 
@@ -625,7 +608,7 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 * sequence where it advertises in 1M then disables
 	 * advertising altogether.
 	 */
-	Flags_Set(FLAG_ACTIVE_MODE, 0);
+	attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_CONTROL_TASK,
 				      FMC_SOFTWARE_RESET);
 
@@ -729,7 +712,11 @@ static void UpdateDin1(void)
 
 	if (v >= 0) {
 		attr_set_mask32(ATTR_ID_digital_input, 0, v);
-		Flags_Set(FLAG_DIGITAL_IN1_STATE, v);
+		if (v == 1) {
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN1_STATE_BITMASK);
+		} else {
+			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN1_STATE_BITMASK);
+		}
 	}
 }
 
@@ -739,7 +726,11 @@ static void UpdateDin2(void)
 
 	if (v >= 0) {
 		attr_set_mask32(ATTR_ID_digital_input, 1, v);
-		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
+		if (v == 1) {
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN2_STATE_BITMASK);
+		} else {
+			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN2_STATE_BITMASK);
+		}
 	}
 }
 
@@ -786,7 +777,11 @@ static void UpdateMagnet(void)
 	if (v >= 0) {
 		/* NEAR = 0 and FAR = 1 */
 		attr_set_uint32(ATTR_ID_magnet_state, v);
-		Flags_Set(FLAG_MAGNET_STATE, v);
+		if (v == 1) {
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_MAGNET_STATE_BITMASK);
+		} else {
+			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_MAGNET_STATE_BITMASK);
+		}
 	}
 }
 

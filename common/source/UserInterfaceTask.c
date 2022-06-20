@@ -20,10 +20,10 @@ LOG_MODULE_REGISTER(ui, CONFIG_UI_TASK_LOG_LEVEL);
 #include "FrameworkIncludes.h"
 #include "attr.h"
 #include "BspSupport.h"
-#include "Flags.h"
 #include "Advertisement.h"
 #include "UserInterfaceTask.h"
 #include "LEDs.h"
+#include "attr_custom_validator.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -414,8 +414,8 @@ static void TamperSwitchStatus(void)
 	uint8_t activeMode = 0;
 	if (v >= 0) {
 		attr_set_uint32(ATTR_ID_tamper_switch_status, (uint32_t)v);
-		Flags_Set(FLAG_TAMPER_SWITCH_STATE, v);
 		if (v == 1) {
+			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_TAMPER_SWITCH_STATE_BITMASK);
 			SensorEventData_t eventTamper;
 			/* Send Event Message */
 			eventTamper.u16 = v;
@@ -424,11 +424,12 @@ static void TamperSwitchStatus(void)
 			/* Only turn on LED when in active mode */
 			attr_get(ATTR_ID_active_mode, &activeMode,
 				 sizeof(activeMode));
+
 			if (activeMode) {
 				led_blink(LED_COLOR_RED, LED_PATTERN_TAMPER);
 			}
-
 		} else {
+			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_TAMPER_SWITCH_STATE_BITMASK);
 			led_off(LED_COLOR_RED);
 		}
 	}

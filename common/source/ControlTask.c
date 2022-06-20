@@ -15,13 +15,12 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 /* Includes                                                                   */
 /******************************************************************************/
 #include <zephyr.h>
-#include <power/reboot.h>
+#include <sys/reboot.h>
 #include <hal/nrf_power.h>
 #include <logging/log_ctrl.h>
 #include <mgmt/mgmt.h>
 #include <img_mgmt/image.h>
 #include <img_mgmt/img_mgmt.h>
-#include <lcz_os_mgmt/os_mgmt_impl.h>
 #include <pm_config.h>
 #include <lcz_nrf_reset_reason.h>
 
@@ -39,7 +38,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "lcz_bluetooth.h"
 #include "attr.h"
 #include "lcz_qrtc.h"
-#include "Flags.h"
 #include "EventTask.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
@@ -119,11 +117,8 @@ static void RebootHandler(void);
 static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 				 void *arg);
 
-static int img_mgmt_vercmp(const struct image_version *a,
-			   const struct image_version *b);
-
-static int upload_start_check(uint32_t offset, uint32_t size,
-			      const struct image_header *header, void *arg);
+static int upload_start_check(const struct img_mgmt_upload_req req,
+			      const struct img_mgmt_upload_action action);
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -187,10 +182,10 @@ EXTERNED void Framework_AssertionHandler(char *file, int line)
 	}
 }
 
-int attr_prepare_up_time(void)
+int attr_prepare_uptime(void)
 {
 	int64_t uptimeMs = k_uptime_get();
-	return (attr_set_signed64(ATTR_ID_up_time, uptimeMs));
+	return (attr_set_signed64(ATTR_ID_uptime, uptimeMs));
 }
 
 int attr_prepare_log_file_status(void)
@@ -241,8 +236,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	mcumgr_wrapper_register_subsystems();
 
-	Flags_Init();
-
 	/* Start the Event Manager as early as possible before any events get
 	 * posted to it by threads trumping this one.
 	 */
@@ -262,7 +255,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 	/* Register callbacks for mcumgr management events */
 	mgmt_register_evt_cb(mcumgr_mgmt_callback);
-	img_mgmt_set_upload_cb(upload_start_check, 0);
+	img_mgmt_set_upload_cb(upload_start_check);
 
 	Framework_StartTimer(&pObj->msgTask);
 
@@ -457,46 +450,8 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 	app_prepare_for_reboot();
 }
 
-/**
- * Compares two image version numbers in a semver-compatible way.
- *
- * @param a                     The first version to compare.
- * @param b                     The second version to compare.
- *
- * @return                      -1 if a < b
- * @return                       0 if a = b
- * @return                       1 if a > b
- *
- * Taken from mcumgr file cmd/img_mgmt/port/zephyr/src/zephyr_img_mgmt.c
- */
-static int img_mgmt_vercmp(const struct image_version *a,
-			   const struct image_version *b)
-{
-	if (a->iv_major < b->iv_major) {
-		return -1;
-	} else if (a->iv_major > b->iv_major) {
-		return 1;
-	}
-
-	if (a->iv_minor < b->iv_minor) {
-		return -1;
-	} else if (a->iv_minor > b->iv_minor) {
-		return 1;
-	}
-
-	if (a->iv_revision < b->iv_revision) {
-		return -1;
-	} else if (a->iv_revision > b->iv_revision) {
-		return 1;
-	}
-
-	/* Note: For semver compatibility, don't compare the 32-bit build num. */
-
-	return 0;
-}
-
-static int upload_start_check(uint32_t offset, uint32_t size,
-			      const struct image_header *header, void *arg)
+static int upload_start_check(const struct img_mgmt_upload_req req,
+			      const struct img_mgmt_upload_action action)
 {
 	int rc;
 	struct image_version current_ver;
@@ -504,9 +459,10 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 	struct image_version min_ver;
 #endif
 	bool downgrade_blocked = false;
+	const struct image_header *hdr = (struct image_header *)req.img_data.value;
 
 	/* Only check the first chunk */
-	if (offset == 0) {
+	if (req.off == 0) {
 		/* Check if configuration is locked */
 		if (attr_is_locked() == true) {
 			/* Configuration is locked, deny firmware update request
@@ -527,7 +483,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 		min_ver.iv_major = CONFIG_MINIMUM_FIRMWARE_VERSION_MAJOR;
 		min_ver.iv_minor = CONFIG_MINIMUM_FIRMWARE_VERSION_MINOR;
 		min_ver.iv_revision = CONFIG_MINIMUM_FIRMWARE_VERSION_REVISION;
-		if (img_mgmt_vercmp(&min_ver, &header->ih_ver) == 1) {
+		if (img_mgmt_vercmp(&min_ver, &hdr->ih_ver) == 1) {
 			/* Trying to downgrade to a pre-release firmware, block
 			 * this action
 			 */
@@ -538,11 +494,11 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 #endif
 
 		/* Check if this will fit into the secondary slot */
-		if (header->ih_img_size > PM_MCUBOOT_SECONDARY_SIZE) {
+		if (hdr->ih_img_size > PM_MCUBOOT_SECONDARY_SIZE) {
 			/* The FOTA file is too large for the slot, deny */
 			LOG_ERR("Attempted too large firmware update "
 				"blocked (0x%x bytes)",
-				header->ih_img_size);
+				hdr->ih_img_size);
 			return MGMT_ERR_EMSGSIZE;
 		}
 
@@ -572,7 +528,7 @@ static int upload_start_check(uint32_t offset, uint32_t size,
 			return MGMT_ERR_EUNKNOWN;
 		}
 
-		if (img_mgmt_vercmp(&current_ver, &header->ih_ver) == 1) {
+		if (img_mgmt_vercmp(&current_ver, &hdr->ih_ver) == 1) {
 			/* Current version is greater than new version, block
 			 * downgrade
 			 */

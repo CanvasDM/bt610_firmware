@@ -31,7 +31,6 @@ LOG_MODULE_REGISTER(AggregationCount, CONFIG_ATTR_VALID_LOG_LEVEL);
 #include "AggregationCount.h"
 #include "SensorTask.h"
 #include "EventTask.h"
-#include "Flags.h"
 #include "AnalogInput.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"

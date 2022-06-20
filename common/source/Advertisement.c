@@ -24,7 +24,7 @@ LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 #include "attr.h"
 #include "Advertisement.h"
 #include "EventTask.h"
-#include "Flags.h"
+#include "attr_custom_validator.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -138,10 +138,7 @@ const struct bt_conn_auth_cb auth_callback = { .passkey_display = NULL,
 					       .passkey_confirm = NULL,
 					       .oob_data_request = NULL,
 					       .cancel = NULL,
-					       .pairing_confirm = NULL,
-					       .pairing_complete = NULL,
-					       .pairing_failed = NULL,
-					       .bond_deleted = NULL };
+					       .pairing_confirm = NULL };
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -443,11 +440,13 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	uint16_t networkId = 0;
 	uint8_t configVersion = 0;
 	uint8_t codedPhySelected = 0;
+	uint16_t flag_data;
 	int r = 0;
 
 	attr_get(ATTR_ID_network_id, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
-	ad.flags = Flags_Get();
+	attr_get(ATTR_ID_bluetooth_flags, &flag_data, sizeof(flag_data));
+	ad.flags = flag_data;
 
 	/* If no event was available, keep the last */
 	if (ad_update->sensor_event.event.type != SENSOR_EVENT_RESERVED) {
