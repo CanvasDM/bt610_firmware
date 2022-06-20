@@ -43,6 +43,10 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "lcz_event_manager.h"
 #include "ControlTask.h"
 
+#ifdef CONFIG_FS_MGMT_FILE_ACCESS_HOOK
+#include "FileAccess.h"
+#endif
+
 /******************************************************************************/
 // Local Constant, Macro and Type Definitions
 /******************************************************************************/
@@ -256,6 +260,11 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	/* Register callbacks for mcumgr management events */
 	mgmt_register_evt_cb(mcumgr_mgmt_callback);
 	img_mgmt_set_upload_cb(upload_start_check);
+
+#ifdef CONFIG_FS_MGMT_FILE_ACCESS_HOOK
+	/* Setup file access control */
+	file_access_setup();
+#endif
 
 	Framework_StartTimer(&pObj->msgTask);
 

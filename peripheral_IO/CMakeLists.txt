@@ -34,7 +34,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
-    ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
     ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/LEDs.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
@@ -43,6 +42,12 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
     ${ATTR_CUSTOM_PATH_BASE}/src/attr_custom_validator_bluetooth_flags.c
     )
+
+if(CONFIG_FS_MGMT_FILE_ACCESS_HOOK)
+target_sources(app PRIVATE
+    ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
+)
+endif()
 
 if(CONFIG_MCUMGR_CMD_SENTRIUS_MGMT)
 target_sources(app PRIVATE
