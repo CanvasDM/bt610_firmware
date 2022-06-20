@@ -39,11 +39,16 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/LEDs.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/NonInit.c
-    ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
     ${ATTR_CUSTOM_PATH_BASE}/src/attr_custom_validator_bluetooth_flags.c
     )
+
+if(CONFIG_MCUMGR_CMD_SENTRIUS_MGMT)
+target_sources(app PRIVATE
+    ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
+)
+endif()
 
 if(CONFIG_TEST_MENU)
 target_sources(app PRIVATE
