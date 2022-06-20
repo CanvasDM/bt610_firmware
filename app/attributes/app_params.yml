@@ -3,7 +3,7 @@ sensor_name:
   name: sensor_name
   required: true
   schema:
-    minLength: 1
+    minLength: 0
     maxLength: 23
     type: string
     x-ctype: string
