@@ -6,7 +6,7 @@ sensor_name:
     minLength: 0
     maxLength: 23
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: true
   x-default: ""
   x-example: BT610
@@ -23,7 +23,7 @@ location:
     minLength: 0
     maxLength: 32
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: NA
   x-example: myRoom
@@ -40,7 +40,7 @@ advertising_interval:
     minimum: 500
     maximum: 10000
     type: integer
-    x-ctype: uint16_t
+  x-ctype: uint16_t
   x-broadcast: true
   x-default: "1000"
   x-example: "1000"
@@ -57,7 +57,7 @@ advertising_duration:
     minimum: 0
     maximum: 65535
     type: integer
-    x-ctype: uint16_t
+  x-ctype: uint16_t
   x-broadcast: true
   x-default: "15000"
   x-example: "15000"
@@ -75,7 +75,7 @@ lock:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -94,7 +94,7 @@ power_sense_interval:
     minimum: 0
     maximum: 86400
     type: integer
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: true
   x-default: 0
   x-example: 60
@@ -111,7 +111,7 @@ temperture_sense_interval:
     minimum: 0
     maximum: 86400
     type: integer
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: true
   x-default: 60
   x-example: 10
@@ -128,7 +128,7 @@ aggregation_count:
     minimum: 1
     maximum: 32
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: false
   x-default: "1"
   x-deprecated: true
@@ -146,7 +146,7 @@ digital_output_1_state:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -163,7 +163,7 @@ digital_output_2_state:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -180,7 +180,7 @@ firmware_version:
     minLength: 3
     maxLength: 11
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: 0.0.0
   x-example: 1.0.0
@@ -197,7 +197,7 @@ reset_reason:
     minLength: 0
     maxLength: 12
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: RESETPIN
   x-example: DOG
@@ -214,7 +214,7 @@ bluetooth_address:
     minLength: 12
     maxLength: 12
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: "0"
   x-example: "010203040506"
@@ -231,7 +231,7 @@ reset_count:
     minLength: 0
     maxLength: 0
     type: integer
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: false
   x-default: 0
   x-example: 1
@@ -248,7 +248,7 @@ uptime:
     minimum: 0
     maximum: 0
     type: number
-    x-ctype: int64_t
+  x-ctype: int64_t
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -258,676 +258,6 @@ uptime:
   x-savable: false
   x-writable: false
   summary: Time in milliseconds since the last reboot
-high_temp_1_thresh_1:
-  name: high_temp_1_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-high_temp_1_thresh_2:
-  name: high_temp_1_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-low_temp_1_thresh_1:
-  name: low_temp_1_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-low_temp_1_thresh_2:
-  name: low_temp_1_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-temp_1_delta_thresh:
-  name: temp_1_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 255
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold in degrees C
-high_temp_2_thresh_1:
-  name: high_temp_2_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-high_temp_2_thresh_2:
-  name: high_temp_2_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1.2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-low_temp_2_thresh_1:
-  name: low_temp_2_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-low_temp_2_thresh_2:
-  name: low_temp_2_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-temp_2_delta_thresh:
-  name: temp_2_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 255
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold
-high_temp_3_thresh_1:
-  name: high_temp_3_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-high_temp_3_thresh_2:
-  name: high_temp_3_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1.2e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-low_temp_3_thresh_1:
-  name: low_temp_3_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-low_temp_3_thresh_2:
-  name: low_temp_3_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-temp_3_delta_thresh:
-  name: temp_3_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 255.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 2e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold
-high_temp_4_thresh_1:
-  name: high_temp_4_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-high_temp_4_thresh_2:
-  name: high_temp_4_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 1.27e+2
-  x-example: 1.2e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-low_temp_4_thresh_1:
-  name: low_temp_4_thresh_1
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-low_temp_4_thresh_2:
-  name: low_temp_4_thresh_2
-  required: true
-  schema:
-    minimum: -128.0
-    maximum: 127.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: -1.28e+2
-  x-example: -4e+1
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-temp_4_delta_thresh:
-  name: temp_4_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 255.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 2e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold
-high_analog_1_thresh_1:
-  name: high_analog_1_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_1_thresh_2:
-  name: high_analog_1_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_1_thresh_1:
-  name: low_analog_1_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_1_thresh_2:
-  name: low_analog_1_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-analog_1_delta_thresh:
-  name: analog_1_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_2_thresh_1:
-  name: high_analog_2_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_2_thresh_2:
-  name: high_analog_2_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_2_thresh_1:
-  name: low_analog_2_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_2_thresh_2:
-  name: low_analog_2_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-analog_2_delta_thresh:
-  name: analog_2_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_3_thresh_1:
-  name: high_analog_3_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_3_thresh_2:
-  name: high_analog_3_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_3_thresh_1:
-  name: low_analog_3_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_3_thresh_2:
-  name: low_analog_3_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-analog_3_delta_thresh:
-  name: analog_3_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_4_thresh_1:
-  name: high_analog_4_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-high_analog_4_thresh_2:
-  name: high_analog_4_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_4_thresh_1:
-  name: low_analog_4_thresh_1
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 1. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-low_analog_4_thresh_2:
-  name: low_analog_4_thresh_2
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Analog Alarm Threshold 2. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
-analog_4_delta_thresh:
-  name: analog_4_delta_thresh
-  required: true
-  schema:
-    minimum: 0.0
-    maximum: 15000.0
-    type: integer
-    x-ctype: float
-  x-broadcast: true
-  x-default: 0.0
-  x-example: 1e+2
-  x-lockable: true
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Analog Alarm Threshold. Units will either be in PSI, mm, mV,
-    mA, or Amps if AC current is selected
 active_mode:
   name: active_mode
   required: true
@@ -935,7 +265,7 @@ active_mode:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -955,7 +285,7 @@ advertising_phy:
       CODED: 0
       1M: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 1
   x-example: 0
@@ -971,7 +301,7 @@ tx_power:
     minimum: -40
     maximum: 8
     type: integer
-    x-ctype: int8_t
+  x-ctype: int8_t
   x-broadcast: true
   x-default: 0
   x-example: 8
@@ -988,7 +318,7 @@ network_id:
     minimum: 0
     maximum: 65535
     type: integer
-    x-ctype: uint16_t
+  x-ctype: uint16_t
   x-broadcast: true
   x-default: 0
   x-example: 100
@@ -1004,7 +334,7 @@ config_version:
     minimum: 0
     maximum: 255
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 10
@@ -1028,7 +358,7 @@ config_type:
       ULTRASONIC_PRESSURE: 5
       SPI_OR_I2C: 6
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 2
@@ -1044,7 +374,7 @@ ge:
     minimum: -5.0
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 1e+0
   x-example: 9.98e-1
   x-lockable: true
@@ -1057,7 +387,7 @@ oe:
     minimum: -16.0
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: -1.22e+1
   x-lockable: true
@@ -1070,7 +400,7 @@ thermistor_config:
     minimum: 0
     maximum: 15
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -1086,7 +416,7 @@ temperature_result_1:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 0.0
   x-notify-if-unchanged: true
@@ -1100,7 +430,7 @@ temperature_result_2:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 0.0
   x-notify-if-unchanged: true
@@ -1114,7 +444,7 @@ temperature_result_3:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 0.0
   x-notify-if-unchanged: true
@@ -1128,7 +458,7 @@ temperature_result_4:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 0.0
   x-notify-if-unchanged: true
@@ -1142,7 +472,7 @@ power_voltage:
     minimum: 0
     maximum: 4.0
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-default: 0
   x-example: 3.2
   x-prepare: true
@@ -1159,7 +489,7 @@ digital_input:
       PORT1_BITMASK: 1
       PORT2_BITMASK: 2
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-default: 0
   x-example: 0
   x-lockable: true
@@ -1174,7 +504,7 @@ digital_input_1_config:
     minimum: 0
     maximum: 131
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 128
@@ -1190,7 +520,7 @@ digital_input_2_config:
     minimum: 0
     maximum: 131
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 128
@@ -1206,7 +536,7 @@ analog_input_1:
     minimum: 0.0
     maximum: 15000.0
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-broadcast: false
   x-default: 0.0
   x-example: 0.0
@@ -1224,7 +554,7 @@ analog_input_2:
     minimum: 0.0
     maximum: 15000.0
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-broadcast: false
   x-default: 0.0
   x-example: 0.0
@@ -1242,7 +572,7 @@ analog_input_3:
     minimum: 0.0
     maximum: 15000.0
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-broadcast: false
   x-default: 0.0
   x-example: 0.0
@@ -1260,7 +590,7 @@ analog_input_4:
     minimum: 0.0
     maximum: 15000.0
     type: integer
-    x-ctype: float
+  x-ctype: float
   x-broadcast: false
   x-default: 0.0
   x-example: 0.0
@@ -1287,7 +617,7 @@ analog_input_1_type:
       AC_CURRENT_150A: 6
       AC_CURRENT_500A: 7
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -1305,7 +635,7 @@ analog_input_2_type:
     minimum: 0
     maximum: 7
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -1322,7 +652,7 @@ analog_input_3_type:
     minimum: 0
     maximum: 7
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -1339,7 +669,7 @@ analog_input_4_type:
     minimum: 0
     maximum: 7
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: true
   x-default: 0
   x-example: 0
@@ -1359,7 +689,7 @@ magnet_state:
       FAR: true
       NEAR: false
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 1
@@ -1376,7 +706,7 @@ param_path:
     minLength: 2
     maxLength: 8
     type: string
-    x-ctype: string
+  x-ctype: string
   x-default: /ext
   x-example: /lfs1
   x-lockable: false
@@ -1390,7 +720,7 @@ battery_age:
     minimum: 0
     maximum: 0
     type: number
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -1407,7 +737,7 @@ api_version:
     minLength: 6
     maxLength: 11
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: 0.5.0
   x-example: 123.456.789
@@ -1424,10 +754,10 @@ qrtc:
     minimum: 0
     maximum: 0
     type: number
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-default: 0
   x-example: 0
-  x-prepare: true
+  x-prepare: false
   x-readable: true
   summary: Quasi-RTC (epoch, Seconds from Jan 1, 1970)
 qrtc_last_set:
@@ -1437,11 +767,11 @@ qrtc_last_set:
     minimum: 0
     maximum: 0
     type: number
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: true
   x-default: 0
   x-example: 0
-  x-prepare: true
+  x-prepare: false
   x-readable: true
   x-savable: true
   summary: Last time the RTC was set
@@ -1452,7 +782,7 @@ sh_offset:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "2.7315e+2"
   x-example: "2.7315e+2"
   x-lockable: true
@@ -1467,7 +797,7 @@ analog_sense_interval:
     minimum: 0
     maximum: 86400
     type: integer
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-broadcast: true
   x-default: "60"
   x-example: "10"
@@ -1486,7 +816,7 @@ tamper_switch_status:
       ACTIVE_NOT_PRESSED: true
       INACTIVE_PRESSED: false
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -1501,7 +831,7 @@ settings_passcode:
     minimum: 0
     maximum: 999999
     type: integer
-    x-ctype: uint32_t
+  x-ctype: uint32_t
   x-backup: true
   x-broadcast: true
   x-default: "123456"
@@ -1521,7 +851,7 @@ therm_1_coefficient_a:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "1.132e-3"
   x-example: "1.132e-3"
   x-lockable: true
@@ -1536,7 +866,7 @@ therm_2_coefficient_a:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "1.132e-3"
   x-example: "1.132e-3"
   x-lockable: true
@@ -1551,7 +881,7 @@ therm_3_coefficient_a:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "1.132e-3"
   x-example: "1.132e-3"
   x-lockable: true
@@ -1566,7 +896,7 @@ therm_4_coefficient_a:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "1.132e-3"
   x-example: "1.132e-3"
   x-lockable: true
@@ -1581,7 +911,7 @@ therm_1_coefficient_b:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "2.338e-4"
   x-example: "2.338e-4"
   x-lockable: true
@@ -1596,7 +926,7 @@ therm_2_coefficient_b:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "2.338e-4"
   x-example: "2.338e-4"
   x-lockable: true
@@ -1611,7 +941,7 @@ therm_3_coefficient_b:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "2.338e-4"
   x-example: "2.338e-4"
   x-lockable: true
@@ -1626,7 +956,7 @@ therm_4_coefficient_b:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "2.338e-4"
   x-example: "2.338e-4"
   x-lockable: true
@@ -1641,7 +971,7 @@ therm_1_coefficient_c:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 8.780e-8
   x-example: 8.780e-8
   x-lockable: true
@@ -1656,7 +986,7 @@ therm_2_coefficient_c:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 8.780e-8
   x-example: 8.780e-8
   x-lockable: true
@@ -1671,7 +1001,7 @@ therm_3_coefficient_c:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 8.780e-8
   x-example: 8.780e-8
   x-lockable: true
@@ -1686,7 +1016,7 @@ therm_4_coefficient_c:
     minimum: 1.2e-38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 8.780e-8
   x-example: 8.780e-8
   x-lockable: true
@@ -1701,10 +1031,10 @@ data_logging_enable:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
-  x-broadcast: true
+  x-ctype: bool
   x-default: 0
   x-example: 1
+  x-broadcast: true
   x-lockable: true
   x-readable: true
   x-savable: true
@@ -1717,7 +1047,7 @@ factory_reset_enable:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 1
   x-example: 0
   x-lockable: true
@@ -1737,7 +1067,7 @@ log_file_status:
     minimum: 0
     maximum: 3
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-default: 0
   x-example: 1
   x-prepare: true
@@ -1750,7 +1080,7 @@ adc_power_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1766,7 +1096,7 @@ adc_power_simulated_counts:
     minimum: 0
     maximum: 4095
     type: integer
-    x-ctype: int16_t
+  x-ctype: int16_t
   x-broadcast: false
   x-default: 0
   x-example: 1000
@@ -1783,7 +1113,7 @@ adc_analog_sensor_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1799,7 +1129,7 @@ adc_analog_sensor_simulated_counts:
     minimum: 0
     maximum: 4095
     type: integer
-    x-ctype: int16_t
+  x-ctype: int16_t
   x-broadcast: false
   x-default: 0
   x-example: 1000
@@ -1816,7 +1146,7 @@ adc_thermistor_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1832,7 +1162,7 @@ adc_thermistor_simulated_counts:
     minimum: 0
     maximum: 4095
     type: integer
-    x-ctype: int16_t
+  x-ctype: int16_t
   x-broadcast: false
   x-default: 0
   x-example: 1000
@@ -1849,7 +1179,7 @@ adc_vref_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1865,7 +1195,7 @@ adc_vref_simulated_counts:
     minimum: 0
     maximum: 4095
     type: integer
-    x-ctype: int16_t
+  x-ctype: int16_t
   x-broadcast: false
   x-default: 0
   x-example: 1000
@@ -1882,7 +1212,7 @@ voltage_1_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1898,7 +1228,7 @@ voltage_1_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -1914,7 +1244,7 @@ voltage_2_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1930,7 +1260,7 @@ voltage_2_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -1946,7 +1276,7 @@ voltage_3_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1962,7 +1292,7 @@ voltage_3_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -1978,7 +1308,7 @@ voltage_4_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -1994,7 +1324,7 @@ voltage_4_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2010,7 +1340,7 @@ ultrasonic_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2026,7 +1356,7 @@ ultrasonic_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2042,7 +1372,7 @@ pressure_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2058,7 +1388,7 @@ pressure_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2074,7 +1404,7 @@ current_1_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2090,7 +1420,7 @@ current_1_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2106,7 +1436,7 @@ current_2_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2122,7 +1452,7 @@ current_2_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2138,7 +1468,7 @@ current_3_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2154,7 +1484,7 @@ current_3_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2170,7 +1500,7 @@ current_4_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2186,7 +1516,7 @@ current_4_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2202,7 +1532,7 @@ vref_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2218,7 +1548,7 @@ vref_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2234,7 +1564,7 @@ temperature_1_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2250,7 +1580,7 @@ temperature_1_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2266,7 +1596,7 @@ temperature_2_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2282,7 +1612,7 @@ temperature_2_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "0.0"
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2298,7 +1628,7 @@ temperature_3_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2314,7 +1644,7 @@ temperature_3_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: "0.0"
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2330,7 +1660,7 @@ temperature_4_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2346,7 +1676,7 @@ temperature_4_simulated_value:
     minimum: -3.4e+38
     maximum: 3.4e+38
     type: number
-    x-ctype: float
+  x-ctype: float
   x-default: 0.0
   x-example: 8.780e-8
   x-hide-in-dump: true
@@ -2362,7 +1692,7 @@ power_volts_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2378,7 +1708,7 @@ power_volts_simulated_value:
     minimum: 0
     maximum: 4.00
     type: integer
-    x-ctype: int32_t
+  x-ctype: int32_t
   x-broadcast: false
   x-default: 0
   x-example: 1.00
@@ -2395,7 +1725,7 @@ digital_input_1_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2412,7 +1742,7 @@ digital_input_1_simulated_value:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-default: 0
   x-example: 0
   x-hide-in-dump: true
@@ -2430,7 +1760,7 @@ digital_input_2_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2449,7 +1779,7 @@ digital_input_2_simulated_value:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2468,7 +1798,7 @@ mag_switch_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2487,7 +1817,7 @@ mag_switch_simulated_value:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2506,7 +1836,7 @@ tamper_switch_simulated:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2525,7 +1855,7 @@ tamper_switch_simulated_value:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2548,7 +1878,7 @@ boot_phy:
     minimum: 0
     maximum: 2
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2567,7 +1897,7 @@ mobile_app_disconnect:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -2586,7 +1916,7 @@ attr_save_error_code:
     minimum: 0
     maximum: 0
     type: integer
-    x-ctype: int32_t
+  x-ctype: int32_t
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -2605,7 +1935,7 @@ recover_settings_count:
     minimum: 0
     maximum: 0
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: false
   x-default: 0
   x-deprecated: false
@@ -2624,7 +1954,7 @@ block_downgrades:
     minimum: 0
     maximum: 1
     type: integer
-    x-ctype: bool
+  x-ctype: bool
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2643,7 +1973,7 @@ security_level:
     minimum: -1
     maximum: 4
     type: integer
-    x-ctype: int8_t
+  x-ctype: int8_t
   x-broadcast: false
   x-default: 0
   x-example: 0
@@ -2661,7 +1991,7 @@ load_path:
     minLength: 0
     maxLength: 32
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: /lfs1/params.txt
   x-example: /lfs1/params.txt
@@ -2678,7 +2008,7 @@ dump_path:
     minLength: 0
     maxLength: 32
     type: string
-    x-ctype: string
+  x-ctype: string
   x-broadcast: false
   x-default: /lfs1/dump.txt
   x-example: /lfs1/dump.txt
@@ -2699,7 +2029,7 @@ settings_passcode_status:
     minimum: 0
     maximum: 2
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: false
   x-default: 0
   x-example: 1
@@ -2720,7 +2050,7 @@ lock_status:
     minimum: 0
     maximum: 2
     type: integer
-    x-ctype: uint8_t
+  x-ctype: uint8_t
   x-broadcast: false
   x-default: 0
   x-example: 0

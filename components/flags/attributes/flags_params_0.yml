@@ -1,0 +1,19 @@
+---
+bluetooth_flags:
+  name: bluetooth_flags
+  required: true
+  schema:
+    maximum: 65535
+    minimum: 0
+    type: integer
+  x-ctype: uint16_t
+  x-broadcast: true
+  x-default: 0
+  x-example: 1
+  x-lockable: false
+  x-prepare: false
+  x-readable: true
+  x-savable: false
+  x-writable: false
+  x-validator: bluetooth_flags
+  summary: Flags found in Bluetooth Advert
