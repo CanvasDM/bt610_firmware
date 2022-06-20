@@ -1702,6 +1702,7 @@ data_logging_enable:
     maximum: 1
     type: integer
     x-ctype: bool
+  x-broadcast: true
   x-default: 0
   x-example: 1
   x-lockable: true
