@@ -739,7 +739,7 @@ api_version:
     type: string
   x-ctype: string
   x-broadcast: false
-  x-default: 0.5.0
+  x-default: 0.5.1
   x-example: 123.456.789
   x-lockable: false
   x-prepare: false
@@ -1700,24 +1700,24 @@ power_volts_simulated:
   x-readable: true
   x-savable: false
   x-writable: true
-  summary: Enables simulated data for power mv
+  summary: Enables simulated data for power voltage
 power_volts_simulated_value:
   name: power_volts_simulated_value
   required: true
   schema:
     minimum: 0
-    maximum: 4.00
-    type: integer
-  x-ctype: int32_t
+    maximum: 4.0
+    type: number
+  x-ctype: float
   x-broadcast: false
-  x-default: 0
-  x-example: 1.00
+  x-default: 0.0
+  x-example: 1.0
   x-hide-in-dump: true
   x-lockable: true
   x-readable: true
   x-savable: false
   x-writable: true
-  summary: Simulated power mv value
+  summary: Simulated power voltage value
 digital_input_1_simulated:
   name: digital_input_1_simulated
   required: true

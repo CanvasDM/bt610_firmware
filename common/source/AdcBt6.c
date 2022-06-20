@@ -2,7 +2,7 @@
  * @file AdcBt6.c
  * @brief This will read the ADC pins and report back the value as a voltage
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2022 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -152,7 +152,7 @@ static bool PressureIsSimulated(float *simulated_value);
 static bool CurrentIsSimulated(size_t channel, float *simulated_value);
 static bool VrefIsSimulated(float *simulated_value);
 static bool TemperatureIsSimulated(size_t channel, float *simulated_value);
-static bool power_volt_is_simulated(int32_t *simulated_value);
+static bool power_volt_is_simulated(float *simulated_value);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -995,7 +995,7 @@ static bool TemperatureIsSimulated(size_t channel, float *simulated_value)
 	return (is_simulated);
 }
 
-static bool power_volt_is_simulated(int32_t *simulated_value)
+static bool power_volt_is_simulated(float *simulated_value)
 {
 	bool is_simulated = false;
 	bool simulation_enabled = false;
@@ -1005,15 +1005,13 @@ static bool power_volt_is_simulated(int32_t *simulated_value)
 	    sizeof(simulation_enabled)) {
 		if (simulation_enabled) {
 			/* If so, try to read the simulated value */
-			if (attr_get(ATTR_ID_power_volts_simulated_value,
-				     simulated_value,
-				     sizeof(*simulated_value)) ==
-			    sizeof(*simulated_value)) {
+			if (attr_get(ATTR_ID_power_volts_simulated_value, simulated_value,
+				     sizeof(float)) == sizeof(float)) {
 				/* Only apply the value if safe to do so */
 				is_simulated = true;
 			}
 		}
 	}
 
-	return(is_simulated);
+	return (is_simulated);
 }
