@@ -1,681 +1,644 @@
 ---
-thermistor_1_high_1:
-  name: high_temp_1_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-thermistor_1_high_2:
-  name: high_temp_1_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-thermistor_1_low_1:
-  name: low_temp_1_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-thermistor_1_low_2:
-  name: low_temp_1_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-thermistor_1_delta:
-  name: temp_1_delta_thresh
-  required: true
-  schema:
-    minimum: -1.0e+0
-    maximum: 2.55e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold in degrees C
-thermistor_2_high_1:
-  name: high_temp_2_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-thermistor_2_high_2:
-  name: high_temp_2_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-thermistor_2_low_1:
-  name: low_temp_2_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-thermistor_2_low_2:
-  name: low_temp_2_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-thermistor_2_delta:
-  name: temp_2_delta_thresh
-  required: true
-  schema:
-    minimum: -1.0e+0
-    maximum: 2.55e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold in degrees C
-thermistor_3_high_1:
-  name: high_temp_3_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-thermistor_3_high_2:
-  name: high_temp_3_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-thermistor_3_low_1:
-  name: low_temp_3_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-thermistor_3_low_2:
-  name: low_temp_3_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-thermistor_3_delta:
-  name: temp_3_delta_thresh
-  required: true
-  schema:
-    minimum: -1.0e+0
-    maximum: 2.55e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold in degrees C
-thermistor_4_high_1:
-  name: high_temp_4_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 1 in degrees C
-thermistor_4_high_2:
-  name: high_temp_4_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High Temperature Alarm Threshold 2 in degrees C
-thermistor_4_low_1:
-  name: low_temp_4_thresh_1
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 1 in degrees C
-thermistor_4_low_2:
-  name: low_temp_4_thresh_2
-  required: true
-  schema:
-    minimum: -1.28e+2
-    maximum: 1.27e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: -4e+1
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low Temperature Alarm Threshold 2 in degrees C
-thermistor_4_delta:
-  name: temp_4_delta_thresh
-  required: true
-  schema:
-    minimum: -1.0e+0
-    maximum: 2.55e+2
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 2e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta Temperature Alarm Threshold in degrees C
-analog_1_high_1:
-  name: high_analog_1_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 1 in degrees C
-analog_1_high_2:
-  name: high_analog_1_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 2 in degrees C
-analog_1_low_1:
-  name: low_analog_1_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 1 in degrees C
-analog_1_low_2:
-  name: low_analog_1_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 2 in degrees C
-analog_1_delta:
-  name: analog_1_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta analog Alarm Threshold in degrees C
-analog_2_high_1:
-  name: high_analog_2_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 1 in degrees C
-analog_2_high_2:
-  name: high_analog_2_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 2 in degrees C
-analog_2_low_1:
-  name: low_analog_2_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 1 in degrees C
-analog_2_low_2:
-  name: low_analog_2_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 2 in degrees C
-analog_2_delta:
-  name: analog_2_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta analog Alarm Threshold in degrees C
-analog_3_high_1:
-  name: high_analog_3_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 1 in degrees C
-analog_3_high_2:
-  name: high_analog_3_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 2 in degrees C
-analog_3_low_1:
-  name: low_analog_3_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 1 in degrees C
-analog_3_low_2:
-  name: low_analog_3_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 2 in degrees C
-analog_3_delta:
-  name: analog_3_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta analog Alarm Threshold in degrees C
-analog_4_high_1:
-  name: high_analog_4_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 1 in degrees C
-analog_4_high_2:
-  name: high_analog_4_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: High analog Alarm Threshold 2 in degrees C
-analog_4_low_1:
-  name: low_analog_4_thresh_1
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 1 in degrees C
-analog_4_low_2:
-  name: low_analog_4_thresh_2
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Low analog Alarm Threshold 2 in degrees C
-analog_4_delta:
-  name: analog_4_delta_thresh
-  required: true
-  schema:
-    minimum: 0
-    maximum: 1.5e+4
-    type: integer
-  x-ctype: float
-  x-broadcast: true
-  x-default: 0
-  x-example: 1e+2
-  x-lockable: true
-  x-prepare: false
-  x-readable: true
-  x-savable: true
-  x-writable: true
-  summary: Delta analog Alarm Threshold in degrees C
+info:
+  title: bt6xx_firmware_alarm_attributes
+attributes:
+  - name: high_temp_1_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 1 in degrees C
+  - name: high_temp_1_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 2 in degrees C
+  - name: low_temp_1_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 1 in degrees C
+  - name: low_temp_1_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 2 in degrees C
+  - name: temp_1_delta_thresh
+    required: true
+    schema:
+        minimum: -1.0e+0
+        maximum: 2.55e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 2e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta Temperature Alarm Threshold in degrees C
+  - name: high_temp_2_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 1 in degrees C
+  - name: high_temp_2_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 2 in degrees C
+  - name: low_temp_2_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 1 in degrees C
+  - name: low_temp_2_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 2 in degrees C
+  - name: temp_2_delta_thresh
+    required: true
+    schema:
+        minimum: -1.0e+0
+        maximum: 2.55e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 2e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta Temperature Alarm Threshold in degrees C
+  - name: high_temp_3_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 1 in degrees C
+  - name: high_temp_3_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 2 in degrees C
+  - name: low_temp_3_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 1 in degrees C
+  - name: low_temp_3_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 2 in degrees C
+  - name: temp_3_delta_thresh
+    required: true
+    schema:
+        minimum: -1.0e+0
+        maximum: 2.55e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 2e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta Temperature Alarm Threshold in degrees C
+  - name: high_temp_4_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 1 in degrees C
+  - name: high_temp_4_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High Temperature Alarm Threshold 2 in degrees C
+  - name: low_temp_4_thresh_1
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 1 in degrees C
+  - name: low_temp_4_thresh_2
+    required: true
+    schema:
+        minimum: -1.28e+2
+        maximum: 1.27e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: -4e+1
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low Temperature Alarm Threshold 2 in degrees C
+  - name: temp_4_delta_thresh
+    required: true
+    schema:
+        minimum: -1.0e+0
+        maximum: 2.55e+2
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 2e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta Temperature Alarm Threshold in degrees C
+  - name: high_analog_1_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 1 in degrees C
+  - name: high_analog_1_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 2 in degrees C
+  - name: low_analog_1_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 1 in degrees C
+  - name: low_analog_1_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 2 in degrees C
+  - name: analog_1_delta_thresh
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta analog Alarm Threshold in degrees C
+  - name: high_analog_2_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 1 in degrees C
+  - name: high_analog_2_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 2 in degrees C
+  - name: low_analog_2_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 1 in degrees C
+  - name: low_analog_2_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 2 in degrees C
+  - name: analog_2_delta_thresh
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta analog Alarm Threshold in degrees C
+  - name: high_analog_3_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 1 in degrees C
+  - name: high_analog_3_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 2 in degrees C
+  - name: low_analog_3_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 1 in degrees C
+  - name: low_analog_3_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 2 in degrees C
+  - name: analog_3_delta_thresh
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta analog Alarm Threshold in degrees C
+  - name: high_analog_4_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 1 in degrees C
+  - name: high_analog_4_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: High analog Alarm Threshold 2 in degrees C
+  - name: low_analog_4_thresh_1
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 1 in degrees C
+  - name: low_analog_4_thresh_2
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Low analog Alarm Threshold 2 in degrees C
+  - name: analog_4_delta_thresh
+    required: true
+    schema:
+        minimum: 0
+        maximum: 1.5e+4
+        type: integer
+    x-ctype: float
+    x-broadcast: true
+    x-default: 0
+    x-example: 1e+2
+    x-lockable: true
+    x-prepare: false
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Delta analog Alarm Threshold in degrees C
