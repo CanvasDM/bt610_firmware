@@ -20,9 +20,6 @@ components:
         - $ref: ./app/attributes/app_params.yml
         - $ref: ./components/flags/attributes/flags_params_0.yml
         - $ref: ./components/alarms/attributes/alarms_params.yml
-    aux_components:
-      name: aux_components
-      schema:
-        type: array
-      x-flag-component:
+    device_flags:
+      x-device-flags:
         - $ref: ./components/flags/input/flag_defines.yml
