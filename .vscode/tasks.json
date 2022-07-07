@@ -18,9 +18,9 @@
       /* ALWAYS RUN FIRST.... Run this to build merged bootloader and application properly. */
       "label": "build with mcuboot *Run this First*",
       "type": "shell",
-      "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO -- -Dmcuboot_CONF_FILE=\"${workspaceRoot}/peripheral_IO/mcuboot_bt6.conf\" -Dmcuboot_ROOT_APP_DIR=\"${workspaceRoot}/common\" -Dmcuboot_ROOT_PROJECT_APP_DIR=\"${workspaceRoot}/peripheral_IO\"",
+      "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
       "windows": {
-        "command": "west build -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO -- -Dmcuboot_CONF_FILE=\"${workspaceRoot}\\peripheral_IO\\mcuboot_bt6.conf\" -Dmcuboot_ROOT_APP_DIR=\"${workspaceRoot}\\common\" -Dmcuboot_ROOT_PROJECT_APP_DIR=\"${workspaceRoot}\\peripheral_IO\""
+        "command": "west build -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
       },
       "problemMatcher": {
         "base": "$gcc",
@@ -33,9 +33,9 @@
     {
       "label": "flash",
       "type": "shell",
-      "command": "west flash -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
       "windows": {
-        "command": "west flash -d ${workspaceRoot}\\peripheral_IO\\build"
+        "command": "west flash --recover -d ${workspaceRoot}\\peripheral_IO\\build"
       },
       "problemMatcher": []
     },
@@ -75,9 +75,9 @@
     {
       "label": "rebuild app and flash",
       "type": "shell",
-      "command": "west flash -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
       "windows": {
-        "command": "west flash -d ${workspaceRoot}\\peripheral_IO\\build"
+        "command": "west flash --recover -d ${workspaceRoot}\\peripheral_IO\\build"
       },
       "problemMatcher": [],
       "dependsOn": [
@@ -117,6 +117,15 @@
       "command": "west build -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO --target ram_report > ${workspaceRoot}/peripheral_IO/build/ram_report",
       "windows": {
         "command": "west build -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO --target ram_report > ${workspaceRoot}\\peripheral_IO\\build\\ram_report"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "PM report",
+      "type": "shell",
+      "command": "west build -t partition_manager_report -b bt6 -d ${workspaceRoot}/peripheral_IO/build",
+      "windows": {
+        "command": "west build -t partition_manager_report -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build"
       },
       "problemMatcher": []
     },
