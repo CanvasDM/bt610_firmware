@@ -21,8 +21,9 @@ set(PM_STATIC_YML_FILE
 )
 
 set(b0_OVERLAY_CONFIG
-   ${CMAKE_SOURCE_DIR}/b0_bt6.conf
+    ${CMAKE_SOURCE_DIR}/b0_bt6.conf
 )
+
 # Enable floating point support in MCU MGR. Needs to be enabled here
 # for visibility in underlying MCU MGR files.
 add_definitions(-DFLOAT_SUPPORT=1)
@@ -56,22 +57,22 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
     ${ATTR_CUSTOM_PATH_BASE}/src/attr_custom_validator_bluetooth_flags.c
-    )
+)
 
 if(CONFIG_FS_MGMT_FILE_ACCESS_HOOK)
-target_sources(app PRIVATE
-    ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
-)
+    target_sources(app PRIVATE
+        ${CMAKE_SOURCE_DIR}/../common/source/FileAccess.c
+    )
 endif()
 
-if(CONFIG_MCUMGR_CMD_SENTRIUS_MGMT)
-target_sources(app PRIVATE
-    ${CMAKE_SOURCE_DIR}/../common/source/Sentrius_mgmt.c
-)
+if(CONFIG_MCUMGR_CMD_PRODUCTION_MGMT)
+    target_sources(app PRIVATE
+        ${CMAKE_SOURCE_DIR}/../common/source/production_mgmt.c
+    )
 endif()
 
 if(CONFIG_TEST_MENU)
-target_sources(app PRIVATE
-    ${CMAKE_SOURCE_DIR}/../common/source/TestMenu.c
-)
+    target_sources(app PRIVATE
+        ${CMAKE_SOURCE_DIR}/../common/source/TestMenu.c
+    )
 endif()

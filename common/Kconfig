@@ -70,7 +70,7 @@ config SETTINGS_MOUNT_POINT
     string "The mount point for settings (storage partition in internal flash)"
     default "/lfs"
 
-config MCUMGR_CMD_SENTRIUS_MGMT
+config MCUMGR_CMD_PRODUCTION_MGMT
     bool "Enable the Sentrius mcumgr interface"
     depends on MCUMGR
     default y

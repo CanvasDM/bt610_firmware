@@ -30,7 +30,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "UserInterfaceTask.h"
 #include "SensorTask.h"
 #include "Version.h"
-#include "Sentrius_mgmt.h"
 #include "mcumgr_wrapper.h"
 #include "lcz_no_init_ram_var.h"
 #include "NonInit.h"
@@ -252,10 +251,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	SensorTask_Initialize();
 
 	EventTask_Initialize();
-
-#ifdef CONFIG_MCUMGR_CMD_SENTRIUS_MGMT
-	Sentrius_mgmt_register_group();
-#endif
 
 	/* Register callbacks for mcumgr management events */
 	mgmt_register_evt_cb(mcumgr_mgmt_callback);
