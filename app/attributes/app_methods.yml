@@ -19,7 +19,7 @@ methods:
         schema:
           type: string
           minLength: 0
-          maxLength: 0
+          maxLength: 64
     result:
       name: rev_echo_result
       schema:
@@ -38,36 +38,36 @@ methods:
             minLength: 0
             maxLength: 0
   - name: calibrate_thermistor
-    summary: Tell BT6xx to run thermistor calibration using provided calibration parameters
-    description: BT6xx will save results
+    summary: ""
+    description: Uses uint32_t for input parameters
     x-management-option: ReadWrite
-    x-id: 2
+    x-id: 4
     x-group_id: 256
     params:
       - name: p1
         summary: Parameter 1
-        description: Ideal ADC counts for 560 Ohm resistor (R1 = 559.4 ohms --> C1 = 4096 * 559.4/(10000 + 559.4) = 217.0)
+        description: Calibration factor x10000
         required: true
-        x-ctype: float
+        x-ctype: uint32_t
         x-sequencenumber: 1
-        x-default: 2.207351e+2
-        x-example: 2.207351e+2
+        x-default: 2207351
+        x-example: 2207351
         schema:
-          type: number
-          minimum: 1.2e-38
-          maximum: 3.4e+38
+          type: integer
+          minimum: 0
+          maximum: 0
       - name: p2
         summary: Parameter 2
-        description: Ideal ADC counts for 330K resistor (R2 = 331.9k --> C2 = 4096 * 331900/(10000 + 331900) = 3976.2)
+        description: Calibration factor x10000
         required: true
-        x-ctype: float
+        x-ctype: uint32_t
         x-sequencenumber: 2
-        x-default: 3.98e+3
-        x-example: 3.98e+3
+        x-default: 39800000
+        x-example: 39800000
         schema:
-          type: number
-          minimum: 1.2e-38
-          maximum: 3.4e+38
+          type: integer
+          minimum: 0
+          maximum: 0
     result:
       name: calibrate_thermistor_result
       schema:
@@ -85,24 +85,22 @@ methods:
             minimum: 0
             maximum: 0
         - name: ge
-          type: number
           summary: Gain Error
           description: This is applied to all thermistor readings
           required: true
           x-ctype: float
-          x-example: 9.98e-1
+          x-example: "9.98e-1"
           x-sequencenumber: 2
           schema:
             type: integer
             minimum: 0
             maximum: 0
         - name: oe
-          type: number
           summary: Offset Error
           description: This is applied to all thermistor readings
           required: true
           x-ctype: float
-          x-example: -1.28e+1
+          x-example: -1.28e1
           x-sequencenumber: 3
           schema:
             type: integer
@@ -138,75 +136,6 @@ methods:
           x-example: 0
           x-ctype: int32_t
           x-sequencenumber: 1
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 0
-  - name: calibrate_thermistor_version_2
-    summary: ""
-    description: Uses uint32_t for input parameters
-    x-management-option: ReadWrite
-    x-id: 4
-    x-group_id: 256
-    params:
-      - name: p1
-        summary: Parameter 1
-        description: Calibration factor x10000
-        required: true
-        x-ctype: uint32_t
-        x-sequencenumber: 1
-        x-default: 2207351
-        x-example: 2207351
-        schema:
-          type: integer
-          minimum: 0
-          maximum: 0
-      - name: p2
-        summary: Parameter 2
-        description: Calibration factor x10000
-        required: true
-        x-ctype: uint32_t
-        x-sequencenumber: 2
-        x-default: 39800000
-        x-example: 39800000
-        schema:
-          type: integer
-          minimum: 0
-          maximum: 0
-    result:
-      name: calibrate_thermistor_v2_result
-      schema:
-        type: array
-      x-result:
-        - name: r
-          summary: result
-          description: negative error code, 0 on success
-          required: true
-          x-ctype: int32_t
-          x-example: 0
-          x-sequencenumber: 1
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 0
-        - name: ge
-          summary: Gain Error
-          description: This is applied to all thermistor readings
-          required: true
-          x-ctype: float
-          x-example: "9.98e-1"
-          x-sequencenumber: 2
-          schema:
-            type: integer
-            minimum: 0
-            maximum: 0
-        - name: oe
-          summary: Offset Error
-          description: This is applied to all thermistor readings
-          required: true
-          x-ctype: float
-          x-example: -1.28e1
-          x-sequencenumber: 3
           schema:
             type: integer
             minimum: 0
