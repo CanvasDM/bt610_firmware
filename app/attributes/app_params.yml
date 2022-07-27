@@ -281,7 +281,7 @@ attributes:
     x-writable: true
     summary: Advertising Phy Value
   - name: tx_power
-    required: false
+    required: true
     schema:
         minimum: -40
         maximum: 8

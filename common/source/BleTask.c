@@ -69,23 +69,6 @@ typedef struct BleTaskTag {
 	bool conn_from_le_coded;
 } BleTaskObj_t;
 
-typedef enum {
-	POWER_LEVEL_PLUS_8 = 0,
-	POWER_LEVEL_PLUS_7,
-	POWER_LEVEL_PLUS_6,
-	POWER_LEVEL_PLUS_5,
-	POWER_LEVEL_PLUS_4,
-	POWER_LEVEL_PLUS_3,
-	POWER_LEVEL_PLUS_2,
-	POWER_LEVEL_ZERO,
-	POWER_LEVEL_MIN_4,
-	POWER_LEVEL_MIN_8,
-	POWER_LEVEL_MIN_12,
-	POWER_LEVEL_MIN_16,
-	POWER_LEVEL_MIN_20,
-	POWER_LEVEL_MIN_40,
-} TxPowerLevel_t;
-
 /* The Advertising Duration must always be this times greater than the
  * Advertising Interval.
  */
@@ -665,61 +648,11 @@ static int UpdateName(void)
 
 static void TransmitPower(void)
 {
-	TxPowerLevel_t txPower = 0;
 	int8_t powerLevel = 0;
 	uint16_t connectionHandle = 0;
 	int r = 0;
 
-	attr_get(ATTR_ID_tx_power, &txPower, sizeof(txPower));
-
-	switch (txPower) {
-	case POWER_LEVEL_PLUS_8:
-		powerLevel = 8;
-		break;
-	case POWER_LEVEL_PLUS_7:
-		powerLevel = 7;
-		break;
-	case POWER_LEVEL_PLUS_6:
-		powerLevel = 6;
-		break;
-	case POWER_LEVEL_PLUS_5:
-		powerLevel = 5;
-		break;
-	case POWER_LEVEL_PLUS_4:
-		powerLevel = 4;
-		break;
-	case POWER_LEVEL_PLUS_3:
-		powerLevel = 3;
-		break;
-	case POWER_LEVEL_PLUS_2:
-		powerLevel = 2;
-		break;
-	case POWER_LEVEL_ZERO:
-		powerLevel = 0;
-		break;
-	case POWER_LEVEL_MIN_4:
-		powerLevel = -4;
-		break;
-	case POWER_LEVEL_MIN_8:
-		powerLevel = -8;
-		break;
-	case POWER_LEVEL_MIN_12:
-		powerLevel = -12;
-		break;
-	case POWER_LEVEL_MIN_16:
-		powerLevel = -16;
-		break;
-	case POWER_LEVEL_MIN_20:
-		powerLevel = -20;
-		break;
-	case POWER_LEVEL_MIN_40:
-		powerLevel = -40;
-		break;
-	default:
-		/* This is the default power level for this device */
-		powerLevel = 8;
-		break;
-	}
+	attr_get(ATTR_ID_tx_power, &powerLevel, sizeof(powerLevel));
 
 	if (bto.conn != NULL) {
 		/* TX power level when connected */
