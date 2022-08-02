@@ -1,6 +1,6 @@
 info:
 - title: flag_defines
-  version: 1.01
+  version: 1.02
   project: BT610
 flag_registers:
 - flag_attribute_name: bluetooth_flags
@@ -9,7 +9,7 @@ flag_registers:
     maximum: 65535
     minimum: 0
     type: integer
-  x-ctype: uint16_t
+  x-ctype: atomic_t
   x-broadcast: true
   x-default: 0
   x-example: 1
@@ -26,55 +26,17 @@ flag_registers:
     bit: 0
   - name: active_mode
     bit: 1
-  - name: any_alarm
+  - name: attribute_set_device_management
     bit: 2
-    clear_on_clear_dependants:
-      associations:
-      - temp1_alarm
-      - temp2_alarm
-      - temp3_alarm
-      - temp4_alarm
-      - low_battery_alarm
-      - analog1_alarm
-      - analog2_alarm
-      - analog3_alarm
-      - analog4_alarm
-      operation: all_match
-    set_on_set_dependants:
-      associations:
-      - temp1_alarm
-      - temp2_alarm
-      - temp3_alarm
-      - temp4_alarm
-      - low_battery_alarm
-      - analog1_alarm
-      - analog2_alarm
-      - analog3_alarm
-      - analog4_alarm
-      operation: any_match
-  - name: temp1_alarm
-    bit: 3
-  - name: temp2_alarm
-    bit: 4
-  - name: temp3_alarm
-    bit: 5
-  - name: temp4_alarm
-    bit: 6
   - name: low_battery_alarm
-    bit: 7
-  - name: analog1_alarm
-    bit: 8
-  - name: analog2_alarm
-    bit: 9
-  - name: analog3_alarm
-    bit: 10
-  - name: analog4_alarm
-    bit: 11
+    bit: 3
   - name: digital_in1_state
-    bit: 12
+    bit: 4
   - name: digital_in2_state
-    bit: 13
+    bit: 5
   - name: tamper_switch_state
-    bit: 14
+    bit: 6
   - name: magnet_state
-    bit: 15
+    bit: 7
+  - name: memfault_data
+    bit: 8
