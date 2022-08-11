@@ -57,6 +57,7 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/SensorTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/UserInterfaceTask.c
     ${ATTR_CUSTOM_PATH_BASE}/src/attr_custom_validator_bluetooth_flags.c
+    ${ATTR_CUSTOM_PATH_BASE}/src/attr_custom_validator_event_filter_flags.c
 )
 
 if(CONFIG_FS_MGMT_FILE_ACCESS_HOOK)

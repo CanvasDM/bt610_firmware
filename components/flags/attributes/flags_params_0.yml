@@ -19,3 +19,20 @@ attributes:
     x-writable: false
     x-validator: bluetooth_flags
     summary: Flags found in Bluetooth Advert
+  - name: event_filter_flags
+    required: true
+    schema:
+      maximum: 1048575
+      minimum: 0
+      type: integer
+    x-ctype: atomic_t
+    x-broadcast: true
+    x-default: 0
+    x-example: 1
+    x-lockable: false
+    x-prepare: false
+    x-readable: true
+    x-savable: false
+    x-writable: true
+    x-validator: event_filter_flags
+    summary: Flags used to filter if events are reported

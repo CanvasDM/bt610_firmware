@@ -11,9 +11,9 @@
 LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #define THIS_FILE "Event"
 
-/******************************************************************************/
-/* Includes                                                                   */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Includes                                                                                       */
+/**************************************************************************************************/
 #include <zephyr.h>
 #include <device.h>
 
@@ -23,10 +23,11 @@ LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #include "Advertisement.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
+#include "attr_custom_validator_event_filter_flags.h"
 
-/******************************************************************************/
-/* Local Constant, Macro and Type Definitions                                 */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Local Constant, Macro and Type Definitions                                                     */
+/**************************************************************************************************/
 #ifndef EVENT_TASK_PRIORITY
 #define EVENT_TASK_PRIORITY K_PRIO_PREEMPT(1)
 #endif
@@ -43,35 +44,33 @@ typedef struct EventTaskTag {
 	FwkMsgTask_t msgTask;
 } EventTaskObj_t;
 
-/******************************************************************************/
-/* Local Data Definitions                                                     */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Local Data Definitions                                                                         */
+/**************************************************************************************************/
 static EventTaskObj_t eventTaskObject;
 
 K_THREAD_STACK_DEFINE(eventTaskStack, EVENT_TASK_STACK_DEPTH);
 
-K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH,
-	      FWK_QUEUE_ALIGNMENT);
+K_MSGQ_DEFINE(eventTaskQueue, FWK_QUEUE_ENTRY_SIZE, EVENT_TASK_QUEUE_DEPTH, FWK_QUEUE_ALIGNMENT);
 
 /* Rolling id used to identify new events */
 static uint32_t event_task_event_id = 0;
 
-/******************************************************************************/
-/* Local Function Prototypes                                                  */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Local Function Prototypes                                                                      */
+/**************************************************************************************************/
+
 static void EventTaskThread(void *, void *, void *);
 static void SetDataloggerStatus(void);
-static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						    FwkMsg_t *pMsg);
-static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg);
-static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg);
+static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
+static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static void SendEventDataAdvert(SensorMsg_t *sensor_event);
+static bool eventFilter(SensorEventType_t eventType);
 
-/******************************************************************************/
-/* Framework Message Dispatcher                                               */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Framework Message Dispatcher                                                                   */
+/**************************************************************************************************/
 static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 {
 	/* clang-format off */
@@ -85,9 +84,9 @@ static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	/* clang-format on */
 }
 
-/******************************************************************************/
-/* Global Function Definitions                                                */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Global Function Definitions                                                                    */
+/**************************************************************************************************/
 void EventTask_Initialize(void)
 {
 	eventTaskObject.msgTask.rxer.id = FWK_ID_EVENT_TASK;
@@ -100,18 +99,16 @@ void EventTask_Initialize(void)
 	Framework_RegisterTask(&eventTaskObject.msgTask);
 
 	eventTaskObject.msgTask.pTid =
-		k_thread_create(&eventTaskObject.msgTask.threadData,
-				eventTaskStack,
-				K_THREAD_STACK_SIZEOF(eventTaskStack),
-				EventTaskThread, &eventTaskObject, NULL, NULL,
-				EVENT_TASK_PRIORITY, 0, K_NO_WAIT);
+		k_thread_create(&eventTaskObject.msgTask.threadData, eventTaskStack,
+				K_THREAD_STACK_SIZEOF(eventTaskStack), EventTaskThread,
+				&eventTaskObject, NULL, NULL, EVENT_TASK_PRIORITY, 0, K_NO_WAIT);
 
 	k_thread_name_set(eventTaskObject.msgTask.pTid, THIS_FILE);
 }
 
-/******************************************************************************/
-/* Local Function Definitions                                                 */
-/******************************************************************************/
+/**************************************************************************************************/
+/* Local Function Definitions                                                                     */
+/**************************************************************************************************/
 static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	EventTaskObj_t *pObj = (EventTaskObj_t *)pArg1;
@@ -124,14 +121,12 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static void SetDataloggerStatus(void)
 {
 	bool dataLogEnable;
-	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable,
-		 sizeof(dataLogEnable));
+	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable, sizeof(dataLogEnable));
 
 	lcz_event_manager_set_logging_state(dataLogEnable);
 }
 
-static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						    FwkMsg_t *pMsg)
+static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	SensorMsg_t eventData;
@@ -142,14 +137,13 @@ static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	eventData.event.data = pEventMsg->eventData;
 
 	/* We always add events to the Event Manager for long term storage */
-	eventData.event.timestamp = lcz_event_manager_add_sensor_event(
-		pEventMsg->eventType, &pEventMsg->eventData);
+	eventData.event.timestamp =
+		lcz_event_manager_add_sensor_event(pEventMsg->eventType, &pEventMsg->eventData);
 
 	SendEventDataAdvert(&eventData);
 	return DISPATCH_OK;
 }
-static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg)
+static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	SensorMsg_t eventData;
@@ -163,8 +157,7 @@ static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						   FwkMsg_t *pMsg)
+static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	UNUSED_PARAMETER(pMsgRxer);
 	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
@@ -185,18 +178,150 @@ static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 }
 static void SendEventDataAdvert(SensorMsg_t *sensor_event)
 {
-	/* Now post the event to the BLE Task */
-	EventLogMsg_t *pMsgSend =
-		(EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+	bool activeEvent = false;
+	/*Check if the event flag is active */
+	activeEvent = eventFilter(sensor_event->event.type);
 
-	if (pMsgSend != NULL) {
-		pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
-		pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
-		pMsgSend->header.rxId = FWK_ID_BLE_TASK;
-		pMsgSend->eventType = sensor_event->event.type;
-		pMsgSend->eventData = sensor_event->event.data;
-		pMsgSend->id = event_task_event_id++;
-		pMsgSend->timeStamp = sensor_event->event.timestamp;
-		FRAMEWORK_MSG_SEND(pMsgSend);
+	if (activeEvent == true) {
+		/* Now post the event to the BLE Task */
+		EventLogMsg_t *pMsgSend = (EventLogMsg_t *)BufferPool_Take(sizeof(EventLogMsg_t));
+
+		if (pMsgSend != NULL) {
+			pMsgSend->header.msgCode = FMC_SENSOR_EVENT;
+			pMsgSend->header.txId = FWK_ID_SENSOR_TASK;
+			pMsgSend->header.rxId = FWK_ID_BLE_TASK;
+			pMsgSend->eventType = sensor_event->event.type;
+			pMsgSend->eventData = sensor_event->event.data;
+			pMsgSend->id = event_task_event_id++;
+			pMsgSend->timeStamp = sensor_event->event.timestamp;
+			FRAMEWORK_MSG_SEND(pMsgSend);
+		}
 	}
+}
+
+static bool eventFilter(SensorEventType_t eventType)
+{
+	bool filterStatus = false;
+	switch (eventType) {
+	case SENSOR_EVENT_TEMPERATURE_1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_TEMPERATURE_1_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_TEMPERATURE_2:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_TEMPERATURE_2_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_TEMPERATURE_3:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_TEMPERATURE_3_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_TEMPERATURE_4:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_TEMPERATURE_4_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_VOLTAGE_1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_1_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_VOLTAGE_2:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_2_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_VOLTAGE_3:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_3_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_VOLTAGE_4:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_4_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_CURRENT_1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_1_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_CURRENT_2:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_2_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_CURRENT_3:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_3_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_CURRENT_4:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_4_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_ULTRASONIC_1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_ULTRASONIC_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_PRESSURE_1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_PRESSURE_1_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_PRESSURE_2:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_PRESSURE_2_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_TAMPER:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_TAMPER_SWITCH_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_MAGNET:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_MAGNET_SENSE_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_BATTERY_GOOD:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_BATTERY_GOOD_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_BATTERY_BAD:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_BATTERY_BAD_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_DIGITAL_IN1:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_DIGITAL_IN1_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	case SENSOR_EVENT_DIGITAL_IN2:
+		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
+				       FLAG_DIGITAL_IN2_EVENT_BITMASK)) {
+			filterStatus = true;
+		}
+		break;
+	default:
+		filterStatus = false;
+		break;
+	}
+
+	return filterStatus;
 }
