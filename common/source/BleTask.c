@@ -577,7 +577,7 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 			bto.conn_from_le_coded = true;
 		}
 
-		r = bt_conn_set_security(bto.conn, BT_SECURITY_L1);
+		r = bt_conn_set_security(bto.conn, BT_SECURITY_L2);
 		LOG_DBG("Setting security status: %d", r);
 
 		/* Set the power for the connection */
