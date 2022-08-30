@@ -30,7 +30,6 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "UserInterfaceTask.h"
 #include "SensorTask.h"
 #include "Version.h"
-#include "mcumgr_wrapper.h"
 #include "lcz_no_init_ram_var.h"
 #include "NonInit.h"
 #include "file_system_utilities.h"
@@ -236,8 +235,6 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 		 sizeof(dataLogEnable));
 
 	RebootHandler();
-
-	mcumgr_wrapper_register_subsystems();
 
 	/* Start the Event Manager as early as possible before any events get
 	 * posted to it by threads trumping this one.
