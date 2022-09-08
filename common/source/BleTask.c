@@ -404,7 +404,7 @@ static DispatchResult_t BleAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
 	size_t i;
 	uint8_t updateData = false;
-	uint32_t tmp_val = 0;
+
 	for (i = 0; i < pb->count; i++) {
 		switch (pb->list[i]) {
 		case ATTR_ID_sensor_name:
