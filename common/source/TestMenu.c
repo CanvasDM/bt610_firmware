@@ -73,7 +73,7 @@ static int battery_measurement(const struct shell *shell, size_t argc,
 
 		for (i = 0; i < samples; i++) {
 			status = AdcBt6_read_power_volts(&raw, &volts);
-			shell_print(shell, "[%u] status: %d raw: %d volts: %d", i,
+			shell_print(shell, "[%u] status: %d raw: %d volts: %e", i,
 				    status, raw, volts);
 			if (status != 0) {
 				break;
@@ -84,9 +84,10 @@ static int battery_measurement(const struct shell *shell, size_t argc,
 		}
 		avg_raw /= samples;
 		avg_volts /= samples;
-		shell_print(shell, "averages: raw: %d volts: %d", avg_raw, avg_volts);
+		shell_print(shell, "averages: raw: %d volts: %e", avg_raw, avg_volts);
 		result = 0;
 	} else {
+        #warning "TODO Bug 22561 - Remove lock references"
 		shell_error(shell, "Configuration lock is engaged, "
 				   "test functions are unavailable");
 	}
