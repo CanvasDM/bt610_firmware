@@ -49,9 +49,7 @@ static int fs_mgmt_impl_app_access_check(bool write, char *path)
 			rc = 0;
 		} else if (strcmp(path, attr_get_quasi_static(ATTR_ID_dump_path)) == 0) {
 			rc = 0;
-		} else if (strcmp(path, CONFIG_ATTRIBUTE_MGMT_FEEDBACK_FILE) == 0) {
-			rc = 0;
-		} else if (strcmp(path, CONFIG_ATTR_SHELL_FEEDBACK_FILE) == 0) {
+		} else if (strcmp(path, CONFIG_ATTRIBUTE_FEEDBACK_FILE) == 0) {
 			rc = 0;
 		}
 	} else {
