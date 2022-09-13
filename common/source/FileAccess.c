@@ -57,10 +57,7 @@ static int fs_mgmt_impl_app_access_check(bool write, char *path)
 	} else {
 		/* Write: allow access to parameter upload file only */
 		if (strcmp(path, attr_get_quasi_static(ATTR_ID_load_path)) == 0) {
-			/* But do not allow if the settings lock is engaged */
-			if (attr_is_locked() == false) {
-				rc = 0;
-			}
+			rc = 0;
 		}
 	}
 

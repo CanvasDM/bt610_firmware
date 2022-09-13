@@ -464,18 +464,6 @@ static int upload_start_check(const struct img_mgmt_upload_req req,
 
 	/* Only check the first chunk */
 	if (req.off == 0) {
-		/* Check if configuration is locked */
-		if (attr_is_locked() == true) {
-			/* Configuration is locked, deny firmware update request
-			 * until the device has been unlocked to prevent
-			 * unauthorised upgrading or downgrading of firmware.
-			 * Use an EPERUSER error to distinguish this state for
-			 * the mobile application
-			 */
-			LOG_ERR("Attempted firmware update whilst settings are "
-				"locked");
-			return MGMT_ERR_EPERUSER;
-		}
 
 #if defined(CONFIG_MINIMUM_FIRMWARE_VERSION_FOTA_CHECK)
 		/* There is a minimum firmware version that can be loaded over
