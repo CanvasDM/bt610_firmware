@@ -20,7 +20,7 @@ extern "C" {
 /**************************************************************************************************/
 /* Global Constants, Macros and Type Definitions                                                  */
 /**************************************************************************************************/
-#define EVENT_MANAGER_FILE_OUT_PATH "/ext/event_file_out"
+#define EVENT_MANAGER_FILE_OUT_PATH "/lfs1/event_file_out"
 
 /**************************************************************************************************/
 /* Global Function Prototypes                                                                     */
