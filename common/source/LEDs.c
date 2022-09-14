@@ -35,10 +35,12 @@ LOG_MODULE_REGISTER(leds, 0);
 #define LED1_NODE DT_ALIAS(led1)
 
 /* clang-format off */
-#define LED0_DEV  DT_GPIO_LABEL(LED0_NODE, gpios)
-#define LED0      DT_GPIO_PIN(LED0_NODE, gpios)
-#define LED1_DEV  DT_GPIO_LABEL(LED1_NODE, gpios)
-#define LED1      DT_GPIO_PIN(LED1_NODE, gpios)
+#define LED0_DEV   DT_GPIO_LABEL(LED0_NODE, gpios)
+#define LED0_FLAGS DT_GPIO_FLAGS(LED0_NODE, gpios)
+#define LED0       DT_GPIO_PIN(LED0_NODE, gpios)
+#define LED1_DEV   DT_GPIO_LABEL(LED1_NODE, gpios)
+#define LED1_FLAGS DT_GPIO_FLAGS(LED1_NODE, gpios)
+#define LED1       DT_GPIO_PIN(LED1_NODE, gpios)
 /* clang-format on */
 
 #define ADVERTISE_30SEC_TIMER 30
@@ -57,21 +59,20 @@ static void red_led_off(void);
 /* Local Data Definitions                                                     */
 /******************************************************************************/
 #ifdef CONFIG_LCZ_LED_CUSTOM_ON_OFF
-static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, green_led_on, green_led_off },
-	{ RED_LED, red_led_on, red_led_off }
-};
+static const lcz_led_configuration_t LED_CONFIGURATION[] = { { GREEN_LED, green_led_on,
+							       green_led_off },
+							     { RED_LED, red_led_on, red_led_off } };
 #else
 #if defined(CONFIG_MCUBOOT)
 /* For the bootloader, set LED polarities to be opposite so they alternate */
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH },
-	{ RED_LED, LED0_DEV, LED0, LED_ACTIVE_LOW }
+	{ GREEN_LED, LED1_DEV, LED1, LED1_FLAGS },
+	{ RED_LED, LED0_DEV, LED0, !LED0_FLAGS }
 };
 #else
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED1_DEV, LED1, LED_ACTIVE_HIGH },
-	{ RED_LED, LED0_DEV, LED0, LED_ACTIVE_HIGH }
+	{ GREEN_LED, LED1_DEV, LED1, LED1_FLAGS },
+	{ RED_LED, LED0_DEV, LED0, LED0_FLAGS }
 };
 #endif
 #endif
@@ -113,9 +114,7 @@ static const struct lcz_led_blink_pattern BOOTLOADER_ACTIVE_PATTERN = {
 /******************************************************************************/
 void InitialiseLEDs(void)
 {
-	lcz_led_init((lcz_led_configuration_t *)LED_CONFIGURATION,
-		     ARRAY_SIZE(LED_CONFIGURATION));
-
+	lcz_led_init((lcz_led_configuration_t *)LED_CONFIGURATION, ARRAY_SIZE(LED_CONFIGURATION));
 }
 
 void led_blink(ledColors_t color, ledPatterns_t pattern)
@@ -189,17 +188,17 @@ void led_off(ledColors_t color)
 
 void led_test(uint32_t delay)
 {
-        lcz_led_turn_on(GREEN_LED);
-        k_sleep(K_MSEC(delay));
+	lcz_led_turn_on(GREEN_LED);
+	k_sleep(K_MSEC(delay));
 
-        lcz_led_turn_on(RED_LED);
-        k_sleep(K_MSEC(delay));
+	lcz_led_turn_on(RED_LED);
+	k_sleep(K_MSEC(delay));
 
-        lcz_led_turn_off(GREEN_LED);
-        k_sleep(K_MSEC(delay));
+	lcz_led_turn_off(GREEN_LED);
+	k_sleep(K_MSEC(delay));
 
-        lcz_led_turn_off(RED_LED);
-        k_sleep(K_MSEC(delay));
+	lcz_led_turn_off(RED_LED);
+	k_sleep(K_MSEC(delay));
 }
 
 /******************************************************************************/
@@ -233,11 +232,11 @@ static int bootloader_leds_init(const struct device *device)
 	/* This is used by the bootloader at start-up to switch between the
 	 * LEDs to indicate that it is busy with an operation
 	 */
-        ARG_UNUSED(device);
+	ARG_UNUSED(device);
 	InitialiseLEDs();
 	led_blink(LED_COLOR_AMBER, LED_PATTERN_BOOTLOADER_ACTIVE);
 
-        return 0;
+	return 0;
 }
 
 SYS_INIT(bootloader_leds_init, APPLICATION, 0);
