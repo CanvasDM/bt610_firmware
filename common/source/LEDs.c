@@ -63,18 +63,10 @@ static const lcz_led_configuration_t LED_CONFIGURATION[] = { { GREEN_LED, green_
 							       green_led_off },
 							     { RED_LED, red_led_on, red_led_off } };
 #else
-#if defined(CONFIG_MCUBOOT)
-/* For the bootloader, set LED polarities to be opposite so they alternate */
-static const lcz_led_configuration_t LED_CONFIGURATION[] = {
-	{ GREEN_LED, LED1_DEV, LED1, LED1_FLAGS },
-	{ RED_LED, LED0_DEV, LED0, !LED0_FLAGS }
-};
-#else
 static const lcz_led_configuration_t LED_CONFIGURATION[] = {
 	{ GREEN_LED, LED1_DEV, LED1, LED1_FLAGS },
 	{ RED_LED, LED0_DEV, LED0, LED0_FLAGS }
 };
-#endif
 #endif
 
 /* clang-format off */
