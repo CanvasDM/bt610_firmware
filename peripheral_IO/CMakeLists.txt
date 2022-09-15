@@ -8,7 +8,7 @@ set(FWK_APP_MSG_FILE_LIST
     ${CMAKE_SOURCE_DIR}/../common/framework_config/framework_msg_codes_list.h
 )
 set(mcuboot_CONF_FILE
-    ${CMAKE_SOURCE_DIR}/mcuboot_bt6.conf
+    ${CMAKE_SOURCE_DIR}/mcuboot_bt610.conf
 )
 set(mcuboot_ROOT_APP_DIR
     ${CMAKE_SOURCE_DIR}/../common
@@ -17,11 +17,11 @@ set(mcuboot_ROOT_PROJECT_APP_DIR
     ${CMAKE_SOURCE_DIR}/../peripheral_IO
 )
 set(PM_STATIC_YML_FILE
-    ${CMAKE_SOURCE_DIR}/pm_static.sb.bt6.yml
+    ${CMAKE_SOURCE_DIR}/pm_static.sb.bt610.yml
 )
 
 set(b0_OVERLAY_CONFIG
-    ${CMAKE_SOURCE_DIR}/b0_bt6.conf
+    ${CMAKE_SOURCE_DIR}/b0_bt610.conf
 )
 
 # Prepend the additional boards directory but still allow the original Zephyr

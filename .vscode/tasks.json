@@ -18,9 +18,9 @@
       /* ALWAYS RUN FIRST.... Run this to build merged bootloader and application properly. */
       "label": "build with mcuboot *Run this First*",
       "type": "shell",
-      "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "command": "west build -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
       "windows": {
-        "command": "west build -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
+        "command": "west build -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
       },
       "problemMatcher": {
         "base": "$gcc",
@@ -60,9 +60,9 @@
     {
       "label": "build",
       "type": "shell",
-      "command": "west build -b bt6 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "command": "west build -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
       "windows": {
-        "command": "west build -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
+        "command": "west build -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
       },
       "problemMatcher": {
         "base": "$gcc",
@@ -123,9 +123,9 @@
     {
       "label": "PM report",
       "type": "shell",
-      "command": "west build -t partition_manager_report -b bt6 -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}/peripheral_IO/build",
       "windows": {
-        "command": "west build -t partition_manager_report -b bt6 -d ${workspaceRoot}\\peripheral_IO\\build"
+        "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build"
       },
       "problemMatcher": []
     },
@@ -141,9 +141,9 @@
     {
       "label": "build hci uart",
       "type": "shell",
-      "command": "west build -b bt6 -d ${workspaceRoot}/hci_uart/build ${workspaceRoot}/hci_uart",
+      "command": "west build -b bt610 -d ${workspaceRoot}/hci_uart/build ${workspaceRoot}/hci_uart",
       "windows": {
-        "command": "west build -b bt6 -d ${workspaceRoot}\\hci_uart\\build ${workspaceRoot}\\hci_uart"
+        "command": "west build -b bt610 -d ${workspaceRoot}\\hci_uart\\build ${workspaceRoot}\\hci_uart"
       },
       "problemMatcher": {
         "base": "$gcc",
