@@ -78,8 +78,7 @@ typedef struct ControlTaskTag {
 	bool factoryResetFlag;
 } ControlTaskObj_t;
 
-#if defined(CONFIG_SETTINGS_FS_FILE) &&                                        \
-	defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                              \
+#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                  \
 	CONFIG_MAX_SETTINGS_FILE_SIZE != 0
 BUILD_ASSERT(CONFIG_MAX_SETTINGS_FILE_SIZE >= 256,
 	     "Settings file maximum size must be at least 256 bytes");
@@ -102,22 +101,17 @@ K_MSGQ_DEFINE(controlTaskQueue, FWK_QUEUE_ENTRY_SIZE, CONTROL_TASK_QUEUE_DEPTH,
 /******************************************************************************/
 static void ControlTaskThread(void *, void *, void *);
 
-static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						FwkMsg_t *pMsg);
+static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
-static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					    FwkMsg_t *pMsg);
+static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
-static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						FwkMsg_t *pMsg);
+static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
-static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg);
+static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 
 static void RebootHandler(void);
 
-static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
-				 void *arg);
+static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id, void *arg);
 
 static int upload_start_check(const struct img_mgmt_upload_req req,
 			      const struct img_mgmt_upload_action action);
@@ -159,9 +153,8 @@ void ControlTask_Initialize(void)
 #else
 	cto.msgTask.pTid =
 		k_thread_create(&cto.msgTask.threadData, controlTaskStack,
-				K_THREAD_STACK_SIZEOF(controlTaskStack),
-				ControlTaskThread, &cto, NULL, NULL,
-				CONTROL_TASK_PRIORITY, 0, K_NO_WAIT);
+				K_THREAD_STACK_SIZEOF(controlTaskStack), ControlTaskThread, &cto,
+				NULL, NULL, CONTROL_TASK_PRIORITY, 0, K_NO_WAIT);
 #endif
 
 	k_thread_name_set(cto.msgTask.pTid, THIS_FILE);
@@ -224,15 +217,13 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
 
 	attr_set_uint32(ATTR_ID_lock_status,
-			    (lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED :
-						    LOCK_STATUS_NOT_SETUP));
+			(lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED : LOCK_STATUS_NOT_SETUP));
 
 	/* Safe to read the data log enable flag after reading back all
 	 * attributes. We use this to determine whether to disable or enable
 	 * logging at startup.
 	 */
-	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable,
-		 sizeof(dataLogEnable));
+	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable, sizeof(dataLogEnable));
 
 	RebootHandler();
 
@@ -267,35 +258,26 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static void RebootHandler(void)
 {
-	attr_set_string(ATTR_ID_firmware_version, VERSION_STRING,
-			strlen(VERSION_STRING));
+	attr_set_string(ATTR_ID_firmware_version, VERSION_STRING, strlen(VERSION_STRING));
 
 	uint32_t reset_reason = lcz_nrf_reset_reason_get_and_clear_register();
-	const char *s =
-		lcz_nrf_reset_reason_get_string(reset_reason);
+	const char *s = lcz_nrf_reset_reason_get_string(reset_reason);
 	LOG_WRN("reset reason: %s (%08X)", s, reset_reason);
 
-	if (reset_reason ==
-	    (POWER_RESETREAS_DOG_Detected << POWER_RESETREAS_DOG_Pos)) {
+	if (reset_reason == (POWER_RESETREAS_DOG_Detected << POWER_RESETREAS_DOG_Pos)) {
 		LOG_ERR("*WARNING* Unit reboot was forced by watchdog timeout");
 	}
 
 	uint32_t reset_count = 0;
 
-	if (fsu_lfs_mount() == 0) {
-		fsu_read_abs(RESET_COUNT_FNAME, &reset_count,
-			     sizeof(reset_count));
-		reset_count += 1;
-		fsu_write_abs(RESET_COUNT_FNAME, &reset_count,
-			      sizeof(reset_count));
-	}
+	fsu_read_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
+	reset_count += 1;
+	fsu_write_abs(RESET_COUNT_FNAME, &reset_count, sizeof(reset_count));
 
-#if defined(CONFIG_SETTINGS_FS_FILE) &&                                        \
-	defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                              \
+#if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                  \
 	CONFIG_MAX_SETTINGS_FILE_SIZE > 0
 	/* Check the size of the settings file */
-	if (fsu_get_file_size_abs(CONFIG_SETTINGS_FS_FILE) >=
-	    CONFIG_MAX_SETTINGS_FILE_SIZE) {
+	if (fsu_get_file_size_abs(CONFIG_SETTINGS_FS_FILE) >= CONFIG_MAX_SETTINGS_FILE_SIZE) {
 		/* Settings file is too large, clear it so that there is
 		 * sufficient space to save settings
 		 */
@@ -310,16 +292,14 @@ static void RebootHandler(void)
 		LOG_INF("Bootloader time: %u", pnird->bootloader_time);
 		LOG_INF("Execution time: %u", k_uptime_get_32());
 		if (pnird->qrtc > 0) {
-			if (pnird->bootloader_time >=
-			    BOOTLOADER_MAX_TIME_SANITY_CHECK) {
+			if (pnird->bootloader_time >= BOOTLOADER_MAX_TIME_SANITY_CHECK) {
 				LOG_ERR("Bootloader time is in excess of 10 minutes, "
 					"ignoring value");
 				pnird->bootloader_time = 0;
 			}
 
-			pnird->qrtc +=
-				((pnird->bootloader_time + k_uptime_get_32()) /
-				 MS_TO_SECONDS_DIVISOR);
+			pnird->qrtc += ((pnird->bootloader_time + k_uptime_get_32()) /
+					MS_TO_SECONDS_DIVISOR);
 			lcz_qrtc_set_epoch(pnird->qrtc);
 
 			LOG_INF("Device time: %u", pnird->qrtc);
@@ -348,8 +328,7 @@ static void RebootHandler(void)
 	attr_set_uint32(ATTR_ID_reset_count, reset_count);
 }
 
-static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					    FwkMsg_t *pMsg)
+static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsg);
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
@@ -372,8 +351,7 @@ static DispatchResult_t HeartbeatMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						FwkMsg_t *pMsg)
+static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ControlTaskObj_t *pObj = FWK_TASK_CONTAINER(ControlTaskObj_t);
 	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
@@ -393,8 +371,7 @@ static DispatchResult_t AttrBroadcastMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-					       FwkMsg_t *pMsg)
+static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
@@ -403,13 +380,11 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	attr_factory_reset();
 	lcz_event_manager_factory_reset();
 	/* Need reset to init all the values */
-	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK,
-				      FMC_SOFTWARE_RESET);
+	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK, FMC_SOFTWARE_RESET);
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
-						FwkMsg_t *pMsg)
+static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
 	ARG_UNUSED(pMsg);
@@ -428,8 +403,7 @@ static DispatchResult_t SoftwareResetMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
-static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
-				 void *arg)
+static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id, void *arg)
 {
 	/* We are only interested in the firmware upload complete event, skip
 	 * all others
@@ -444,9 +418,8 @@ static void mcumgr_mgmt_callback(uint8_t opcode, uint16_t group, uint8_t id,
 	/* Save the current PHY to the boot PHY attribute so it can be restored
 	 * after rebooting
 	 */
-	attr_set_uint32(ATTR_ID_boot_phy, (ble_conn_last_was_le_coded() ?
-							ADVERTISING_PHY_CODED :
-							ADVERTISING_PHY_1M));
+	attr_set_uint32(ATTR_ID_boot_phy, (ble_conn_last_was_le_coded() ? ADVERTISING_PHY_CODED :
+									  ADVERTISING_PHY_1M));
 
 	app_prepare_for_reboot();
 }
@@ -464,7 +437,6 @@ static int upload_start_check(const struct img_mgmt_upload_req req,
 
 	/* Only check the first chunk */
 	if (req.off == 0) {
-
 #if defined(CONFIG_MINIMUM_FIRMWARE_VERSION_FOTA_CHECK)
 		/* There is a minimum firmware version that can be loaded over
 		 * FOTA, ensure that this version requirement is met

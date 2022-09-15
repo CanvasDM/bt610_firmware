@@ -1,6 +1,0 @@
-/* SPDX-License-Identifier: LicenseRef-Nordic-5-Clause */
-
-&uart0 {
-	/delete-property/ rts-pin;
-	/delete-property/ cts-pin;
-};

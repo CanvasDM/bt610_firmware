@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ * Copyright (c) 2022 Laird Connectivity LLC
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+&uart0 {
+    /delete-property/ rts-pin;
+    /delete-property/ cts-pin;
+};
+
+/delete-node/ &lfs_partition;
+
+/ {
+	chosen {
+		/* required for partition manager to use external flash */
+		nordic,pm-ext-flash = &mx25r64;
+	};
+
+	fstab {
+		compatible = "zephyr,fstab";
+		lfs1: lfs1 {
+			compatible = "zephyr,fstab,littlefs";
+			mount-point = "/lfs1";
+			partition = <&littlefs_storage>;
+			automount;
+			read-size = <16>;
+			prog-size = <16>;
+			cache-size = <64>;
+			lookahead-size = <32>;
+			block-cycles = <512>;
+		};
+	};
+};
+
+&mx25r64 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		littlefs_storage: partition@200000 {
+			label = "littlefs_storage";
+			reg = <0x00200000 0x00600000>;
+		};
+	};
+};
+
+
