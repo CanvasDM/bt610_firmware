@@ -24,10 +24,6 @@ set(b0_OVERLAY_CONFIG
     ${CMAKE_SOURCE_DIR}/b0_bt610.conf
 )
 
-# Prepend the additional boards directory but still allow the original Zephyr
-# boards directory to be used with lower priority
-list(PREPEND BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../)
-
 # The component-generated files for attributes
 set(ATTR_CUSTOM_PATH_BASE ${CMAKE_SOURCE_DIR}/../components/attributes)
 
