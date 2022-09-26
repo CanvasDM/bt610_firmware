@@ -58,7 +58,7 @@ enum {
 	/**< Number of microseconds in 10 milliseconds. */
 	UNIT_10_MS = 10000
 };
-#ifndef CONFIG_ADVERTISEMENT_DISABLE
+
 static bool advertising;
 static struct bt_le_adv_param bt_param =
 	BT_LE_ADV_PARAM_INIT(BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
@@ -68,7 +68,6 @@ static struct bt_le_adv_param bt_extendParam = BT_LE_ADV_PARAM_INIT(
 	BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME |
 		BT_LE_ADV_OPT_EXT_ADV | BT_LE_ADV_OPT_CODED,
 	BT_GAP_ADV_SLOW_INT_MIN, BT_GAP_ADV_SLOW_INT_MAX, NULL);
-#endif
 
 static struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
