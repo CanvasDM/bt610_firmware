@@ -118,12 +118,14 @@ typedef struct AdcObj {
 	float oe;
 } AdcObj_t;
 
+#define CONFIG_ATTR_FLOAT_MAX_STR_SIZE 20
+#define CONFIG_ATTR_FLOAT_FMT "%.4e"
+#define F_FMT CONFIG_ATTR_FLOAT_FMT
+
 #define THERM_CAL_FMT_STR                                                      \
 	"c1: " F_FMT " c2: " F_FMT " ge: " F_FMT "oe: " F_FMT "\r\n"
 #define THERM_CAL_FMT_STR_MAX_SIZE                                             \
 	((4 * CONFIG_ATTR_FLOAT_MAX_STR_SIZE) + sizeof(THERM_CAL_FMT_STR))
-
-#define F_FMT CONFIG_ATTR_FLOAT_FMT
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
