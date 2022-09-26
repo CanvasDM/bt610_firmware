@@ -12,7 +12,6 @@ attributes:
     x-broadcast: true
     x-default: ""
     x-example: BT610
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -28,7 +27,6 @@ attributes:
     x-broadcast: false
     x-default: NA
     x-example: myRoom
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -44,7 +42,6 @@ attributes:
     x-broadcast: true
     x-default: "1000"
     x-example: "1000"
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -60,7 +57,6 @@ attributes:
     x-broadcast: true
     x-default: "15000"
     x-example: "15000"
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -77,7 +73,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -95,7 +90,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 60
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -111,7 +105,6 @@ attributes:
     x-broadcast: true
     x-default: 60
     x-example: 10
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -128,7 +121,6 @@ attributes:
     x-default: "1"
     x-deprecated: true
     x-example: "5"
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -144,7 +136,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -160,7 +151,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -176,7 +166,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0.0
     x-example: 1.0.0
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -192,7 +181,6 @@ attributes:
     x-broadcast: false
     x-default: RESETPIN
     x-example: DOG
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -208,7 +196,6 @@ attributes:
     x-broadcast: false
     x-default: "0"
     x-example: "010203040506"
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -224,7 +211,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -240,7 +226,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -256,7 +241,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-validator: cp8
@@ -275,7 +259,6 @@ attributes:
     x-broadcast: true
     x-default: 1
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -292,7 +275,6 @@ attributes:
     x-example: 8
     x-readable: true
     x-savable: true
-    x-lockable: true
     x-validator: tx_power
     x-writable: true
     summary: Bluetooth Tx Power (dBm)
@@ -306,7 +288,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 100
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -344,7 +325,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 2
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -358,7 +338,6 @@ attributes:
     x-ctype: float
     x-default: 1e+0
     x-example: 9.98e-1
-    x-lockable: true
     x-readable: true
     summary: ADC Calibrated Thermistor Gain Error
   - name: oe
@@ -370,7 +349,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: -1.22e+1
-    x-lockable: true
     x-readable: true
     summary: ADC calibrated offset error
   - name: thermistor_config
@@ -383,7 +361,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -465,7 +442,6 @@ attributes:
     x-ctype: uint8_t
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-prepare: true
     x-readable: true
     summary: Bit 0 is digital input 1, Bit 1 is digital input 2
@@ -480,7 +456,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 128
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -495,7 +470,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 128
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -510,7 +484,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0
     x-example: 0.0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -527,7 +500,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0
     x-example: 0.0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -544,7 +516,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0
     x-example: 0.0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -561,7 +532,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0
     x-example: 0.0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -587,7 +557,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-validator: aic
@@ -604,7 +573,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-validator: aic
@@ -620,7 +588,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-validator: aic
@@ -636,7 +603,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-validator: aic
@@ -655,7 +621,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -670,7 +635,6 @@ attributes:
     x-ctype: string
     x-default: /ext
     x-example: /lfs1
-    x-lockable: false
     x-readable: true
     x-savable: false
     summary: Folder on file system used for Parse/Dump commands
@@ -684,7 +648,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -700,7 +663,6 @@ attributes:
     x-broadcast: false
     x-default: 0.5.1
     x-example: 123.456.789
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -741,7 +703,6 @@ attributes:
     x-ctype: float
     x-default: "2.7315e+2"
     x-example: "2.7315e+2"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -756,7 +717,6 @@ attributes:
     x-broadcast: true
     x-default: "60"
     x-example: "10"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -789,8 +749,6 @@ attributes:
     x-broadcast: true
     x-default: "123456"
     x-example: "987654"
-    x-hide-in-dump: true
-    x-lockable: false
     x-obscure-in-show: true
     x-readable: false
     x-savable: true
@@ -806,7 +764,6 @@ attributes:
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -820,7 +777,6 @@ attributes:
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -834,7 +790,6 @@ attributes:
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -848,7 +803,6 @@ attributes:
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -862,7 +816,6 @@ attributes:
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -876,7 +829,6 @@ attributes:
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -890,7 +842,6 @@ attributes:
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -904,7 +855,6 @@ attributes:
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -918,7 +868,6 @@ attributes:
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -932,7 +881,6 @@ attributes:
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -946,7 +894,6 @@ attributes:
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -960,7 +907,6 @@ attributes:
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -975,7 +921,6 @@ attributes:
     x-default: 0
     x-example: 1
     x-broadcast: true
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -989,7 +934,6 @@ attributes:
     x-ctype: bool
     x-default: 1
     x-example: 0
-    x-lockable: true
     x-readable: true
     x-savable: true
     x-writable: true
@@ -1020,8 +964,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1036,8 +978,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1000
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1051,8 +991,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1067,8 +1005,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1000
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1082,8 +1018,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1098,8 +1032,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1000
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1113,8 +1045,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1129,8 +1059,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1000
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1144,8 +1072,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1159,8 +1085,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1174,8 +1098,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1189,8 +1111,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1204,8 +1124,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1219,8 +1137,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1234,8 +1150,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1249,8 +1163,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1264,8 +1176,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1279,8 +1189,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1294,8 +1202,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1309,8 +1215,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1324,8 +1228,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1339,8 +1241,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1354,8 +1254,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1369,8 +1267,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1384,8 +1280,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1399,8 +1293,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1414,8 +1306,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1429,8 +1319,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1444,8 +1332,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1459,8 +1345,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1474,8 +1358,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1489,8 +1371,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1504,8 +1384,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1519,8 +1397,6 @@ attributes:
     x-ctype: float
     x-default: "0.0"
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1534,8 +1410,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1549,8 +1423,6 @@ attributes:
     x-ctype: float
     x-default: "0.0"
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1564,8 +1436,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1579,8 +1449,6 @@ attributes:
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1594,8 +1462,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1610,8 +1476,6 @@ attributes:
     x-broadcast: false
     x-default: 0.0
     x-example: 1.0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-writable: true
@@ -1625,8 +1489,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-readable: true
     x-savable: false
     x-validator: din1simen
@@ -1641,8 +1503,6 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1659,8 +1519,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1677,8 +1535,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1695,8 +1551,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1713,8 +1567,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1731,8 +1583,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1749,8 +1599,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1771,8 +1619,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-hide-in-dump: true
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -1789,8 +1635,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-hide-in-dump: true
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1807,8 +1651,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-hide-in-dump: true
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1826,7 +1668,6 @@ attributes:
     x-default: 0
     x-deprecated: false
     x-example: 0
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1843,7 +1684,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: true
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -1861,7 +1701,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: false
     x-prepare: true
     x-readable: true
     x-savable: false
@@ -1878,7 +1717,6 @@ attributes:
     x-broadcast: false
     x-default: /lfs1/params.txt
     x-example: /lfs1/params.txt
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: true
@@ -1894,7 +1732,6 @@ attributes:
     x-broadcast: false
     x-default: /lfs1/dump.txt
     x-example: /lfs1/dump.txt
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1914,7 +1751,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 1
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
@@ -1934,7 +1770,6 @@ attributes:
     x-broadcast: false
     x-default: 0
     x-example: 0
-    x-lockable: false
     x-prepare: false
     x-readable: true
     x-savable: false
