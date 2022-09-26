@@ -42,7 +42,6 @@ target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/EventTask.c
-    ${CMAKE_SOURCE_DIR}/../common/source/HalfFloatDecoder.c
     ${CMAKE_SOURCE_DIR}/../common/source/LEDs.c
     ${CMAKE_SOURCE_DIR}/../common/source/main.c
     ${CMAKE_SOURCE_DIR}/../common/source/NonInit.c
