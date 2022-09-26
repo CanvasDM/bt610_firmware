@@ -53,7 +53,7 @@ flag_registers:
   x-lockable: false
   x-prepare: false
   x-readable: true
-  x-savable: false
+  x-savable: true
   x-writable: true
   x-validator: event_filter_flags
   reg_id: 1
