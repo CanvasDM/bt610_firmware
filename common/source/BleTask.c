@@ -16,7 +16,6 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 /******************************************************************************/
 #include <zephyr.h>
 #include <sys/byteorder.h>
-#include "settings/settings.h"
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
 #include <bluetooth/hci.h>
@@ -26,6 +25,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
 #include <fs/fs.h>
 #include <fs/littlefs.h>
+#include "settings/settings.h"
 #endif
 
 #include "FrameworkIncludes.h"
@@ -221,6 +221,7 @@ bool ble_conn_last_was_le_coded(void)
 /* The Zephyr settings module and Laird Connectivity settings both use internal
  * flash that has the default mount point of /lfs.
  */
+#if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
 int lcz_param_file_mount_fs(void)
 {
 	int r = 0;
@@ -236,6 +237,7 @@ int lcz_param_file_mount_fs(void)
 	k_mutex_unlock(&mount_mutex);
 	return r;
 }
+#endif
 
 int attr_prepare_security_level(void)
 {
