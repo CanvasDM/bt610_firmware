@@ -35,6 +35,7 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "BleTask.h"
 #include "EventTask.h"
 #include "attr_custom_validator.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Global Data Definitions                                                    */
@@ -316,11 +317,7 @@ static void BleTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	attr_get(ATTR_ID_active_mode, &bto.activeModeStatus,
 		      sizeof(bto.activeModeStatus));
 
-	if (bto.activeModeStatus == 1) {
-		attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
-	} else {
-		attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
-	}
+	Flags_Set(FLAG_ACTIVE_MODE, bto.activeModeStatus);
 
 	attr_get(ATTR_ID_advertising_phy, &bto.codedPHYBroadcast,
 		      sizeof(bto.codedPHYBroadcast));

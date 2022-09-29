@@ -23,7 +23,7 @@ LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #include "Advertisement.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
-#include "attr_custom_validator_event_filter_flags.h"
+#include "attr_table.h"
 
 /**************************************************************************************************/
 /* Local Constant, Macro and Type Definitions                                                     */
@@ -202,119 +202,113 @@ static void SendEventDataAdvert(SensorMsg_t *sensor_event)
 static bool eventFilter(SensorEventType_t eventType)
 {
 	bool filterStatus = false;
+	uint32_t event_filter_flags;
+
+	attr_get(ATTR_ID_event_filter_flags, &event_filter_flags, sizeof(event_filter_flags));
+
 	switch (eventType) {
 	case SENSOR_EVENT_TEMPERATURE_1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_TEMPERATURE_1_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_TEMPERATURE_1_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_TEMPERATURE_2:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_TEMPERATURE_2_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_TEMPERATURE_2_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_TEMPERATURE_3:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_TEMPERATURE_3_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_TEMPERATURE_3_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_TEMPERATURE_4:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_TEMPERATURE_4_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_TEMPERATURE_4_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_VOLTAGE_1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_1_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_VOLTAGE_1_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_VOLTAGE_2:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_2_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_VOLTAGE_2_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_VOLTAGE_3:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_3_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_VOLTAGE_3_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_VOLTAGE_4:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_VOLTAGE_4_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_VOLTAGE_4_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_CURRENT_1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_1_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_CURRENT_1_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_CURRENT_2:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_2_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_CURRENT_2_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_CURRENT_3:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_3_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_CURRENT_3_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_CURRENT_4:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_CURRENT_4_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_CURRENT_4_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_ULTRASONIC_1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_ULTRASONIC_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_ULTRASONIC_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_PRESSURE_1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_PRESSURE_1_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_PRESSURE_1_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_PRESSURE_2:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags, FLAG_PRESSURE_2_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_PRESSURE_2_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_TAMPER:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_TAMPER_SWITCH_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_TAMPER_SWITCH_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_MAGNET:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_MAGNET_SENSE_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_MAGNET_SENSE_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_BATTERY_GOOD:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_BATTERY_GOOD_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_BATTERY_GOOD_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_BATTERY_BAD:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_BATTERY_BAD_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_BATTERY_BAD_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_DIGITAL_IN1:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_DIGITAL_IN1_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_DIGITAL_IN1_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;
 	case SENSOR_EVENT_DIGITAL_IN2:
-		if (attr_are_flags_set(ATTR_ID_event_filter_flags,
-				       FLAG_DIGITAL_IN2_EVENT_BITMASK)) {
+		if (event_filter_flags & EVENT_FILTER_FLAGS_DIGITAL_IN2_EVENT_BITMASK) {
 			filterStatus = true;
 		}
 		break;

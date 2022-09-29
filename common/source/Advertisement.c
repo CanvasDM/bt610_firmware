@@ -25,6 +25,7 @@ LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 #include "Advertisement.h"
 #include "EventTask.h"
 #include "attr_custom_validator.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -444,8 +445,7 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 
 	attr_get(ATTR_ID_network_id, &networkId, sizeof(networkId));
 	ad.networkId = networkId;
-	attr_get(ATTR_ID_bluetooth_flags, &flag_data, sizeof(flag_data));
-	ad.flags = flag_data;
+	ad.flags = Flags_Get();
 
 	/* If no event was available, keep the last */
 	if (ad_update->sensor_event.event.type != SENSOR_EVENT_RESERVED) {

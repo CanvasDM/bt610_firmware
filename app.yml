@@ -18,8 +18,4 @@ components:
         type: array
       x-device-parameters:
         - $ref: ./app/attributes/app_params.yml
-        - $ref: ./components/flags/attributes/flags_params_0.yml
         - $ref: ../modules/lib/laird_connect/pki_auth/attributes/params.yml
-    device_flags:
-      x-device-flags:
-        - $ref: ./components/flags/input/flag_defines.yml

@@ -1786,3 +1786,95 @@ attributes:
     x-savable: false
     x-writable: false
     summary: Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged
+  - name: bluetooth_flags
+    required: true
+    schema:
+        minimum: 0
+        maximum: 0
+        enum:
+            TIME_WAS_SET_BITMASK: 0x1
+            ACTIVE_MODE_BITMASK: 0x2
+            ATTRIBUTE_SET_DEVICE_MANAGEMENT_BITMASK: 0x4
+            LOW_BATTERY_ALARM_BITMASK: 0x8
+            DIGITAL_IN1_STATE_BITMASK: 0x10
+            DIGITAL_IN2_STATE_BITMASK: 0x20
+            TAMPER_SWITCH_STATE_BITMASK: 0x40
+            MAGNET_STATE_BITMASK: 0x80
+            MEMFAULT_DATA_BITMASK: 0x100
+            UNUSED_0: 0x200
+            UNUSED_1: 0x400
+            UNUSED_2: 0x800
+            UNUSED_3: 0x1000
+            UNUSED_4: 0x2000
+            UNUSED_5: 0x4000
+            UNUSED_6: 0x8000
+            UNUSED_7: 0x10000
+            UNUSED_8: 0x20000
+            UNUSED_9: 0x40000
+            UNUSED_10: 0x80000
+            UNUSED_11: 0x100000
+            UNUSED_12: 0x200000
+            UNUSED_13: 0x400000
+            UNUSED_14: 0x800000
+            UNUSED_15: 0x1000000
+            UNUSED_16: 0x2000000
+            UNUSED_17: 0x4000000
+            UNUSED_18: 0x8000000
+            UNUSED_19: 0x10000000
+            UNUSED_20: 0x20000000
+            UNUSED_21: 0x40000000
+            UNUSED_22: 0x80000000
+        type: integer
+    x-ctype: uint32_t
+    x-broadcast: true
+    x-default: 0
+    x-example: 1
+    x-readable: true
+    x-writable: true
+    summary: Flags published over Bluetooth
+  - name: event_filter_flags
+    required: true
+    schema:
+        minimum: 0
+        maximum: 2097151
+        enum:
+            TEMPERATURE_1_EVENT_BITMASK: 0x1
+            TEMPERATURE_2_EVENT_BITMASK: 0x2
+            TEMPERATURE_3_EVENT_BITMASK: 0x4
+            TEMPERATURE_4_EVENT_BITMASK: 0x8
+            VOLTAGE_1_EVENT_BITMASK: 0x10
+            VOLTAGE_2_EVENT_BITMASK: 0x20
+            VOLTAGE_3_EVENT_BITMASK: 0x40
+            VOLTAGE_4_EVENT_BITMASK: 0x80
+            CURRENT_1_EVENT_BITMASK: 0x100
+            CURRENT_2_EVENT_BITMASK: 0x200
+            CURRENT_3_EVENT_BITMASK: 0x400
+            CURRENT_4_EVENT_BITMASK: 0x800
+            ULTRASONIC_EVENT_BITMASK: 0x1000
+            PRESSURE_1_EVENT_BITMASK: 0x2000
+            PRESSURE_2_EVENT_BITMASK: 0x4000
+            TAMPER_SWITCH_EVENT_BITMASK: 0x8000
+            MAGNET_SENSE_EVENT_BITMASK: 0x10000
+            BATTERY_GOOD_EVENT_BITMASK: 0x20000
+            BATTERY_BAD_EVENT_BITMASK: 0x40000
+            DIGITAL_IN1_EVENT_BITMASK: 0x80000
+            DIGITAL_IN2_EVENT_BITMASK: 0x100000
+            UNUSED_0: 0x200000
+            UNUSED_1: 0x400000
+            UNUSED_2: 0x800000
+            UNUSED_3: 0x1000000
+            UNUSED_4: 0x2000000
+            UNUSED_5: 0x4000000
+            UNUSED_6: 0x8000000
+            UNUSED_7: 0x10000000
+            UNUSED_8: 0x20000000
+            UNUSED_9: 0x40000000
+            UNUSED_10: 0x80000000
+        type: integer
+    x-ctype: uint32_t
+    x-default: 2097151
+    x-example: 1
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: Filter to limit Bluetooth advertisement events

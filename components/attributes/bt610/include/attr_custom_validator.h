@@ -18,7 +18,6 @@
 #include <stddef.h>
 
 #include "attr_defs.h"
-#include "attr_custom_validator_bluetooth_flags.h"
 
 #ifdef __cplusplus
 extern "C" {

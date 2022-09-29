@@ -36,6 +36,7 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 #include "AggregationCount.h"
+#include "Flags.h"
 
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
@@ -227,11 +228,11 @@ int attr_prepare_power_voltage(void)
 		if (volts > POWER_BAD_VOLTAGE) {
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
-			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_LOW_BATTERY_ALARM_BITMASK);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
 		} else {
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_BAD, eventAlarm);
-			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_LOW_BATTERY_ALARM_BITMASK);
+			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
 		}
 	}
 	return r;
@@ -401,7 +402,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_ID_qrtc_last_set:
 			printRTCTime();
 			/* RTC was set by external device */
-			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_TIME_WAS_SET_BITMASK);
+			Flags_Set(FLAG_TIME_WAS_SET, 1);
 			break;
 
 		case ATTR_ID_digital_output_1_state:
@@ -585,7 +586,7 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	/* This handler triggers a change to 1M PHY. This
 	 * may be ignored if a connection is already active.
 	 */
-	attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
+	Flags_Set(FLAG_ACTIVE_MODE, 1);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_BLE_TASK,
 				      FMC_ENTER_ACTIVE_MODE);
 
@@ -608,7 +609,7 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	 * sequence where it advertises in 1M then disables
 	 * advertising altogether.
 	 */
-	attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_ACTIVE_MODE_BITMASK);
+	Flags_Set(FLAG_ACTIVE_MODE, 0);
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_SENSOR_TASK, FWK_ID_CONTROL_TASK,
 				      FMC_SOFTWARE_RESET);
 
@@ -712,11 +713,7 @@ static void UpdateDin1(void)
 
 	if (v >= 0) {
 		attr_set_mask32(ATTR_ID_digital_input, 0, v);
-		if (v == 1) {
-			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN1_STATE_BITMASK);
-		} else {
-			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN1_STATE_BITMASK);
-		}
+		Flags_Set(FLAG_DIGITAL_IN1_STATE, v);
 	}
 }
 
@@ -726,11 +723,7 @@ static void UpdateDin2(void)
 
 	if (v >= 0) {
 		attr_set_mask32(ATTR_ID_digital_input, 1, v);
-		if (v == 1) {
-			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN2_STATE_BITMASK);
-		} else {
-			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_DIGITAL_IN2_STATE_BITMASK);
-		}
+		Flags_Set(FLAG_DIGITAL_IN2_STATE, v);
 	}
 }
 
@@ -777,11 +770,7 @@ static void UpdateMagnet(void)
 	if (v >= 0) {
 		/* NEAR = 0 and FAR = 1 */
 		attr_set_uint32(ATTR_ID_magnet_state, v);
-		if (v == 1) {
-			attr_set_flags(ATTR_ID_bluetooth_flags, FLAG_MAGNET_STATE_BITMASK);
-		} else {
-			attr_clear_flags(ATTR_ID_bluetooth_flags, FLAG_MAGNET_STATE_BITMASK);
-		}
+		Flags_Set(FLAG_MAGNET_STATE, v);
 	}
 }
 
