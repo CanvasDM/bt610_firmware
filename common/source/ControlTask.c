@@ -183,12 +183,6 @@ int attr_prepare_uptime(void)
 	return (attr_set_signed64(ATTR_ID_uptime, uptimeMs));
 }
 
-int attr_prepare_log_file_status(void)
-{
-	uint32_t logFileStatus = lcz_event_manager_get_log_file_status();
-	return (attr_set_uint32(ATTR_ID_log_file_status, logFileStatus));
-}
-
 void app_prepare_for_reboot(void)
 {
 	/* Save attributes */
@@ -208,7 +202,6 @@ void sys_reboot_notification(int type)
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
-	bool dataLogEnable;
 	bool lock_enabled;
 
 	LOG_WRN("Version %s", VERSION_STRING);
@@ -219,18 +212,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	attr_set_uint32(ATTR_ID_lock_status,
 			(lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED : LOCK_STATUS_NOT_SETUP));
 
-	/* Safe to read the data log enable flag after reading back all
-	 * attributes. We use this to determine whether to disable or enable
-	 * logging at startup.
-	 */
-	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable, sizeof(dataLogEnable));
-
 	RebootHandler();
-
-	/* Start the Event Manager as early as possible before any events get
-	 * posted to it by threads trumping this one.
-	 */
-	lcz_event_manager_initialise(dataLogEnable);
 
 	UserInterfaceTask_Initialize();
 
@@ -378,7 +360,6 @@ static DispatchResult_t FactoryResetMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMs
 	LOG_WRN("Factory Reset");
 	cto.factoryResetFlag = true;
 	attr_factory_reset();
-	lcz_event_manager_factory_reset();
 	/* Need reset to init all the values */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_CONTROL_TASK, FWK_ID_CONTROL_TASK, FMC_SOFTWARE_RESET);
 	return DISPATCH_OK;

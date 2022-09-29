@@ -24,6 +24,7 @@ LOG_MODULE_REGISTER(EventTask, CONFIG_EVENT_TASK_LOG_LEVEL);
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
 #include "attr_table.h"
+#include "lcz_qrtc.h"
 
 /**************************************************************************************************/
 /* Local Constant, Macro and Type Definitions                                                     */
@@ -61,9 +62,7 @@ static uint32_t event_task_event_id = 0;
 /**************************************************************************************************/
 
 static void EventTaskThread(void *, void *, void *);
-static void SetDataloggerStatus(void);
 static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static void SendEventDataAdvert(SensorMsg_t *sensor_event);
 static bool eventFilter(SensorEventType_t eventType);
 
@@ -76,7 +75,6 @@ static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
 	case FMC_EVENT_TRIGGER:       return EventLogTimeStampMsgHandler;
-	case FMC_ATTR_CHANGED:        return EventAttrChangedMsgHandler;
 	default:                      return NULL;
 	}
 	/* clang-format on */
@@ -116,14 +114,6 @@ static void EventTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	}
 }
 
-static void SetDataloggerStatus(void)
-{
-	bool dataLogEnable;
-	attr_get(ATTR_ID_data_logging_enable, &dataLogEnable, sizeof(dataLogEnable));
-
-	lcz_event_manager_set_logging_state(dataLogEnable);
-}
-
 static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 {
 	ARG_UNUSED(pMsgRxer);
@@ -133,34 +123,12 @@ static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
 
 	eventData.event.type = pEventMsg->eventType;
 	eventData.event.data = pEventMsg->eventData;
-
-	/* We always add events to the Event Manager for long term storage */
-	eventData.event.timestamp =
-		lcz_event_manager_add_sensor_event(pEventMsg->eventType, &pEventMsg->eventData);
+	eventData.event.timestamp = lcz_qrtc_get_epoch();
 
 	SendEventDataAdvert(&eventData);
 	return DISPATCH_OK;
 }
 
-static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	UNUSED_PARAMETER(pMsgRxer);
-	attr_changed_msg_t *pb = (attr_changed_msg_t *)pMsg;
-	size_t i;
-	for (i = 0; i < pb->count; i++) {
-		switch (pb->list[i]) {
-		case ATTR_ID_data_logging_enable:
-			SetDataloggerStatus();
-			break;
-		default:
-			/* Don't care about this attribute. This is a
-			 * broadcast.
-			 */
-			break;
-		}
-	}
-	return DISPATCH_OK;
-}
 static void SendEventDataAdvert(SensorMsg_t *sensor_event)
 {
 	bool activeEvent = false;

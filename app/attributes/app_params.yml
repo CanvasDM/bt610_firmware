@@ -906,20 +906,6 @@ attributes:
     x-savable: true
     x-writable: true
     summary: Steinhart-Hart Temperature Equation    coefficient C
-  - name: data_logging_enable
-    required: true
-    schema:
-        minimum: 0
-        maximum: 1
-        type: integer
-    x-ctype: bool
-    x-default: 0
-    x-example: 1
-    x-broadcast: true
-    x-readable: true
-    x-savable: true
-    x-writable: true
-    summary: "0 = disable, 1 = enable"
   - name: factory_reset_enable
     required: true
     schema:
@@ -933,23 +919,6 @@ attributes:
     x-savable: true
     x-writable: true
     summary: "false = disable, true = enable"
-  - name: log_file_status
-    required: true
-    schema:
-        enum:
-            WAITING_FOR_PREPARE_COMMAND: 0
-            PREPARING: 1
-            READY: 2
-            FAILED: 3
-        minimum: 0
-        maximum: 3
-        type: integer
-    x-ctype: uint8_t
-    x-default: 0
-    x-example: 1
-    x-prepare: true
-    x-readable: true
-    summary: Status of log operation
   - name: adc_power_simulated
     required: true
     schema:

@@ -42,12 +42,10 @@ static int fs_mgmt_impl_app_access_check(bool write, char *path)
 
 	/* Check if a file is being read or written */
 	if (write == false) {
-		/* Read: allow access to event manager output, parameter dump output and feedback
+		/* Read: allow access to parameter dump output and feedback
 		 * files only
 		 */
-		if (strcmp(path, EVENT_MANAGER_FILE_OUT_PATH) == 0) {
-			rc = 0;
-		} else if (strcmp(path, attr_get_quasi_static(ATTR_ID_dump_path)) == 0) {
+		if (strcmp(path, attr_get_quasi_static(ATTR_ID_dump_path)) == 0) {
 			rc = 0;
 		} else if (strcmp(path, CONFIG_ATTRIBUTE_FEEDBACK_FILE) == 0) {
 			rc = 0;
