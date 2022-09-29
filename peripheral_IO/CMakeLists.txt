@@ -25,7 +25,7 @@ set(b0_OVERLAY_CONFIG
 )
 
 # The component-generated files for attributes
-set(ATTR_CUSTOM_PATH_BASE ${CMAKE_SOURCE_DIR}/../components/attributes)
+set(ATTR_CUSTOM_PATH_BASE ${CMAKE_SOURCE_DIR}/../components/attributes/bt610)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
