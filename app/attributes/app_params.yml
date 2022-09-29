@@ -121,22 +121,6 @@ attributes:
     x-savable: true
     x-writable: true
     summary: Temperature Sense interval in seconds
-  - name: aggregation_count
-    required: true
-    schema:
-        minimum: 1
-        maximum: 32
-        type: integer
-    x-ctype: uint8_t
-    x-broadcast: false
-    x-default: "1"
-    x-deprecated: true
-    x-example: "5"
-    x-prepare: false
-    x-readable: true
-    x-savable: true
-    x-writable: true
-    summary: Aggregation value used on all the sensor data
   - name: digital_output_1_state
     required: true
     schema:

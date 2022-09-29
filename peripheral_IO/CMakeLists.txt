@@ -37,7 +37,6 @@ include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
     ${CMAKE_SOURCE_DIR}/../common/source/Advertisement.c
-    ${CMAKE_SOURCE_DIR}/../common/source/AggregationCount.c
     ${CMAKE_SOURCE_DIR}/../common/source/BleTask.c
     ${CMAKE_SOURCE_DIR}/../common/source/BspSupport.c
     ${CMAKE_SOURCE_DIR}/../common/source/ControlTask.c

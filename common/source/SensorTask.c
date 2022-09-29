@@ -35,7 +35,6 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "attr_custom_validator.h"
 #include "lcz_sensor_event.h"
 #include "lcz_event_manager.h"
-#include "AggregationCount.h"
 #include "Flags.h"
 
 /******************************************************************************/
@@ -155,6 +154,7 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 			     float *result);
 static void SendEvent(SensorEventType_t type, SensorEventData_t data);
+static SensorEventType_t AnalogConfigType(size_t channel);
 
 static void powerTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
@@ -539,15 +539,14 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	size_t index = 0;
 	int r;
-	float temperature = 0.0;
+	float temperature;
 
 #warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE, &temperature);
 		if (r == 0) {
-			AggregationTempHandler(index, temperature);
-		} else {
-			/* Clear the alarm enable and flags */
+			SendEvent((SensorEventType_t)(SENSOR_EVENT_TEMPERATURE_1 + index),
+				(SensorEventData_t)temperature);
 		}
 	}
 	StartTemperatureInterval();
@@ -562,15 +561,13 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	ARG_UNUSED(pMsgRxer);
 	size_t index = 0;
 	int r;
-	float analogValue = 0.0;
+	float analogValue;
 
 #warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
 		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE, &analogValue);
 		if (r == 0) {
-			AggregationAnalogHandler(index, analogValue);
-		} else {
-			/* Clear the alarm enable and flags */
+			SendEvent(AnalogConfigType(index), (SensorEventData_t)analogValue);
 		}
 	}
 	StartAnalogInterval();
@@ -667,8 +664,6 @@ static void SensorConfigChange(bool bootup)
 	attr_copy_uint32(&configurationType, ATTR_ID_config_type);
 
 	if ((bootup == false) || (configurationType == ANALOG_INPUT_1_TYPE_UNUSED)) {
-		/* Clear the Aggregation queue on event type change */
-		AggregationPurgeQueueHandler();
 		/* Disable all the thermistors */
 		DisableThermistorReadings();
 		/* Disable all analogs */
@@ -1038,6 +1033,37 @@ static void SendEvent(SensorEventType_t type, SensorEventData_t data)
 		pMsgSend->eventData = data;
 		FRAMEWORK_MSG_SEND(pMsgSend);
 	}
+}
+
+static SensorEventType_t AnalogConfigType(size_t channel)
+{
+	enum analog_input_1_type configType;
+	SensorEventType_t eventTypeReturn;
+	attr_get((ATTR_ID_analog_input_1_type + channel), &configType,
+		  sizeof(uint8_t));
+
+	switch (configType) {
+	case ANALOG_INPUT_1_TYPE_VOLTAGE_0V_TO_10V_DC:
+		eventTypeReturn = SENSOR_EVENT_VOLTAGE_1 + channel;
+		break;
+	case ANALOG_INPUT_1_TYPE_CURRENT_4MA_TO_20MA:
+		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
+		break;
+	case ANALOG_INPUT_1_TYPE_PRESSURE:
+	case ANALOG_INPUT_1_TYPE_ULTRASONIC:
+		eventTypeReturn = SENSOR_EVENT_ULTRASONIC_1 + (channel);
+		break;
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_20A:
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_150A:
+	case ANALOG_INPUT_1_TYPE_AC_CURRENT_500A:
+		eventTypeReturn = SENSOR_EVENT_CURRENT_1 + channel;
+		break;
+	default:
+		/*should not get here but just in case still return something*/
+		eventTypeReturn = SENSOR_EVENT_VOLTAGE_1;
+		break;
+	}
+	return (eventTypeReturn);
 }
 
 /******************************************************************************/

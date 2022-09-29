@@ -63,7 +63,6 @@ static uint32_t event_task_event_id = 0;
 static void EventTaskThread(void *, void *, void *);
 static void SetDataloggerStatus(void);
 static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
-static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static DispatchResult_t EventAttrChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg);
 static void SendEventDataAdvert(SensorMsg_t *sensor_event);
 static bool eventFilter(SensorEventType_t eventType);
@@ -77,7 +76,6 @@ static FwkMsgHandler_t *EventTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	switch (MsgCode) {
 	case FMC_INVALID:             return Framework_UnknownMsgHandler;
 	case FMC_EVENT_TRIGGER:       return EventLogTimeStampMsgHandler;
-	case FMC_AGGREGATION_EVENT:   return EventNoTimeStampMsgHandler;
 	case FMC_ATTR_CHANGED:        return EventAttrChangedMsgHandler;
 	default:                      return NULL;
 	}
@@ -139,19 +137,6 @@ static DispatchResult_t EventLogTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, 
 	/* We always add events to the Event Manager for long term storage */
 	eventData.event.timestamp =
 		lcz_event_manager_add_sensor_event(pEventMsg->eventType, &pEventMsg->eventData);
-
-	SendEventDataAdvert(&eventData);
-	return DISPATCH_OK;
-}
-static DispatchResult_t EventNoTimeStampMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
-{
-	ARG_UNUSED(pMsgRxer);
-	SensorMsg_t eventData;
-	EventLogMsg_t *pEventMsg = (EventLogMsg_t *)pMsg;
-
-	eventData.event.type = pEventMsg->eventType;
-	eventData.event.data = pEventMsg->eventData;
-	eventData.event.timestamp = pEventMsg->timeStamp;
 
 	SendEventDataAdvert(&eventData);
 	return DISPATCH_OK;
