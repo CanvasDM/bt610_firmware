@@ -30,7 +30,6 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "BspSupport.h"
 #include "AdcBt6.h"
 #include "AnalogInput.h"
-#include "AlarmControl.h"
 #include "SensorTask.h"
 #include "attr_custom_validator.h"
 #include "lcz_sensor_event.h"
@@ -81,10 +80,6 @@ typedef struct SensorTaskTag {
 	digitalAlarm_t input2Alarm;
 	uint32_t savedPasscode;
 
-	float previousTemp[TOTAL_THERM_CH];
-	float magnitudeOfTempDifference[TOTAL_THERM_CH];
-	float previousAnalogValue[TOTAL_ANALOG_CH];
-	float magnitudeOfAnalogDifference[TOTAL_ANALOG_CH];
 } SensorTaskObj_t;
 
 /******************************************************************************/
@@ -198,11 +193,6 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.digitalIn2Enabled = NO_ALARM;
 	sensorTaskObject.input1Alarm = 0;
 	sensorTaskObject.input2Alarm = 0;
-	memset(sensorTaskObject.previousTemp, 0, TOTAL_THERM_CH);
-	memset(sensorTaskObject.magnitudeOfTempDifference, 0, TOTAL_THERM_CH);
-	memset(sensorTaskObject.previousAnalogValue, 0, TOTAL_ANALOG_CH);
-	memset(sensorTaskObject.magnitudeOfAnalogDifference, 0,
-	       TOTAL_ANALOG_CH);
 
 	Framework_RegisterTask(&sensorTaskObject.msgTask);
 
@@ -448,7 +438,6 @@ SensorTaskDigitalInAlarmMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	SensorEventData_t eventAlarm;
 	uint32_t digitalAlarm = 0;
 
-#warning "Bug #21857 Add in alarm component function calls to BT610"
 	if ((pSensorMsg->pin == DIN1_MCU_PIN) &&
 	    (sensorTaskObject.digitalIn1Enabled == 1)) {
 		UpdateDin1();
@@ -541,7 +530,6 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int r;
 	float temperature;
 
-#warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_THERM_CH; index++) {
 		r = MeasureThermistor(index, ADC_PWR_SEQ_SINGLE, &temperature);
 		if (r == 0) {
@@ -563,7 +551,6 @@ static DispatchResult_t AnalogReadMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	int r;
 	float analogValue;
 
-#warning "Bug #21857 Add in alarm component function calls to BT610"
 	for (index = 0; index < TOTAL_ANALOG_CH; index++) {
 		r = MeasureAnalogInput(index, ADC_PWR_SEQ_SINGLE, &analogValue);
 		if (r == 0) {
@@ -973,12 +960,6 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 		if (r >= 0) {
 			r = attr_set_float(ATTR_ID_analog_input_1 + channel,
 					   *result);
-
-			sensorTaskObject.magnitudeOfAnalogDifference[channel] =
-				abs(*result -
-				    sensorTaskObject
-					    .previousAnalogValue[channel]);
-			sensorTaskObject.previousAnalogValue[channel] = *result;
 		}
 	} else {
 		/* Shouldn't get into this failure state */
@@ -1001,11 +982,6 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 		if (r >= 0) {
 			*result =
 				AdcBt6_ConvertThermToTemperature(channel, raw);
-
-			sensorTaskObject.magnitudeOfTempDifference[channel] =
-				abs(*result -
-				    sensorTaskObject.previousTemp[channel]);
-			sensorTaskObject.previousTemp[channel] = *result;
 		}
 	} else {
 		LOG_DBG("Thermistor channel %d not enabled", channel + 1);
