@@ -2,6 +2,17 @@
 info:
   title: bt6xx_firmware_attributes
 attributes:
+  - name: reserved0
+    required: true
+    schema:
+        minimum: 0
+        maximum: 0
+        type: integer
+    x-ctype: uint16_t
+    x-broadcast: true
+    x-default: 0
+    x-readable: true
+    summary: Index 0 is always reserved
   - name: sensor_name
     required: true
     schema:
