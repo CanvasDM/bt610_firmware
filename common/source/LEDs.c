@@ -35,10 +35,10 @@ LOG_MODULE_REGISTER(leds, 0);
 #define LED1_NODE DT_ALIAS(led1)
 
 /* clang-format off */
-#define LED0_DEV   DT_GPIO_LABEL(LED0_NODE, gpios)
+#define LED0_DEV   DEVICE_DT_GET(DT_GPIO_CTLR(LED0_NODE, gpios))
 #define LED0_FLAGS DT_GPIO_FLAGS(LED0_NODE, gpios)
 #define LED0       DT_GPIO_PIN(LED0_NODE, gpios)
-#define LED1_DEV   DT_GPIO_LABEL(LED1_NODE, gpios)
+#define LED1_DEV   DEVICE_DT_GET(DT_GPIO_CTLR(LED1_NODE, gpios))
 #define LED1_FLAGS DT_GPIO_FLAGS(LED1_NODE, gpios)
 #define LED1       DT_GPIO_PIN(LED1_NODE, gpios)
 /* clang-format on */

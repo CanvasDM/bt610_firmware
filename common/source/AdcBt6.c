@@ -36,7 +36,7 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
-#define ADC_DEVICE_NAME DT_LABEL(DT_INST(0, nordic_nrf_saadc))
+#define ADC_DEVICE_NAME DEVICE_DT_NAME(DT_NODELABEL(adc))
 
 /* clang-format off */
 #define ADC_RESOLUTION            12
@@ -58,12 +58,12 @@ LOG_MODULE_REGISTER(AdcBt6, CONFIG_ADC_BT6_LOG_LEVEL);
 /* clang-format on */
 
 #if DT_NODE_HAS_STATUS(DT_NODELABEL(i2c0), okay)
-#define I2C_DEV_NAME DT_LABEL(DT_NODELABEL(i2c0))
+#define I2C_DEV_NAME DEVICE_DT_NAME(DT_NODELABEL(i2c0))
 #else
 #error "Please set the correct I2C device"
 #endif
 
-const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
+const uint32_t I2C_CFG = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_CONTROLLER;
 
 #define POWER_ENABLE_DELAY_US 200
 #define MUX_SWITCH_DELAY_US 100

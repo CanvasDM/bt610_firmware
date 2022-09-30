@@ -560,11 +560,11 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	if (r) {
 		LOG_ERR("Failed to connect to central %s (%u)",
-			log_strdup(addr), r);
+			addr, r);
 		bt_conn_unref(conn);
 		bto.conn = NULL;
 	} else {
-		LOG_INF("Connected: %s", log_strdup(addr));
+		LOG_INF("Connected: %s", addr);
 		bto.conn = bt_conn_ref(conn);
 
 		/* Fetch PHY so we know what to advertise in if a firmware
@@ -602,7 +602,7 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	bool lock_enabled;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
-	LOG_INF("Disconnected: %s reason: %s", log_strdup(addr),
+	LOG_INF("Disconnected: %s reason: %s", addr,
 		lbt_get_hci_err_string(reason));
 
 	/* Purge the advertising event queue so out of
@@ -640,7 +640,7 @@ static int UpdateName(void)
 	attr_get(ATTR_ID_sensor_name, name, ATTR_MAX_STR_LENGTH);
 	r = bt_set_name(name);
 	if (r < 0) {
-		LOG_ERR("bt_set_name: %s %d", log_strdup(name), r);
+		LOG_ERR("bt_set_name: %s %d", name, r);
 	}
 	return r;
 }

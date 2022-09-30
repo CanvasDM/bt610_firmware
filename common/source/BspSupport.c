@@ -103,24 +103,24 @@ static bool DigitalInputIRQNeeded(bool new_state, bool old_state,
 /******************************************************************************/
 void BSP_Init(void)
 {
-	port0 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio0)));
+	port0 = device_get_binding(DEVICE_DT_NAME(DT_NODELABEL(gpio0)));
 	if (!port0) {
-		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio0)));
+		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(gpio0)));
 	}
 
-	port1 = device_get_binding(DT_LABEL(DT_NODELABEL(gpio1)));
+	port1 = device_get_binding(DEVICE_DT_NAME(DT_NODELABEL(gpio1)));
 	if (!port1) {
-		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(gpio1)));
+		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(gpio1)));
 	}
 
-	uart0_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart0)));
+	uart0_dev = device_get_binding(DEVICE_DT_NAME(DT_NODELABEL(uart0)));
 	if (!uart0_dev) {
-		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(uart0)));
+		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(uart0)));
 	}
 
-	uart1_dev = device_get_binding(DT_LABEL(DT_NODELABEL(uart1)));
+	uart1_dev = device_get_binding(DEVICE_DT_NAME(DT_NODELABEL(uart1)));
 	if (!uart1_dev) {
-		LOG_ERR("Cannot find %s!", DT_LABEL(DT_NODELABEL(uart1)));
+		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(uart1)));
 	}
 
 	ConfigureOutputs();

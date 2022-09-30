@@ -76,12 +76,12 @@ struct button_cfg {
 		    uint32_t pins);
 };
 
-#define BUTTON_CFG(x, _flags, _edge)                                           \
-	{                                                                      \
-		.label = DT_GPIO_LABEL(BUTTON##x##_NODE, gpios),               \
-		.pin = DT_GPIO_PIN(BUTTON##x##_NODE, gpios),                   \
-		.flags = (_flags) | FLAGS_OR_ZERO(BUTTON##x##NODE),            \
-		.edge = (_edge), .isr = Button##x##HandlerIsr                  \
+#define BUTTON_CFG(x, _flags, _edge)                                \
+	{                                                           \
+		.label = DEVICE_DT_NAME(BUTTON##x##_NODE),          \
+		.pin = DT_GPIO_PIN(BUTTON##x##_NODE, gpios),        \
+		.flags = (_flags) | FLAGS_OR_ZERO(BUTTON##x##NODE), \
+		.edge = (_edge), .isr = Button##x##HandlerIsr       \
 	}
 
 #define DT_HAS_BUTTON_NODE(x) DT_NODE_HAS_STATUS(BUTTON##x##_NODE, okay)

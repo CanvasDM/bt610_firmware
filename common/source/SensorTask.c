@@ -697,7 +697,7 @@ static void printRTCTime(void)
 	uint8_t time_string[SENSOR_TASK_RTC_TIMESTAMP_SIZE];
 
 	SensorTask_GetTimeString(time_string);
-	LOG_DBG("Time = %s", log_strdup(time_string));
+	LOG_DBG("Time = %s", time_string);
 }
 #endif
 

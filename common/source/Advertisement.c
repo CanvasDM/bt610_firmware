@@ -160,7 +160,7 @@ int Advertisement_Init(void)
 	}
 	bt_addr_le_to_str(&addr, addr_str, sizeof(addr_str));
 	LOG_INF("Bluetooth Address: %s count: %d status: %d",
-		log_strdup(addr_str), count, r);
+		addr_str, count, r);
 
 	/* Remove ':' from default format */
 	size_t i;
