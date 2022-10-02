@@ -599,7 +599,6 @@ static void ConnectedCallback(struct bt_conn *conn, uint8_t r)
 static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
-	bool lock_enabled;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Disconnected: %s reason: %s", addr,
@@ -619,14 +618,6 @@ static void DisconnectedCallback(struct bt_conn *conn, uint8_t reason)
 	/* Start the advertisement again */
 	FRAMEWORK_MSG_CREATE_AND_SEND(FWK_ID_BLE_TASK, FWK_ID_BLE_TASK,
 				      FMC_BLE_START_ADVERTISING);
-
-	/* Check if settings lock needs to be re-activated */
-	attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
-
-	if (lock_enabled == true) {
-		attr_set_uint32(ATTR_ID_lock_status,
-				    LOCK_STATUS_SETUP_ENGAGED);
-	}
 }
 
 /* Update name in Bluetooth stack.  Zephyr will handle updating name in

@@ -676,8 +676,6 @@ static void UART0CTSHandlerIsr(const struct device *port,
  */
 static void UART0WorkqHandler(struct k_work *item)
 {
-	bool lock_enabled;
-
 	if (uart0_dev) {
 		/* Ignoring the return code here - if it's non-zero the UART is
 		 * already off.
@@ -689,19 +687,6 @@ static void UART0WorkqHandler(struct k_work *item)
 		(void)gpio_pin_set(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
 				   BSP_SUPPORT_UART_RTS_INACTIVE);
 		(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_SUSPEND);
-
-		/* If we have no active Bluetooth connection, lock the settings
-		 * if it's setup that way
-		 */
-		if (ble_is_connected() == false) {
-			attr_get(ATTR_ID_lock, &lock_enabled,
-				 sizeof(lock_enabled));
-
-			if (lock_enabled == true) {
-				attr_set_uint32(ATTR_ID_lock_status,
-						LOCK_STATUS_SETUP_ENGAGED);
-			}
-		}
 
 		uart0PinChangeStateActive = false;
 		uart0PinChanges = 0;

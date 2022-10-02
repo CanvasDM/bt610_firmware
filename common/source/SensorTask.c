@@ -78,8 +78,6 @@ typedef struct SensorTaskTag {
 	uint8_t digitalIn2Enabled;
 	digitalAlarm_t input1Alarm;
 	digitalAlarm_t input2Alarm;
-	uint32_t savedPasscode;
-
 } SensorTaskObj_t;
 
 /******************************************************************************/
@@ -120,7 +118,6 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
 
-static void SaveSettingPasscode(void);
 static void LoadSensorConfiguration(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
@@ -304,19 +301,6 @@ void SensorTask_GetTimeString(uint8_t *time_string)
 }
 #endif
 
-void LoadSettingPasscode(void)
-{
-	/* Load the settings passcode from memory into local RAM
-	 * to use to compare to what the user enters
-	 */
-	uint32_t passCode = 0;
-	attr_copy_uint32(&passCode, ATTR_ID_settings_passcode);
-	sensorTaskObject.savedPasscode = passCode;
-
-	/* Turn off the display on the terminal of the passcode */
-	attr_set_quiet(ATTR_ID_settings_passcode, true);
-}
-
 /******************************************************************************/
 /* Local Function Definitions                                                 */
 /******************************************************************************/
@@ -338,7 +322,6 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	attr_prepare_power_voltage();
 	InitializeIntervalTimers();
 	UpdateMagnet();
-	LoadSettingPasscode();
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
@@ -414,9 +397,6 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 				FWK_ID_SENSOR_TASK, FWK_ID_SENSOR_TASK,
 				(!activeMode ? FMC_ENTER_SHELF_MODE :
 						     FMC_ENTER_ACTIVE_MODE));
-			break;
-		case ATTR_ID_settings_passcode:
-			SaveSettingPasscode();
 			break;
 		default:
 			/* Don't do anything - this is a broadcast */
@@ -600,43 +580,6 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	LOG_WRN("Entering shelf mode");
 
 	return DISPATCH_OK;
-}
-
-static void SaveSettingPasscode(void)
-{
-	enum settings_passcode_status passCodeStatus = SETTINGS_PASSCODE_STATUS_UNDEFINED;
-	bool lockStatus = false;
-	uint32_t passCode = 0;
-	attr_get(ATTR_ID_lock, &lockStatus, sizeof(lockStatus));
-	attr_copy_uint32(&passCode, ATTR_ID_settings_passcode);
-
-	if (lockStatus == true) {
-		/* Check if the passcode entered matches */
-		if (passCode == sensorTaskObject.savedPasscode) {
-			/* Unlock the settings */
-			attr_set_uint32(ATTR_ID_lock_status,
-					LOCK_STATUS_SETUP_DISENGAGED);
-
-			passCodeStatus = SETTINGS_PASSCODE_STATUS_VALID_CODE;
-		} else {
-			/* Reset the passcode to last saved passcode */
-			attr_set_no_broadcast_uint32(ATTR_ID_settings_passcode,
-					sensorTaskObject.savedPasscode);
-
-			passCodeStatus = SETTINGS_PASSCODE_STATUS_INVALID_CODE;
-		}
-	} else {
-		/* set the new passcode */
-		sensorTaskObject.savedPasscode = passCode;
-		/* Lock the settings */
-		attr_set_uint32(ATTR_ID_lock, true);
-		attr_set_uint32(ATTR_ID_lock_status, LOCK_STATUS_SETUP_ENGAGED);
-
-		passCodeStatus = SETTINGS_PASSCODE_STATUS_VALID_CODE;
-	}
-
-	/* Send feedback to APP about the passcode */
-	attr_set_uint32(ATTR_ID_settings_passcode_status, passCodeStatus);
 }
 
 static void LoadSensorConfiguration(void)

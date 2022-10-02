@@ -202,15 +202,8 @@ void sys_reboot_notification(int type)
 static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
-	bool lock_enabled;
 
 	LOG_WRN("Version %s", VERSION_STRING);
-
-	/* Check if settings lock is enabled and set it up */
-	attr_get(ATTR_ID_lock, &lock_enabled, sizeof(lock_enabled));
-
-	attr_set_uint32(ATTR_ID_lock_status,
-			(lock_enabled == true ? LOCK_STATUS_SETUP_ENGAGED : LOCK_STATUS_NOT_SETUP));
 
 	RebootHandler();
 

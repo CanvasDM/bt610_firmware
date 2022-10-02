@@ -69,20 +69,6 @@ attributes:
     x-writable: true
     summary: Advertising duration of an event in milliseconds. Must be 4x greater
              than the Interval.
-  - name: lock
-    required: true
-    schema:
-        minimum: 0
-        maximum: 1
-        type: integer
-    x-ctype: bool
-    x-default: 0
-    x-example: 0
-    x-readable: true
-    x-savable: true
-    summary:
-        "Lock enabled: false = lock not setup, true = lock setup. See lock_status
-         for details on if lock is active"
   - name: power_sense_interval
     required: true
     schema:
@@ -671,21 +657,6 @@ attributes:
     x-readable: true
     summary: Returns the current state of the tamper switch
     description: 1 = Tamper switch active (not pressed) 0 = Tamper switch inactive (pressed).
-  - name: settings_passcode
-    required: true
-    schema:
-        minimum: 0
-        maximum: 999999
-        type: integer
-    x-ctype: uint32_t
-    x-backup: true
-    x-broadcast: true
-    x-default: "123456"
-    x-example: "987654"
-    x-obscure-in-show: true
-    x-savable: true
-    x-validator: cp32
-    summary: Six digit numeric passcode to unlock device settings.
   - name: therm_1_coefficient_a
     required: true
     schema:
@@ -1484,18 +1455,6 @@ attributes:
     x-readable: true
     summary: Result code from deferred settings saving
     description: negative error code, 0 on success
-  - name: recover_settings_count
-    required: true
-    schema:
-        minimum: 0
-        maximum: 0
-        type: integer
-    x-ctype: uint8_t
-    x-default: 0
-    x-example: 0
-    x-readable: true
-    summary: Used for recovering settings
-    description: A rolling count of number of times the module has been recovered
   - name: block_downgrades
     required: true
     schema:
@@ -1547,36 +1506,6 @@ attributes:
     x-example: /lfs1/dump.txt
     x-readable: true
     summary: (Default) Absolute file name for dump command
-  - name: settings_passcode_status
-    required: true
-    schema:
-        enum:
-            UNDEFINED: 0
-            VALID_CODE: 1
-            INVALID_CODE: 2
-        minimum: 0
-        maximum: 2
-        type: integer
-    x-ctype: uint8_t
-    x-default: 0
-    x-example: 1
-    x-readable: true
-    summary: Will return the status of current settings passcode entered
-  - name: lock_status
-    required: true
-    schema:
-        enum:
-            NOT_SETUP: 0
-            SETUP_ENGAGED: 1
-            SETUP_DISENGAGED: 2
-        minimum: 0
-        maximum: 2
-        type: integer
-    x-ctype: uint8_t
-    x-default: 0
-    x-example: 0
-    x-readable: true
-    summary: Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged
   - name: bluetooth_flags
     required: true
     schema:
