@@ -23,7 +23,6 @@ attributes:
     x-broadcast: true
     x-default: ""
     x-example: BT610
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -35,10 +34,8 @@ attributes:
         maxLength: 32
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: NA
     x-example: myRoom
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -53,7 +50,6 @@ attributes:
     x-broadcast: true
     x-default: "1000"
     x-example: "1000"
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -68,7 +64,6 @@ attributes:
     x-broadcast: true
     x-default: "15000"
     x-example: "15000"
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -81,13 +76,10 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
     x-savable: true
-    x-writable: false
     summary:
         "Lock enabled: false = lock not setup, true = lock setup. See lock_status
          for details on if lock is active"
@@ -101,7 +93,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 60
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -116,7 +107,6 @@ attributes:
     x-broadcast: true
     x-default: 60
     x-example: 10
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -131,7 +121,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -146,7 +135,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -158,13 +146,9 @@ attributes:
         maxLength: 11
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: 0.0.0
     x-example: 1.0.0
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: "Firmware Version. Format = Major.Minor.Build"
   - name: reset_reason
     required: true
@@ -173,13 +157,9 @@ attributes:
         maxLength: 12
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: RESETPIN
     x-example: DOG
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: For Development
   - name: bluetooth_address
     required: true
@@ -188,13 +168,9 @@ attributes:
         maxLength: 12
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: "0"
     x-example: "010203040506"
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Bluetooth address
   - name: reset_count
     required: true
@@ -203,13 +179,9 @@ attributes:
         maxLength: 0
         type: integer
     x-ctype: uint32_t
-    x-broadcast: false
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: reset Count
   - name: uptime
     required: true
@@ -218,13 +190,10 @@ attributes:
         maximum: 0
         type: number
     x-ctype: int64_t
-    x-broadcast: false
     x-default: 0
     x-example: 0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Time in milliseconds since the last reboot
   - name: active_mode
     required: true
@@ -298,8 +267,6 @@ attributes:
     x-default: 0
     x-example: 10
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Tracker for when settings change
     description: This is used for synchronization between clients (Bluegrass/Phone application).
   - name: config_type
@@ -476,13 +443,10 @@ attributes:
         maximum: 15000.0
         type: integer
     x-ctype: float
-    x-broadcast: false
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Unit depends on Analog Input Configuration Type. Units will either
         be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_2
@@ -492,13 +456,10 @@ attributes:
         maximum: 15000.0
         type: integer
     x-ctype: float
-    x-broadcast: false
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Unit depends on Analog Input Configuration Type. Units will either
         be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_3
@@ -508,13 +469,10 @@ attributes:
         maximum: 15000.0
         type: integer
     x-ctype: float
-    x-broadcast: false
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Unit depends on Analog Input Configuration Type. Units will either
         be in    PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_4
@@ -524,13 +482,10 @@ attributes:
         maximum: 15000.0
         type: integer
     x-ctype: float
-    x-broadcast: false
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Unit depends on Analog Input Configuration Type. Units will either
         be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_1_type
@@ -613,13 +568,9 @@ attributes:
             NEAR: false
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Proximity of magnet to sensor used to activate sensor and start advertising when near
   - name: param_path
     required: true
@@ -631,7 +582,6 @@ attributes:
     x-default: /ext
     x-example: /lfs1
     x-readable: true
-    x-savable: false
     summary: Folder on file system used for Parse/Dump commands
   - name: battery_age
     required: true
@@ -640,13 +590,9 @@ attributes:
         maximum: 0
         type: number
     x-ctype: uint32_t
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Time in seconds that the battery has been in use
   - name: api_version
     required: true
@@ -655,13 +601,9 @@ attributes:
         maxLength: 11
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: 0.5.1
     x-example: 123.456.789
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: The API attribute version that the firmware supports
   - name: qrtc
     required: true
@@ -672,11 +614,9 @@ attributes:
     x-ctype: uint32_t
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
     summary: Quasi-RTC (epoch, Seconds from Jan 1, 1970)
   - name: qrtc_last_set
-    required: false
     schema:
         minimum: 0
         maximum: 0
@@ -685,7 +625,6 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
     x-savable: true
     summary: Last time the RTC was set
@@ -730,7 +669,6 @@ attributes:
     x-default: 0
     x-example: 1
     x-readable: true
-    x-savable: false
     summary: Returns the current state of the tamper switch
     description: 1 = Tamper switch active (not pressed) 0 = Tamper switch inactive (pressed).
   - name: settings_passcode
@@ -745,10 +683,8 @@ attributes:
     x-default: "123456"
     x-example: "987654"
     x-obscure-in-show: true
-    x-readable: false
     x-savable: true
     x-validator: cp32
-    x-writable: false
     summary: Six digit numeric passcode to unlock device settings.
   - name: therm_1_coefficient_a
     required: true
@@ -929,7 +865,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated power ADC counts
   - name: adc_power_simulated_counts
@@ -939,11 +874,9 @@ attributes:
         maximum: 4095
         type: integer
     x-ctype: int16_t
-    x-broadcast: false
     x-default: 0
     x-example: 1000
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated counts for Power ADC channel
   - name: adc_analog_sensor_simulated
@@ -956,7 +889,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated Analog Sensor ADC counts
   - name: adc_analog_sensor_simulated_counts
@@ -966,11 +898,9 @@ attributes:
         maximum: 4095
         type: integer
     x-ctype: int16_t
-    x-broadcast: false
     x-default: 0
     x-example: 1000
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated counts for Analog Sensor ADC channel
   - name: adc_thermistor_simulated
@@ -983,7 +913,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated Thermistor ADC counts
   - name: adc_thermistor_simulated_counts
@@ -993,11 +922,9 @@ attributes:
         maximum: 4095
         type: integer
     x-ctype: int16_t
-    x-broadcast: false
     x-default: 0
     x-example: 1000
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated counts for Thermistor ADC channel
   - name: adc_vref_simulated
@@ -1010,7 +937,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated counts for VRef ADC counts
   - name: adc_vref_simulated_counts
@@ -1020,11 +946,9 @@ attributes:
         maximum: 4095
         type: integer
     x-ctype: int16_t
-    x-broadcast: false
     x-default: 0
     x-example: 1000
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated counts for VRef ADC channel
   - name: voltage_1_simulated
@@ -1037,7 +961,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Voltage Input 1
   - name: voltage_1_simulated_value
@@ -1050,7 +973,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Voltage Input 1 value
   - name: voltage_2_simulated
@@ -1063,7 +985,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Voltage Input 2
   - name: voltage_2_simulated_value
@@ -1076,7 +997,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Voltage Input 2 value
   - name: voltage_3_simulated
@@ -1089,7 +1009,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Voltage Input 3
   - name: voltage_3_simulated_value
@@ -1102,7 +1021,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Voltage Input 3 value
   - name: voltage_4_simulated
@@ -1115,7 +1033,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Voltage Input 4
   - name: voltage_4_simulated_value
@@ -1128,7 +1045,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Voltage Input 4 value
   - name: ultrasonic_simulated
@@ -1141,7 +1057,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for the Ultrasonic sensor
   - name: ultrasonic_simulated_value
@@ -1154,7 +1069,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Ultrasonic sensor value
   - name: pressure_simulated
@@ -1167,7 +1081,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for the Pressure sensor
   - name: pressure_simulated_value
@@ -1180,7 +1093,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Pressure sensor value
   - name: current_1_simulated
@@ -1193,7 +1105,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Current Input 1
   - name: current_1_simulated_value
@@ -1206,7 +1117,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Current Input 1 value
   - name: current_2_simulated
@@ -1219,7 +1129,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Current Input 2
   - name: current_2_simulated_value
@@ -1232,7 +1141,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Current Input 2 value
   - name: current_3_simulated
@@ -1245,7 +1153,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Current Input 3
   - name: current_3_simulated_value
@@ -1258,7 +1165,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Current Input 3 value
   - name: current_4_simulated
@@ -1271,7 +1177,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Current Input 4
   - name: current_4_simulated_value
@@ -1284,7 +1189,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Current Input 4 value
   - name: vref_simulated
@@ -1297,7 +1201,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Vref
   - name: vref_simulated_value
@@ -1310,7 +1213,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Vref value
   - name: temperature_1_simulated
@@ -1323,7 +1225,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Temperature 1
   - name: temperature_1_simulated_value
@@ -1336,7 +1237,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Temperature 1 value
   - name: temperature_2_simulated
@@ -1349,7 +1249,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Temperature 2
   - name: temperature_2_simulated_value
@@ -1362,7 +1261,6 @@ attributes:
     x-default: "0.0"
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Temperature 2 value
   - name: temperature_3_simulated
@@ -1375,7 +1273,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Temperature 3
   - name: temperature_3_simulated_value
@@ -1388,7 +1285,6 @@ attributes:
     x-default: "0.0"
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Temperature 3 value
   - name: temperature_4_simulated
@@ -1401,7 +1297,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for Temperature 4
   - name: temperature_4_simulated_value
@@ -1414,7 +1309,6 @@ attributes:
     x-default: 0.0
     x-example: 8.780e-8
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated Temperature 4 value
   - name: power_volts_simulated
@@ -1427,7 +1321,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Enables simulated data for power voltage
   - name: power_volts_simulated_value
@@ -1437,11 +1330,9 @@ attributes:
         maximum: 4.0
         type: number
     x-ctype: float
-    x-broadcast: false
     x-default: 0.0
     x-example: 1.0
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: Simulated power voltage value
   - name: digital_input_1_simulated
@@ -1454,7 +1345,6 @@ attributes:
     x-default: 0
     x-example: 0
     x-readable: true
-    x-savable: false
     x-validator: din1simen
     x-writable: true
     summary: Enables simulated data for Digital Input 1
@@ -1467,9 +1357,7 @@ attributes:
     x-ctype: bool
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: din1sim
     x-writable: true
     summary: Simulated data for Digital Input 1
@@ -1480,12 +1368,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: din2simen
     x-writable: true
     summary: Enables simulated data for Digital Input 2
@@ -1496,12 +1381,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: din2sim
     x-writable: true
     summary: Simulated data for Digital Input 2
@@ -1512,12 +1394,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: magsimen
     x-writable: true
     summary: Enables simulated data for the Mag Switch
@@ -1528,12 +1407,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: magsim
     x-writable: true
     summary: Simulated data for the Mag Switch
@@ -1544,12 +1420,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: tampsimen
     x-writable: true
     summary: Enables simulated data for the Tamper Switch
@@ -1560,12 +1433,9 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-validator: tampsim
     x-writable: true
     summary: Simulated data for the Tamper Switch
@@ -1580,10 +1450,8 @@ attributes:
         maximum: 2
         type: integer
     x-ctype: uint8_t
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-writable: true
@@ -1599,9 +1467,7 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
-    x-savable: false
     x-writable: true
     summary: This is used when the mobile app wants to disconnect, causing the BT6 to confirm the disconnect before forcing it
     description: 0 = do not disconnect, 1 = start disconnect after 2 seconds
@@ -1615,10 +1481,7 @@ attributes:
     x-broadcast: true
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Result code from deferred settings saving
     description: negative error code, 0 on success
   - name: recover_settings_count
@@ -1628,14 +1491,9 @@ attributes:
         maximum: 0
         type: integer
     x-ctype: uint8_t
-    x-broadcast: false
     x-default: 0
-    x-deprecated: false
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Used for recovering settings
     description: A rolling count of number of times the module has been recovered
   - name: block_downgrades
@@ -1645,10 +1503,8 @@ attributes:
         maximum: 1
         type: integer
     x-ctype: bool
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
     x-savable: true
     x-validator: block_downgrades
@@ -1662,13 +1518,10 @@ attributes:
         maximum: 4
         type: integer
     x-ctype: int8_t
-    x-broadcast: false
     x-default: 0
     x-example: 0
     x-prepare: true
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Current Bluetooth security level as seen by the sensor
     description: -1 indicates error, otherwise value indicates level as per bt_security_t
   - name: load_path
@@ -1678,13 +1531,10 @@ attributes:
         maxLength: 32
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: /lfs1/params.txt
     x-example: /lfs1/params.txt
-    x-prepare: false
     x-readable: true
     x-savable: true
-    x-writable: false
     summary: (Default) Absolute file name for load parameters command
   - name: dump_path
     required: true
@@ -1693,13 +1543,9 @@ attributes:
         maxLength: 32
         type: string
     x-ctype: string
-    x-broadcast: false
     x-default: /lfs1/dump.txt
     x-example: /lfs1/dump.txt
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: (Default) Absolute file name for dump command
   - name: settings_passcode_status
     required: true
@@ -1712,13 +1558,9 @@ attributes:
         maximum: 2
         type: integer
     x-ctype: uint8_t
-    x-broadcast: false
     x-default: 0
     x-example: 1
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Will return the status of current settings passcode entered
   - name: lock_status
     required: true
@@ -1731,13 +1573,9 @@ attributes:
         maximum: 2
         type: integer
     x-ctype: uint8_t
-    x-broadcast: false
     x-default: 0
     x-example: 0
-    x-prepare: false
     x-readable: true
-    x-savable: false
-    x-writable: false
     summary: Lock status, 0 = lock not setup, 1 = lock setup and engaged, 2 = lock setup and disengaged
   - name: bluetooth_flags
     required: true
