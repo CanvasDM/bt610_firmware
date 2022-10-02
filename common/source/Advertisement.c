@@ -440,7 +440,6 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	uint16_t networkId = 0;
 	uint8_t configVersion = 0;
 	uint8_t codedPhySelected = 0;
-	uint16_t flag_data;
 	int r = 0;
 
 	attr_get(ATTR_ID_network_id, &networkId, sizeof(networkId));
