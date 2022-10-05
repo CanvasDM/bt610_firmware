@@ -33,6 +33,7 @@ project(peripheral_IO)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
+include_directories(${CMAKE_SOURCE_DIR}/../src/version)
 
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
