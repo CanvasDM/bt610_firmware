@@ -1598,3 +1598,15 @@ attributes:
     x-savable: true
     x-writable: true
     summary: Filter to limit Bluetooth advertisement events
+  - name: shell_password
+    required: true
+    schema:
+        maxLength: 32
+        minLength: 4
+        type: string
+    x-ctype: string
+    x-default: zephyr
+    x-savable: true
+    x-writable: true
+    x-hide-in-show: true
+    summary: Password to login and use the shell
