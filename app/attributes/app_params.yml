@@ -1610,3 +1610,16 @@ attributes:
     x-writable: true
     x-hide-in-show: true
     summary: Password to login and use the shell
+  - name: log_on_boot
+    description: "When set to false, logging output will be disabled when the firmware starts."
+    required: true
+    schema:
+      maximum: 1
+      minimum: 0
+      type: integer
+    x-ctype: bool
+    x-broadcast: true
+    x-default: 0
+    x-readable: true
+    x-savable: true
+    x-writable: true
