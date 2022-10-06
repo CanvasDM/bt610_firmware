@@ -27,6 +27,34 @@ set(b0_OVERLAY_CONFIG
 # The component-generated files for attributes
 set(ATTR_CUSTOM_PATH_BASE ${CMAKE_SOURCE_DIR}/../components/attributes/bt610)
 
+# Version information generation
+# Generate build ID based on UTC timestamp
+string(TIMESTAMP build_time "%s" UTC)
+set(APP_VERSION_BUILD ${build_time})
+set(gen_dir ${CMAKE_BINARY_DIR}/zephyr/include/generated/app)
+set(ver_file ${gen_dir}/app_version.h)
+# Bug 22747 Move project code out of Peripheral IO folder
+configure_file(${CMAKE_SOURCE_DIR}/../src/version/app_version.h.in ${ver_file})
+# Get application version
+file(READ ${ver_file} ver)
+string(REGEX MATCH "APP_VERSION_MAJOR ([0-9]+)" _ ${ver})
+set(ver_major ${CMAKE_MATCH_1})
+string(REGEX MATCH "APP_VERSION_MINOR ([0-9]+)" _ ${ver})
+set(ver_minor ${CMAKE_MATCH_1})
+string(REGEX MATCH "APP_VERSION_PATCH ([0-9]+)" _ ${ver})
+set(ver_patch ${CMAKE_MATCH_1})
+set(app_version ${ver_major}.${ver_minor}.${ver_patch}+${build_time})
+message("app version: ${app_version}")
+
+# Set application version for mcuboot
+set(mcuboot_ver_conf ${CMAKE_BINARY_DIR}/generated_mcuboot_image_version.conf)
+set(MCUBOOT_IMAGE_VERSION ${app_version})
+
+# This configuration file will get automatically merged when building.
+# No need to append to OVERLAY_CONFIG
+# Bug 22747 Move project code out of Peripheral IO folder
+configure_file(${CMAKE_SOURCE_DIR}/../src/version/mcuboot_image_version.conf.in ${mcuboot_ver_conf})
+
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
 
@@ -34,6 +62,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)
 include_directories(${CMAKE_SOURCE_DIR}/../src/version)
+target_include_directories(app PRIVATE ${gen_dir})
 
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/../common/source/AdcBt6.c
