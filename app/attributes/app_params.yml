@@ -147,17 +147,6 @@ attributes:
     x-example: DOG
     x-readable: true
     summary: For Development
-  - name: bluetooth_address
-    required: true
-    schema:
-        minLength: 12
-        maxLength: 12
-        type: string
-    x-ctype: string
-    x-default: "0"
-    x-example: "010203040506"
-    x-readable: true
-    summary: Bluetooth address
   - name: reset_count
     required: true
     schema:
@@ -1598,18 +1587,6 @@ attributes:
     x-savable: true
     x-writable: true
     summary: Filter to limit Bluetooth advertisement events
-  - name: shell_password
-    required: true
-    schema:
-        maxLength: 32
-        minLength: 4
-        type: string
-    x-ctype: string
-    x-default: zephyr
-    x-savable: true
-    x-writable: true
-    x-hide-in-show: true
-    summary: Password to login and use the shell
   - name: log_on_boot
     description: "When set to false, logging output will be disabled when the firmware starts."
     required: true
