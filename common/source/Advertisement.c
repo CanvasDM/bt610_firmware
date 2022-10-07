@@ -17,7 +17,7 @@ LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 #include <bluetooth/conn.h>
 #include <stdlib.h>
 
-#include "Version.h"
+#include "app_version.h"
 #include "lcz_sensor_adv_format.h"
 #include "lcz_sensor_event.h"
 #include "lcz_bluetooth.h"
@@ -185,9 +185,9 @@ int Advertisement_Init(void)
 	rsp.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	rsp.protocolId = BTXXX_1M_PHY_RSP_PROTOCOL_ID;
 	rsp.rsp.productId = BT6XX_PRODUCT_ID;
-	rsp.rsp.firmwareVersionMajor = VERSION_MAJOR;
-	rsp.rsp.firmwareVersionMinor = VERSION_MINOR;
-	rsp.rsp.firmwareVersionPatch = VERSION_PATCH;
+	rsp.rsp.firmwareVersionMajor = APP_VERSION_MAJOR;
+	rsp.rsp.firmwareVersionMinor = APP_VERSION_MINOR;
+	rsp.rsp.firmwareVersionPatch = APP_VERSION_PATCH;
 	rsp.rsp.firmwareType = 0;
 	rsp.rsp.configVersion = 0;
 	rsp.rsp.hardwareVersion = 0;

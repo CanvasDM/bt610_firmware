@@ -4,34 +4,22 @@
 			"path": "."
 		},
 		{
-			"path": "..\\modules\\zephyr_lib"
+			"path": "../modules/lib/laird_connect"
 		},
 		{
-			"path": "..\\zephyr"
+			"path": "../zephyr"
 		},
 		{
-			"path": "..\\modules\\framework"
+			"path": "../nrfxlib"
 		},
 		{
-			"path": "..\\manifest_repo"
+			"path": "../nrf"
 		},
 		{
-			"path": "..\\nrfxlib"
+			"path": "../bootloader"
 		},
 		{
-			"path": "..\\nrf"
-		},
-		{
-			"path": "..\\bootloader"
-		},
-		{
-			"path": "..\\modules\\lib"
-		},
-		{
-			"path": "..\\modules\\lib\\mcumgr"
-		},
-		{
-			"path": "..\\boards\\arm\\bt6"
+			"path": "../bt610_dm_firmware_manifest"
 		}
 	],
 	"settings": {

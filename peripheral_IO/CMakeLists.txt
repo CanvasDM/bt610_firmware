@@ -58,6 +58,20 @@ configure_file(${CMAKE_SOURCE_DIR}/../src/version/mcuboot_image_version.conf.in 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(peripheral_IO)
 
+# Build the API
+execute_process(
+    COMMAND
+    ${PYTHON_EXECUTABLE}
+    ${CMAKE_SOURCE_DIR}/../../modules/lib/laird_connect/attributes/generator/api.py
+    ${CMAKE_SOURCE_DIR}/../
+    bt610
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE api_result
+)
+if(NOT "${api_result}" STREQUAL 0)
+    message(FATAL_ERROR "Failed to build API")
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/include)
 include_directories(${CMAKE_SOURCE_DIR}/../common/framework_config)

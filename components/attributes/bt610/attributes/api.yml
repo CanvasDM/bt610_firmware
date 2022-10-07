@@ -1,0 +1,3697 @@
+openrpc: 1.2.6
+info:
+  title: Project_Index
+  version: 0.0.1
+methods:
+- name: rev_echo
+  summary: Echo reversed string
+  x-management-option: ReadWrite
+  x-id: 1
+  x-group_id: 256
+  params:
+  - name: d
+    summary: Value
+    description: Value
+    required: true
+    x-ctype: string
+    x-sequencenumber: 1
+    x-default: ''
+    x-example: hello world
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 64
+  result:
+    name: rev_echo_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Value
+      description: Value
+      required: true
+      x-ctype: string
+      x-sequencenumber: 1
+      x-default: '0'
+      x-example: '1'
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: calibrate_thermistor
+  summary: ''
+  description: Uses uint32_t for input parameters
+  x-management-option: ReadWrite
+  x-id: 4
+  x-group_id: 256
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Calibration factor x10000
+    required: true
+    x-ctype: uint32_t
+    x-sequencenumber: 1
+    x-default: 2207351
+    x-example: 2207351
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  - name: p2
+    summary: Parameter 2
+    description: Calibration factor x10000
+    required: true
+    x-ctype: uint32_t
+    x-sequencenumber: 2
+    x-default: 39800000
+    x-example: 39800000
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: calibrate_thermistor_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: result
+      description: negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: ge
+      summary: Gain Error
+      description: This is applied to all thermistor readings
+      required: true
+      x-ctype: float
+      x-example: '9.98e-1'
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: oe
+      summary: Offset Error
+      description: This is applied to all thermistor readings
+      required: true
+      x-ctype: float
+      x-example: -1.28e1
+      x-sequencenumber: 3
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: test_led
+  summary: Turn green LED on, then red on, green off, and finally red off.
+  x-management-option: ReadWrite
+  x-id: 3
+  x-group_id: 256
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Duration in milliseconds for each step
+    required: true
+    x-ctype: uint32_t
+    x-default: 1000
+    x-example: 1000
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: test_led_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: result
+      description: negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: get_parameter
+  summary: Get Parameter
+  description: ''
+  x-management-option: Read
+  x-id: 1
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter ID
+    description: Parameter ID
+    required: true
+    x-ctype: uint16_t
+    x-sequencenumber: 1
+    x-default: null
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  result:
+    name: get_parameter_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: result
+      description: negative error code if an error occurred, otherwise size of data
+        returned
+      required: true
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      x-default: 0
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: id
+      summary: Parameter ID
+      description: Parameter ID
+      required: true
+      x-ctype: uint16_t
+      x-sequencenumber: 2
+      x-default: 0
+      x-example: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r1
+      summary: Value
+      description: Actual type sent depends on the parameter itself chosen.
+      required: false
+      x-ctype: string
+      x-sequencenumber: 3
+      x-default: 0
+      x-example: 0
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: set_parameter
+  summary: Set Parameter
+  description: Set an attribute
+  x-management-option: Write
+  x-id: 2
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter ID
+    description: Parameter ID
+    required: true
+    x-ctype: uint16_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  - name: p2
+    summary: Parameter Value
+    description: Actual type sent depends on the parameter itself chosen in p1
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: set_parameter_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: The id number of what is being set
+      required: true
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      x-default: 0
+      x-example: 3
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result status of setting the value. Will return 0 if successful, negative
+        if error
+      description: ''
+      required: true
+      x-ctype: int32_t
+      x-sequencenumber: 2
+      x-default: null
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: load_parameter_file
+  summary: Load parameters from a file
+  description: Used in conjunction with file system commands
+  x-management-option: Write
+  x-id: 3
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: File name
+    description: Input file is an optional
+    required: false
+    x-ctype: string
+    x-default: 0
+    x-example: /lfs/attr.txt
+    x-sequencenumber: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: load_parameter_file_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: f
+      summary: Path to the feedback file containing load error details
+      required: false
+      x-example: /ext/feedback.txt
+      x-ctype: string
+      x-sequencenumber: 2
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: dump_parameter_file
+  summary: Dump chosen parameters to a file
+  description: Used in conjunction with file system commands
+  x-management-option: Write
+  x-id: 4
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Have the parameter choose the dump type
+    description: Dump Type 0 = read/write, 1 = writable, 2 = read-only
+    required: true
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 2
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 2
+  - name: p2
+    summary: File name
+    description: Output file is an optional parameter. This is only used if CONFIG_ATTRIBUTE_MGMT_DUMP_USER_FILE_NAME
+      is set, otherwise it will be ignored.
+    required: false
+    x-ctype: string
+    x-default: 0
+    x-example: /lfs/dump.txt
+    x-sequencenumber: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: dump_parameter_file_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, length of file in bytes on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: n
+      summary: Name
+      description: The absolute path name of the dump file on the file system. Returned
+        only when successful.
+      required: false
+      x-example: /ext/dump.txt
+      x-ctype: string
+      x-sequencenumber: 2
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: factory_reset
+  summary: This will force a factory reset of the device.
+  x-management-option: Write
+  x-id: 5
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: factory_reset_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: set_notify
+  summary: Set notification flag
+  description: Device generates BLE notifications for corresponding attribute
+  x-management-option: Write
+  x-id: 6
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Attribute ID
+    required: true
+    x-ctype: uint16_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  - name: p2
+    summary: Parameter 2
+    description: Value to set notification flag to
+    required: true
+    x-ctype: bool
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 2
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 1
+  result:
+    name: set_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: Attribute id
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: get_notify
+  summary: Get notification flag
+  description: Device generates BLE notifications for corresponding attribute
+  x-management-option: Read
+  x-id: 7
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Parameter Id
+    required: true
+    x-ctype: uint16_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  result:
+    name: get_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: Attribute id
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result
+      description: Notification state
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: disable_notify
+  summary: Disable All Notifications
+  x-management-option: Write
+  x-id: 8
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: disable_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: check_lock_status
+  summary: Check lock status of module
+  x-management-option: Read
+  x-id: 9
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Dummy
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: check_lock_status_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: '0'
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: r1
+      summary: Lock Setup
+      description: True if the lock has been setup, false otherwise
+      required: true
+      x-ctype: bool
+      x-sequencenumber: 2
+      x-default: 0
+      x-example: 1
+      schema:
+        type: bool
+        minimum: 0
+        maximum: 1
+    - name: r2
+      summary: Lock Currently Enabled
+      description: True if the lock is currently engaged, false otherwise
+      required: true
+      x-ctype: bool
+      x-sequencenumber: 3
+      x-default: 0
+      x-example: 1
+      schema:
+        type: bool
+        minimum: 0
+        maximum: 1
+- name: set_lock_code
+  summary: Set lock code of module
+  description: If successful, will update the lock code and the lock will engage when
+    the UART/BLE device disconnects
+  x-management-option: Write
+  x-id: 10
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Lock code
+    description: Lock Code
+    required: true
+    x-ctype: uint32_t
+    x-sequencenumber: 1
+    x-default: null
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 999999
+  result:
+    name: set_lock_code_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: lock
+  summary: Lock module configuration
+  x-management-option: Write
+  x-id: 11
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Dummy Parameter
+    description: Dummy Parameter
+    required: false
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: lock_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: unlock
+  summary: Unlock module configuration
+  x-management-option: Write
+  x-id: 12
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Unlock code
+    required: true
+    x-ctype: uint32_t
+    x-sequencenumber: 1
+    x-default: null
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 999999
+  - name: p2
+    summary: Disable lock
+    description: If set to true, will clear the lock entirely until it is manually
+      re-enabled
+    required: true
+    x-ctype: bool
+    x-sequencenumber: 2
+    x-default: null
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 1
+  result:
+    name: unlock_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: get_unlock_error_code
+  summary: Check last error code umlock error code (clears last error on read)
+  x-management-option: Read
+  x-id: 13
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Dummy
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: get_unlock_error_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: r1
+      summary: Unlock error code
+      description: Error code from last unlock attempt, 0 = no error, 1 = valid code,
+        2 = invalid code. Reset to 0 on read
+      required: true
+      x-ctype: int8_t
+      x-sequencenumber: 2
+      x-default: null
+      x-example: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2
+- name: get_api_version
+  summary: Return the current version of api document parameter
+  x-management-option: Read
+  x-id: 14
+  x-group_id: 65
+  params: []
+  result:
+    name: get_api_version_result
+    schema:
+      type: array
+    x-result:
+    - name: api_version
+      summary: Result
+      description: Return api version stored in memory
+      required: true
+      x-ctype: string
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: string
+        minLength: 6
+        maxLength: 11
+- name: get_indices
+  summary: Return info on the attribute table size
+  x-management-option: Read
+  x-id: 15
+  x-group_id: 65
+  params: []
+  result:
+    name: get_api_version_result
+    schema:
+      type: array
+    x-result:
+    - name: table_size
+      summary: Result
+      description: Returns total number items in attribute table
+      required: true
+      x-ctype: uint32_t
+      x-example: 172
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: min_id
+      summary: Result
+      description: Returns number of the id first item in the table (should be zero)
+      required: true
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: max_id
+      summary: result
+      description: returns number of the id last item in the table
+      required: true
+      x-ctype: uint32_t
+      x-example: 58
+      x-sequencenumber: 3
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+- name: get_entry_details
+  summary: Return the current version of api document parameter
+  x-management-option: Read
+  x-id: 16
+  x-group_id: 65
+  params:
+  - name: method
+    summary: Transversal method
+    description: index = 0, first = 1, last = 2, next = 3, previous = 4
+    required: true
+    x-ctype: uint8_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 3
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 4
+  - name: index
+    summary: Attribute index
+    description: Attribute index
+    required: false
+    x-ctype: uint32_t
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: 35
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 999999
+  result:
+    name: get_entry_details_result
+    schema:
+      type: array
+    x-result:
+    - name: index
+      summary: Attribute index
+      description: Attribute index
+      required: true
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: res
+      summary: Result code
+      description: Result code
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: id
+      summary: Attribute ID
+      description: Attribute ID
+      required: false
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 3
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: name
+      summary: Attribute name
+      description: Attribute name
+      required: false
+      x-ctype: string
+      x-example: 0
+      x-sequencenumber: 4
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+    - name: size
+      summary: Attribute size (bytes)
+      description: Attribute size (bytes)
+      required: false
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 5
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: type
+      summary: Attribute type
+      description: Attribute type
+      required: false
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 6
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: flags
+      summary: Attribute flags
+      description: Attribute flags
+      required: false
+      x-ctype: uint32_t
+      x-example: 0
+      x-sequencenumber: 7
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999999
+    - name: prepared
+      summary: Attribute prepared read
+      description: Attribute prepared read
+      required: false
+      x-ctype: bool
+      x-example: 0
+      x-sequencenumber: 8
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1
+    - name: min
+      summary: Attribute minimum value
+      description: Actual type sent depends on the parameter itself
+      required: false
+      x-ctype: string
+      x-example: 0
+      x-sequencenumber: 9
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+    - name: max
+      summary: Attribute maximum value
+      description: Actual type sent depends on the parameter itself
+      required: false
+      x-ctype: string
+      x-example: 0
+      x-sequencenumber: 10
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: file_download
+  summary: File Download
+  description: Request to download file from Zephyr file system.
+  x-management-option: Read
+  x-id: 0
+  x-group_id: 8
+  params:
+  - name: 'off'
+    summary: File offset
+    description: Offset where to start file access
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  - name: name
+    summary: file name
+    description: Full filename to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 64
+  result:
+    name: file_download_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Reason code
+      description: Result of the read operation
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: 'off'
+      summary: File offset
+      description: The updated file offset following read
+      required: true
+      x-ctype: uint64_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: data
+      summary: data
+      description: data
+      required: true
+      x-ctype: array<byte>
+      x-sequencenumber: 3
+      schema:
+        type: array
+        minItems: 0
+        maxItems: 0
+    - name: len
+      summary: Length
+      description: The total file length, only returned when the requested offset
+        is 0.
+      required: false
+      x-ctype: uint64_t
+      x-example: 100
+      x-sequencenumber: 4
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: file_upload
+  summary: File Upload
+  description: Request to upload file to Zephyr file system.
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 8
+  params:
+  - name: 'off'
+    summary: File Offset
+    description: Offset where to start file access
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  - name: name
+    summary: File name
+    description: Full file name to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: data
+    summary: File data
+    description: The data to write.
+    required: true
+    x-ctype: array<byte>
+    x-sequencenumber: 3
+    x-default: 0
+    schema:
+      type: array
+      minLength: 0
+      maxLength: 0
+  - name: len
+    summary: Data length
+    description: Number of bytes being uploaded
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 4
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: file_upload_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for the upload operation
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: 'off'
+      summary: Offset
+      description: Updated file offset
+      required: true
+      x-ctype: uint64_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: file_status
+  summary: File status
+  description: See if the file is active, return length.
+  x-management-option: Read
+  x-id: 1
+  x-group_id: 8
+  params:
+  - name: name
+    summary: File name
+    description: Full file name to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  result:
+    name: file_status_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for when an error occurs
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: len
+      summary: Length
+      description: If there is no error the file length is returned
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 4
+      x-default: 0
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: file_hash_checksum
+  summary: File hash checksum
+  description: Getting file hash/checksum, with support for IEEE CRC32 and SHA256
+  x-management-option: Read
+  x-id: 2
+  x-group_id: 8
+  params:
+  - name: type
+    summary: Checksum type
+    description: The return type used crc32 or sha256
+    required: true
+    x-ctype: string
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 0
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: name
+    summary: File name
+    description: Full file name to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: 'off'
+    summary: File Offset
+    description: Offset where to start file access
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 3
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  - name: len
+    summary: Data length
+    description: Number of bytes being uploaded
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 4
+    x-default: 0
+    x-example: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 4
+  result:
+    name: file_hash_checksum_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for when an error occurs
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: type
+      summary: Checksum type
+      description: If there is no error the return type used crc32 or sha256
+      required: true
+      x-ctype: string
+      x-sequencenumber: 2
+      x-default: 0
+      x-example: 0
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+    - name: 'off'
+      summary: File Offset
+      description: If there is no error offset where to start file access
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 3
+      x-default: 0
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: len
+      summary: Length
+      description: If there is no error the file length is returned
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 4
+      x-default: 0
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: output
+      summary: Byte string or numerical output
+      description: This can either be a string or uint64 return type
+      required: true
+      x-ctype: string
+      x-sequencenumber: 5
+      x-default: 0
+      x-example: 0
+      schema:
+        type: string
+        minimum: 0
+        maximum: 0
+- name: set_rtc
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 69
+  params:
+  - name: p1
+    summary: Set the RTC in UTC
+    description: Time in seconds. Reference is time 00:00:00 Jan 1, 1970
+    required: true
+    x-default: 1655294400
+    x-example: 1000
+    x-sequencenumber: 1
+    x-ctype: uint32_t
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: set_rtc_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: t
+      summary: Epoch Time
+      description: Time in seconds
+      required: true
+      x-example: 0
+      x-ctype: uint32_t
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: get_rtc
+  x-management-option: Read
+  x-id: 1
+  x-group_id: 69
+  params: []
+  result:
+    name: get_rtc_result
+    schema:
+      type: array
+    x-result:
+    - name: t
+      summary: Get the current RTC value in UTC
+      description: Time in seconds. Default reference is time 00:00:00 Jan 1, 1970
+      required: true
+      x-example: 0
+      x-ctype: uint32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: uart_log_halt
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 68
+  params:
+  - name: p1
+    summary: Turn the log off/on
+    description: 0 = log halt, 1 = log go
+    required: true
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    x-ctype: bool
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: uart_log_halt_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+components:
+  contentDescriptors:
+    device_params:
+      name: device_parameters
+      schema:
+        type: array
+      x-device-parameters:
+      - name: reserved0
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        summary: Index 0 is always reserved
+        x-id: 0
+      - name: sensor_name
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 23
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-example: BT610
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Sensor Name used by the device
+        x-id: 1
+      - name: location
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-default: NA
+        x-example: myRoom
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device Location
+        x-id: 2
+      - name: advertising_interval
+        required: true
+        schema:
+          minimum: 500
+          maximum: 10000
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: '1000'
+        x-example: '1000'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Advertising Interval in milliseconds
+        x-id: 3
+      - name: advertising_duration
+        required: true
+        schema:
+          minimum: 0
+          maximum: 65535
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: '15000'
+        x-example: '15000'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Advertising duration of an event in milliseconds. Must be 4x greater
+          than the Interval.
+        x-id: 4
+      - name: power_sense_interval
+        required: true
+        schema:
+          minimum: 0
+          maximum: 86400
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 60
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Power Sense interval in seconds
+        x-id: 5
+      - name: temperature_sense_interval
+        required: true
+        schema:
+          minimum: 0
+          maximum: 86400
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 60
+        x-example: 10
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Temperature Sense interval in seconds
+        x-id: 6
+      - name: digital_output_1_state
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: false = off, true - on
+        x-id: 7
+      - name: digital_output_2_state
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: false = off, true - on
+        x-id: 8
+      - name: firmware_version
+        required: true
+        schema:
+          minLength: 3
+          maxLength: 11
+          type: string
+        x-ctype: string
+        x-default: 0.0.0
+        x-example: 1.0.0
+        x-readable: true
+        summary: Firmware Version. Format = Major.Minor.Build
+        x-id: 9
+      - name: reset_reason
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 12
+          type: string
+        x-ctype: string
+        x-default: RESETPIN
+        x-example: DOG
+        x-readable: true
+        summary: For Development
+        x-id: 10
+      - name: reset_count
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 0
+          type: integer
+        x-ctype: uint32_t
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        summary: reset Count
+        x-id: 11
+      - name: uptime
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          type: number
+        x-ctype: int64_t
+        x-default: 0
+        x-example: 0
+        x-prepare: true
+        x-readable: true
+        summary: Time in milliseconds since the last reboot
+        x-id: 12
+      - name: active_mode
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: cp8
+        x-writable: true
+        summary: 0 = inactive (shelf mode). 1 = active (sample enabled)
+        x-id: 13
+      - name: advertising_phy
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          enum:
+            CODED: 0
+            1M: 1
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 1
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Advertising Phy Value
+        x-id: 14
+      - name: tx_power
+        required: true
+        schema:
+          minimum: -40
+          maximum: 8
+          type: integer
+        x-ctype: int8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 8
+        x-readable: true
+        x-savable: true
+        x-validator: tx_power
+        x-writable: true
+        summary: Bluetooth Tx Power (dBm)
+        x-id: 15
+      - name: network_id
+        required: true
+        schema:
+          minimum: 0
+          maximum: 65535
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 100
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Network Id used in advertisement.
+        x-id: 16
+      - name: config_version
+        required: true
+        schema:
+          minimum: 0
+          maximum: 255
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 10
+        x-readable: true
+        summary: Tracker for when settings change
+        description: This is used for synchronization between clients (Bluegrass/Phone
+          application).
+        x-id: 17
+      - name: config_type
+        required: true
+        schema:
+          minimum: 0
+          maximum: 6
+          enum:
+            NOT_CONFIGURED: 0
+            ANALOG: 1
+            DIGITAL: 2
+            TEMPERATURE: 3
+            CURRENT: 4
+            ULTRASONIC_PRESSURE: 5
+            SPI_OR_I2C: 6
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 2
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Predetermined configurations (modes of operation)
+        x-id: 18
+      - name: ge
+        required: true
+        schema:
+          minimum: -5.0
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 1e+0
+        x-example: 0.998
+        x-readable: true
+        summary: ADC Calibrated Thermistor Gain Error
+        x-id: 19
+      - name: oe
+        required: true
+        schema:
+          minimum: -16.0
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: -12.2
+        x-readable: true
+        summary: ADC calibrated offset error
+        x-id: 20
+      - name: thermistor_config
+        required: true
+        schema:
+          minimum: 0
+          maximum: 15
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Bitmask of Thermistor Inputs.    Bit 0 is thermistor 1.    1 is enabled,
+          0 is disabled
+        x-id: 21
+      - name: temperature_result_1
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-notify-if-unchanged: true
+        x-prepare: true
+        x-readable: true
+        summary: Temperature in C
+        x-id: 22
+      - name: temperature_result_2
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-notify-if-unchanged: true
+        x-prepare: true
+        x-readable: true
+        summary: Temperature in C
+        x-id: 23
+      - name: temperature_result_3
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-notify-if-unchanged: true
+        x-prepare: true
+        x-readable: true
+        summary: Temperature in C
+        x-id: 24
+      - name: temperature_result_4
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-notify-if-unchanged: true
+        x-prepare: true
+        x-readable: true
+        summary: Temperature in C
+        x-id: 25
+      - name: power_voltage
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4.0
+          type: integer
+        x-ctype: float
+        x-default: 0
+        x-example: 3.2
+        x-prepare: true
+        x-readable: true
+        summary: Input power voltage in volts
+        description: This is the voltage measured by the device at VDD
+        x-id: 26
+      - name: digital_input
+        required: true
+        schema:
+          minimum: 0
+          maximum: 3
+          enum:
+            PORT1_BITMASK: 1
+            PORT2_BITMASK: 2
+          type: integer
+        x-ctype: uint8_t
+        x-default: 0
+        x-example: 0
+        x-prepare: true
+        x-readable: true
+        summary: Bit 0 is digital input 1, Bit 1 is digital input 2
+        description: Bit 0 = Input 1, Bit 1 = Input 2
+        x-id: 27
+      - name: digital_input_1_config
+        required: true
+        schema:
+          minimum: 0
+          maximum: 131
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 128
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: 'Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration: 0 = None, 1
+          = falling edge, 2 = rising edge, 3 = both'
+        x-id: 28
+      - name: digital_input_2_config
+        required: true
+        schema:
+          minimum: 0
+          maximum: 131
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 128
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: 'Bit 7 : Enable/Disable; Bits 1:0 Alarm Enumeration: 0 = None, 1
+          = falling edge, 2 = rising edge, 3 = both'
+        x-id: 29
+      - name: analog_input_1
+        required: true
+        schema:
+          minimum: 0.0
+          maximum: 15000.0
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-prepare: true
+        x-readable: true
+        summary: Unit depends on Analog Input Configuration Type. Units will either
+          be in PSI, mm, mV, mA, or Amps if AC current is selected
+        x-id: 30
+      - name: analog_input_2
+        required: true
+        schema:
+          minimum: 0.0
+          maximum: 15000.0
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-prepare: true
+        x-readable: true
+        summary: Unit depends on Analog Input Configuration Type. Units will either
+          be in PSI, mm, mV, mA, or Amps if AC current is selected
+        x-id: 31
+      - name: analog_input_3
+        required: true
+        schema:
+          minimum: 0.0
+          maximum: 15000.0
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-prepare: true
+        x-readable: true
+        summary: Unit depends on Analog Input Configuration Type. Units will either
+          be in    PSI, mm, mV, mA, or Amps if AC current is selected
+        x-id: 32
+      - name: analog_input_4
+        required: true
+        schema:
+          minimum: 0.0
+          maximum: 15000.0
+          type: integer
+        x-ctype: float
+        x-default: 0.0
+        x-example: 0.0
+        x-prepare: true
+        x-readable: true
+        summary: Unit depends on Analog Input Configuration Type. Units will either
+          be in PSI, mm, mV, mA, or Amps if AC current is selected
+        x-id: 33
+      - name: analog_input_1_type
+        required: true
+        schema:
+          minimum: 0
+          maximum: 7
+          enum:
+            UNUSED: 0
+            VOLTAGE_0V_TO_10V_DC: 1
+            CURRENT_4MA_TO_20MA: 2
+            PRESSURE: 3
+            ULTRASONIC: 4
+            AC_CURRENT_20A: 5
+            AC_CURRENT_150A: 6
+            AC_CURRENT_500A: 7
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: aic
+        x-writable: true
+        summary: Analog Input Channel 1 configuration
+        description: If changing a pressure sensor port, then any active pressure
+          sensor ports must be first set to 0.
+        x-id: 34
+      - name: analog_input_2_type
+        required: true
+        schema:
+          minimum: 0
+          maximum: 7
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: aic
+        x-writable: true
+        summary: Analog Input Channel 2 configuration
+        x-id: 35
+      - name: analog_input_3_type
+        required: true
+        schema:
+          minimum: 0
+          maximum: 7
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: aic
+        x-writable: true
+        summary: Analog Input Channel 3 configuration
+        x-id: 36
+      - name: analog_input_4_type
+        required: true
+        schema:
+          minimum: 0
+          maximum: 7
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: aic
+        x-writable: true
+        summary: Analog Input Channel 4 configuration
+        x-id: 37
+      - name: magnet_state
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          enum:
+            FAR: true
+            NEAR: false
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        summary: Proximity of magnet to sensor used to activate sensor and start advertising
+          when near
+        x-id: 38
+      - name: param_path
+        required: true
+        schema:
+          minLength: 2
+          maxLength: 8
+          type: string
+        x-ctype: string
+        x-default: /ext
+        x-example: /lfs1
+        x-readable: true
+        summary: Folder on file system used for Parse/Dump commands
+        x-id: 39
+      - name: battery_age
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          type: number
+        x-ctype: uint32_t
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        summary: Time in seconds that the battery has been in use
+        x-id: 40
+      - name: api_version
+        required: true
+        schema:
+          minLength: 6
+          maxLength: 11
+          type: string
+        x-ctype: string
+        x-default: 0.0.1
+        x-example: 123.456.789
+        x-readable: true
+        summary: The API attribute version that the firmware supports
+        x-id: 41
+      - name: qrtc
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          type: number
+        x-ctype: uint32_t
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        summary: Quasi-RTC (epoch, Seconds from Jan 1, 1970)
+        x-id: 42
+      - name: qrtc_last_set
+        schema:
+          minimum: 0
+          maximum: 0
+          type: number
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        summary: Last time the RTC was set
+        x-id: 43
+      - name: sh_offset
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '2.7315e+2'
+        x-example: '2.7315e+2'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation offset
+        x-id: 44
+      - name: analog_sense_interval
+        required: true
+        schema:
+          minimum: 0
+          maximum: 86400
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: '60'
+        x-example: '10'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: analog Sense interval in seconds
+        x-id: 45
+      - name: tamper_switch_status
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          enum:
+            ACTIVE_NOT_PRESSED: true
+            INACTIVE_PRESSED: false
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        summary: Returns the current state of the tamper switch
+        description: 1 = Tamper switch active (not pressed) 0 = Tamper switch inactive
+          (pressed).
+        x-id: 46
+      - name: therm_1_coefficient_a
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '1.132e-3'
+        x-example: '1.132e-3'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient A
+        x-id: 47
+      - name: therm_2_coefficient_a
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '1.132e-3'
+        x-example: '1.132e-3'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient A
+        x-id: 48
+      - name: therm_3_coefficient_a
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '1.132e-3'
+        x-example: '1.132e-3'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation    coefficient A
+        x-id: 49
+      - name: therm_4_coefficient_a
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '1.132e-3'
+        x-example: '1.132e-3'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient A
+        x-id: 50
+      - name: therm_1_coefficient_b
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '2.338e-4'
+        x-example: '2.338e-4'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient B
+        x-id: 51
+      - name: therm_2_coefficient_b
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '2.338e-4'
+        x-example: '2.338e-4'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation    coefficient B
+        x-id: 52
+      - name: therm_3_coefficient_b
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '2.338e-4'
+        x-example: '2.338e-4'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient B
+        x-id: 53
+      - name: therm_4_coefficient_b
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '2.338e-4'
+        x-example: '2.338e-4'
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient B
+        x-id: 54
+      - name: therm_1_coefficient_c
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 8.78e-08
+        x-example: 8.78e-08
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation    coefficient C
+        x-id: 55
+      - name: therm_2_coefficient_c
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 8.78e-08
+        x-example: 8.78e-08
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient C
+        x-id: 56
+      - name: therm_3_coefficient_c
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 8.78e-08
+        x-example: 8.78e-08
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation coefficient C
+        x-id: 57
+      - name: therm_4_coefficient_c
+        required: true
+        schema:
+          minimum: 1.2e-38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 8.78e-08
+        x-example: 8.78e-08
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Steinhart-Hart Temperature Equation    coefficient C
+        x-id: 58
+      - name: factory_reset_enable
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 1
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: false = disable, true = enable
+        x-id: 59
+      - name: adc_power_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated power ADC counts
+        x-id: 60
+      - name: adc_power_simulated_counts
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4095
+          type: integer
+        x-ctype: int16_t
+        x-default: 0
+        x-example: 1000
+        x-readable: true
+        x-writable: true
+        summary: Simulated counts for Power ADC channel
+        x-id: 61
+      - name: adc_analog_sensor_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated Analog Sensor ADC counts
+        x-id: 62
+      - name: adc_analog_sensor_simulated_counts
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4095
+          type: integer
+        x-ctype: int16_t
+        x-default: 0
+        x-example: 1000
+        x-readable: true
+        x-writable: true
+        summary: Simulated counts for Analog Sensor ADC channel
+        x-id: 63
+      - name: adc_thermistor_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated Thermistor ADC counts
+        x-id: 64
+      - name: adc_thermistor_simulated_counts
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4095
+          type: integer
+        x-ctype: int16_t
+        x-default: 0
+        x-example: 1000
+        x-readable: true
+        x-writable: true
+        summary: Simulated counts for Thermistor ADC channel
+        x-id: 65
+      - name: adc_vref_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated counts for VRef ADC counts
+        x-id: 66
+      - name: adc_vref_simulated_counts
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4095
+          type: integer
+        x-ctype: int16_t
+        x-default: 0
+        x-example: 1000
+        x-readable: true
+        x-writable: true
+        summary: Simulated counts for VRef ADC channel
+        x-id: 67
+      - name: voltage_1_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Voltage Input 1
+        x-id: 68
+      - name: voltage_1_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Voltage Input 1 value
+        x-id: 69
+      - name: voltage_2_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Voltage Input 2
+        x-id: 70
+      - name: voltage_2_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Voltage Input 2 value
+        x-id: 71
+      - name: voltage_3_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Voltage Input 3
+        x-id: 72
+      - name: voltage_3_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Voltage Input 3 value
+        x-id: 73
+      - name: voltage_4_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Voltage Input 4
+        x-id: 74
+      - name: voltage_4_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Voltage Input 4 value
+        x-id: 75
+      - name: ultrasonic_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for the Ultrasonic sensor
+        x-id: 76
+      - name: ultrasonic_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Ultrasonic sensor value
+        x-id: 77
+      - name: pressure_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for the Pressure sensor
+        x-id: 78
+      - name: pressure_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Pressure sensor value
+        x-id: 79
+      - name: current_1_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Current Input 1
+        x-id: 80
+      - name: current_1_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Current Input 1 value
+        x-id: 81
+      - name: current_2_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Current Input 2
+        x-id: 82
+      - name: current_2_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Current Input 2 value
+        x-id: 83
+      - name: current_3_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Current Input 3
+        x-id: 84
+      - name: current_3_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Current Input 3 value
+        x-id: 85
+      - name: current_4_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Current Input 4
+        x-id: 86
+      - name: current_4_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Current Input 4 value
+        x-id: 87
+      - name: vref_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Vref
+        x-id: 88
+      - name: vref_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Vref value
+        x-id: 89
+      - name: temperature_1_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Temperature 1
+        x-id: 90
+      - name: temperature_1_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Temperature 1 value
+        x-id: 91
+      - name: temperature_2_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Temperature 2
+        x-id: 92
+      - name: temperature_2_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '0.0'
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Temperature 2 value
+        x-id: 93
+      - name: temperature_3_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Temperature 3
+        x-id: 94
+      - name: temperature_3_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: '0.0'
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Temperature 3 value
+        x-id: 95
+      - name: temperature_4_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for Temperature 4
+        x-id: 96
+      - name: temperature_4_simulated_value
+        required: true
+        schema:
+          minimum: -3.4e+38
+          maximum: 3.4e+38
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 8.78e-08
+        x-readable: true
+        x-writable: true
+        summary: Simulated Temperature 4 value
+        x-id: 97
+      - name: power_volts_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-writable: true
+        summary: Enables simulated data for power voltage
+        x-id: 98
+      - name: power_volts_simulated_value
+        required: true
+        schema:
+          minimum: 0
+          maximum: 4.0
+          type: number
+        x-ctype: float
+        x-default: 0.0
+        x-example: 1.0
+        x-readable: true
+        x-writable: true
+        summary: Simulated power voltage value
+        x-id: 99
+      - name: digital_input_1_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: din1simen
+        x-writable: true
+        summary: Enables simulated data for Digital Input 1
+        x-id: 100
+      - name: digital_input_1_simulated_value
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: din1sim
+        x-writable: true
+        summary: Simulated data for Digital Input 1
+        x-id: 101
+      - name: digital_input_2_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: din2simen
+        x-writable: true
+        summary: Enables simulated data for Digital Input 2
+        x-id: 102
+      - name: digital_input_2_simulated_value
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: din2sim
+        x-writable: true
+        summary: Simulated data for Digital Input 2
+        x-id: 103
+      - name: mag_switch_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: magsimen
+        x-writable: true
+        summary: Enables simulated data for the Mag Switch
+        x-id: 104
+      - name: mag_switch_simulated_value
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: magsim
+        x-writable: true
+        summary: Simulated data for the Mag Switch
+        x-id: 105
+      - name: tamper_switch_simulated
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: tampsimen
+        x-writable: true
+        summary: Enables simulated data for the Tamper Switch
+        x-id: 106
+      - name: tamper_switch_simulated_value
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-validator: tampsim
+        x-writable: true
+        summary: Simulated data for the Tamper Switch
+        x-id: 107
+      - name: boot_phy
+        required: true
+        schema:
+          enum:
+            DEFAULT: 0
+            CODED: 1
+            1M: 2
+          minimum: 0
+          maximum: 2
+          type: integer
+        x-ctype: uint8_t
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The PHY to enable for 30s at bootup
+        description: 'Enumeration: 0 = Default, 1 = 1M, 2 = Coded'
+        x-id: 108
+      - name: mobile_app_disconnect
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        x-writable: true
+        summary: This is used when the mobile app wants to disconnect, causing the
+          BT6 to confirm the disconnect before forcing it
+        description: 0 = do not disconnect, 1 = start disconnect after 2 seconds
+        x-id: 109
+      - name: attr_save_error_code
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          type: integer
+        x-ctype: int32_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        summary: Result code from deferred settings saving
+        description: negative error code, 0 on success
+        x-id: 110
+      - name: block_downgrades
+        required: true
+        schema:
+          minimum: 0
+          maximum: 1
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-example: 0
+        x-readable: true
+        x-savable: true
+        x-validator: block_downgrades
+        x-writable: true
+        summary: Allows FOTA downgrading of older firmwares to be disallowed
+        description: Will disallow receiving older firmware files via FOTA when set
+          to 1
+        x-id: 111
+      - name: security_level
+        required: true
+        schema:
+          minimum: -1
+          maximum: 4
+          type: integer
+        x-ctype: int8_t
+        x-default: 0
+        x-example: 0
+        x-prepare: true
+        x-readable: true
+        summary: Current Bluetooth security level as seen by the sensor
+        description: -1 indicates error, otherwise value indicates level as per bt_security_t
+        x-id: 112
+      - name: load_path
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-default: /lfs1/params.txt
+        x-example: /lfs1/params.txt
+        x-readable: true
+        x-savable: true
+        summary: (Default) Absolute file name for load parameters command
+        x-id: 113
+      - name: dump_path
+        required: true
+        schema:
+          minLength: 0
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-default: /lfs1/dump.txt
+        x-example: /lfs1/dump.txt
+        x-readable: true
+        summary: (Default) Absolute file name for dump command
+        x-id: 114
+      - name: bluetooth_flags
+        required: true
+        schema:
+          minimum: 0
+          maximum: 0
+          enum:
+            DEVICE_MANAGEMENT_DATA_READY_BITMASK: 1
+            MEMFAULT_DATA_BITMASK: 2
+            TIME_WAS_SET_BITMASK: 4
+            ACTIVE_MODE_BITMASK: 8
+            LOW_BATTERY_ALARM_BITMASK: 16
+            DIGITAL_IN1_STATE_BITMASK: 32
+            DIGITAL_IN2_STATE_BITMASK: 64
+            TAMPER_SWITCH_STATE_BITMASK: 128
+            MAGNET_STATE_BITMASK: 256
+            UNUSED_0: 512
+            UNUSED_1: 1024
+            UNUSED_2: 2048
+            UNUSED_3: 4096
+            UNUSED_4: 8192
+            UNUSED_5: 16384
+            UNUSED_6: 32768
+            UNUSED_7: 65536
+            UNUSED_8: 131072
+            UNUSED_9: 262144
+            UNUSED_10: 524288
+            UNUSED_11: 1048576
+            UNUSED_12: 2097152
+            UNUSED_13: 4194304
+            UNUSED_14: 8388608
+            UNUSED_15: 16777216
+            UNUSED_16: 33554432
+            UNUSED_17: 67108864
+            UNUSED_18: 134217728
+            UNUSED_19: 268435456
+            UNUSED_20: 536870912
+            UNUSED_21: 1073741824
+            UNUSED_22: 2147483648
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-example: 1
+        x-readable: true
+        x-writable: true
+        summary: Flags published over Bluetooth
+        x-id: 115
+      - name: event_filter_flags
+        required: true
+        schema:
+          minimum: 0
+          maximum: 2097151
+          enum:
+            TEMPERATURE_1_EVENT_BITMASK: 1
+            TEMPERATURE_2_EVENT_BITMASK: 2
+            TEMPERATURE_3_EVENT_BITMASK: 4
+            TEMPERATURE_4_EVENT_BITMASK: 8
+            VOLTAGE_1_EVENT_BITMASK: 16
+            VOLTAGE_2_EVENT_BITMASK: 32
+            VOLTAGE_3_EVENT_BITMASK: 64
+            VOLTAGE_4_EVENT_BITMASK: 128
+            CURRENT_1_EVENT_BITMASK: 256
+            CURRENT_2_EVENT_BITMASK: 512
+            CURRENT_3_EVENT_BITMASK: 1024
+            CURRENT_4_EVENT_BITMASK: 2048
+            ULTRASONIC_EVENT_BITMASK: 4096
+            PRESSURE_1_EVENT_BITMASK: 8192
+            PRESSURE_2_EVENT_BITMASK: 16384
+            TAMPER_SWITCH_EVENT_BITMASK: 32768
+            MAGNET_SENSE_EVENT_BITMASK: 65536
+            BATTERY_GOOD_EVENT_BITMASK: 131072
+            BATTERY_BAD_EVENT_BITMASK: 262144
+            DIGITAL_IN1_EVENT_BITMASK: 524288
+            DIGITAL_IN2_EVENT_BITMASK: 1048576
+            UNUSED_0: 2097152
+            UNUSED_1: 4194304
+            UNUSED_2: 8388608
+            UNUSED_3: 16777216
+            UNUSED_4: 33554432
+            UNUSED_5: 67108864
+            UNUSED_6: 134217728
+            UNUSED_7: 268435456
+            UNUSED_8: 536870912
+            UNUSED_9: 1073741824
+            UNUSED_10: 2147483648
+          type: integer
+        x-ctype: uint32_t
+        x-default: 2097151
+        x-example: 1
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Filter to limit Bluetooth advertisement events
+        x-id: 116
+      - name: log_on_boot
+        description: When set to false, logging output will be disabled when the firmware
+          starts.
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 117
+      - name: tel_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/tel/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for telemetry authentication.
+        x-id: 118
+      - name: tel_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/tel/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for telemetry authentication.
+        x-id: 119
+      - name: dm_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/dm/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for DM authentication.
+        x-id: 120
+      - name: dm_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/dm/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for DM authentication.
+        x-id: 121
+      - name: fs_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/fs/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for firmware and file service authentication.
+        x-id: 122
+      - name: fs_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/fs/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for firmware and file service authentication.
+        x-id: 123
+      - name: p2p_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/p2p/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for peer-to-peer authentication.
+        x-id: 124
+      - name: p2p_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/p2p/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for peer-to-peer authentication.
+        x-id: 125
+      - name: lwm2m_server_url
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 11
+          type: string
+          pattern: coaps?://(\.?|\w|[-|_])+([\.|/]((\w|[0-9]|[-|_])*))+(\:[0-9]{1,5})?
+        x-ctype: string
+        x-broadcast: true
+        x-default: coap://leshan.eclipseprojects.io:5683
+        x-example: coaps://leshan.eclipseprojects.io:5784
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Server URL to connect to
+        x-id: 126
+      - name: lwm2m_endpoint
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_device
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Endpoint name to identify the device
+        x-id: 127
+      - name: lwm2m_security
+        required: true
+        schema:
+          maximum: 4
+          minimum: 0
+          type: integer
+          enum:
+            PSK: 0
+            RPK: 1
+            CERT: 2
+            NO_SEC: 3
+            CERT_EST: 4
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 3
+        x-example: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: LwM2M Security mode
+        x-id: 128
+      - name: lwm2m_psk_id
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_device
+        x-example: my_device
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: PSK ID
+        x-id: 129
+      - name: lwm2m_psk
+        required: true
+        schema:
+          maxItems: 16
+          minItems: 16
+          type: array
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-array-size: 16
+        x-default: '{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+          0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f }'
+        x-prepare: false
+        x-readable: false
+        x-savable: true
+        x-writable: true
+        x-obscure-in-show: true
+        summary: Pre-shared key
+        x-id: 130
+      - name: lwm2m_bootstrap
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: 0 - disabled bootstrap, 1 - enabled
+        x-id: 131
+      - name: lwm2m_short_id
+        required: true
+        schema:
+          maximum: 65534
+          minimum: 1
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 1
+        x-example: 101
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: short_server_id This identifier uniquely identifies each LwM2M Server
+          configured for the LwM2M Client. This Resource MUST be set when the Bootstrap-Server
+          Resource has a value of 'false'.
+        x-id: 132
+      - name: lwm2m_mfg
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: Laird Connectivity
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device manufacturer
+        x-id: 133
+      - name: lwm2m_mn
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: model
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device model number
+        x-id: 134
+      - name: lwm2m_sn
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: serial_number
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device serial number
+        x-id: 135
+      - name: lwm2m_fw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device firmware version
+        x-id: 136
+      - name: lwm2m_pwr_src
+        required: false
+        schema:
+          maximum: 7
+          minimum: 0
+          type: integer
+          enum:
+            DC: 0
+            INT_BATT: 1
+            EXT_BATT: 2
+            FUEL_CELL: 3
+            POE: 4
+            USB: 5
+            AC: 6
+            SOLAR: 7
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: true
+        summary: Device power source. This attribute maps to LwM2M path 3/0/6/0.
+        x-id: 137
+      - name: lwm2m_pwr_src_volt
+        required: false
+        schema:
+          maximum: 600000
+          minimum: -600000
+          type: integer
+        x-ctype: int32_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Device power source voltage. This attribute maps to LwM2M path 3/0/7/0.
+        x-id: 138
+      - name: lwm2m_sw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device software version
+        x-id: 139
+      - name: lwm2m_hw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device hardware version
+        x-id: 140
+      - name: lwm2m_batt_stat
+        required: false
+        schema:
+          maximum: 6
+          minimum: 0
+          type: integer
+          enum:
+            NORM: 0
+            CHARGING: 1
+            CHARGE_COMP: 2
+            DAMAGED: 3
+            LOW: 4
+            NOT_INST: 5
+            UNKNOWN: 6
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 6
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Device battery status
+        x-id: 141
+      - name: lwm2m_fup_pkg_name
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_firmware
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Firmware update firmware package name
+        x-id: 142
+      - name: lwm2m_fup_pkg_ver
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Firmware update package version
+        x-id: 143
+      - name: lwm2m_fup_proxy_srv
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 11
+          type: string
+          pattern: ^coaps?://[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?(\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?)+(:\d{1,5})?/?$
+        x-ctype: string
+        x-broadcast: true
+        x-default: coaps://coap-proxy.salticidae.net:5684
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Firmware update proxy server
+        x-id: 144
+      - name: bluetooth_address
+        required: true
+        schema:
+          minLength: 12
+          maxLength: 12
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: '0'
+        x-example: '010203040506'
+        x-lockable: false
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Bluetooth address
+        x-id: 145
+      - name: dm_cnx_delay
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 600
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Delay (in seconds) before connecting to DM server
+        x-id: 146
+      - name: factory_load_path
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/factory_load.txt
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Path for factory settings that can be restored with attribute load
+        x-id: 147
+      - name: device_id
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 0
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Unique identifier for the device. When firmware boots, if the value
+          is blank (the default value), the firmware will set a unique value for the
+          device using BLE MAC address, IMEI, or some similar value.
+        x-id: 148
+      - name: ble_rssi
+        summary: Received Signal Strength Indication
+        required: true
+        schema:
+          type: integer
+        x-ctype: int16_t
+        x-broadcast: true
+        x-default: -128
+        x-lockable: false
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        x-id: 149
+      - name: smp_auth_req
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: If true, SMP authentication will be required before accessing any
+          SMP services. If false, all SMP services are available regardless of authentication
+          status.
+        x-id: 150
+      - name: smp_auth_timeout
+        required: true
+        schema:
+          maximum: 86400
+          minimum: 0
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 300
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: SMP authentication will time out after a lapse in SMP commands lasting
+          this number of seconds.
+        x-id: 151
+      - name: shell_password
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 4
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: zephyr
+        x-prepare: false
+        x-readable: false
+        x-savable: true
+        x-writable: true
+        x-hide-in-show: true
+        x-show-on-change: false
+        summary: Password to login and use the shell
+        x-id: 152

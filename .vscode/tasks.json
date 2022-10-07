@@ -15,151 +15,82 @@
   },
   "tasks": [
     {
-      /* ALWAYS RUN FIRST.... Run this to build merged bootloader and application properly. */
-      "label": "build with mcuboot *Run this First*",
+      "label": "build",
       "type": "shell",
       "command": "west build -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
-      "windows": {
-        "command": "west build -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
-      },
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
-      },
-      "dependsOn": [
-        "ibv mcuboot"
-      ]
+      }
+    },
+    {
+      "label": "re-build",
+      "type": "shell",
+      "command": "west build -p -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": "absolute"
+      }
     },
     {
       "label": "flash",
       "type": "shell",
       "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
-      "windows": {
-        "command": "west flash --recover -d ${workspaceRoot}\\peripheral_IO\\build"
-      },
       "problemMatcher": []
-    },
-    {
-      "label": "ibv",
-      "type": "shell",
-      "command": "python3 increment_build_version ./peripheral_IO/include/version.h",
-      "windows": {
-        "command": "py increment_build_version.py .\\peripheral_IO\\include\\version.h"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "ibv mcuboot",
-      "type": "shell",
-      "command": "python3 increment_build_version ./peripheral_IO/include/version.h ./peripheral_IO/prj.conf",
-      "windows": {
-        "command": "py increment_build_version.py .\\peripheral_IO\\include\\version.h .\\peripheral_IO\\prj.conf"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "build",
-      "type": "shell",
-      "command": "west build -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
-      "windows": {
-        "command": "west build -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
-      },
-      "problemMatcher": {
-        "base": "$gcc",
-        "fileLocation": "absolute"
-      },
-      "dependsOn": [
-        "ibv"
-      ]
     },
     {
       "label": "rebuild app and flash",
       "type": "shell",
       "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
-      "windows": {
-        "command": "west flash --recover -d ${workspaceRoot}\\peripheral_IO\\build"
-      },
       "problemMatcher": [],
       "dependsOn": [
-        "build"
+        "re-build"
       ]
     },
     {
       "label": "clean app",
       "type": "shell",
       "command": "west build -t clean -d ${workspaceRoot}/peripheral_IO/build",
-      "windows": {
-        "command": "west build -t clean -d ${workspaceRoot}\\peripheral_IO\\build"
-      },
       "problemMatcher": []
     },
     {
       "label": "pristine app",
       "type": "shell",
       "command": "west build -t pristine -d ${workspaceRoot}/peripheral_IO/build",
-      "windows": {
-        "command": "west build -t pristine -d ${workspaceRoot}\\peripheral_IO\\build"
-      },
       "problemMatcher": []
     },
     {
       "label": "menuconfig",
       "type": "shell",
       "command": "west build -t menuconfig -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
-      "windows": {
-        "command": "west build -t menuconfig -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO"
-      },
       "problemMatcher": []
     },
     {
       "label": "app ram_report",
       "type": "shell",
       "command": "west build -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO --target ram_report > ${workspaceRoot}/peripheral_IO/build/ram_report",
-      "windows": {
-        "command": "west build -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO --target ram_report > ${workspaceRoot}\\peripheral_IO\\build\\ram_report"
-      },
       "problemMatcher": []
     },
     {
       "label": "PM report",
       "type": "shell",
       "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}/peripheral_IO/build",
-      "windows": {
-        "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}\\peripheral_IO\\build"
-      },
       "problemMatcher": []
     },
     {
       "label": "app rom_report",
       "type": "shell",
       "command": "west build -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO --target rom_report > ${workspaceRoot}/peripheral_IO/build/rom_report",
-      "windows": {
-        "command": "west build -d ${workspaceRoot}\\peripheral_IO\\build ${workspaceRoot}\\peripheral_IO --target rom_report > ${workspaceRoot}\\peripheral_IO\\build\\rom_report"
-      },
       "problemMatcher": []
     },
     {
       "label": "build hci uart",
       "type": "shell",
       "command": "west build -b bt610 -d ${workspaceRoot}/hci_uart/build ${workspaceRoot}/hci_uart",
-      "windows": {
-        "command": "west build -b bt610 -d ${workspaceRoot}\\hci_uart\\build ${workspaceRoot}\\hci_uart"
-      },
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
       }
-    }
-  ],
-  "inputs": [
-    {
-      "id": "app",
-      "description": "Select an app to build",
-      "default": "peripheral_IO",
-      "type": "pickString",
-      "options": [
-        "peripheral_IO"
-      ]
     }
   ]
 }

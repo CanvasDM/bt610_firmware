@@ -29,7 +29,7 @@ LOG_MODULE_REGISTER(ControlTask, CONFIG_CONTROL_TASK_LOG_LEVEL);
 #include "BspSupport.h"
 #include "UserInterfaceTask.h"
 #include "SensorTask.h"
-#include "Version.h"
+#include "app_version.h"
 #include "lcz_no_init_ram_var.h"
 #include "NonInit.h"
 #include "file_system_utilities.h"
@@ -203,7 +203,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 {
 	ControlTaskObj_t *pObj = (ControlTaskObj_t *)pArg1;
 
-	LOG_WRN("Version %s", VERSION_STRING);
+	LOG_WRN("Version %s", APP_VERSION_STRING);
 
 	RebootHandler();
 
@@ -233,7 +233,7 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static void RebootHandler(void)
 {
-	attr_set_string(ATTR_ID_firmware_version, VERSION_STRING, strlen(VERSION_STRING));
+	attr_set_string(ATTR_ID_firmware_version, APP_VERSION_STRING, strlen(APP_VERSION_STRING));
 
 	uint32_t reset_reason = lcz_nrf_reset_reason_get_and_clear_register();
 	const char *s = lcz_nrf_reset_reason_get_string(reset_reason);
