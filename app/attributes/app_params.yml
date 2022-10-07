@@ -1501,15 +1501,15 @@ attributes:
         minimum: 0
         maximum: 0
         enum:
-            TIME_WAS_SET_BITMASK: 0x1
-            ACTIVE_MODE_BITMASK: 0x2
-            ATTRIBUTE_SET_DEVICE_MANAGEMENT_BITMASK: 0x4
-            LOW_BATTERY_ALARM_BITMASK: 0x8
-            DIGITAL_IN1_STATE_BITMASK: 0x10
-            DIGITAL_IN2_STATE_BITMASK: 0x20
-            TAMPER_SWITCH_STATE_BITMASK: 0x40
-            MAGNET_STATE_BITMASK: 0x80
-            MEMFAULT_DATA_BITMASK: 0x100
+            DEVICE_MANAGEMENT_DATA_READY_BITMASK: 0x1
+            MEMFAULT_DATA_BITMASK: 0x2
+            TIME_WAS_SET_BITMASK: 0x4
+            ACTIVE_MODE_BITMASK: 0x8
+            LOW_BATTERY_ALARM_BITMASK: 0x10
+            DIGITAL_IN1_STATE_BITMASK: 0x20
+            DIGITAL_IN2_STATE_BITMASK: 0x40
+            TAMPER_SWITCH_STATE_BITMASK: 0x80
+            MAGNET_STATE_BITMASK: 0x100
             UNUSED_0: 0x200
             UNUSED_1: 0x400
             UNUSED_2: 0x800
