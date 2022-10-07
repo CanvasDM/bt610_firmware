@@ -262,13 +262,13 @@ static int BluetoothInit(void)
 			break;
 		}
 
-		if (IS_ENABLED(CONFIG_BT_SETTINGS)) {
-			r = settings_load();
-			if (r != 0) {
-				LOG_ERR("settings load: %d", r);
-				break;
-			}
+#if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
+		r = settings_load();
+		if (r != 0) {
+			LOG_ERR("settings load: %d", r);
+			break;
 		}
+#endif
 
 		bt_conn_cb_register(&connectionCallbacks);
 
