@@ -359,13 +359,13 @@ BUILD_ASSERT(sizeof(enum lwm2m_batt_stat) == ATTR_SIZE_U8);
 #define ATTR_MAX_INT_SIZE                                           8
 #define ATTR_MAX_KEY_NAME_SIZE                                      35
 #define ATTR_MAX_VALUE_SIZE                                         256
-#define ATTR_MAX_FILE_SIZE                                          5376
+#define ATTR_MAX_FILE_SIZE                                          5429
 #define ATTR_ENABLE_FPU_CHECK                                       1
 
 /* Attribute Max String Lengths */
 #define ATTR_SENSOR_NAME_MAX_STR_SIZE                               24
 #define ATTR_LOCATION_MAX_STR_SIZE                                  33
-#define ATTR_FIRMWARE_VERSION_MAX_STR_SIZE                          12
+#define ATTR_FIRMWARE_VERSION_MAX_STR_SIZE                          65
 #define ATTR_RESET_REASON_MAX_STR_SIZE                              13
 #define ATTR_PARAM_PATH_MAX_STR_SIZE                                9
 #define ATTR_API_VERSION_MAX_STR_SIZE                               12

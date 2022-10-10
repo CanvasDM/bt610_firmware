@@ -1536,14 +1536,13 @@ components:
       - name: firmware_version
         required: true
         schema:
-          minLength: 3
-          maxLength: 11
+          maxLength: 64
+          minLength: 5
           type: string
         x-ctype: string
-        x-default: 0.0.0
-        x-example: 1.0.0
+        x-default: 0.0.0+0
         x-readable: true
-        summary: Firmware Version. Format = Major.Minor.Build
+        summary: Firmware Version. Format = Major.Minor.Fix+build
         x-id: 9
       - name: reset_reason
         required: true

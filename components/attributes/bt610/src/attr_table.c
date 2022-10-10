@@ -179,7 +179,7 @@ static const rw_attribute_t DEFAULT_RW_ATTRIBUTE_VALUES =  {
 /* pystart - ro attributes */
 typedef struct ro_attribute {
 	uint16_t reserved0;
-	char firmware_version[11 + 1];
+	char firmware_version[64 + 1];
 	char reset_reason[12 + 1];
 	uint32_t reset_count;
 	int64_t uptime;
@@ -268,7 +268,7 @@ typedef struct ro_attribute {
 /* pystart - ro defaults */
 static const ro_attribute_t DEFAULT_RO_ATTRIBUTE_VALUES =  {
 	.reserved0 = 0,
-	.firmware_version = "0.0.0",
+	.firmware_version = "0.0.0+0",
 	.reset_reason = "RESETPIN",
 	.reset_count = 0,
 	.uptime = 0,
@@ -393,7 +393,7 @@ const struct attr_table_entry ATTR_TABLE[ATTR_TABLE_SIZE] = {
 	[6  ] = { RW_ATTRX(temperature_sense_interval)          , ATTR_TYPE_U32           , 0x1b  , av_uint32           , NULL                                , .min.ux = 0         , .max.ux = 86400     },
 	[7  ] = { RW_ATTRX(digital_output_1_state)              , ATTR_TYPE_BOOL          , 0x1b  , av_bool             , NULL                                , .min.ux = 0         , .max.ux = 1         },
 	[8  ] = { RW_ATTRX(digital_output_2_state)              , ATTR_TYPE_BOOL          , 0x1b  , av_bool             , NULL                                , .min.ux = 0         , .max.ux = 1         },
-	[9  ] = { RO_ATTRS(firmware_version)                    , ATTR_TYPE_STRING        , 0x2   , av_string           , NULL                                , .min.ux = 3         , .max.ux = 11        },
+	[9  ] = { RO_ATTRS(firmware_version)                    , ATTR_TYPE_STRING        , 0x2   , av_string           , NULL                                , .min.ux = 5         , .max.ux = 64        },
 	[10 ] = { RO_ATTRS(reset_reason)                        , ATTR_TYPE_STRING        , 0x2   , av_string           , NULL                                , .min.ux = 0         , .max.ux = 12        },
 	[11 ] = { RO_ATTRX(reset_count)                         , ATTR_TYPE_U32           , 0x2   , av_uint32           , NULL                                , .min.ux = 0         , .max.ux = 0         },
 	[12 ] = { RO_ATTRX(uptime)                              , ATTR_TYPE_S64           , 0x2   , av_int64            , attr_prepare_uptime                 , .min.sx = 0         , .max.sx = 0         },
