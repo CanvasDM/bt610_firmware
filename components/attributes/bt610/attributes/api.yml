@@ -3111,6 +3111,18 @@ components:
         x-writable: true
         summary: Filter to limit Bluetooth advertisement events
         x-id: 116
+      - name: board
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-default: my_board
+        x-example: pinnacle_100_dvk
+        x-readable: true
+        summary: Zephyr board the firmware is built for.
+        x-id: 117
       - name: log_on_boot
         description: When set to false, logging output will be disabled when the firmware
           starts.
@@ -3125,7 +3137,7 @@ components:
         x-readable: true
         x-savable: true
         x-writable: true
-        x-id: 117
+        x-id: 118
       - name: tel_trust_path
         required: true
         schema:
@@ -3140,7 +3152,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the trust store for telemetry authentication.
-        x-id: 118
+        x-id: 119
       - name: tel_key_path
         required: true
         schema:
@@ -3155,7 +3167,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the key store for telemetry authentication.
-        x-id: 119
+        x-id: 120
       - name: dm_trust_path
         required: true
         schema:
@@ -3170,7 +3182,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the trust store for DM authentication.
-        x-id: 120
+        x-id: 121
       - name: dm_key_path
         required: true
         schema:
@@ -3185,7 +3197,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the key store for DM authentication.
-        x-id: 121
+        x-id: 122
       - name: fs_trust_path
         required: true
         schema:
@@ -3200,7 +3212,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the trust store for firmware and file service authentication.
-        x-id: 122
+        x-id: 123
       - name: fs_key_path
         required: true
         schema:
@@ -3215,7 +3227,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the key store for firmware and file service authentication.
-        x-id: 123
+        x-id: 124
       - name: p2p_trust_path
         required: true
         schema:
@@ -3230,7 +3242,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the trust store for peer-to-peer authentication.
-        x-id: 124
+        x-id: 125
       - name: p2p_key_path
         required: true
         schema:
@@ -3245,7 +3257,7 @@ components:
         x-savable: true
         x-writable: true
         summary: The path to the key store for peer-to-peer authentication.
-        x-id: 125
+        x-id: 126
       - name: lwm2m_server_url
         required: true
         schema:
@@ -3262,7 +3274,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Server URL to connect to
-        x-id: 126
+        x-id: 127
       - name: lwm2m_endpoint
         required: true
         schema:
@@ -3277,7 +3289,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Endpoint name to identify the device
-        x-id: 127
+        x-id: 128
       - name: lwm2m_security
         required: true
         schema:
@@ -3299,7 +3311,7 @@ components:
         x-savable: true
         x-writable: true
         summary: LwM2M Security mode
-        x-id: 128
+        x-id: 129
       - name: lwm2m_psk_id
         required: true
         schema:
@@ -3315,7 +3327,7 @@ components:
         x-savable: true
         x-writable: true
         summary: PSK ID
-        x-id: 129
+        x-id: 130
       - name: lwm2m_psk
         required: true
         schema:
@@ -3333,7 +3345,7 @@ components:
         x-writable: true
         x-obscure-in-show: true
         summary: Pre-shared key
-        x-id: 130
+        x-id: 131
       - name: lwm2m_bootstrap
         required: true
         schema:
@@ -3349,7 +3361,7 @@ components:
         x-savable: true
         x-writable: true
         summary: 0 - disabled bootstrap, 1 - enabled
-        x-id: 131
+        x-id: 132
       - name: lwm2m_short_id
         required: true
         schema:
@@ -3367,7 +3379,7 @@ components:
         summary: short_server_id This identifier uniquely identifies each LwM2M Server
           configured for the LwM2M Client. This Resource MUST be set when the Bootstrap-Server
           Resource has a value of 'false'.
-        x-id: 132
+        x-id: 133
       - name: lwm2m_mfg
         required: false
         schema:
@@ -3382,7 +3394,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device manufacturer
-        x-id: 133
+        x-id: 134
       - name: lwm2m_mn
         required: false
         schema:
@@ -3397,7 +3409,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device model number
-        x-id: 134
+        x-id: 135
       - name: lwm2m_sn
         required: false
         schema:
@@ -3412,7 +3424,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device serial number
-        x-id: 135
+        x-id: 136
       - name: lwm2m_fw_ver
         required: false
         schema:
@@ -3427,7 +3439,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device firmware version
-        x-id: 136
+        x-id: 137
       - name: lwm2m_pwr_src
         required: false
         schema:
@@ -3451,7 +3463,7 @@ components:
         x-savable: false
         x-writable: true
         summary: Device power source. This attribute maps to LwM2M path 3/0/6/0.
-        x-id: 137
+        x-id: 138
       - name: lwm2m_pwr_src_volt
         required: false
         schema:
@@ -3466,7 +3478,7 @@ components:
         x-savable: false
         x-writable: false
         summary: Device power source voltage. This attribute maps to LwM2M path 3/0/7/0.
-        x-id: 138
+        x-id: 139
       - name: lwm2m_sw_ver
         required: false
         schema:
@@ -3481,7 +3493,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device software version
-        x-id: 139
+        x-id: 140
       - name: lwm2m_hw_ver
         required: false
         schema:
@@ -3496,7 +3508,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Device hardware version
-        x-id: 140
+        x-id: 141
       - name: lwm2m_batt_stat
         required: false
         schema:
@@ -3519,7 +3531,7 @@ components:
         x-savable: false
         x-writable: false
         summary: Device battery status
-        x-id: 141
+        x-id: 142
       - name: lwm2m_fup_pkg_name
         required: true
         schema:
@@ -3534,7 +3546,7 @@ components:
         x-savable: false
         x-writable: false
         summary: Firmware update firmware package name
-        x-id: 142
+        x-id: 143
       - name: lwm2m_fup_pkg_ver
         required: true
         schema:
@@ -3549,7 +3561,7 @@ components:
         x-savable: false
         x-writable: false
         summary: Firmware update package version
-        x-id: 143
+        x-id: 144
       - name: lwm2m_fup_proxy_srv
         required: true
         schema:
@@ -3565,7 +3577,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Firmware update proxy server
-        x-id: 144
+        x-id: 145
       - name: bluetooth_address
         required: true
         schema:
@@ -3582,7 +3594,7 @@ components:
         x-savable: false
         x-writable: false
         summary: Bluetooth address
-        x-id: 145
+        x-id: 146
       - name: dm_cnx_delay
         required: true
         schema:
@@ -3597,7 +3609,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Delay (in seconds) before connecting to DM server
-        x-id: 146
+        x-id: 147
       - name: factory_load_path
         required: true
         schema:
@@ -3612,7 +3624,7 @@ components:
         x-savable: true
         x-writable: true
         summary: Path for factory settings that can be restored with attribute load
-        x-id: 147
+        x-id: 148
       - name: device_id
         required: true
         schema:
@@ -3629,7 +3641,7 @@ components:
         summary: Unique identifier for the device. When firmware boots, if the value
           is blank (the default value), the firmware will set a unique value for the
           device using BLE MAC address, IMEI, or some similar value.
-        x-id: 148
+        x-id: 149
       - name: ble_rssi
         summary: Received Signal Strength Indication
         required: true
@@ -3643,7 +3655,7 @@ components:
         x-readable: true
         x-savable: false
         x-writable: false
-        x-id: 149
+        x-id: 150
       - name: smp_auth_req
         required: true
         schema:
@@ -3660,7 +3672,7 @@ components:
         summary: If true, SMP authentication will be required before accessing any
           SMP services. If false, all SMP services are available regardless of authentication
           status.
-        x-id: 150
+        x-id: 151
       - name: smp_auth_timeout
         required: true
         schema:
@@ -3676,7 +3688,7 @@ components:
         x-writable: true
         summary: SMP authentication will time out after a lapse in SMP commands lasting
           this number of seconds.
-        x-id: 151
+        x-id: 152
       - name: shell_password
         required: true
         schema:
@@ -3693,4 +3705,4 @@ components:
         x-hide-in-show: true
         x-show-on-change: false
         summary: Password to login and use the shell
-        x-id: 152
+        x-id: 153

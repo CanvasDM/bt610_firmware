@@ -116,6 +116,7 @@ load_path=/lfs1/params.txt
 dump_path=/lfs1/dump.txt
 bluetooth_flags=0
 event_filter_flags=2097151
+board=my_board
 log_on_boot=0
 tel_trust_path=/lfs1/tel/trust
 tel_key_path=/lfs1/enc/tel/key

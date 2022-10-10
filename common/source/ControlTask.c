@@ -251,7 +251,8 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 
 static void RebootHandler(void)
 {
-	attr_set_string(ATTR_ID_firmware_version, APP_VERSION_STRING, strlen(APP_VERSION_STRING));
+	(void)attr_set_string(ATTR_ID_firmware_version, APP_VERSION_STRING, strlen(APP_VERSION_STRING));
+	(void)attr_set_string(ATTR_ID_board, CONFIG_BOARD, strlen(CONFIG_BOARD));
 
 	uint32_t reset_reason = lcz_nrf_reset_reason_get_and_clear_register();
 	const char *s = lcz_nrf_reset_reason_get_string(reset_reason);

@@ -1586,6 +1586,17 @@ attributes:
     x-savable: true
     x-writable: true
     summary: Filter to limit Bluetooth advertisement events
+  - name: board
+    required: true
+    schema:
+      maxLength: 64
+      minLength: 1
+      type: string
+    x-ctype: string
+    x-default: my_board
+    x-example: pinnacle_100_dvk
+    x-readable: true
+    summary: "Zephyr board the firmware is built for."
   - name: log_on_boot
     description: "When set to false, logging output will be disabled when the firmware starts."
     required: true
