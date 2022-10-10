@@ -69,6 +69,6 @@ config MAX_SETTINGS_FILE_SIZE
 
 endif # USER_APPLICATION
 
-rsource "../common/Kconfig"
+rsource "src/Kconfig"
 
 source "Kconfig.zephyr"

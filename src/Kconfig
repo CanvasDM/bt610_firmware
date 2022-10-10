@@ -39,25 +39,15 @@ config ATTR_VALID_LOG_LEVEL
     range 0 4
     default 3
 
-config AGGREGATION_LOG_LEVEL
-    int "Log level for Aggregation Count"
-    range 0 4
-    default 3
-
 config ADVERTISEMENT_LOG_LEVEL
     int "Log level for Advertisement"
-    range 0 4
-    default 3
-
-config ALARM_CONTROL_LOG_LEVEL
-    int "Log level for Alarm Control"
     range 0 4
     default 3
 
 config EVENT_TASK_LOG_LEVEL
     int "Log level for Event Task"
     range 0 4
-    default 3    
+    default 3
 
 config ADVERTISEMENT_DISABLE
     bool "Disable advertisements for easier debug"
@@ -68,7 +58,7 @@ config ADVERTISEMENT_DISABLE
 
 config SETTINGS_MOUNT_POINT
     string "The mount point for settings (storage partition in internal flash)"
-    default "/lfs"
+    default "/lfs1"
 
 config MCUMGR_CMD_PRODUCTION_MGMT
     bool "Enable the Sentrius mcumgr interface"
@@ -84,6 +74,5 @@ config HEARTBEAT_SECONDS
 
 rsource "Kconfig.adc_bt6"
 rsource "Kconfig.ui"
-rsource "Kconfig.event_log"
 
 endif # APPLICATION_COMMON
