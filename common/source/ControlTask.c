@@ -76,6 +76,8 @@ typedef struct ControlTaskTag {
 	FwkMsgTask_t msgTask;
 	uint32_t broadcastCount;
 	bool factoryResetFlag;
+        /* Flag used to determine when the thread has finished initialisation */
+        bool task_started;
 } ControlTaskObj_t;
 
 #if defined(CONFIG_SETTINGS_FS_FILE) && defined(CONFIG_MAX_SETTINGS_FILE_SIZE) &&                  \
@@ -185,9 +187,20 @@ int attr_prepare_uptime(void)
 
 void app_prepare_for_reboot(void)
 {
-	/* Save attributes */
-	(void)attr_force_save();
-	non_init_save_data();
+	/* The BT6 has a custom sys_reboot_notification handler that
+	 * will save attributes before rebooting. Due to the HW KEY
+	 * module invoking system reboot, and the attributes requiring
+	 * the HW KEY service to decrypt files, a flag is set upon
+	 * completion of the Control Task's start up activities which
+	 * then allows the save activity below to be performed. If the
+	 * flag is not set, it is assumed the attributes are not yet
+	 * ready, and the save operation is skipped.
+	 */
+	if (cto.task_started) {
+		/* Save attributes only when safe to do so */
+		(void)attr_force_save();
+		non_init_save_data();
+	}
 }
 
 void sys_reboot_notification(int type)
@@ -225,6 +238,11 @@ static void ControlTaskThread(void *pArg1, void *pArg2, void *pArg3)
 #endif
 
 	Framework_StartTimer(&pObj->msgTask);
+
+	/* Flag thread initialisation complete to allow saving of attributes
+	 * via sys_reboot_notification
+	 */
+	cto.task_started = true;
 
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
