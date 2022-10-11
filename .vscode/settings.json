@@ -1,10 +1,4 @@
 {
-    "board_unix": "${workspaceRoot}/../boards/arm/bt6",
-    "board_windows": "${workspaceRoot}\\..\\boards\\arm\\bt6\\",
-    "kconfig.zephyr.base": "${workspaceRoot}/../zephyr",
-    "kconfig.zephyr.board": {
-      "board": "bt6"
-    },
     "cSpell.ignoreWords": [
       "bplus",
       "fout",

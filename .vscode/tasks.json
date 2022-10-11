@@ -17,7 +17,7 @@
     {
       "label": "build",
       "type": "shell",
-      "command": "west build -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "command": "west build -b bt610 -d ${workspaceRoot}/build ${workspaceRoot}",
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
@@ -26,7 +26,7 @@
     {
       "label": "re-build",
       "type": "shell",
-      "command": "west build -p -b bt610 -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "command": "west build -p -b bt610 -d ${workspaceRoot}/build ${workspaceRoot}",
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
@@ -35,13 +35,13 @@
     {
       "label": "flash",
       "type": "shell",
-      "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west flash -d ${workspaceRoot}/build",
       "problemMatcher": []
     },
     {
       "label": "rebuild app and flash",
       "type": "shell",
-      "command": "west flash --recover -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west flash -d ${workspaceRoot}/build",
       "problemMatcher": [],
       "dependsOn": [
         "re-build"
@@ -50,37 +50,37 @@
     {
       "label": "clean app",
       "type": "shell",
-      "command": "west build -t clean -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west build -t clean -d ${workspaceRoot}/build",
       "problemMatcher": []
     },
     {
       "label": "pristine app",
       "type": "shell",
-      "command": "west build -t pristine -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west build -t pristine -d ${workspaceRoot}/build",
       "problemMatcher": []
     },
     {
       "label": "menuconfig",
       "type": "shell",
-      "command": "west build -t menuconfig -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO",
+      "command": "west build -t menuconfig -d ${workspaceRoot}/build ${workspaceRoot}",
       "problemMatcher": []
     },
     {
       "label": "app ram_report",
       "type": "shell",
-      "command": "west build -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO --target ram_report > ${workspaceRoot}/peripheral_IO/build/ram_report",
+      "command": "west build -d ${workspaceRoot}/build ${workspaceRoot} --target ram_report > ${workspaceRoot}/build/ram_report",
       "problemMatcher": []
     },
     {
       "label": "PM report",
       "type": "shell",
-      "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}/peripheral_IO/build",
+      "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}/build",
       "problemMatcher": []
     },
     {
       "label": "app rom_report",
       "type": "shell",
-      "command": "west build -d ${workspaceRoot}/peripheral_IO/build ${workspaceRoot}/peripheral_IO --target rom_report > ${workspaceRoot}/peripheral_IO/build/rom_report",
+      "command": "west build -d ${workspaceRoot}/build ${workspaceRoot} --target rom_report > ${workspaceRoot}/build/rom_report",
       "problemMatcher": []
     },
     {
