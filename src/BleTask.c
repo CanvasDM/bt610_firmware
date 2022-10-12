@@ -256,11 +256,17 @@ static int BluetoothInit(void)
 {
 	int r = 0;
 	do {
+
+/* For DM enabled devices, bt_enable is called in the lcz_ble_client_dm_init
+ * SYS_INIT handler.
+ */
+#if !defined (CONFIG_LCZ_BLE_CLIENT_DM)
 		r = bt_enable(NULL);
 		if (r != 0) {
 			LOG_ERR("Bluetooth init: %d", r);
 			break;
 		}
+#endif
 
 #if defined(CONFIG_BT_SETTINGS) && defined(CONFIG_FILE_SYSTEM_LITTLEFS)
 		r = settings_load();
