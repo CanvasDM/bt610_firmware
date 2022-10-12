@@ -28,8 +28,8 @@ extern "C" {
 /**************************************************************************************************/
 /* pystart - enumerations */
 enum advertising_phy {
-	ADVERTISING_PHY_CODED = 0,
-	ADVERTISING_PHY_1M = 1,
+	ADVERTISING_PHY_1M = 0,
+	ADVERTISING_PHY_CODED = 1,
 };
 
 enum config_type {

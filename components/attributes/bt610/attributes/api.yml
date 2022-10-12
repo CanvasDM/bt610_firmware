@@ -1603,8 +1603,8 @@ components:
           minimum: 0
           maximum: 1
           enum:
-            CODED: 0
-            1M: 1
+            1M: 0
+            CODED: 1
           type: integer
         x-ctype: bool
         x-broadcast: true

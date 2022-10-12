@@ -550,8 +550,8 @@ const struct attr_table_entry ATTR_TABLE[ATTR_TABLE_SIZE] = {
 const char *const attr_get_string_advertising_phy(int value)
 {
 	switch (value) {
-		case 0:           return "Coded";
-		case 1:           return "1 M";
+		case 0:           return "1 M";
+		case 1:           return "Coded";
 		default:          return "?";
 	}
 }
