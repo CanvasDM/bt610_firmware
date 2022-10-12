@@ -39,6 +39,16 @@ LOG_MODULE_REGISTER(Advertisement, CONFIG_ADVERTISEMENT_LOG_LEVEL);
 #define CODED_PHY_STRING "Coded"
 #define STANDARD_PHY_STRING "1M PHY"
 
+#if defined (CONFIG_LCZ_BLE_CLIENT_DM)
+	#define BT6_CODED_PHY_AD_PROTOCOL_ID BTXXX_DM_CODED_PHY_AD_PROTOCOL_ID
+	#define BT6_1M_PHY_AD_PROTOCOL_ID BTXXX_DM_1M_PHY_AD_PROTOCOL_ID
+	#define BT6_1M_PHY_RSP_PROTOCOL_ID BTXXX_DM_1M_PHY_RSP_PROTOCOL_ID
+#else
+	#define BT6_CODED_PHY_AD_PROTOCOL_ID BTXXX_CODED_PHY_AD_PROTOCOL_ID
+	#define BT6_1M_PHY_AD_PROTOCOL_ID BTXXX_1M_PHY_AD_PROTOCOL_ID
+	#define BT6_1M_PHY_RSP_PROTOCOL_ID BTXXX_1M_PHY_RSP_PROTOCOL_ID
+#endif
+
 /******************************************************************************/
 /* Local Data Definitions                                                     */
 /******************************************************************************/
@@ -175,7 +185,7 @@ int Advertisement_Init(void)
 	attr_set_string(ATTR_ID_bluetooth_address, bd_addr, size - 1);
 
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
-	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;
+	ad.protocolId = BT6_1M_PHY_AD_PROTOCOL_ID;
 	ad.networkId = 0;
 	ad.flags = 0;
 	memcpy(&ad.addr, &addr.a, sizeof(bt_addr_t));
@@ -183,7 +193,7 @@ int Advertisement_Init(void)
 	ad.resetCount = 0;
 
 	rsp.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
-	rsp.protocolId = BTXXX_1M_PHY_RSP_PROTOCOL_ID;
+	rsp.protocolId = BT6_1M_PHY_RSP_PROTOCOL_ID ;
 	rsp.rsp.productId = BT6XX_PRODUCT_ID;
 	rsp.rsp.firmwareVersionMajor = APP_VERSION_MAJOR;
 	rsp.rsp.firmwareVersionMinor = APP_VERSION_MINOR;
@@ -193,7 +203,7 @@ int Advertisement_Init(void)
 	rsp.rsp.hardwareVersion = 0;
 
 	ext.ad = ad;
-	ext.ad.protocolId = BTXXX_CODED_PHY_AD_PROTOCOL_ID;
+	ext.ad.protocolId = BT6_CODED_PHY_AD_PROTOCOL_ID;
 	ext.rsp.productId = rsp.rsp.productId;
 	ext.rsp.firmwareVersionMajor = rsp.rsp.firmwareVersionMajor;
 	ext.rsp.firmwareVersionMinor = rsp.rsp.firmwareVersionMinor;
@@ -468,7 +478,7 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 	 * Coded PHY adverts for this part of the advert and we're
 	 * using the 1M advert as the data source for both.
 	 */
-	ext.ad.protocolId = BTXXX_CODED_PHY_AD_PROTOCOL_ID;
+	ext.ad.protocolId = BT6_CODED_PHY_AD_PROTOCOL_ID;
 
 	ext.rsp.configVersion = rsp.rsp.configVersion;
 
