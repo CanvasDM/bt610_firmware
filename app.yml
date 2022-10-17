@@ -4,11 +4,14 @@ info:
   title: Project_Index
   version: 0.0.1
 methods:
-    - $ref: ./app/attributes/app_methods.yml
-    - $ref: ./../modules/lib/laird_connect/attributes/attributes/attributes_methods.yml
-    - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/fs_mgmt_methods.yml
-    - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/qrtc_mgmt_methods.yml
-    - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/shell_log_mgmt_methods.yml
+  - $ref: ./app/attributes/app_methods.yml
+  - $ref: ./../modules/lib/laird_connect/attributes/attributes/attributes_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/qrtc_mgmt_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/shell_log_mgmt_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/os_mgmt_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/os_mgmt_mcumgr_params_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/lcz_fs_mgmt_methods.yml
+  - $ref: ./../modules/lib/laird_connect/zephyr_lib/components/attributes/shell_mgmt_methods.yml
 components:
   contentDescriptors:
     device_params:
