@@ -20,15 +20,15 @@ extern "C" {
 /******************************************************************************/
 /* Global Constants, Macros and Type Definitions                              */
 /******************************************************************************/
-#define FLAG_TIME_WAS_SET                    0x1, 0
-#define FLAG_ACTIVE_MODE                     0x1, 1
-#define FLAG_ATTRIBUTE_SET_DEVICE_MANAGEMENT 0x1, 2
-#define FLAG_LOW_BATTERY_ALARM               0x1, 3
-#define FLAG_DIGITAL_IN1_STATE               0x1, 4
-#define FLAG_DIGITAL_IN2_STATE               0x1, 5
-#define FLAG_TAMPER_SWITCH_STATE             0x1, 6
-#define FLAG_MAGNET_STATE                    0x1, 7
-#define FLAG_MEMFAULT_DATA                   0x1, 8
+#define FLAG_DEVICE_MANAGEMENT_DATA_READY    0x1, 0
+#define FLAG_MEMFAULT_DATA                   0x1, 1
+#define FLAG_TIME_WAS_SET                    0x1, 2
+#define FLAG_ACTIVE_MODE                     0x1, 3
+#define FLAG_LOW_BATTERY_ALARM               0x1, 4
+#define FLAG_DIGITAL_IN1_STATE               0x1, 5
+#define FLAG_DIGITAL_IN2_STATE               0x1, 6
+#define FLAG_TAMPER_SWITCH_STATE             0x1, 7
+#define FLAG_MAGNET_STATE                    0x1, 8
 #define FLAG_UNUSED_0                        0x1, 9
 #define FLAG_UNUSED_1                        0x1, 10
 #define FLAG_UNUSED_2                        0x1, 11
