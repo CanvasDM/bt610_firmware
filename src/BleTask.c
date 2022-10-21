@@ -37,6 +37,10 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "attr_custom_validator.h"
 #include "Flags.h"
 
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+#include "lcz_lwm2m_client.h"
+#endif
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -112,6 +116,9 @@ static void StartDisconnectTimer(void);
 static void ResetAppDisconnectParam(void);
 static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+void lwm2m_data_ready_cb(bool data_ready);
+#endif
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
 static void EnterActiveModeTimerCallbackIsr(struct k_timer *timer_id);
@@ -295,6 +302,9 @@ static int BluetoothInit(void)
 			break;
 		}
 
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+		lcz_lwm2m_client_register_data_ready_cb(lwm2m_data_ready_cb);
+#endif
 	} while (0);
 
 	return r;
@@ -696,7 +706,7 @@ static void set_tx_power(uint8_t handle_type, uint16_t handle,
 		return;
 	}
 	rp = (void *)rsp->data;
-	LOG_INF("Actual Tx Power: %d\n", rp->selected_tx_power);
+	LOG_INF("Actual Tx Power: %d", rp->selected_tx_power);
 
 	net_buf_unref(rsp);
 }
@@ -764,6 +774,13 @@ static uint32_t GetAdvertisingDuration(void)
 	}
 	return ((uint32_t)(advertising_duration));
 }
+
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+void lwm2m_data_ready_cb(bool data_ready)
+{
+	Flags_Set(FLAG_DEVICE_MANAGEMENT_DATA_READY, data_ready);
+}
+#endif
 
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

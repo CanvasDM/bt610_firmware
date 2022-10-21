@@ -354,6 +354,7 @@ BUILD_ASSERT(sizeof(enum lwm2m_batt_stat) == ATTR_SIZE_U8);
 #define ATTR_TABLE_SIZE                                             154
 #define ATTR_TABLE_MAX_ID                                           153
 #define ATTR_TABLE_WRITABLE_COUNT                                   118
+#define ATTR_TABLE_CRC_OF_NAMES                                     0x5b8924ce
 #define ATTR_MAX_STR_LENGTH                                         255
 #define ATTR_MAX_STR_SIZE                                           256
 #define ATTR_MAX_BIN_SIZE                                           16
