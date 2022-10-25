@@ -61,6 +61,7 @@ static struct k_timer uart0CTSCheckTimer;
  * interfering with shell startup
  */
 static struct k_work_delayable uart0_shut_off_delayed_work;
+static bool log_on_boot;
 #endif
 /* Backup of digital input IRQ configuration for simulation purposes */
 static gpio_flags_t digital_input_1_IRQ_config = 0;
@@ -548,6 +549,11 @@ static void UART0InitialiseSWFlowControl(void)
 			UART0WorkqHandler(NULL);
 		}
 	}
+
+	/* Read back log_on_boot here during start-up. No need to poll for changes,
+	 * the board needs to be reset for changes to be applied.
+	 */
+	log_on_boot = attr_get_bool(ATTR_ID_log_on_boot);
 #endif
 }
 
@@ -632,8 +638,7 @@ static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id)
 							   UART_0_RTS_PIN),
 							   BSP_SUPPORT_UART_RTS_ACTIVE);
 				}
-
-				if (uart0LogBackend != NULL) {
+				if ((uart0LogBackend != NULL) && (log_on_boot)) {
 					log_backend_activate(uart0LogBackend,
 							     uart0LogBackend->cb->ctx);
 				}
