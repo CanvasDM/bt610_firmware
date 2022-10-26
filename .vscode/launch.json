@@ -5,15 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "cwd": "${workspaceRoot}",
-            "executable": "build/zephyr/zephyr.elf",
+            // Be sure to set cortex-debug.armToolchainPath in user settings.
+            // For example "cortex-debug.armToolchainPath": "/Users/ryan/zephyr-sdk-0.14.2/arm-zephyr-eabi/bin"
+            // If using the Zephyr SDK setting "cortex-debug.armToolchainPrefix": "arm-zephyr-eabi" is required.
             "name": "Debug",
-            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "executable": "build/zephyr/zephyr.elf",
+            // Because the builds use a bootloader, attaching to the already flashed running firmware is the best strategy.
+            // After attaching, the CPU will be halted. Reset the device via the debug toolbar to continue debugging to avoid a hardfault.
+            // NOTE: When debugging, a user will only be able to halt the CPU once. Upon resuming operation, a hardfault will occur due to the the BLE controller.
+            "request": "attach",
             "type": "cortex-debug",
             "servertype": "jlink",
             "device": "nRF52840_xxAA",
-            "svdFile": "${workspaceRoot}/../modules/hal/nordic/nrfx/mdk/rf52840.svd",
-            "interface": "swd"
+            "svdFile": "${workspaceFolder}/../modules/hal/nordic/nrfx/mdk/nrf52840.svd",
+            "interface": "swd",
+            "rtos": "Zephyr"
         }
     ]
 }

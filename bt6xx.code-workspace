@@ -4,57 +4,24 @@
 			"path": "."
 		},
 		{
+			"path": "../bt610_dm_firmware_manifest"
+		},
+		{
 			"path": "../modules/lib/laird_connect"
-		},
-		{
-			"path": "../zephyr"
-		},
-		{
-			"path": "../nrfxlib"
 		},
 		{
 			"path": "../nrf"
 		},
 		{
-			"path": "../bootloader"
-		},
-		{
-			"path": "../bt610_dm_firmware_manifest"
+			"path": "../zephyr"
 		}
 	],
 	"settings": {
 		"files.associations": {
-			"*.bak": "c",
-			"xmemory": "c",
-			"array": "c",
-			"compare": "c",
-			"functional": "c",
-			"memory": "c",
-			"tuple": "c",
-			"type_traits": "c",
-			"utility": "c",
-			"xtr1common": "c",
-			"xutility": "c",
-			"cstring": "c",
-			"xstring": "c",
-			"initializer_list": "c",
-			"list": "c",
-			"vector": "c",
-			"xhash": "c",
-			"xtree": "c",
-			"cctype": "cpp",
-			"*.inc": "c",
-			"file_system_utilities.h": "c",
-			"attribute.h": "c",
-			"istream": "c",
-			"ostream": "c",
-			"string": "c",
-			"string_view": "c",
-			"thread": "c",
-			"chrono": "c",
-			"ratio": "c",
-			"lcz_bluetooth.h": "c",
-			"version.h": "c"
-		}
+			"*.in": "c"
+		},
+		"nrf-connect.applications": [
+			"${workspaceFolder}"
+		]
 	}
 }

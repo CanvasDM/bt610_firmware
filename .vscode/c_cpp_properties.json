@@ -11,8 +11,7 @@
               "${workspaceFolder}/../modules/**",
               "${workspaceFolder}/../nrf/**",
               "${workspaceFolder}/../nrfxlib/**",
-              "${workspaceFolder}/../mbedtls/**",
-              "${workspaceFolder}/common/**"
+              "${workspaceFolder}/../mbedtls/**"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",

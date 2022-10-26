@@ -17,7 +17,7 @@
     {
       "label": "build",
       "type": "shell",
-      "command": "west build -b bt610 -d ${workspaceRoot}/build ${workspaceRoot}",
+      "command": "west build -b bt610 -d ${workspaceFolder}/build ${workspaceFolder}",
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
@@ -26,7 +26,7 @@
     {
       "label": "re-build",
       "type": "shell",
-      "command": "west build -p -b bt610 -d ${workspaceRoot}/build ${workspaceRoot}",
+      "command": "west build -p -b bt610 -d ${workspaceFolder}/build ${workspaceFolder}",
       "problemMatcher": {
         "base": "$gcc",
         "fileLocation": "absolute"
@@ -35,13 +35,13 @@
     {
       "label": "flash",
       "type": "shell",
-      "command": "west flash -d ${workspaceRoot}/build",
+      "command": "west flash -d ${workspaceFolder}/build",
       "problemMatcher": []
     },
     {
       "label": "rebuild app and flash",
       "type": "shell",
-      "command": "west flash -d ${workspaceRoot}/build",
+      "command": "west flash -d ${workspaceFolder}/build",
       "problemMatcher": [],
       "dependsOn": [
         "re-build"
@@ -50,47 +50,47 @@
     {
       "label": "clean app",
       "type": "shell",
-      "command": "west build -t clean -d ${workspaceRoot}/build",
+      "command": "west build -t clean -d ${workspaceFolder}/build",
       "problemMatcher": []
     },
     {
       "label": "pristine app",
       "type": "shell",
-      "command": "west build -t pristine -d ${workspaceRoot}/build",
+      "command": "west build -t pristine -d ${workspaceFolder}/build",
       "problemMatcher": []
     },
     {
       "label": "menuconfig",
       "type": "shell",
-      "command": "west build -t menuconfig -d ${workspaceRoot}/build ${workspaceRoot}",
+      "command": "west build -t menuconfig -d ${workspaceFolder}/build ${workspaceFolder}",
       "problemMatcher": []
     },
     {
       "label": "app ram_report",
       "type": "shell",
-      "command": "west build -d ${workspaceRoot}/build ${workspaceRoot} --target ram_report > ${workspaceRoot}/build/ram_report",
+      "command": "west build -d ${workspaceFolder}/build ${workspaceFolder} --target ram_report > ${workspaceFolder}/build/ram_report",
       "problemMatcher": []
     },
     {
       "label": "PM report",
       "type": "shell",
-      "command": "west build -t partition_manager_report -b bt610 -d ${workspaceRoot}/build",
+      "command": "west build -t partition_manager_report -b bt610 -d ${workspaceFolder}/build",
       "problemMatcher": []
     },
     {
       "label": "app rom_report",
       "type": "shell",
-      "command": "west build -d ${workspaceRoot}/build ${workspaceRoot} --target rom_report > ${workspaceRoot}/build/rom_report",
+      "command": "west build -d ${workspaceFolder}/build ${workspaceFolder} --target rom_report > ${workspaceFolder}/build/rom_report",
       "problemMatcher": []
     },
     {
-      "label": "build hci uart",
+      "label": "Build API",
       "type": "shell",
-      "command": "west build -b bt610 -d ${workspaceRoot}/hci_uart/build ${workspaceRoot}/hci_uart",
-      "problemMatcher": {
-        "base": "$gcc",
-        "fileLocation": "absolute"
-      }
+      "command": "python3 ${workspaceFolder}/../modules/lib/laird_connect/attributes/generator/api.py ${workspaceFolder} bt610",
+      "windows": {
+        "command": "py -3 ${workspaceFolder}/../modules/lib/laird_connect/attributes/generator/api.py ${workspaceFolder} bt610",
+      },
+      "problemMatcher": []
     }
   ]
 }
