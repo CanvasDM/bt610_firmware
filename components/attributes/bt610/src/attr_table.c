@@ -99,6 +99,7 @@ typedef struct rw_attribute {
 	bool smp_auth_req;
 	uint32_t smp_auth_timeout;
 	char shell_password[32 + 1];
+	uint8_t shell_session_timeout;
 } rw_attribute_t;
 /* pyend */
 
@@ -172,7 +173,8 @@ static const rw_attribute_t DEFAULT_RW_ATTRIBUTE_VALUES =  {
 	.device_id = "",
 	.smp_auth_req = 0,
 	.smp_auth_timeout = 300,
-	.shell_password = "zephyr"
+	.shell_password = "zephyr",
+	.shell_session_timeout = 1
 };
 /* pyend */
 
@@ -289,7 +291,7 @@ static const ro_attribute_t DEFAULT_RO_ATTRIBUTE_VALUES =  {
 	.magnet_state = 0,
 	.param_path = "/ext",
 	.battery_age = 0,
-	.api_version = "0.0.1",
+	.api_version = "0.0.2",
 	.qrtc = 0,
 	.tamper_switch_status = 0,
 	.adc_power_simulated = 0,
@@ -539,7 +541,8 @@ const struct attr_table_entry ATTR_TABLE[ATTR_TABLE_SIZE] = {
 	[150] = { RO_ATTRX(ble_rssi)                            , ATTR_TYPE_S16           , 0xa   , av_int16            , NULL                                , .min.sx = 0         , .max.sx = 0         },
 	[151] = { RW_ATTRX(smp_auth_req)                        , ATTR_TYPE_BOOL          , 0x1b  , av_bool             , NULL                                , .min.ux = 0         , .max.ux = 1         },
 	[152] = { RW_ATTRX(smp_auth_timeout)                    , ATTR_TYPE_U32           , 0x1b  , av_uint32           , NULL                                , .min.ux = 0         , .max.ux = 86400     },
-	[153] = { RW_ATTRS(shell_password)                      , ATTR_TYPE_STRING        , 0x91  , av_string           , NULL                                , .min.ux = 4         , .max.ux = 32        }
+	[153] = { RW_ATTRS(shell_password)                      , ATTR_TYPE_STRING        , 0x91  , av_string           , NULL                                , .min.ux = 4         , .max.ux = 32        },
+	[154] = { RW_ATTRX(shell_session_timeout)               , ATTR_TYPE_U8            , 0x13  , av_uint8            , NULL                                , .min.ux = 0         , .max.ux = 255       }
 };
 /* pyend */
 

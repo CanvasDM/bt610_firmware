@@ -348,20 +348,21 @@ BUILD_ASSERT(sizeof(enum lwm2m_batt_stat) == ATTR_SIZE_U8);
 #define ATTR_ID_smp_auth_req                          151
 #define ATTR_ID_smp_auth_timeout                      152
 #define ATTR_ID_shell_password                        153
+#define ATTR_ID_shell_session_timeout                 154
 /* pyend */
 
 /* pystart - attribute constants */
-#define ATTR_TABLE_SIZE                                             154
-#define ATTR_TABLE_MAX_ID                                           153
-#define ATTR_TABLE_WRITABLE_COUNT                                   118
-#define ATTR_TABLE_CRC_OF_NAMES                                     0x5b8924ce
+#define ATTR_TABLE_SIZE                                             155
+#define ATTR_TABLE_MAX_ID                                           154
+#define ATTR_TABLE_WRITABLE_COUNT                                   119
+#define ATTR_TABLE_CRC_OF_NAMES                                     0x861fa4db
 #define ATTR_MAX_STR_LENGTH                                         255
 #define ATTR_MAX_STR_SIZE                                           256
 #define ATTR_MAX_BIN_SIZE                                           16
 #define ATTR_MAX_INT_SIZE                                           8
 #define ATTR_MAX_KEY_NAME_SIZE                                      35
 #define ATTR_MAX_VALUE_SIZE                                         256
-#define ATTR_MAX_FILE_SIZE                                          5500
+#define ATTR_MAX_FILE_SIZE                                          5526
 #define ATTR_ENABLE_FPU_CHECK                                       1
 
 /* Attribute Max String Lengths */

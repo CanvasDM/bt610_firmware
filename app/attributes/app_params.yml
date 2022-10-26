@@ -5,9 +5,9 @@ attributes:
   - name: reserved0
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        type: integer
+      minimum: 0
+      maximum: 0
+      type: integer
     x-ctype: uint16_t
     x-broadcast: true
     x-default: 0
@@ -16,9 +16,9 @@ attributes:
   - name: sensor_name
     required: true
     schema:
-        minLength: 0
-        maxLength: 23
-        type: string
+      minLength: 0
+      maxLength: 23
+      type: string
     x-ctype: string
     x-broadcast: true
     x-default: ""
@@ -30,9 +30,9 @@ attributes:
   - name: location
     required: true
     schema:
-        minLength: 0
-        maxLength: 32
-        type: string
+      minLength: 0
+      maxLength: 32
+      type: string
     x-ctype: string
     x-default: NA
     x-example: myRoom
@@ -43,9 +43,9 @@ attributes:
   - name: advertising_interval
     required: true
     schema:
-        minimum: 500
-        maximum: 10000
-        type: integer
+      minimum: 500
+      maximum: 10000
+      type: integer
     x-ctype: uint16_t
     x-broadcast: true
     x-default: "1000"
@@ -57,9 +57,9 @@ attributes:
   - name: advertising_duration
     required: true
     schema:
-        minimum: 0
-        maximum: 65535
-        type: integer
+      minimum: 0
+      maximum: 65535
+      type: integer
     x-ctype: uint16_t
     x-broadcast: true
     x-default: "15000"
@@ -67,14 +67,15 @@ attributes:
     x-readable: true
     x-savable: true
     x-writable: true
-    summary: Advertising duration of an event in milliseconds. Must be 4x greater
-             than the Interval.
+    summary:
+      Advertising duration of an event in milliseconds. Must be 4x greater
+      than the Interval.
   - name: power_sense_interval
     required: true
     schema:
-        minimum: 0
-        maximum: 86400
-        type: integer
+      minimum: 0
+      maximum: 86400
+      type: integer
     x-ctype: uint32_t
     x-broadcast: true
     x-default: 0
@@ -86,9 +87,9 @@ attributes:
   - name: temperature_sense_interval
     required: true
     schema:
-        minimum: 0
-        maximum: 86400
-        type: integer
+      minimum: 0
+      maximum: 86400
+      type: integer
     x-ctype: uint32_t
     x-broadcast: true
     x-default: 60
@@ -100,9 +101,9 @@ attributes:
   - name: digital_output_1_state
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 0
@@ -114,9 +115,9 @@ attributes:
   - name: digital_output_2_state
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 0
@@ -138,9 +139,9 @@ attributes:
   - name: reset_reason
     required: true
     schema:
-        minLength: 0
-        maxLength: 12
-        type: string
+      minLength: 0
+      maxLength: 12
+      type: string
     x-ctype: string
     x-default: RESETPIN
     x-example: DOG
@@ -149,9 +150,9 @@ attributes:
   - name: reset_count
     required: true
     schema:
-        minLength: 0
-        maxLength: 0
-        type: integer
+      minLength: 0
+      maxLength: 0
+      type: integer
     x-ctype: uint32_t
     x-default: 0
     x-example: 1
@@ -160,9 +161,9 @@ attributes:
   - name: uptime
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        type: number
+      minimum: 0
+      maximum: 0
+      type: number
     x-ctype: int64_t
     x-default: 0
     x-example: 0
@@ -172,9 +173,9 @@ attributes:
   - name: active_mode
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 0
@@ -187,12 +188,12 @@ attributes:
   - name: advertising_phy
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        enum:
-            1M: 0
-            CODED: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      enum:
+        1M: 0
+        CODED: 1
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 1
@@ -204,9 +205,9 @@ attributes:
   - name: tx_power
     required: true
     schema:
-        minimum: -40
-        maximum: 8
-        type: integer
+      minimum: -40
+      maximum: 8
+      type: integer
     x-ctype: int8_t
     x-broadcast: true
     x-default: 0
@@ -219,9 +220,9 @@ attributes:
   - name: network_id
     required: true
     schema:
-        minimum: 0
-        maximum: 65535
-        type: integer
+      minimum: 0
+      maximum: 65535
+      type: integer
     x-ctype: uint16_t
     x-broadcast: true
     x-default: 0
@@ -233,9 +234,9 @@ attributes:
   - name: config_version
     required: true
     schema:
-        minimum: 0
-        maximum: 255
-        type: integer
+      minimum: 0
+      maximum: 255
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -246,17 +247,17 @@ attributes:
   - name: config_type
     required: true
     schema:
-        minimum: 0
-        maximum: 6
-        enum:
-            NOT_CONFIGURED: 0
-            ANALOG: 1
-            DIGITAL: 2
-            TEMPERATURE: 3
-            CURRENT: 4
-            ULTRASONIC_PRESSURE: 5
-            SPI_OR_I2C: 6
-        type: integer
+      minimum: 0
+      maximum: 6
+      enum:
+        NOT_CONFIGURED: 0
+        ANALOG: 1
+        DIGITAL: 2
+        TEMPERATURE: 3
+        CURRENT: 4
+        ULTRASONIC_PRESSURE: 5
+        SPI_OR_I2C: 6
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -268,9 +269,9 @@ attributes:
   - name: ge
     required: true
     schema:
-        minimum: -5.0
-        maximum: 3.4e+38
-        type: number
+      minimum: -5.0
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 1e+0
     x-example: 9.98e-1
@@ -279,9 +280,9 @@ attributes:
   - name: oe
     required: true
     schema:
-        minimum: -16.0
-        maximum: 3.4e+38
-        type: number
+      minimum: -16.0
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: -1.22e+1
@@ -290,9 +291,9 @@ attributes:
   - name: thermistor_config
     required: true
     schema:
-        minimum: 0
-        maximum: 15
-        type: integer
+      minimum: 0
+      maximum: 15
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -304,9 +305,9 @@ attributes:
   - name: temperature_result_1
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: integer
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
@@ -317,9 +318,9 @@ attributes:
   - name: temperature_result_2
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: integer
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
@@ -330,9 +331,9 @@ attributes:
   - name: temperature_result_3
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: integer
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
@@ -343,9 +344,9 @@ attributes:
   - name: temperature_result_4
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: integer
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
@@ -356,9 +357,9 @@ attributes:
   - name: power_voltage
     required: true
     schema:
-        minimum: 0
-        maximum: 4.0
-        type: integer
+      minimum: 0
+      maximum: 4.0
+      type: integer
     x-ctype: float
     x-default: 0
     x-example: 3.2
@@ -369,12 +370,12 @@ attributes:
   - name: digital_input
     required: true
     schema:
-        minimum: 0
-        maximum: 3
-        enum:
-            PORT1_BITMASK: 1
-            PORT2_BITMASK: 2
-        type: integer
+      minimum: 0
+      maximum: 3
+      enum:
+        PORT1_BITMASK: 1
+        PORT2_BITMASK: 2
+      type: integer
     x-ctype: uint8_t
     x-default: 0
     x-example: 0
@@ -385,9 +386,9 @@ attributes:
   - name: digital_input_1_config
     required: true
     schema:
-        minimum: 0
-        maximum: 131
-        type: integer
+      minimum: 0
+      maximum: 131
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -399,9 +400,9 @@ attributes:
   - name: digital_input_2_config
     required: true
     schema:
-        minimum: 0
-        maximum: 131
-        type: integer
+      minimum: 0
+      maximum: 131
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -413,70 +414,70 @@ attributes:
   - name: analog_input_1
     required: true
     schema:
-        minimum: 0.0
-        maximum: 15000.0
-        type: integer
+      minimum: 0.0
+      maximum: 15000.0
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
     summary: Unit depends on Analog Input Configuration Type. Units will either
-        be in PSI, mm, mV, mA, or Amps if AC current is selected
+      be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_2
     required: true
     schema:
-        minimum: 0.0
-        maximum: 15000.0
-        type: integer
+      minimum: 0.0
+      maximum: 15000.0
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
     summary: Unit depends on Analog Input Configuration Type. Units will either
-        be in PSI, mm, mV, mA, or Amps if AC current is selected
+      be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_3
     required: true
     schema:
-        minimum: 0.0
-        maximum: 15000.0
-        type: integer
+      minimum: 0.0
+      maximum: 15000.0
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
     summary: Unit depends on Analog Input Configuration Type. Units will either
-        be in    PSI, mm, mV, mA, or Amps if AC current is selected
+      be in    PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_4
     required: true
     schema:
-        minimum: 0.0
-        maximum: 15000.0
-        type: integer
+      minimum: 0.0
+      maximum: 15000.0
+      type: integer
     x-ctype: float
     x-default: 0.0
     x-example: 0.0
     x-prepare: true
     x-readable: true
     summary: Unit depends on Analog Input Configuration Type. Units will either
-        be in PSI, mm, mV, mA, or Amps if AC current is selected
+      be in PSI, mm, mV, mA, or Amps if AC current is selected
   - name: analog_input_1_type
     required: true
     schema:
-        minimum: 0
-        maximum: 7
-        enum:
-            UNUSED: 0
-            VOLTAGE_0V_TO_10V_DC: 1
-            CURRENT_4MA_TO_20MA: 2
-            PRESSURE: 3
-            ULTRASONIC: 4
-            AC_CURRENT_20A: 5
-            AC_CURRENT_150A: 6
-            AC_CURRENT_500A: 7
-        type: integer
+      minimum: 0
+      maximum: 7
+      enum:
+        UNUSED: 0
+        VOLTAGE_0V_TO_10V_DC: 1
+        CURRENT_4MA_TO_20MA: 2
+        PRESSURE: 3
+        ULTRASONIC: 4
+        AC_CURRENT_20A: 5
+        AC_CURRENT_150A: 6
+        AC_CURRENT_500A: 7
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -490,9 +491,9 @@ attributes:
   - name: analog_input_2_type
     required: true
     schema:
-        minimum: 0
-        maximum: 7
-        type: integer
+      minimum: 0
+      maximum: 7
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -505,9 +506,9 @@ attributes:
   - name: analog_input_3_type
     required: true
     schema:
-        minimum: 0
-        maximum: 7
-        type: integer
+      minimum: 0
+      maximum: 7
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -520,9 +521,9 @@ attributes:
   - name: analog_input_4_type
     required: true
     schema:
-        minimum: 0
-        maximum: 7
-        type: integer
+      minimum: 0
+      maximum: 7
+      type: integer
     x-ctype: uint8_t
     x-broadcast: true
     x-default: 0
@@ -535,12 +536,12 @@ attributes:
   - name: magnet_state
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        enum:
-            FAR: true
-            NEAR: false
-        type: integer
+      minimum: 0
+      maximum: 1
+      enum:
+        FAR: true
+        NEAR: false
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 1
@@ -549,9 +550,9 @@ attributes:
   - name: param_path
     required: true
     schema:
-        minLength: 2
-        maxLength: 8
-        type: string
+      minLength: 2
+      maxLength: 8
+      type: string
     x-ctype: string
     x-default: /ext
     x-example: /lfs1
@@ -560,9 +561,9 @@ attributes:
   - name: battery_age
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        type: number
+      minimum: 0
+      maximum: 0
+      type: number
     x-ctype: uint32_t
     x-default: 0
     x-example: 0
@@ -571,9 +572,9 @@ attributes:
   - name: api_version
     required: true
     schema:
-        minLength: 6
-        maxLength: 11
-        type: string
+      minLength: 6
+      maxLength: 11
+      type: string
     x-ctype: string
     x-default: 0.5.1
     x-example: 123.456.789
@@ -582,9 +583,9 @@ attributes:
   - name: qrtc
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        type: number
+      minimum: 0
+      maximum: 0
+      type: number
     x-ctype: uint32_t
     x-default: 0
     x-example: 0
@@ -592,9 +593,9 @@ attributes:
     summary: Quasi-RTC (epoch, Seconds from Jan 1, 1970)
   - name: qrtc_last_set
     schema:
-        minimum: 0
-        maximum: 0
-        type: number
+      minimum: 0
+      maximum: 0
+      type: number
     x-ctype: uint32_t
     x-broadcast: true
     x-default: 0
@@ -605,9 +606,9 @@ attributes:
   - name: sh_offset
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "2.7315e+2"
     x-example: "2.7315e+2"
@@ -618,9 +619,9 @@ attributes:
   - name: analog_sense_interval
     required: true
     schema:
-        minimum: 0
-        maximum: 86400
-        type: integer
+      minimum: 0
+      maximum: 86400
+      type: integer
     x-ctype: uint32_t
     x-broadcast: true
     x-default: "60"
@@ -632,12 +633,12 @@ attributes:
   - name: tamper_switch_status
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        enum:
-            ACTIVE_NOT_PRESSED: true
-            INACTIVE_PRESSED: false
-        type: integer
+      minimum: 0
+      maximum: 1
+      enum:
+        ACTIVE_NOT_PRESSED: true
+        INACTIVE_PRESSED: false
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 0
@@ -648,9 +649,9 @@ attributes:
   - name: therm_1_coefficient_a
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
@@ -661,9 +662,9 @@ attributes:
   - name: therm_2_coefficient_a
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
@@ -674,9 +675,9 @@ attributes:
   - name: therm_3_coefficient_a
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
@@ -687,9 +688,9 @@ attributes:
   - name: therm_4_coefficient_a
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "1.132e-3"
     x-example: "1.132e-3"
@@ -700,9 +701,9 @@ attributes:
   - name: therm_1_coefficient_b
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
@@ -713,9 +714,9 @@ attributes:
   - name: therm_2_coefficient_b
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
@@ -726,9 +727,9 @@ attributes:
   - name: therm_3_coefficient_b
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
@@ -739,9 +740,9 @@ attributes:
   - name: therm_4_coefficient_b
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "2.338e-4"
     x-example: "2.338e-4"
@@ -752,9 +753,9 @@ attributes:
   - name: therm_1_coefficient_c
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
@@ -765,9 +766,9 @@ attributes:
   - name: therm_2_coefficient_c
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
@@ -778,9 +779,9 @@ attributes:
   - name: therm_3_coefficient_c
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
@@ -791,9 +792,9 @@ attributes:
   - name: therm_4_coefficient_c
     required: true
     schema:
-        minimum: 1.2e-38
-        maximum: 3.4e+38
-        type: number
+      minimum: 1.2e-38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 8.780e-8
     x-example: 8.780e-8
@@ -804,9 +805,9 @@ attributes:
   - name: factory_reset_enable
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 1
     x-example: 0
@@ -817,9 +818,9 @@ attributes:
   - name: adc_power_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -829,9 +830,9 @@ attributes:
   - name: adc_power_simulated_counts
     required: true
     schema:
-        minimum: 0
-        maximum: 4095
-        type: integer
+      minimum: 0
+      maximum: 4095
+      type: integer
     x-ctype: int16_t
     x-default: 0
     x-example: 1000
@@ -841,9 +842,9 @@ attributes:
   - name: adc_analog_sensor_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -853,9 +854,9 @@ attributes:
   - name: adc_analog_sensor_simulated_counts
     required: true
     schema:
-        minimum: 0
-        maximum: 4095
-        type: integer
+      minimum: 0
+      maximum: 4095
+      type: integer
     x-ctype: int16_t
     x-default: 0
     x-example: 1000
@@ -865,9 +866,9 @@ attributes:
   - name: adc_thermistor_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -877,9 +878,9 @@ attributes:
   - name: adc_thermistor_simulated_counts
     required: true
     schema:
-        minimum: 0
-        maximum: 4095
-        type: integer
+      minimum: 0
+      maximum: 4095
+      type: integer
     x-ctype: int16_t
     x-default: 0
     x-example: 1000
@@ -889,9 +890,9 @@ attributes:
   - name: adc_vref_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -901,9 +902,9 @@ attributes:
   - name: adc_vref_simulated_counts
     required: true
     schema:
-        minimum: 0
-        maximum: 4095
-        type: integer
+      minimum: 0
+      maximum: 4095
+      type: integer
     x-ctype: int16_t
     x-default: 0
     x-example: 1000
@@ -913,9 +914,9 @@ attributes:
   - name: voltage_1_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -925,9 +926,9 @@ attributes:
   - name: voltage_1_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -937,9 +938,9 @@ attributes:
   - name: voltage_2_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -949,9 +950,9 @@ attributes:
   - name: voltage_2_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -961,9 +962,9 @@ attributes:
   - name: voltage_3_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -973,9 +974,9 @@ attributes:
   - name: voltage_3_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -985,9 +986,9 @@ attributes:
   - name: voltage_4_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -997,9 +998,9 @@ attributes:
   - name: voltage_4_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1009,9 +1010,9 @@ attributes:
   - name: ultrasonic_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1021,9 +1022,9 @@ attributes:
   - name: ultrasonic_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1033,9 +1034,9 @@ attributes:
   - name: pressure_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1045,9 +1046,9 @@ attributes:
   - name: pressure_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1057,9 +1058,9 @@ attributes:
   - name: current_1_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1069,9 +1070,9 @@ attributes:
   - name: current_1_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1081,9 +1082,9 @@ attributes:
   - name: current_2_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1093,9 +1094,9 @@ attributes:
   - name: current_2_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1105,9 +1106,9 @@ attributes:
   - name: current_3_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1117,9 +1118,9 @@ attributes:
   - name: current_3_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1129,9 +1130,9 @@ attributes:
   - name: current_4_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1141,9 +1142,9 @@ attributes:
   - name: current_4_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1153,9 +1154,9 @@ attributes:
   - name: vref_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1165,9 +1166,9 @@ attributes:
   - name: vref_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1177,9 +1178,9 @@ attributes:
   - name: temperature_1_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1189,9 +1190,9 @@ attributes:
   - name: temperature_1_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1201,9 +1202,9 @@ attributes:
   - name: temperature_2_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1213,9 +1214,9 @@ attributes:
   - name: temperature_2_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "0.0"
     x-example: 8.780e-8
@@ -1225,9 +1226,9 @@ attributes:
   - name: temperature_3_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1237,9 +1238,9 @@ attributes:
   - name: temperature_3_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: "0.0"
     x-example: 8.780e-8
@@ -1249,9 +1250,9 @@ attributes:
   - name: temperature_4_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1261,9 +1262,9 @@ attributes:
   - name: temperature_4_simulated_value
     required: true
     schema:
-        minimum: -3.4e+38
-        maximum: 3.4e+38
-        type: number
+      minimum: -3.4e+38
+      maximum: 3.4e+38
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 8.780e-8
@@ -1273,9 +1274,9 @@ attributes:
   - name: power_volts_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1285,9 +1286,9 @@ attributes:
   - name: power_volts_simulated_value
     required: true
     schema:
-        minimum: 0
-        maximum: 4.0
-        type: number
+      minimum: 0
+      maximum: 4.0
+      type: number
     x-ctype: float
     x-default: 0.0
     x-example: 1.0
@@ -1297,9 +1298,9 @@ attributes:
   - name: digital_input_1_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1310,9 +1311,9 @@ attributes:
   - name: digital_input_1_simulated_value
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1323,9 +1324,9 @@ attributes:
   - name: digital_input_2_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1336,9 +1337,9 @@ attributes:
   - name: digital_input_2_simulated_value
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1349,9 +1350,9 @@ attributes:
   - name: mag_switch_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1362,9 +1363,9 @@ attributes:
   - name: mag_switch_simulated_value
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1375,9 +1376,9 @@ attributes:
   - name: tamper_switch_simulated
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1388,9 +1389,9 @@ attributes:
   - name: tamper_switch_simulated_value
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1401,13 +1402,13 @@ attributes:
   - name: boot_phy
     required: true
     schema:
-        enum:
-            DEFAULT: 0
-            CODED: 1
-            1M: 2
-        minimum: 0
-        maximum: 2
-        type: integer
+      enum:
+        DEFAULT: 0
+        CODED: 1
+        1M: 2
+      minimum: 0
+      maximum: 2
+      type: integer
     x-ctype: uint8_t
     x-default: 0
     x-example: 0
@@ -1419,9 +1420,9 @@ attributes:
   - name: mobile_app_disconnect
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-broadcast: true
     x-default: 0
@@ -1433,9 +1434,9 @@ attributes:
   - name: attr_save_error_code
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        type: integer
+      minimum: 0
+      maximum: 0
+      type: integer
     x-ctype: int32_t
     x-broadcast: true
     x-default: 0
@@ -1446,9 +1447,9 @@ attributes:
   - name: block_downgrades
     required: true
     schema:
-        minimum: 0
-        maximum: 1
-        type: integer
+      minimum: 0
+      maximum: 1
+      type: integer
     x-ctype: bool
     x-default: 0
     x-example: 0
@@ -1461,9 +1462,9 @@ attributes:
   - name: security_level
     required: true
     schema:
-        minimum: -1
-        maximum: 4
-        type: integer
+      minimum: -1
+      maximum: 4
+      type: integer
     x-ctype: int8_t
     x-default: 0
     x-example: 0
@@ -1474,9 +1475,9 @@ attributes:
   - name: load_path
     required: true
     schema:
-        minLength: 0
-        maxLength: 32
-        type: string
+      minLength: 0
+      maxLength: 32
+      type: string
     x-ctype: string
     x-default: /lfs1/params.txt
     x-example: /lfs1/params.txt
@@ -1486,9 +1487,9 @@ attributes:
   - name: dump_path
     required: true
     schema:
-        minLength: 0
-        maxLength: 32
-        type: string
+      minLength: 0
+      maxLength: 32
+      type: string
     x-ctype: string
     x-default: /lfs1/dump.txt
     x-example: /lfs1/dump.txt
@@ -1497,42 +1498,42 @@ attributes:
   - name: bluetooth_flags
     required: true
     schema:
-        minimum: 0
-        maximum: 0
-        enum:
-            DEVICE_MANAGEMENT_DATA_READY_BITMASK: 0x1
-            MEMFAULT_DATA_BITMASK: 0x2
-            TIME_WAS_SET_BITMASK: 0x4
-            ACTIVE_MODE_BITMASK: 0x8
-            LOW_BATTERY_ALARM_BITMASK: 0x10
-            DIGITAL_IN1_STATE_BITMASK: 0x20
-            DIGITAL_IN2_STATE_BITMASK: 0x40
-            TAMPER_SWITCH_STATE_BITMASK: 0x80
-            MAGNET_STATE_BITMASK: 0x100
-            UNUSED_0: 0x200
-            UNUSED_1: 0x400
-            UNUSED_2: 0x800
-            UNUSED_3: 0x1000
-            UNUSED_4: 0x2000
-            UNUSED_5: 0x4000
-            UNUSED_6: 0x8000
-            UNUSED_7: 0x10000
-            UNUSED_8: 0x20000
-            UNUSED_9: 0x40000
-            UNUSED_10: 0x80000
-            UNUSED_11: 0x100000
-            UNUSED_12: 0x200000
-            UNUSED_13: 0x400000
-            UNUSED_14: 0x800000
-            UNUSED_15: 0x1000000
-            UNUSED_16: 0x2000000
-            UNUSED_17: 0x4000000
-            UNUSED_18: 0x8000000
-            UNUSED_19: 0x10000000
-            UNUSED_20: 0x20000000
-            UNUSED_21: 0x40000000
-            UNUSED_22: 0x80000000
-        type: integer
+      minimum: 0
+      maximum: 0
+      enum:
+        DEVICE_MANAGEMENT_DATA_READY_BITMASK: 0x1
+        MEMFAULT_DATA_BITMASK: 0x2
+        TIME_WAS_SET_BITMASK: 0x4
+        ACTIVE_MODE_BITMASK: 0x8
+        LOW_BATTERY_ALARM_BITMASK: 0x10
+        DIGITAL_IN1_STATE_BITMASK: 0x20
+        DIGITAL_IN2_STATE_BITMASK: 0x40
+        TAMPER_SWITCH_STATE_BITMASK: 0x80
+        MAGNET_STATE_BITMASK: 0x100
+        UNUSED_0: 0x200
+        UNUSED_1: 0x400
+        UNUSED_2: 0x800
+        UNUSED_3: 0x1000
+        UNUSED_4: 0x2000
+        UNUSED_5: 0x4000
+        UNUSED_6: 0x8000
+        UNUSED_7: 0x10000
+        UNUSED_8: 0x20000
+        UNUSED_9: 0x40000
+        UNUSED_10: 0x80000
+        UNUSED_11: 0x100000
+        UNUSED_12: 0x200000
+        UNUSED_13: 0x400000
+        UNUSED_14: 0x800000
+        UNUSED_15: 0x1000000
+        UNUSED_16: 0x2000000
+        UNUSED_17: 0x4000000
+        UNUSED_18: 0x8000000
+        UNUSED_19: 0x10000000
+        UNUSED_20: 0x20000000
+        UNUSED_21: 0x40000000
+        UNUSED_22: 0x80000000
+      type: integer
     x-ctype: uint32_t
     x-broadcast: true
     x-default: 0
@@ -1543,42 +1544,42 @@ attributes:
   - name: event_filter_flags
     required: true
     schema:
-        minimum: 0
-        maximum: 2097151
-        enum:
-            TEMPERATURE_1_EVENT_BITMASK: 0x1
-            TEMPERATURE_2_EVENT_BITMASK: 0x2
-            TEMPERATURE_3_EVENT_BITMASK: 0x4
-            TEMPERATURE_4_EVENT_BITMASK: 0x8
-            VOLTAGE_1_EVENT_BITMASK: 0x10
-            VOLTAGE_2_EVENT_BITMASK: 0x20
-            VOLTAGE_3_EVENT_BITMASK: 0x40
-            VOLTAGE_4_EVENT_BITMASK: 0x80
-            CURRENT_1_EVENT_BITMASK: 0x100
-            CURRENT_2_EVENT_BITMASK: 0x200
-            CURRENT_3_EVENT_BITMASK: 0x400
-            CURRENT_4_EVENT_BITMASK: 0x800
-            ULTRASONIC_EVENT_BITMASK: 0x1000
-            PRESSURE_1_EVENT_BITMASK: 0x2000
-            PRESSURE_2_EVENT_BITMASK: 0x4000
-            TAMPER_SWITCH_EVENT_BITMASK: 0x8000
-            MAGNET_SENSE_EVENT_BITMASK: 0x10000
-            BATTERY_GOOD_EVENT_BITMASK: 0x20000
-            BATTERY_BAD_EVENT_BITMASK: 0x40000
-            DIGITAL_IN1_EVENT_BITMASK: 0x80000
-            DIGITAL_IN2_EVENT_BITMASK: 0x100000
-            UNUSED_0: 0x200000
-            UNUSED_1: 0x400000
-            UNUSED_2: 0x800000
-            UNUSED_3: 0x1000000
-            UNUSED_4: 0x2000000
-            UNUSED_5: 0x4000000
-            UNUSED_6: 0x8000000
-            UNUSED_7: 0x10000000
-            UNUSED_8: 0x20000000
-            UNUSED_9: 0x40000000
-            UNUSED_10: 0x80000000
-        type: integer
+      minimum: 0
+      maximum: 2097151
+      enum:
+        TEMPERATURE_1_EVENT_BITMASK: 0x1
+        TEMPERATURE_2_EVENT_BITMASK: 0x2
+        TEMPERATURE_3_EVENT_BITMASK: 0x4
+        TEMPERATURE_4_EVENT_BITMASK: 0x8
+        VOLTAGE_1_EVENT_BITMASK: 0x10
+        VOLTAGE_2_EVENT_BITMASK: 0x20
+        VOLTAGE_3_EVENT_BITMASK: 0x40
+        VOLTAGE_4_EVENT_BITMASK: 0x80
+        CURRENT_1_EVENT_BITMASK: 0x100
+        CURRENT_2_EVENT_BITMASK: 0x200
+        CURRENT_3_EVENT_BITMASK: 0x400
+        CURRENT_4_EVENT_BITMASK: 0x800
+        ULTRASONIC_EVENT_BITMASK: 0x1000
+        PRESSURE_1_EVENT_BITMASK: 0x2000
+        PRESSURE_2_EVENT_BITMASK: 0x4000
+        TAMPER_SWITCH_EVENT_BITMASK: 0x8000
+        MAGNET_SENSE_EVENT_BITMASK: 0x10000
+        BATTERY_GOOD_EVENT_BITMASK: 0x20000
+        BATTERY_BAD_EVENT_BITMASK: 0x40000
+        DIGITAL_IN1_EVENT_BITMASK: 0x80000
+        DIGITAL_IN2_EVENT_BITMASK: 0x100000
+        UNUSED_0: 0x200000
+        UNUSED_1: 0x400000
+        UNUSED_2: 0x800000
+        UNUSED_3: 0x1000000
+        UNUSED_4: 0x2000000
+        UNUSED_5: 0x4000000
+        UNUSED_6: 0x8000000
+        UNUSED_7: 0x10000000
+        UNUSED_8: 0x20000000
+        UNUSED_9: 0x40000000
+        UNUSED_10: 0x80000000
+      type: integer
     x-ctype: uint32_t
     x-default: 2097151
     x-example: 1

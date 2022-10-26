@@ -153,3 +153,4 @@ ble_rssi=123456
 smp_auth_req=1
 smp_auth_timeout=1234567890
 shell_password=12345678901234567890123456789012
+shell_session_timeout=123

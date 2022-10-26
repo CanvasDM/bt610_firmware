@@ -2,7 +2,7 @@
 openrpc: 1.2.6
 info:
   title: Project_Index
-  version: 0.0.1
+  version: 0.0.2
 methods:
   - $ref: ./app/attributes/app_methods.yml
   - $ref: ./../modules/lib/laird_connect/attributes/attributes/attributes_methods.yml
