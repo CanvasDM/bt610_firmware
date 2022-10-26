@@ -36,6 +36,32 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #include "lcz_event_manager.h"
 #include "Flags.h"
 
+/* LWM2M telemetry additions */
+#ifdef CONFIG_LCZ_LWM2M_CLIENT
+#include "lcz_lwm2m_client.h"
+#endif
+#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+#include "lcz_lwm2m_current.h"
+#endif
+#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+#include "lcz_lwm2m_pressure.h"
+#endif
+#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+#include "lcz_lwm2m_fill_level.h"
+#endif
+#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+#include "lcz_lwm2m_temperature.h"
+#endif
+
+/* Any of these being set indicates lwm2m telemetry support is needed */
+#if defined CONFIG_LCZ_LWM2M_BATTERY || \
+	defined CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR || \
+	defined CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR || \
+	defined CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR || \
+	defined CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	#define LWM2M_TELEMETRY_SUPPORT_ENABLED
+#endif
+
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
@@ -79,6 +105,10 @@ typedef struct SensorTaskTag {
 	digitalAlarm_t input1Alarm;
 	digitalAlarm_t input2Alarm;
 } SensorTaskObj_t;
+
+#ifdef LWM2M_TELEMETRY_SUPPORT_ENABLED
+#define EXPECT_OK() if (r != 0) { LOG_ERR("Failed to create LWM2M object!"); }
+#endif
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -148,6 +178,13 @@ static int MeasureThermistor(size_t channel, AdcPwrSequence_t power,
 static void SendEvent(SensorEventType_t type, SensorEventData_t data);
 static SensorEventType_t AnalogConfigType(size_t channel);
 
+/* LWM2M telemetry update */
+static int update_lwm2m_temperature(int index, float temperature);
+static int update_lwm2m_pressure(int index, float pressure);
+static int update_lwm2m_fill_level(int index, float fill_level);
+static int update_lwm2m_current(int index, float current);
+static int update_lwm2m_battery(lcz_lwm2m_client_device_battery_status_t status, float voltage);
+
 static void powerTimerCallbackIsr(struct k_timer *timer_id);
 static void temperatureReadTimerCallbackIsr(struct k_timer *timer_id);
 static void analogReadTimerCallbackIsr(struct k_timer *timer_id);
@@ -179,6 +216,11 @@ static FwkMsgHandler_t *SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 /******************************************************************************/
 void SensorTask_Initialize(void)
 {
+	#ifdef LWM2M_TELEMETRY_SUPPORT_ENABLED
+	int r = 0;
+	int i;
+	#endif
+
 	sensorTaskObject.msgTask.rxer.id = FWK_ID_SENSOR_TASK;
 	sensorTaskObject.msgTask.rxer.rxBlockTicks = K_FOREVER;
 	sensorTaskObject.msgTask.rxer.pMsgDispatcher = SensorTaskMsgDispatcher;
@@ -191,6 +233,33 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.input1Alarm = 0;
 	sensorTaskObject.input2Alarm = 0;
 
+	/* Instantiate LWM2M telemetry objects */
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR_INSTANCE_COUNT) && (!r); i++) {
+		r = lcz_lwm2m_temperature_create(i);
+		EXPECT_OK();
+	}
+	#endif
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR_INSTANCE_COUNT) && (!r); i++) {
+		r = lcz_lwm2m_pressure_create(i);
+		EXPECT_OK();
+	}
+	#endif
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR_INSTANCE_COUNT) && (!r); i++) {
+		r = lcz_lwm2m_fill_level_create(i);
+		EXPECT_OK();
+	}
+	#endif
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR_INSTANCE_COUNT) && (!r); i++) {
+		r = lcz_lwm2m_current_create(i);
+		EXPECT_OK();
+	}
+	#endif
+
+	/* Register the Sensor Task for Framework services */
 	Framework_RegisterTask(&sensorTaskObject.msgTask);
 
 	sensorTaskObject.msgTask.pTid =
@@ -209,6 +278,9 @@ int attr_prepare_power_voltage(void)
 	float volts = 0;
 	SensorEventData_t eventAlarm;
 	int r = AdcBt6_read_power_volts(&raw, &volts);
+	#ifdef CONFIG_LCZ_LWM2M_CLIENT
+	lcz_lwm2m_client_device_battery_status_t battery_status;
+	#endif
 
 	if (r >= 0) {
 		r = attr_set_signed32(ATTR_ID_power_voltage, volts);
@@ -216,11 +288,21 @@ int attr_prepare_power_voltage(void)
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_GOOD, eventAlarm);
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 0);
+			#ifdef CONFIG_LCZ_LWM2M_CLIENT
+			battery_status = LCZ_LWM2M_CLIENT_DEV_BATT_STAT_NORMAL;
+			#endif
 		} else {
 			eventAlarm.f = volts;
 			SendEvent(SENSOR_EVENT_BATTERY_BAD, eventAlarm);
 			Flags_Set(FLAG_LOW_BATTERY_ALARM, 1);
+			#ifdef CONFIG_LCZ_LWM2M_CLIENT
+			battery_status = LCZ_LWM2M_CLIENT_DEV_BATT_STAT_LOW;
+			#endif
 		}
+		#ifdef CONFIG_LCZ_LWM2M_CLIENT
+		/* Update Object 3 in either case */
+		(void)update_lwm2m_battery(battery_status, volts);
+		#endif
 	}
 	return r;
 }
@@ -515,6 +597,7 @@ static DispatchResult_t MeasureTemperatureMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 		if (r == 0) {
 			SendEvent((SensorEventType_t)(SENSOR_EVENT_TEMPERATURE_1 + index),
 				(SensorEventData_t)temperature);
+			(void)update_lwm2m_temperature(index, temperature);
 		}
 	}
 	StartTemperatureInterval();
@@ -844,6 +927,7 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 					   power);
 			if (r >= 0) {
 				*result = AdcBt6_ConvertCurrent(channel, raw);
+				(void)update_lwm2m_current(channel, *result);
 			}
 			break;
 
@@ -852,6 +936,7 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 					   power);
 			if (r >= 0) {
 				*result = AdcBt6_ConvertPressure(channel, raw);
+				(void)update_lwm2m_pressure(channel, *result);
 			}
 			break;
 
@@ -859,18 +944,17 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_ULTRASONIC,
 					   power);
 			if (r >= 0) {
-				*result =
-					AdcBt6_ConvertUltrasonic(channel, raw);
+				*result = AdcBt6_ConvertUltrasonic(channel, raw);
+				(void)update_lwm2m_fill_level(channel, *result);
 			}
 			break;
 
 		case ANALOG_INPUT_1_TYPE_AC_CURRENT_20A:
 			/* Configured for a voltage measurement */
-			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE,
-					   power);
+			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 			if (r >= 0) {
-				*result =
-					AdcBt6_ConvertACCurrent20(channel, raw);
+				*result = AdcBt6_ConvertACCurrent20(channel, raw);
+				(void)update_lwm2m_current(channel, *result);
 			}
 			break;
 
@@ -879,30 +963,27 @@ static int MeasureAnalogInput(size_t channel, AdcPwrSequence_t power,
 			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE,
 					   power);
 			if (r >= 0) {
-				*result = AdcBt6_ConvertACCurrent150(channel,
-								     raw);
+				*result = AdcBt6_ConvertACCurrent150(channel, raw);
+				(void)update_lwm2m_current(channel, *result);
 			}
 			break;
 
 		case ANALOG_INPUT_1_TYPE_AC_CURRENT_500A:
 			/* Configured for a voltage measurement */
-			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE,
-					   power);
+			r = AdcBt6_Measure(&raw, channel, ADC_TYPE_VOLTAGE, power);
 			if (r >= 0) {
-				*result = AdcBt6_ConvertACCurrent500(channel,
-								     raw);
+				*result = AdcBt6_ConvertACCurrent500(channel, raw);
+				(void)update_lwm2m_current(channel, *result);
 			}
 			break;
 		default:
-			LOG_DBG("Analog input channel %d disabled",
-				channel + 1);
+			LOG_DBG("Analog input channel %d disabled", channel + 1);
 			r = -ENODEV;
 			break;
 		}
 
 		if (r >= 0) {
-			r = attr_set_float(ATTR_ID_analog_input_1 + channel,
-					   *result);
+			r = attr_set_float(ATTR_ID_analog_input_1 + channel, *result);
 		}
 	} else {
 		/* Shouldn't get into this failure state */
@@ -983,6 +1064,96 @@ static SensorEventType_t AnalogConfigType(size_t channel)
 		break;
 	}
 	return (eventTypeReturn);
+}
+
+static int update_lwm2m_temperature(int index, float temperature)
+{
+	int r = 0;
+
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	r = lcz_lwm2m_temperature_set(index, (double)temperature);
+	if (r < 0) {
+		LOG_ERR("Could not set temperature instance %d [%d]", index, r);
+	}
+	#endif
+	return(r);
+}
+
+static int update_lwm2m_pressure(int index, float pressure)
+{
+	int r = 0;
+
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+	r = lcz_lwm2m_pressure_set(index, (double)pressure);
+	if (r < 0) {
+		LOG_ERR("Could not set pressure instance %d [%d]", index, r);
+	}
+	#endif
+	return(r);
+}
+
+static int update_lwm2m_fill_level(int index, float fill_level)
+{
+	int r = 0;
+
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+	r = lcz_lwm2m_fill_level_set(index, (double)fill_level);
+	if (r < 0) {
+		LOG_ERR("Could not set filling sensor instance %d [%d]", index, r);
+	}
+	#endif
+	return(r);
+}
+
+static int update_lwm2m_current(int index, float current)
+{
+	int r = 0;
+
+	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+	r = lcz_lwm2m_current_set(index, (double)current);
+	if (r < 0) {
+		LOG_ERR("Could not set current sensor instance %d [%d]", index, r);
+	}
+	#endif
+	return(r);
+}
+
+static int update_lwm2m_battery(lcz_lwm2m_client_device_battery_status_t status, float voltage)
+{
+	int r = 0;
+
+	#ifdef CONFIG_LCZ_LWM2M_CLIENT
+	int32_t pwr_src_mv;
+	lcz_lwm2m_client_device_power_source_t pwr_src = LCZ_LWM2M_CLIENT_DEV_PWR_SRC_INT_BATT;
+
+	/* Update power source */
+	r = lcz_lwm2m_client_set_available_power_source(0, &pwr_src);
+	if (r < 0) {
+		LOG_ERR("Could not set power source [%d]", r);
+	}
+
+	/* Update device errors if needed */
+	if (status == LCZ_LWM2M_CLIENT_DEV_BATT_STAT_LOW) {
+		r = lcz_lwm2m_client_device_set_err(LWM2M_DEVICE_ERROR_LOW_POWER);
+		if (r < 0) {
+			LOG_ERR("Could not set device error [%d]", r);
+		}
+	}
+
+	/* Update battery state */
+	r = lcz_lwm2m_client_set_battery_status(&status);
+	if (r < 0) {
+		LOG_ERR("Could not set battery state [%d]", r);
+	}
+
+	/* Update battery voltage in millivolts */
+	pwr_src_mv = (int32_t)(voltage * 1000.0);
+	r = lcz_lwm2m_client_set_power_source_voltage(0, &pwr_src_mv);
+	if (r < 0) {
+		LOG_ERR("Could not set battery voltage [%d]", r);
+	}
+	#endif
+	return(r);
 }
 
 /******************************************************************************/
