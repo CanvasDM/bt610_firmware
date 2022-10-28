@@ -28,9 +28,8 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
 /**************************************************************************************************/
 /* Local Constant, Macro and Type Definitions                                                     */
 /**************************************************************************************************/
-#define DEFAULT_HW_VERSION "0"
-#define PKG_NAME_PREFIX "BT610_DM"
-#define PKG_NAME PKG_NAME_PREFIX "[" CONFIG_BOARD "]"
+#define PKG_NAME_PREFIX "lc_dm"
+#define PKG_NAME PKG_NAME_PREFIX "-" CONFIG_BOARD "-"
 
 void main(void)
 {
@@ -47,10 +46,8 @@ void main(void)
 	}
 #endif
 #ifdef CONFIG_LCZ_LWM2M_CLIENT
-	(void)lcz_lwm2m_client_set_device_model_number(CONFIG_BOARD);
 	(void)lcz_lwm2m_client_set_device_firmware_version(APP_VERSION_STRING);
 	(void)lcz_lwm2m_client_set_software_version(KERNEL_VERSION_STRING);
-	(void)lcz_lwm2m_client_set_hardware_version(DEFAULT_HW_VERSION);
 #endif
 #ifdef CONFIG_LCZ_LWM2M_FW_UPDATE
 	(void)lcz_lwm2m_fw_update_set_pkg_name(PKG_NAME);
