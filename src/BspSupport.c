@@ -30,15 +30,10 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 /******************************************************************************/
 /* Local Constant, Macro and Type Definitions                                 */
 /******************************************************************************/
-/* Time (in ms) between checks of the CTS pin on a status change */
-#define BSP_SUPPORT_UART_PIN_CHANGE_CHECK_TIMER_MS 250
+/* Time (in ms) to delay checking the CTS pin state */
+#define BSP_SUPPORT_UART_CTS_DEBOUNCE_TIME_MS 50
 /* Time (in ms) before disabling the UART when CTS is inactive */
-#define BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS 10
-/* Number of pin change check events before enabling/disable UART */
-#define BSP_SUPPORT_UART_PIN_CHECKS 3
-/* Pin states for active and inactive RTS mode */
-#define BSP_SUPPORT_UART_RTS_ACTIVE 0
-#define BSP_SUPPORT_UART_RTS_INACTIVE 1
+#define BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS 5000
 /* Name of UART shell for logging backend */
 #define BSP_SUPPORT_LOGGER_UART_NAME "shell_uart_backend"
 
@@ -54,14 +49,10 @@ static struct gpio_callback digitalIn2_cb_data;
 #if defined(CONFIG_UART_SHUTOFF)
 static struct gpio_callback uart0cts_cb_data;
 static const struct log_backend *uart0LogBackend;
-static uint8_t uart0PinChanges = 0;
-static uint8_t uart0PinChangeStateActive;
-static struct k_timer uart0CTSCheckTimer;
-/* Delayed work queue item used to hold off on shutting the UART down to avoid
- * interfering with shell startup
- */
+static bool uart0_on;
+static bool restore_logging;
+static struct k_work_delayable uart0_cts_debounce_delayed_work;
 static struct k_work_delayable uart0_shut_off_delayed_work;
-static bool log_on_boot;
 #endif
 /* Backup of digital input IRQ configuration for simulation purposes */
 static gpio_flags_t digital_input_1_IRQ_config = 0;
@@ -86,11 +77,10 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 static void UART0CTSHandlerIsr(const struct device *port,
 			       struct gpio_callback *cb, gpio_port_pins_t pins);
 static void UART0WorkqHandler(struct k_work *item);
-static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id);
 #endif
 static void ConfigureOutputs(void);
 static void SendDigitalInputStatus(uint16_t pin, uint8_t status);
-static void UART0InitialiseSWFlowControl(void);
+static void UART0Initialise(void);
 static void UART1Initialise(void);
 static bool MagSwitchIsSimulated(int *simulated_value);
 static bool TamperSwitchIsSimulated(int *simulated_value);
@@ -125,7 +115,7 @@ void BSP_Init(void)
 	}
 
 	ConfigureOutputs();
-	UART0InitialiseSWFlowControl();
+	UART0Initialise();
 	UART1Initialise();
 }
 
@@ -450,28 +440,9 @@ static void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 	}
 }
 
-/** @brief Initialises UART0's software flow control.
- *
- *  NOTE - This relies on the UART CTS & RTS pins being decoupled
- *	   from the UART using property delete operations in an
- *	   overlay. It will not work if the pins are not decoupled
- *	   due to them being under control of the UART.
- */
-static void UART0InitialiseSWFlowControl(void)
+static void UART0Initialise(void)
 {
 	int r = 0;
-
-	/* RTS line as output and set low. This will permanently signal to
-	 * clients data can be sent
-	 */
-	r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
-			       GPIO_OUTPUT_LOW);
-
-	/* CTS line as an input pulled up high */
-	if (!r) {
-		r = gpio_pin_configure(port0, GPIO_PIN_MAP(UART_0_CTS_PIN),
-				       GPIO_INPUT | GPIO_PULL_UP);
-	}
 
 #if defined(CONFIG_UART_SHUTOFF)
 	/* When this gets pulled down, it indicates a client is connected
@@ -495,65 +466,25 @@ static void UART0InitialiseSWFlowControl(void)
 		uart0LogBackend = NULL;
 	}
 
+	k_work_init_delayable(&uart0_shut_off_delayed_work, UART0WorkqHandler);
+	k_work_init_delayable(&uart0_cts_debounce_delayed_work, UART0WorkqHandler);
 
-	if (!r) {
-		/* Check if the CTS pin indicates that there is an active
-		 * connection or not. Read the pin twice to work around
-		 * errata 173
-		 */
-		gpio_flags_t pinFlagsCTS;
-
-		int pinStatusCTS = gpio_pin_get(port0,
-						GPIO_PIN_MAP(UART_0_CTS_PIN));
-		pinStatusCTS = gpio_pin_get(port0,
-					    GPIO_PIN_MAP(UART_0_CTS_PIN));
-
-		if (pinStatusCTS) {
-			/* CTS is in non-connected state, disable
-			 * the UART by default and enable interrupt for a
-			 * falling edge on CTS
-			 */
-			pinFlagsCTS = GPIO_INT_EDGE_FALLING;
-			uart0PinChangeStateActive = false;
-		} else {
-			/* CTS is in connected state, leave UART
-			 * open and enable interrupt for a rising edge on CTS
-			 */
-			pinFlagsCTS = GPIO_INT_EDGE_RISING;
-			uart0PinChangeStateActive = true;
-		}
-
-		r = gpio_pin_interrupt_configure(port0,
-						 GPIO_PIN_MAP(UART_0_CTS_PIN),
-						 pinFlagsCTS);
+	r = gpio_pin_interrupt_configure(port0, GPIO_PIN_MAP(UART_0_CTS_PIN), GPIO_INT_EDGE_BOTH);
+	if (r < 0) {
+		LOG_ERR("Could not config CTS interrupt");
+	}
+	gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
+			   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
+	r = gpio_add_callback(port0, &uart0cts_cb_data);
+	if (r < 0) {
+		LOG_ERR("Could not add CTS callback");
 	}
 
-	if (!r) {
-		/* Initialise timer used for checking CTS pin status after it's
-		 * been changed
-		 */
-		k_timer_init(&uart0CTSCheckTimer, uart0CTSCheckTimerCallbackIsr,
-			     NULL);
+	uart0_on = true;
+	/* trigger fist check of UART0 state */
+	k_work_reschedule(&uart0_cts_debounce_delayed_work,
+			  K_MSEC(BSP_SUPPORT_UART_CTS_DEBOUNCE_TIME_MS));
 
-		/* Set up the callback called when the CTS changes */
-		gpio_init_callback(&uart0cts_cb_data, UART0CTSHandlerIsr,
-				   BIT(GPIO_PIN_MAP(UART_0_CTS_PIN)));
-
-		/* Set up the delayed work structure used to disable the UART */
-		k_work_init_delayable(&uart0_shut_off_delayed_work,
-				      UART0WorkqHandler);
-
-		if (uart0PinChangeStateActive == true) {
-			gpio_add_callback(port0, &uart0cts_cb_data);
-		} else {
-			UART0WorkqHandler(NULL);
-		}
-	}
-
-	/* Read back log_on_boot here during start-up. No need to poll for changes,
-	 * the board needs to be reset for changes to be applied.
-	 */
-	log_on_boot = attr_get_bool(ATTR_ID_log_on_boot);
 #endif
 }
 
@@ -581,80 +512,6 @@ static void DigitalIn2HandlerIsr(const struct device *port,
 }
 
 #if defined(CONFIG_UART_SHUTOFF)
-static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id)
-{
-	UNUSED_PARAMETER(timer_id);
-
-	/* Get the port pin status */
-	int pinStatusCTS = gpio_pin_get(port0, GPIO_PIN_MAP(UART_0_CTS_PIN));
-
-	if (uart0PinChangeStateActive == true) {
-		/* Check that line is inactive */
-		if (!pinStatusCTS) {
-			/* Line appears to be active, cancel check */
-			k_timer_stop(&uart0CTSCheckTimer);
-			uart0PinChanges = 0;
-
-			gpio_add_callback(port0, &uart0cts_cb_data);
-		} else {
-			/* Line appears to be inactive, increment checks and see
-			 * if we need to disable the UART
-			 */
-			++uart0PinChanges;
-
-			if (uart0PinChanges > BSP_SUPPORT_UART_PIN_CHECKS) {
-				/* Disable the UART */
-				k_timer_stop(&uart0CTSCheckTimer);
-				k_work_reschedule(
-					&uart0_shut_off_delayed_work,
-					K_MSEC(
-					BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS));
-			}
-		}
-	} else {
-		/* Check that line is active */
-		if (pinStatusCTS) {
-			/* Line appears to be inactive, cancel check */
-			k_timer_stop(&uart0CTSCheckTimer);
-			uart0PinChanges = 0;
-
-			gpio_add_callback(port0, &uart0cts_cb_data);
-		} else {
-			/* Line appears to be active, increment checks and see if
-			 * we need to enable the UART
-			 */
-			++uart0PinChanges;
-
-			if (uart0PinChanges > BSP_SUPPORT_UART_PIN_CHECKS) {
-				/* Enable the UART */
-				k_timer_stop(&uart0CTSCheckTimer);
-
-				if (uart0_dev) {
-					(void)pm_device_action_run(
-						uart0_dev,
-						PM_DEVICE_ACTION_RESUME);
-					(void)gpio_pin_set(port0,
-							   GPIO_PIN_MAP(
-							   UART_0_RTS_PIN),
-							   BSP_SUPPORT_UART_RTS_ACTIVE);
-				}
-				if ((uart0LogBackend != NULL) && (log_on_boot)) {
-					log_backend_activate(uart0LogBackend,
-							     uart0LogBackend->cb->ctx);
-				}
-
-				uart0PinChangeStateActive = true;
-				uart0PinChanges = 0;
-				(void)gpio_pin_interrupt_configure(port0,
-								   GPIO_PIN_MAP(
-								   UART_0_CTS_PIN),
-								   GPIO_INT_EDGE_RISING);
-
-				gpio_add_callback(port0, &uart0cts_cb_data);
-			}
-		}
-	}
-}
 
 /** @brief IRQ handler for changes to UART 0's CTS line. Used to switch the
  *	   UART on and off dependent upon the state of the CTS line.
@@ -666,13 +523,8 @@ static void uart0CTSCheckTimerCallbackIsr(struct k_timer *timer_id)
 static void UART0CTSHandlerIsr(const struct device *port,
 			       struct gpio_callback *cb, gpio_port_pins_t pins)
 {
-	/* Firstly remove the GPIO callback */
-	gpio_remove_callback(port0, &uart0cts_cb_data);
-
-	/* Start a timer to periodically check the CTS and RX pin statuses */
-	k_timer_start(&uart0CTSCheckTimer,
-		      K_MSEC(BSP_SUPPORT_UART_PIN_CHANGE_CHECK_TIMER_MS),
-		      K_MSEC(BSP_SUPPORT_UART_PIN_CHANGE_CHECK_TIMER_MS));
+	k_work_reschedule(&uart0_cts_debounce_delayed_work,
+			  K_MSEC(BSP_SUPPORT_UART_CTS_DEBOUNCE_TIME_MS));
 }
 
 /** @brief System work queue handler for initial shut off of the UART.
@@ -681,25 +533,33 @@ static void UART0CTSHandlerIsr(const struct device *port,
  */
 static void UART0WorkqHandler(struct k_work *item)
 {
-	if (uart0_dev) {
-		/* Ignoring the return code here - if it's non-zero the UART is
-		 * already off.
-		 */
-		if (uart0LogBackend != NULL) {
-			log_backend_deactivate(uart0LogBackend);
+	struct k_work_delayable *wi = CONTAINER_OF(item, struct k_work_delayable, work);
+	int pin_status_cts = gpio_pin_get_raw(port0, GPIO_PIN_MAP(UART_0_CTS_PIN));
+
+	if (wi == &uart0_shut_off_delayed_work) {
+		if (uart0_dev && pin_status_cts) {
+			LOG_WRN("Shut off uart0");
+			if (uart0LogBackend != NULL) {
+				restore_logging = log_backend_is_active(uart0LogBackend);
+				log_backend_deactivate(uart0LogBackend);
+			}
+
+			(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_SUSPEND);
+			uart0_on = false;
 		}
-
-		(void)gpio_pin_set(port0, GPIO_PIN_MAP(UART_0_RTS_PIN),
-				   BSP_SUPPORT_UART_RTS_INACTIVE);
-		(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_SUSPEND);
-
-		uart0PinChangeStateActive = false;
-		uart0PinChanges = 0;
-		(void)gpio_pin_interrupt_configure(port0,
-						   GPIO_PIN_MAP(UART_0_CTS_PIN),
-						   GPIO_INT_EDGE_FALLING);
-
-		gpio_add_callback(port0, &uart0cts_cb_data);
+	} else if (wi == &uart0_cts_debounce_delayed_work) {
+		if (pin_status_cts) {
+			k_work_reschedule(&uart0_shut_off_delayed_work,
+					  K_MSEC(BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS));
+		} else if (!uart0_on) {
+			k_work_cancel_delayable(&uart0_shut_off_delayed_work);
+			LOG_WRN("Turn on uart0");
+			(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_RESUME);
+			if ((uart0LogBackend != NULL) && restore_logging) {
+				log_backend_activate(uart0LogBackend, uart0LogBackend->cb->ctx);
+			}
+			uart0_on = true;
+		}
 	}
 }
 #endif
