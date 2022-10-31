@@ -1096,10 +1096,13 @@ static int update_lwm2m_fill_level(int index, float fill_level)
 {
 	int r = 0;
 
+	ARG_UNUSED(index);
+
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
-	r = lcz_lwm2m_fill_level_set(index, (double)fill_level);
+	/* Only one ultrasonic sensor permitted */
+	r = lcz_lwm2m_fill_level_set(0, (double)fill_level);
 	if (r < 0) {
-		LOG_ERR("Could not set filling sensor instance %d [%d]", index, r);
+		LOG_ERR("Could not set filling sensor instance 0 [%d]", r);
 	}
 	#endif
 	return(r);
