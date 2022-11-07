@@ -21,6 +21,7 @@
 #include "attr_validator.h"
 #include "BspSupport.h"
 #include "UserInterfaceTask.h"
+#include "SensorTask.h"
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(attrval, CONFIG_ATTR_VALID_LOG_LEVEL);
@@ -29,11 +30,6 @@ LOG_MODULE_REGISTER(attrval, CONFIG_ATTR_VALID_LOG_LEVEL);
 /* Local Constant, Macro and Type Definitions                                                     */
 /**************************************************************************************************/
 #define CHECK_ENTRY() __ASSERT(entry != NULL, "Invalid Entry (index)");
-/* Sensor configuration */
-#define ANALOG_INPUTS_MAX_PRESSURE_SENSORS 2
-#define ANALOG_INPUTS_MAX_PRESSURE_SENSORS_WITH_ULTRASONIC 1
-#define ANALOG_INPUTS_MAX_ULTRASONIC 1
-#define ANALOG_INPUT_NUMBER_OF_CHANNELS 4
 
 /**************************************************************************************************/
 /* Global Data Definitions                                                                        */

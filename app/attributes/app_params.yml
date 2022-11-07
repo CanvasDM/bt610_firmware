@@ -1611,3 +1611,13 @@ attributes:
     x-readable: true
     x-savable: true
     x-writable: true
+  - name: input_config_changed
+    description: "Flag used to indicate when the input configuration has changed."
+    required: true
+    schema:
+      maximum: 1
+      minimum: 0
+      type: integer
+    x-ctype: bool
+    x-default: 1
+    x-readable: true

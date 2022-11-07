@@ -147,8 +147,11 @@ static DispatchResult_t EnterActiveModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						  FwkMsg_t *pMsg);
 static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 						 FwkMsg_t *pMsg);
+static DispatchResult_t ClearInputConfigChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg);
 
 static void LoadSensorConfiguration(void);
+static void ClearInputConfigChangedFlag(void);
 static void SensorConfigChange(bool bootup);
 static void SensorOutput1Control(void);
 static void SensorOutput2Control(void);
@@ -206,6 +209,7 @@ static FwkMsgHandler_t *SensorTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_ANALOG_MEASURE:      return AnalogReadMsgHandler;
 	case FMC_ENTER_ACTIVE_MODE:   return EnterActiveModeMsgHandler;
 	case FMC_ENTER_SHELF_MODE:    return EnterShelfModeMsgHandler;
+	case FMC_CLEAR_INPUT_CONFIG_CHANGED: return ClearInputConfigChangedMsgHandler;
 	default:                      return NULL;
 	}
 	/* clang-format on */
@@ -218,7 +222,11 @@ void SensorTask_Initialize(void)
 {
 	#ifdef LWM2M_TELEMETRY_SUPPORT_ENABLED
 	int r = 0;
-	int i;
+	int channel_index;
+	int object_index;
+	uint8_t config_type;
+	uint8_t analog_input_type[TOTAL_ANALOG_CH];
+	uint8_t thermistor_config;
 	#endif
 
 	sensorTaskObject.msgTask.rxer.id = FWK_ID_SENSOR_TASK;
@@ -233,29 +241,83 @@ void SensorTask_Initialize(void)
 	sensorTaskObject.input1Alarm = 0;
 	sensorTaskObject.input2Alarm = 0;
 
+	/* Read back sensor configuration for telemetry object setup
+	 * if telemetry is enabled.
+	 */
+	#ifdef LWM2M_TELEMETRY_SUPPORT_ENABLED
+	/* Over-arching configuration setting */
+	(void)attr_get(ATTR_ID_config_type, &config_type, sizeof(config_type));
+	/* Analog input configurations */
+	for (channel_index = 0; channel_index < TOTAL_ANALOG_CH; channel_index++) {
+		(void)attr_get(ATTR_ID_analog_input_1_type + channel_index,
+				&analog_input_type[channel_index],
+				sizeof(analog_input_type[channel_index]));
+	}
+	/* Thermistor configuration */
+	(void)attr_get(ATTR_ID_thermistor_config, &thermistor_config, sizeof(thermistor_config));
+	#endif
+
 	/* Instantiate LWM2M telemetry objects */
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
-	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR_INSTANCE_COUNT) && (!r); i++) {
-		r = lcz_lwm2m_temperature_create(i);
-		EXPECT_OK();
+	if (config_type == CONFIG_TYPE_TEMPERATURE) {
+		/* Check if a thermistor is configured on this input */
+		for (channel_index = 0; (channel_index < TOTAL_THERM_CH) && (!r); channel_index++) {
+			if (thermistor_config & BIT(channel_index)) {
+				r = lcz_lwm2m_temperature_create(channel_index);
+				EXPECT_OK();
+			}
+		}
 	}
 	#endif
+
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
-	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR_INSTANCE_COUNT) && (!r); i++) {
-		r = lcz_lwm2m_pressure_create(i);
-		EXPECT_OK();
+	if (config_type == CONFIG_TYPE_ULTRASONIC_PRESSURE) {
+		/* Check if a pressure sensor is configured on this input */
+		for (channel_index = 0, object_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r)
+			&& (object_index < ANALOG_INPUTS_MAX_PRESSURE_SENSORS); channel_index++) {
+			if (analog_input_type[channel_index] == ANALOG_INPUT_1_TYPE_PRESSURE) {
+				/* Keep track of the number of pressure sensors created.
+				 * Leave as soon as two are allocated.
+				 */
+				object_index++;
+				r = lcz_lwm2m_pressure_create(channel_index);
+				EXPECT_OK();
+			}
+		}
 	}
 	#endif
+
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
-	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR_INSTANCE_COUNT) && (!r); i++) {
-		r = lcz_lwm2m_fill_level_create(i);
-		EXPECT_OK();
+	if (config_type == CONFIG_TYPE_ULTRASONIC_PRESSURE) {
+		/* Check if an ultrasonic sensor is configured on this input */
+		for (channel_index = 0, object_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r)
+			&& (object_index < ANALOG_INPUTS_MAX_ULTRASONIC); channel_index++) {
+			if (analog_input_type[channel_index] == ANALOG_INPUT_1_TYPE_ULTRASONIC) {
+				/* Only one ultrasonic sensor is allowed */
+				object_index++;
+				r = lcz_lwm2m_fill_level_create(channel_index);
+				EXPECT_OK();
+			}
+		}
 	}
 	#endif
+
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
-	for (i = 0; (i < CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR_INSTANCE_COUNT) && (!r); i++) {
-		r = lcz_lwm2m_current_create(i);
-		EXPECT_OK();
+	if ((config_type == CONFIG_TYPE_ANALOG) || (config_type == CONFIG_TYPE_CURRENT)) {
+		/* Check if a current sensor is configured on this input */
+		for (channel_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r); channel_index++) {
+			if ((analog_input_type[channel_index] ==
+				ANALOG_INPUT_1_TYPE_CURRENT_4MA_TO_20MA) ||
+				(analog_input_type[channel_index] ==
+				ANALOG_INPUT_1_TYPE_AC_CURRENT_20A) ||
+				(analog_input_type[channel_index] ==
+				ANALOG_INPUT_1_TYPE_AC_CURRENT_150A) ||
+				(analog_input_type[channel_index] ==
+				ANALOG_INPUT_1_TYPE_AC_CURRENT_500A)) {
+				r = lcz_lwm2m_current_create(channel_index);
+				EXPECT_OK();
+			}
+		}
 	}
 	#endif
 
@@ -405,6 +467,11 @@ static void SensorTaskThread(void *pArg1, void *pArg2, void *pArg3)
 	InitializeIntervalTimers();
 	UpdateMagnet();
 
+	/* The last message to process in this list will clear the input config
+	 * changed flag and unblock access to telemetry objects if enabled.
+	 */
+	ClearInputConfigChangedFlag();
+
 	while (true) {
 		Framework_MsgReceiver(&pObj->msgTask.rxer);
 	}
@@ -417,6 +484,7 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	size_t i;
 	bool updateAnalogInterval = false;
 	uint8_t activeMode = 0;
+	bool input_config_changed = false;
 
 	for (i = 0; i < pAttrMsg->count; i++) {
 		switch (pAttrMsg->list[i]) {
@@ -440,18 +508,22 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 		case ATTR_ID_digital_input_2_config:
 			FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK,
 						   FMC_DIGITAL_IN_CONFIG);
+			input_config_changed = true;
 			break;
 		case ATTR_ID_thermistor_config:
 			StartTemperatureInterval();
+			input_config_changed = true;
 			break;
 		case ATTR_ID_analog_input_1_type:
 		case ATTR_ID_analog_input_2_type:
 		case ATTR_ID_analog_input_3_type:
 		case ATTR_ID_analog_input_4_type:
 			updateAnalogInterval = true;
+			input_config_changed = true;
 			break;
 		case ATTR_ID_config_type:
 			SensorConfigChange(false);
+			input_config_changed = true;
 			break;
 
 		case ATTR_ID_qrtc_last_set:
@@ -487,6 +559,9 @@ SensorTaskAttributeChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer, FwkMsg_t *pMsg)
 	}
 	if (updateAnalogInterval == true) {
 		StartAnalogInterval();
+	}
+	if (input_config_changed == true) {
+		(void)attr_set_bool(ATTR_ID_input_config_changed, true);
 	}
 
 	return DISPATCH_OK;
@@ -665,10 +740,28 @@ static DispatchResult_t EnterShelfModeMsgHandler(FwkMsgReceiver_t *pMsgRxer,
 	return DISPATCH_OK;
 }
 
+static DispatchResult_t ClearInputConfigChangedMsgHandler(FwkMsgReceiver_t *pMsgRxer,
+						 FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+
+	/* Clear the input config changed flag here - it will have been set
+	 * during start-up, but only changes post start-up should be taken
+	 * into account.
+	 */
+	(void)attr_set_bool(ATTR_ID_input_config_changed, false);
+}
+
 static void LoadSensorConfiguration(void)
 {
 	SensorConfigChange(true);
 	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_DIGITAL_IN_CONFIG);
+}
+
+static void ClearInputConfigChangedFlag(void)
+{
+	FRAMEWORK_MSG_SEND_TO_SELF(FWK_ID_SENSOR_TASK, FMC_CLEAR_INPUT_CONFIG_CHANGED);
 }
 
 static void SensorConfigChange(bool bootup)
@@ -1071,9 +1164,17 @@ static int update_lwm2m_temperature(int index, float temperature)
 	int r = 0;
 
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
-	r = lcz_lwm2m_temperature_set(index, (double)temperature);
-	if (r < 0) {
-		LOG_ERR("Could not set temperature instance %d [%d]", index, r);
+	bool input_config_changed;
+
+	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
+
+	/* Block update of telemetry objects until configuration is stable */
+	if (input_config_changed == false) {
+		r = lcz_lwm2m_temperature_set(index, (double)temperature);
+		if (r < 0) {
+			LOG_ERR("Could not set temperature instance %d [%d]",
+					index, r);
+		}
 	}
 	#endif
 	return(r);
@@ -1084,9 +1185,16 @@ static int update_lwm2m_pressure(int index, float pressure)
 	int r = 0;
 
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
-	r = lcz_lwm2m_pressure_set(index, (double)pressure);
-	if (r < 0) {
-		LOG_ERR("Could not set pressure instance %d [%d]", index, r);
+	bool input_config_changed;
+
+	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
+
+	/* Block update of telemetry objects until input configuration is stable */
+	if (input_config_changed == false) {
+		r = lcz_lwm2m_pressure_set(index, (double)pressure);
+		if (r < 0) {
+			LOG_ERR("Could not set pressure instance %d [%d]", index, r);
+		}
 	}
 	#endif
 	return(r);
@@ -1099,10 +1207,17 @@ static int update_lwm2m_fill_level(int index, float fill_level)
 	ARG_UNUSED(index);
 
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
-	/* Only one ultrasonic sensor permitted */
-	r = lcz_lwm2m_fill_level_set(0, (double)fill_level);
-	if (r < 0) {
-		LOG_ERR("Could not set filling sensor instance 0 [%d]", r);
+	bool input_config_changed;
+
+	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
+
+	/* Block telemetry updates if the input config has changed */
+	if (input_config_changed == false) {
+		/* Only one ultrasonic sensor permitted */
+		r = lcz_lwm2m_fill_level_set(index, (double)fill_level);
+		if (r < 0) {
+			LOG_ERR("Could not set filling sensor instance %d [%d]", index, r);
+		}
 	}
 	#endif
 	return(r);
@@ -1113,9 +1228,17 @@ static int update_lwm2m_current(int index, float current)
 	int r = 0;
 
 	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
-	r = lcz_lwm2m_current_set(index, (double)current);
-	if (r < 0) {
-		LOG_ERR("Could not set current sensor instance %d [%d]", index, r);
+	bool input_config_changed;
+
+	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
+
+	/* Don't update telemetry objects if the input configuration has changed */
+	if (input_config_changed == false) {
+		r = lcz_lwm2m_current_set(index, (double)current);
+		if (r < 0) {
+			LOG_ERR("Could not set current sensor instance %d [%d]",
+					index, r);
+		}
 	}
 	#endif
 	return(r);

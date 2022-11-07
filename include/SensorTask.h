@@ -39,6 +39,12 @@ typedef enum {
 	TOTAL_ANALOG_CH
 } analog_channel_t;
 
+/* Sensor configuration */
+#define ANALOG_INPUTS_MAX_PRESSURE_SENSORS 2
+#define ANALOG_INPUTS_MAX_PRESSURE_SENSORS_WITH_ULTRASONIC 1
+#define ANALOG_INPUTS_MAX_ULTRASONIC 1
+#define ANALOG_INPUT_NUMBER_OF_CHANNELS 4
+
 /* RTC timestamps are printed in HH:MM:SS format (extra character for NULL) */
 #define SENSOR_TASK_RTC_TIMESTAMP_SIZE 9
 
