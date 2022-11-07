@@ -1621,3 +1621,25 @@ attributes:
     x-ctype: bool
     x-default: 1
     x-readable: true
+  - name: disable_flow_control
+    description: "When true flow control is disabled on the console UART. Requires a reboot to take effect."
+    required: true
+    schema:
+      maximum: 1
+      minimum: 0
+      type: integer
+    x-ctype: bool
+    x-default: 0
+    x-readable: true
+    x-savable: true
+    x-writable: true
+  - name: baud_rate
+    description: "Baud rate for console uart. Requires a reboot to take effect."
+    required: true
+    schema:
+      type: integer
+    x-ctype: uint32_t
+    x-default: 115200
+    x-readable: true
+    x-savable: true
+    x-writable: true

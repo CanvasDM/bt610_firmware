@@ -32,11 +32,15 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
 #define PKG_NAME_PREFIX "lc_dm"
 #define PKG_NAME PKG_NAME_PREFIX "-" CONFIG_BOARD "-"
 
-static const struct uart_config uart_cfg = { .baudrate = 115200,
-					     .parity = UART_CFG_PARITY_NONE,
-					     .stop_bits = UART_CFG_STOP_BITS_1,
-					     .data_bits = UART_CFG_DATA_BITS_8,
-					     .flow_ctrl = UART_CFG_FLOW_CTRL_RTS_CTS };
+#define DEFAULT_BAUD_RATE 115200
+
+static struct uart_config uart_cfg = {
+	.baudrate = DEFAULT_BAUD_RATE,
+	.parity = UART_CFG_PARITY_NONE,
+	.stop_bits = UART_CFG_STOP_BITS_1,
+	.data_bits = UART_CFG_DATA_BITS_8,
+	.flow_ctrl = UART_CFG_FLOW_CTRL_RTS_CTS,
+};
 
 void main(void)
 {
@@ -49,11 +53,18 @@ void main(void)
 	 * LCZ_SHELL_LOGIN selects SHELL_START_OBSCURED which disables log output before main().
 	 */
 #ifdef CONFIG_ATTR
-	if (*(bool *)attr_get_quasi_static(ATTR_ID_log_on_boot) == false)
+	if (attr_get_bool(ATTR_ID_log_on_boot) == false)
 #endif
 	{
 		log_backend_deactivate(shell_backend_uart_get_ptr()->log_backend->backend);
 	}
+#endif
+
+#ifdef CONFIG_ATTR
+	if (attr_get_bool(ATTR_ID_disable_flow_control)) {
+		uart_cfg.flow_ctrl = UART_CFG_FLOW_CTRL_NONE;
+	}
+	uart_cfg.baudrate = attr_get_uint32(ATTR_ID_baud_rate, DEFAULT_BAUD_RATE);
 #endif
 
 	uart_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
