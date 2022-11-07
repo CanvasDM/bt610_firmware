@@ -85,6 +85,7 @@ tamper_switch_simulated_value=0
 boot_phy=0
 mobile_app_disconnect=0
 block_downgrades=0
+load_path=/lfs1/enc/attr_load.txt
 bluetooth_flags=0
 event_filter_flags=2097151
 log_on_boot=0

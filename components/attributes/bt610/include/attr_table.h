@@ -357,7 +357,7 @@ BUILD_ASSERT(sizeof(enum lwm2m_batt_stat) == ATTR_SIZE_U8);
 /* pystart - attribute constants */
 #define ATTR_TABLE_SIZE                                             158
 #define ATTR_TABLE_MAX_ID                                           157
-#define ATTR_TABLE_WRITABLE_COUNT                                   121
+#define ATTR_TABLE_WRITABLE_COUNT                                   122
 #define ATTR_TABLE_CRC_OF_NAMES                                     0x4c735cc2
 #define ATTR_MAX_STR_LENGTH                                         255
 #define ATTR_MAX_STR_SIZE                                           256

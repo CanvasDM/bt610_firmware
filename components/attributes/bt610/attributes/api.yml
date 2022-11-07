@@ -2644,7 +2644,7 @@ components:
         x-savable: true
         x-validator: block_downgrades
         x-writable: true
-        summary: Allows FOTA downgrading of older firmwares to be disallowed
+        summary: Allows FOTA downgrading of older firmware to be disallowed
         description: Will disallow receiving older firmware files via FOTA when set
           to 1
         x-id: 111
@@ -2669,10 +2669,10 @@ components:
           maxLength: 32
           type: string
         x-ctype: string
-        x-default: /lfs1/params.txt
-        x-example: /lfs1/params.txt
+        x-default: /lfs1/enc/attr_load.txt
         x-readable: true
         x-savable: true
+        x-writable: true
         summary: (Default) Absolute file name for load parameters command
         x-id: 113
       - name: dump_path
@@ -2683,7 +2683,6 @@ components:
           type: string
         x-ctype: string
         x-default: /lfs1/dump.txt
-        x-example: /lfs1/dump.txt
         x-readable: true
         summary: (Default) Absolute file name for dump command
         x-id: 114
