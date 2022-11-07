@@ -341,7 +341,7 @@ int attr_prepare_power_voltage(void)
 	SensorEventData_t eventAlarm;
 	int r = AdcBt6_read_power_volts(&raw, &volts);
 	#ifdef CONFIG_LCZ_LWM2M_CLIENT
-	lcz_lwm2m_client_device_battery_status_t battery_status;
+	static lcz_lwm2m_client_device_battery_status_t battery_status;
 	#endif
 
 	if (r >= 0) {
@@ -751,6 +751,8 @@ static DispatchResult_t ClearInputConfigChangedMsgHandler(FwkMsgReceiver_t *pMsg
 	 * into account.
 	 */
 	(void)attr_set_bool(ATTR_ID_input_config_changed, false);
+
+	return DISPATCH_OK;
 }
 
 static void LoadSensorConfiguration(void)
@@ -1249,8 +1251,8 @@ static int update_lwm2m_battery(lcz_lwm2m_client_device_battery_status_t status,
 	int r = 0;
 
 	#ifdef CONFIG_LCZ_LWM2M_CLIENT
-	int32_t pwr_src_mv;
-	lcz_lwm2m_client_device_power_source_t pwr_src = LCZ_LWM2M_CLIENT_DEV_PWR_SRC_INT_BATT;
+	static int32_t pwr_src_mv;
+	static lcz_lwm2m_client_device_power_source_t pwr_src = LCZ_LWM2M_CLIENT_DEV_PWR_SRC_INT_BATT;
 
 	/* Update power source */
 	r = lcz_lwm2m_client_set_available_power_source(0, &pwr_src);
