@@ -94,7 +94,8 @@ int av_tx_power(const ate_t *const entry, void *pv, size_t vlen, bool do_write)
 {
 	ARG_UNUSED(vlen);
 	CHECK_ENTRY();
-	int32_t value = *((int32_t *)pv);
+	int8_t value = *((int8_t *)pv);
+	__ASSERT(entry->size == sizeof(value), "Validator and attribute size mismatch");
 
 	/* Values supported by nRF52840 */
 	bool valid = false;
@@ -122,9 +123,9 @@ int av_tx_power(const ate_t *const entry, void *pv, size_t vlen, bool do_write)
 	}
 
 	if (valid) {
-		if (do_write && value != *((int32_t *)entry->pData)) {
+		if (do_write && value != *((int8_t *)entry->pData)) {
 			atomic_set_bit(attr_modified, attr_table_index(entry));
-			*((int32_t *)entry->pData) = value;
+			*((int8_t *)entry->pData) = value;
 		}
 		return 1;
 	}
