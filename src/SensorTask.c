@@ -40,25 +40,25 @@ LOG_MODULE_REGISTER(Sensor, CONFIG_SENSOR_TASK_LOG_LEVEL);
 #ifdef CONFIG_LCZ_LWM2M_CLIENT
 #include "lcz_lwm2m_client.h"
 #endif
-#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+#ifdef CONFIG_LWM2M_IPSO_CURRENT_SENSOR
 #include "lcz_lwm2m_current.h"
 #endif
-#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+#ifdef CONFIG_LWM2M_IPSO_PRESSURE_SENSOR
 #include "lcz_lwm2m_pressure.h"
 #endif
-#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+#ifdef CONFIG_LWM2M_IPSO_FILLING_SENSOR
 #include "lcz_lwm2m_fill_level.h"
 #endif
-#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+#ifdef CONFIG_LWM2M_IPSO_TEMP_SENSOR
 #include "lcz_lwm2m_temperature.h"
 #endif
 
 /* Any of these being set indicates lwm2m telemetry support is needed */
 #if defined CONFIG_LCZ_LWM2M_BATTERY || \
-	defined CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR || \
-	defined CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR || \
-	defined CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR || \
-	defined CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	defined CONFIG_LWM2M_IPSO_CURRENT_SENSOR || \
+	defined CONFIG_LWM2M_IPSO_PRESSURE_SENSOR || \
+	defined CONFIG_LWM2M_IPSO_FILLING_SENSOR || \
+	defined CONFIG_LWM2M_IPSO_TEMP_SENSOR
 	#define LWM2M_TELEMETRY_SUPPORT_ENABLED
 #endif
 
@@ -258,7 +258,7 @@ void SensorTask_Initialize(void)
 	#endif
 
 	/* Instantiate LWM2M telemetry objects */
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_TEMP_SENSOR
 	if (config_type == CONFIG_TYPE_TEMPERATURE) {
 		/* Check if a thermistor is configured on this input */
 		for (channel_index = 0; (channel_index < TOTAL_THERM_CH) && (!r); channel_index++) {
@@ -270,7 +270,7 @@ void SensorTask_Initialize(void)
 	}
 	#endif
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_PRESSURE_SENSOR
 	if (config_type == CONFIG_TYPE_ULTRASONIC_PRESSURE) {
 		/* Check if a pressure sensor is configured on this input */
 		for (channel_index = 0, object_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r)
@@ -287,7 +287,7 @@ void SensorTask_Initialize(void)
 	}
 	#endif
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_FILLING_SENSOR
 	if (config_type == CONFIG_TYPE_ULTRASONIC_PRESSURE) {
 		/* Check if an ultrasonic sensor is configured on this input */
 		for (channel_index = 0, object_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r)
@@ -302,7 +302,7 @@ void SensorTask_Initialize(void)
 	}
 	#endif
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_CURRENT_SENSOR
 	if ((config_type == CONFIG_TYPE_ANALOG) || (config_type == CONFIG_TYPE_CURRENT)) {
 		/* Check if a current sensor is configured on this input */
 		for (channel_index = 0; (channel_index < TOTAL_ANALOG_CH) && (!r); channel_index++) {
@@ -1165,7 +1165,7 @@ static int update_lwm2m_temperature(int index, float temperature)
 {
 	int r = 0;
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_TEMP_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_TEMP_SENSOR
 	bool input_config_changed;
 
 	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
@@ -1186,7 +1186,7 @@ static int update_lwm2m_pressure(int index, float pressure)
 {
 	int r = 0;
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_PRESSURE_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_PRESSURE_SENSOR
 	bool input_config_changed;
 
 	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
@@ -1208,7 +1208,7 @@ static int update_lwm2m_fill_level(int index, float fill_level)
 
 	ARG_UNUSED(index);
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_FILLING_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_FILLING_SENSOR
 	bool input_config_changed;
 
 	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
@@ -1229,7 +1229,7 @@ static int update_lwm2m_current(int index, float current)
 {
 	int r = 0;
 
-	#ifdef CONFIG_LCZ_LWM2M_IPSO_CURRENT_SENSOR
+	#ifdef CONFIG_LWM2M_IPSO_CURRENT_SENSOR
 	bool input_config_changed;
 
 	input_config_changed = attr_get_bool(ATTR_ID_input_config_changed);
