@@ -68,6 +68,7 @@ typedef enum {
 		    (DT_GPIO_FLAGS(node, gpios)), (0))
 
 struct button_cfg {
+	const struct gpio_dt_spec input;
 	const char *label;
 	gpio_pin_t pin;
 	gpio_flags_t flags;
@@ -76,12 +77,13 @@ struct button_cfg {
 		    uint32_t pins);
 };
 
-#define BUTTON_CFG(x, _flags, _edge)                                \
-	{                                                           \
-		.label = DEVICE_DT_NAME(BUTTON##x##_NODE),          \
-		.pin = DT_GPIO_PIN(BUTTON##x##_NODE, gpios),        \
-		.flags = (_flags) | FLAGS_OR_ZERO(BUTTON##x##NODE), \
-		.edge = (_edge), .isr = Button##x##HandlerIsr       \
+#define BUTTON_CFG(x, _flags, _edge)                                        \
+	{                                                                   \
+		.input = GPIO_DT_SPEC_GET_OR(BUTTON##x##_NODE, gpios, {0}), \
+		.label = DEVICE_DT_NAME(BUTTON##x##_NODE),                  \
+		.pin = DT_GPIO_PIN(BUTTON##x##_NODE, gpios),                \
+		.flags = (_flags) | FLAGS_OR_ZERO(BUTTON##x##NODE),         \
+		.edge = (_edge), .isr = Button##x##HandlerIsr               \
 	}
 
 #define DT_HAS_BUTTON_NODE(x) DT_NODE_HAS_STATUS(BUTTON##x##_NODE, okay)
@@ -220,7 +222,6 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
 	bool simulation_enabled, bool last_simulation_enabled)
 {
 	bool live_input_state;
-	const struct device *dev;
 	int result = 0;
 	bool update_needed = false;
 	bool last_simulated_state;
@@ -252,9 +253,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedStatus(
 		}
 		if (update_needed) {
 			/* Update needed to the system */
-			dev = device_get_binding(
-				BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
-			Button2HandlerIsr(dev, NULL, 0);
+			Button2HandlerIsr(BUTTON_CFG[BUTTON_CFG_ID_MAG].input.port, NULL, 0);
 		}
 	}
 	return (result);
@@ -265,7 +264,6 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
 {
 	int result = 0;
 	bool simulation_enabled;
-	const struct device *dev;
 
 	/* Simulation enabled? */
 	if ((result = attr_get(ATTR_ID_mag_switch_simulated,
@@ -275,9 +273,7 @@ int UserInterfaceTask_UpdateMagSwitchSimulatedValue(bool simulated_value,
 		if (simulation_enabled) {
 			/* Change in value? */
 			if (simulated_value != last_simulated_value) {
-				dev = device_get_binding(
-					BUTTON_CFG[BUTTON_CFG_ID_MAG].label);
-				Button2HandlerIsr(dev, NULL, 0);
+				Button2HandlerIsr(BUTTON_CFG[BUTTON_CFG_ID_MAG].input.port, NULL, 0);
 			}
 		}
 	}
@@ -288,7 +284,6 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
 	bool simulation_enabled, bool last_simulation_enabled)
 {
 	bool live_input_state;
-	const struct device *dev;
 	bool update_needed = false;
 	int result = 0;
 	bool last_simulated_state;
@@ -321,9 +316,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedStatus(
 		}
 		if (update_needed) {
 			/* Yes, so we need to update the system */
-			dev = device_get_binding(
-				BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
-			Button1HandlerIsr(dev, NULL, 0);
+			Button1HandlerIsr(BUTTON_CFG[BUTTON_CFG_ID_TAMPER].input.port, NULL, 0);
 		}
 	}
 	return (result);
@@ -334,7 +327,6 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
 {
 	int result = 0;
 	bool simulation_enabled;
-	const struct device *dev;
 
 	/* Simulation enabled? */
 	if ((result = attr_get(ATTR_ID_tamper_switch_simulated,
@@ -344,9 +336,7 @@ int UserInterfaceTask_UpdateTamperSwitchSimulatedValue(
 		if (simulation_enabled) {
 			/* Change in value? */
 			if (simulated_value != last_simulated_value) {
-				dev = device_get_binding(
-					BUTTON_CFG[BUTTON_CFG_ID_TAMPER].label);
-				Button1HandlerIsr(dev, NULL, 0);
+				Button1HandlerIsr(BUTTON_CFG[BUTTON_CFG_ID_TAMPER].input.port, NULL, 0);
 			}
 		}
 	}
@@ -377,28 +367,24 @@ static void UserIfTaskThread(void *pArg1, void *pArg2, void *pArg3)
 static int InitializeButtons(void)
 {
 	int r = -EIO;
-	const struct device *dev;
 	size_t i;
 
 	for (i = 0; i < CONFIG_UI_NUMBER_OF_BUTTONS; i++) {
-		dev = device_get_binding(BUTTON_CFG[i].label);
-		if (dev == NULL) {
+		if (!device_is_ready(BUTTON_CFG[i].input.port)) {
 			r = -EIO;
 			break;
 		}
 
-		r = gpio_pin_configure(dev, BUTTON_CFG[i].pin,
-				       BUTTON_CFG[i].flags);
+		r = gpio_pin_configure_dt(&BUTTON_CFG[i].input, BUTTON_CFG[i].flags);
+
 		BREAK_ON_ERROR(r);
 
-		r = gpio_pin_interrupt_configure(dev, BUTTON_CFG[i].pin,
-						 BUTTON_CFG[i].edge);
+		r = gpio_pin_interrupt_configure_dt(&BUTTON_CFG[i].input, BUTTON_CFG[i].edge);
+
 		BREAK_ON_ERROR(r);
 
-		gpio_init_callback(&button_cb_data[i], BUTTON_CFG[i].isr,
-				   BIT(BUTTON_CFG[i].pin));
-
-		r = gpio_add_callback(dev, &button_cb_data[i]);
+		gpio_init_callback(&button_cb_data[i], BUTTON_CFG[i].isr, BIT(BUTTON_CFG[i].pin));
+		r = gpio_add_callback(BUTTON_CFG[i].input.port, &button_cb_data[i]);
 		BREAK_ON_ERROR(r);
 	}
 
