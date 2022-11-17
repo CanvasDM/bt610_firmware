@@ -41,6 +41,10 @@ LOG_MODULE_REGISTER(BleTask, CONFIG_LOG_LEVEL_BLE_TASK);
 #include "lcz_lwm2m_client.h"
 #endif
 
+#if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
+#include "ble_client_dm_ble.h"
+#endif
+
 /******************************************************************************/
 /* Global Data Definitions                                                    */
 /******************************************************************************/
@@ -118,6 +122,9 @@ static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
 #if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
 void lwm2m_data_ready_cb(bool data_ready);
+#endif
+#if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
+void ble_client_memfault_data_ready_cb(bool data_ready);
 #endif
 static void DurationTimerCallbackIsr(struct k_timer *timer_id);
 static void BootAdvertTimerCallbackIsr(struct k_timer *timer_id);
@@ -304,6 +311,10 @@ static int BluetoothInit(void)
 
 #if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
 		lcz_lwm2m_client_register_data_ready_cb(lwm2m_data_ready_cb);
+#endif
+
+#if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
+		ble_client_dm_register_memfault_data_ready_cb(ble_client_memfault_data_ready_cb);
 #endif
 	} while (0);
 
@@ -779,6 +790,13 @@ static uint32_t GetAdvertisingDuration(void)
 void lwm2m_data_ready_cb(bool data_ready)
 {
 	Flags_Set(FLAG_DEVICE_MANAGEMENT_DATA_READY, data_ready);
+}
+#endif
+
+#if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
+void ble_client_memfault_data_ready_cb(bool data_ready)
+{
+	Flags_Set(FLAG_MEMFAULT_DATA, data_ready);
 }
 #endif
 
