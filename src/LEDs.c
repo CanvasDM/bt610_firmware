@@ -131,12 +131,12 @@ void led_blink(ledColors_t color, ledPatterns_t pattern)
 	}
 
 	if (color == LED_COLOR_GREEN) {
-		lcz_led_blink(GREEN_LED, pPattern);
+		lcz_led_blink(GREEN_LED, pPattern, false);
 	} else if (color == LED_COLOR_RED) {
-		lcz_led_blink(RED_LED, pPattern);
+		lcz_led_blink(RED_LED, pPattern, false);
 	} else if (color == LED_COLOR_AMBER) {
-		lcz_led_blink(RED_LED, pPattern);
-		lcz_led_blink(GREEN_LED, pPattern);
+		lcz_led_blink(RED_LED, pPattern, false);
+		lcz_led_blink(GREEN_LED, pPattern, false);
 	}
 }
 
