@@ -1650,8 +1650,8 @@ components:
           minimum: 0
           maximum: 1
           enum:
-            FAR: true
-            NEAR: false
+            FAR: false
+            NEAR: true
           type: integer
         x-ctype: bool
         x-default: 0

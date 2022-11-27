@@ -871,9 +871,15 @@ static void UpdateMagnet(void)
 	int v = BSP_PinGet(MAGNET_MCU_PIN);
 
 	if (v >= 0) {
-		/* NEAR = 0 and FAR = 1 */
-		attr_set_uint32(ATTR_ID_magnet_state, v);
-		Flags_Set(FLAG_MAGNET_STATE, v);
+		/* Far = 0 and Near = 1. The mag switch
+		 * used to sense the magnet is set to a logic 1
+		 * when no magnet is present, and a logic 0 when
+		 * a magnet is applied. Both values set below
+		 * are inverted so these map correctly.
+		 */
+		bool magnet_state = !((bool)(v));
+		attr_set_uint32(ATTR_ID_magnet_state, magnet_state);
+		Flags_Set(FLAG_MAGNET_STATE, (int)magnet_state);
 	}
 }
 

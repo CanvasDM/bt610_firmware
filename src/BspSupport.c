@@ -599,6 +599,12 @@ static bool MagSwitchIsSimulated(int *simulated_value)
 			    sizeof(mag_switch_state)) {
 				/* Only apply the value if safe to do so */
 				is_simulated = true;
+				/* Also map the simulated value to the expected
+				 * pin state. A simulated value of true sets a
+				 * magnet state of Near, but this maps to a pin
+				 * level of 0 or false.
+				 */
+				mag_switch_state = !mag_switch_state;
 				*simulated_value = (int)mag_switch_state;
 			}
 		}

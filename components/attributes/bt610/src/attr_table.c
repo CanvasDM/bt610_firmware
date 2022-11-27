@@ -609,8 +609,8 @@ const char *const attr_get_string_analog_input_1_type(int value)
 const char *const attr_get_string_magnet_state(int value)
 {
 	switch (value) {
-		case true:        return "Far";
-		case false:       return "Near";
+		case false:       return "Far";
+		case true:        return "Near";
 		default:          return "?";
 	}
 }

@@ -59,8 +59,8 @@ enum analog_input_1_type {
 };
 
 enum magnet_state {
-	MAGNET_STATE_FAR = true,
-	MAGNET_STATE_NEAR = false,
+	MAGNET_STATE_FAR = false,
+	MAGNET_STATE_NEAR = true,
 };
 
 enum tamper_switch_status {
