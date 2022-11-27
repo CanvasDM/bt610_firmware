@@ -197,7 +197,6 @@ int Advertisement_Init(void)
 		}
 	}
 	bd_addr[j] = 0;
-	attr_set_string(ATTR_ID_bluetooth_address, bd_addr, size - 1);
 
 #if defined(CONFIG_LCZ_BLE_CLIENT_DM)
 	/* Fill in the unencrypted advertisement data */
@@ -223,6 +222,8 @@ int Advertisement_Init(void)
 	enc_ad.epoch = 0;
 	enc_ad.data.u32 = 0;
 #else
+	attr_set_string(ATTR_ID_bluetooth_address, bd_addr, size - 1);
+
 	ad.companyId = LAIRD_CONNECTIVITY_MANUFACTURER_SPECIFIC_COMPANY_ID1;
 	ad.protocolId = BTXXX_1M_PHY_AD_PROTOCOL_ID;
 	ad.networkId = 0;
