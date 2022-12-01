@@ -288,7 +288,7 @@ int Advertisement_IntervalUpdate(void)
 				r = bt_le_ext_adv_update_param(adv1M, &bt_param1M);
 			}
 
-			LOG_INF("update interval (%d)", r);
+			LOG_DBG("update interval (%d)", r);
 		}
 		r = Advertisement_Start();
 	} else {
@@ -298,7 +298,7 @@ int Advertisement_IntervalUpdate(void)
 			r = bt_le_ext_adv_update_param(adv1M, &bt_param1M);
 		}
 
-		LOG_INF("update interval (%d)", r);
+		LOG_DBG("update interval (%d)", r);
 	}
 
 	return r;
@@ -322,7 +322,7 @@ int Advertisement_IntervalDefault(void)
 	if (r == 0) {
 		r = bt_le_ext_adv_update_param(adv1M, &bt_param1M);
 	}
-	LOG_INF("update interval to default(%d)", r);
+	LOG_DBG("update interval to default(%d)", r);
 
 	return r;
 }
@@ -347,7 +347,7 @@ int Advertisement_End(void)
 		phyType = STANDARD_PHY_STRING;
 	}
 
-	LOG_INF("Advertising %s end (%d)", phyType, r);
+	LOG_DBG("Advertising %s end (%d)", phyType, r);
 	advertising = false;
 
 	return r;
@@ -369,7 +369,7 @@ int Advertisement_Start(void)
 		}
 
 		advertising = (r == 0);
-		LOG_INF("Advertising %s start (%d)", phyType, r);
+		LOG_DBG("Advertising %s start (%d)", phyType, r);
 	}
 
 #endif
@@ -605,7 +605,7 @@ void QueuedUpdateAdvertisement(struct k_work *item)
 					   ARRAY_SIZE(bt_rsp));
 	}
 #endif
-	LOG_INF("update advertising data (%d)", r);
+	LOG_DBG("update advertising data (%d)", r);
 	if (r < 0) {
 		LOG_ERR("Failed to update advertising data (%d)", r);
 	}
