@@ -178,7 +178,7 @@ static const rw_attribute_t DEFAULT_RW_ATTRIBUTE_VALUES =  {
 	.smp_auth_req = 0,
 	.smp_auth_timeout = 300,
 	.shell_password = "zephyr",
-	.shell_session_timeout = 1
+	.shell_session_timeout = 5
 };
 /* pyend */
 

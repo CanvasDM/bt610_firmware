@@ -74,6 +74,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/framework_config)
 include_directories(${CMAKE_SOURCE_DIR}/src/version)
 target_include_directories(app PRIVATE ${gen_dir})
+zephyr_include_directories(${CMAKE_SOURCE_DIR}/memfault)
+
 
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/src/AdcBt6.c

@@ -156,4 +156,4 @@ ble_rssi=-128
 smp_auth_req=0
 smp_auth_timeout=300
 shell_password=zephyr
-shell_session_timeout=1
+shell_session_timeout=5
