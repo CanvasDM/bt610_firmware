@@ -1647,7 +1647,7 @@
             },
             "x-ctype": "bool",
             "x-broadcast": true,
-            "x-default": 0,
+            "x-default": 1,
             "x-example": 0,
             "x-readable": true,
             "x-savable": true,
