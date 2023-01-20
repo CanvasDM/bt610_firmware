@@ -2,7 +2,7 @@
   "openrpc": "1.2.6",
   "info": {
     "title": "Project_Index",
-    "version": "0.0.2"
+    "version": "1.0.0"
   },
   "methods": [
     {
@@ -2158,7 +2158,7 @@
               "type": "string"
             },
             "x-ctype": "string",
-            "x-default": "0.0.2",
+            "x-default": "1.0.0",
             "x-example": "123.456.789",
             "x-readable": true,
             "summary": "The API attribute version that the firmware supports",
