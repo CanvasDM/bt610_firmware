@@ -1,0 +1,9 @@
+#S<lwm2m_endpoint=>#V<modelNumber>#S<_>#A<device_id>
+#S<lwm2m_security=>#A<lwm2m_security>
+#S<lwm2m_bootstrap=>#A<lwm2m_bootstrap>
+#S<lwm2m_mn=>#V<modelNumber>
+#S<lwm2m_sn=>#A<device_id>
+#S<lwm2m_hw_ver=>#V<poPartNumber>#S<-R>#V<poPartRev>
+#S<device_id=>#A<device_id>
+#S<shell_password=>#A<device_id>#S<_!>
+#S<sensor_name=>#V<modelNumber>#S<_>#A<device_id>

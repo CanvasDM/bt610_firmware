@@ -1,0 +1,4 @@
+#S<pki> #S<csrgen> #S<dm> #S<US> #S<'Laird Connectivity'> #S<IT> #V<modelNumber>#S<.>#A<device_id>#S<@lc.canvas>
+#S<pki> #S<csrgen> #S<tel> #S<US> #S<'Laird Connectivity'> #S<IT> #V<modelNumber>#S<.>#A<device_id>#S<@lc.canvas>
+#S<pki> #S<csrgen> #S<p2p> #S<US> #S<'Laird Connectivity'> #S<IT> #V<modelNumber>#S<.>#A<device_id>#S<@lc.canvas>
+#S<pki> #S<csrgen> #S<fs> #S<US> #S<'Laird Connectivity'> #S<IT> #V<modelNumber>#S<.>#A<device_id>#S<@lc.canvas>
