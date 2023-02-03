@@ -7,6 +7,9 @@
 			"path": "../bt610_dm_firmware_manifest"
 		},
 		{
+			"path": "../bt610_dm_firmware_public_manifest"
+		},
+		{
 			"path": "../modules/lib/laird_connect"
 		},
 		{
