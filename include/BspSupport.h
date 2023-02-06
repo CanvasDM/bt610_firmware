@@ -1,8 +1,7 @@
 /**
  * @file BspSupport.h
- * @brief
  *
- * Copyright (c) 2020 Laird Connectivity
+ * Copyright (c) 2020-2023 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,7 +13,7 @@
 /******************************************************************************/
 #include <zephyr/types.h>
 #include <stddef.h>
-#include <drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>
 
 #ifdef __cplusplus
 extern "C" {

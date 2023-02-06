@@ -2,24 +2,25 @@
  * @file BspSupport.c
  * @brief This is the board support file for defining and configuring the GPIO pins
  *
- * Copyright (c) 2020-2021 Laird Connectivity
+ * Copyright (c) 2020-2023 Laird Connectivity
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <logging/log.h>
-#include <logging/log_ctrl.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 #define LOG_LEVEL
 LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 
 /******************************************************************************/
 /* Includes                                                                   */
 /******************************************************************************/
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
-#include <sys/util.h>
-#include <pm/device.h>
+#include <zephyr/zephyr.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/pm/device.h>
+#include <zephyr/drivers/uart.h>
 
 #include "FrameworkIncludes.h"
 #include "BspSupport.h"
@@ -33,9 +34,14 @@ LOG_MODULE_REGISTER(BspSupport, CONFIG_BSP_LOG_LEVEL);
 /* Time (in ms) to delay checking the CTS pin state */
 #define BSP_SUPPORT_UART_CTS_DEBOUNCE_TIME_MS 50
 /* Time (in ms) before disabling the UART when CTS is inactive */
-#define BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS 5000
+#define BSP_SUPPORT_UART_DISABLE_UART_TIMER_MS 10000
 /* Name of UART shell for logging backend */
 #define BSP_SUPPORT_LOGGER_UART_NAME "shell_uart_backend"
+
+#define DEFAULT_BAUD_RATE 115200
+
+#define PREPARE_UART_FOR_SHUTDOWN true
+#define PREPARE_UART_FOR_RUN false
 
 /******************************************************************************/
 /* Local Data Definitions                                                     */
@@ -64,6 +70,14 @@ static gpio_flags_t digital_input_2_IRQ_config = 0;
 static bool digital_input_1_last_state = false;
 static bool digital_input_2_last_state = false;
 
+static struct uart_config uart_cfg = {
+	.baudrate = DEFAULT_BAUD_RATE,
+	.parity = UART_CFG_PARITY_NONE,
+	.stop_bits = UART_CFG_STOP_BITS_1,
+	.data_bits = UART_CFG_DATA_BITS_8,
+	.flow_ctrl = UART_CFG_FLOW_CTRL_RTS_CTS,
+};
+
 /******************************************************************************/
 /* Local Function Prototypes                                                  */
 /******************************************************************************/
@@ -88,6 +102,7 @@ static bool DigitalInput1IsSimulated(int *simulated_value);
 static bool DigitalInput2IsSimulated(int *simulated_value);
 static bool DigitalInputIRQNeeded(bool new_state, bool old_state,
 				  gpio_flags_t pin_config);
+static void config_uart0(bool prepare_for_shutdown);
 
 /******************************************************************************/
 /* Global Function Definitions                                                */
@@ -109,10 +124,12 @@ void BSP_Init(void)
 		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(uart0)));
 	}
 
+#if DT_NODE_HAS_STATUS(DT_NODELABEL(uart1), okay)
 	uart1_dev = device_get_binding(DEVICE_DT_NAME(DT_NODELABEL(uart1)));
 	if (!uart1_dev) {
 		LOG_ERR("Cannot find %s!", DEVICE_DT_NAME(DT_NODELABEL(uart1)));
 	}
+#endif
 
 	ConfigureOutputs();
 	UART0Initialise();
@@ -440,9 +457,36 @@ static void SendDigitalInputStatus(uint16_t pin, uint8_t status)
 	}
 }
 
+static void config_uart0(bool prepare_for_shutdown)
+{
+	int ret;
+
+#ifdef CONFIG_ATTR
+	if (attr_get_bool(ATTR_ID_disable_flow_control)) {
+		uart_cfg.flow_ctrl = UART_CFG_FLOW_CTRL_NONE;
+	}
+	uart_cfg.baudrate = attr_get_uint32(ATTR_ID_baud_rate, DEFAULT_BAUD_RATE);
+#endif
+
+	if (prepare_for_shutdown) {
+		uart_cfg.flow_ctrl = UART_CFG_FLOW_CTRL_NONE;
+	}
+
+	if (device_is_ready(uart0_dev)) {
+		ret = uart_configure(uart0_dev, &uart_cfg);
+		if (ret != 0) {
+			LOG_ERR("Could not config console UART [%d]", ret);
+		}
+	} else {
+		LOG_ERR("Console UART not ready");
+	}
+}
+
 static void UART0Initialise(void)
 {
 	int r = 0;
+
+	config_uart0(PREPARE_UART_FOR_RUN);
 
 #if defined(CONFIG_UART_SHUTOFF)
 	/* When this gets pulled down, it indicates a client is connected
@@ -484,7 +528,6 @@ static void UART0Initialise(void)
 	/* trigger fist check of UART0 state */
 	k_work_reschedule(&uart0_cts_debounce_delayed_work,
 			  K_MSEC(BSP_SUPPORT_UART_CTS_DEBOUNCE_TIME_MS));
-
 #endif
 }
 
@@ -543,7 +586,8 @@ static void UART0WorkqHandler(struct k_work *item)
 				restore_logging = log_backend_is_active(uart0LogBackend);
 				log_backend_deactivate(uart0LogBackend);
 			}
-
+			config_uart0(PREPARE_UART_FOR_SHUTDOWN);
+			uart_irq_rx_disable(uart0_dev);
 			(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_SUSPEND);
 			uart0_on = false;
 		}
@@ -555,9 +599,11 @@ static void UART0WorkqHandler(struct k_work *item)
 			k_work_cancel_delayable(&uart0_shut_off_delayed_work);
 			LOG_WRN("Turn on uart0");
 			(void)pm_device_action_run(uart0_dev, PM_DEVICE_ACTION_RESUME);
+			uart_irq_rx_enable(uart0_dev);
 			if ((uart0LogBackend != NULL) && restore_logging) {
 				log_backend_activate(uart0LogBackend, uart0LogBackend->cb->ctx);
 			}
+			config_uart0(PREPARE_UART_FOR_RUN);
 			uart0_on = true;
 		}
 	}
@@ -575,6 +621,7 @@ static void UART1Initialise(void)
 		/* Ignoring the return code here - if it's non-zero the UART is
 		 * already off.
 		 */
+		uart_irq_rx_disable(uart1_dev);
 		(void)pm_device_action_run(uart1_dev, PM_DEVICE_ACTION_SUSPEND);
 	}
 }

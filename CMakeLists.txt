@@ -19,9 +19,15 @@ set(mcuboot_ROOT_PROJECT_APP_DIR
 set(PM_STATIC_YML_FILE
     ${CMAKE_SOURCE_DIR}/pm_static.sb.bt610.yml
 )
-
 set(b0_OVERLAY_CONFIG
     ${CMAKE_SOURCE_DIR}/b0_bt610.conf
+)
+set(b0_DTC_OVERLAY_FILE
+    ${CMAKE_SOURCE_DIR}/boards/bootloader.${BOARD}.overlay
+)
+
+set(mcuboot_DTC_OVERLAY_FILE
+    ${CMAKE_SOURCE_DIR}/boards/bootloader.${BOARD}.overlay
 )
 
 # The component-generated files for attributes
@@ -34,6 +40,7 @@ set(APP_VERSION_BUILD ${build_time})
 set(gen_dir ${CMAKE_BINARY_DIR}/zephyr/include/generated/app)
 set(ver_file ${gen_dir}/app_version.h)
 configure_file(${CMAKE_SOURCE_DIR}/src/version/app_version.h.in ${ver_file})
+
 # Get application version
 file(READ ${ver_file} ver)
 string(REGEX MATCH "APP_VERSION_MAJOR ([0-9]+)" _ ${ver})
@@ -66,6 +73,7 @@ execute_process(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE api_result
 )
+
 if(NOT "${api_result}" STREQUAL 0)
     message(FATAL_ERROR "Failed to build API")
 endif()
@@ -75,7 +83,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src/framework_config)
 include_directories(${CMAKE_SOURCE_DIR}/src/version)
 target_include_directories(app PRIVATE ${gen_dir})
 zephyr_include_directories(${CMAKE_SOURCE_DIR}/memfault)
-
 
 target_sources(app PRIVATE
     ${CMAKE_SOURCE_DIR}/src/AdcBt6.c
