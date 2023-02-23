@@ -99,6 +99,15 @@ static const struct lcz_led_blink_pattern BOOTLOADER_ACTIVE_PATTERN = {
 	.off_time = 500,
 	.repeat_count = REPEAT_INDEFINITELY
 };
+
+/* Canvas enabled devices blink the green LED when connected to the LwM2M service */
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+static const struct lcz_led_blink_pattern DM_CONNECTED_PATTERN = {
+	.on_time = 75,
+	.off_time = 4925,
+	.repeat_count = REPEAT_INDEFINITELY
+};
+#endif
 /* clang-format on */
 
 /******************************************************************************/
@@ -121,6 +130,10 @@ void led_blink(ledColors_t color, ledPatterns_t pattern)
 		pPattern = &TAMPER_PATTERN;
 	} else if (pattern == LED_PATTERN_EXIT_SHELF_MODE) {
 		pPattern = &EXIT_SHELF_MODE_PATTERN;
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+	} else if (pattern == LED_PATTERN_DM_CONNECTED) {
+		pPattern = &DM_CONNECTED_PATTERN;
+#endif
 	} else if (pattern == LED_PATTERN_FACTORY_RESET) {
 		pPattern = &FACTORY_RESET_PATTERN;
 	} else if (pattern == LED_PATTERN_BOOTLOADER_ACTIVE) {

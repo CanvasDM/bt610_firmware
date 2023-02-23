@@ -119,6 +119,11 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 static Dispatch_t AmrLedOnMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 static Dispatch_t LedsOffMsgHandler(FwkMsgRxer_t *pMsgRxer, FwkMsg_t *pMsg);
 
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+static Dispatch_t DmConnectedMsgHandler(FwkMsgRxer_t *pMsgRxer,
+						FwkMsg_t *pMsg);
+#endif
+
 static bool ValidAliveDuration(int64_t duration);
 static bool ValidExitShelfModeDuration(int64_t duration);
 static bool ValidFactoryResetDuration(int64_t duration);
@@ -179,6 +184,9 @@ static FwkMsgHandler_t *UserIfTaskMsgDispatcher(FwkMsgCode_t MsgCode)
 	case FMC_FACTORY_RESET:           return UiFactoryResetMsgHandler;
 	case FMC_AMR_LED_ON:              return AmrLedOnMsgHandler;
 	case FMC_LEDS_OFF:                return LedsOffMsgHandler;
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+	case FMC_DM_CONNECTED:            return DmConnectedMsgHandler;
+#endif
 	default:                          return NULL;
 	}
 	/* clang-format on */
@@ -512,6 +520,22 @@ static Dispatch_t UiFactoryResetMsgHandler(FwkMsgRxer_t *pMsgRxer,
 
 	return result;
 }
+
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+static Dispatch_t DmConnectedMsgHandler(FwkMsgRxer_t *pMsgRxer,
+					    FwkMsg_t *pMsg)
+{
+	ARG_UNUSED(pMsgRxer);
+	ARG_UNUSED(pMsg);
+
+	/* This starts the green LED flashing continuously whilst
+	 * the DM connection is active.
+	 */
+	led_blink(LED_COLOR_GREEN, LED_PATTERN_DM_CONNECTED);
+
+	return DISPATCH_OK;
+}
+#endif
 
 /******************************************************************************/
 /* Interrupt Service Routines                                                 */

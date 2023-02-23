@@ -122,6 +122,8 @@ static void RequestDisconnect(struct bt_conn *ConnectionHandle);
 static uint32_t GetAdvertisingDuration(void);
 #if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
 void lwm2m_data_ready_cb(bool data_ready);
+static void lwm2m_client_connected_event(struct lwm2m_ctx *client, int lwm2m_client_index,
+					 bool connected, enum lwm2m_rd_client_event client_event);
 #endif
 #if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
 void ble_client_memfault_data_ready_cb(bool data_ready);
@@ -176,6 +178,13 @@ static struct fs_mount_t settings_mnt = {
  */
 K_MSGQ_DEFINE(ble_task_advert_queue, sizeof(SensorMsg_t),
 	      BLE_TASK_ADVERT_QUEUE_SIZE, FWK_QUEUE_ALIGNMENT);
+
+/* Used to register for callbacks for connection events from the LwM2M
+ * service.
+ */
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+static struct lcz_lwm2m_client_event_callback_agent lwm2m_event_agent;
+#endif
 
 /******************************************************************************/
 /* Framework Message Dispatcher                                               */
@@ -311,6 +320,10 @@ static int BluetoothInit(void)
 
 #if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
 		lcz_lwm2m_client_register_data_ready_cb(lwm2m_data_ready_cb);
+
+		/* Register handler for client events */
+		lwm2m_event_agent.connected_callback = lwm2m_client_connected_event;
+		(void)lcz_lwm2m_client_register_event_callback(&lwm2m_event_agent);
 #endif
 
 #if defined(CONFIG_LCZ_BLE_CLIENT_DM_MEMFAULT)
@@ -867,3 +880,25 @@ static bool le_param_req(struct bt_conn *conn, struct bt_le_conn_param *param)
 
 	return (true);
 }
+
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+static void lwm2m_client_connected_event(struct lwm2m_ctx *client, int lwm2m_client_index,
+					 bool connected, enum lwm2m_rd_client_event client_event)
+{
+	if (lwm2m_client_index == CONFIG_LCZ_BLE_CLIENT_DM_CLIENT_INDEX) {
+		if (connected == false) {
+			/* If disconnected, we switch the green LED off */
+			FRAMEWORK_MSG_CREATE_AND_SEND(
+						FWK_ID_BLE_TASK,
+						FWK_ID_USER_IF_TASK,
+						FMC_LEDS_OFF);
+		} else {
+			/* If connected, start to flash the green LED on and off */
+			FRAMEWORK_MSG_CREATE_AND_SEND(
+						FWK_ID_BLE_TASK,
+						FWK_ID_USER_IF_TASK,
+						FMC_DM_CONNECTED);
+		}
+	}
+}
+#endif

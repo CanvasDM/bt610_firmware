@@ -29,7 +29,10 @@ typedef enum {
         LED_PATTERN_ALIVE,
         LED_PATTERN_EXIT_SHELF_MODE,
         LED_PATTERN_FACTORY_RESET,
-        LED_PATTERN_BOOTLOADER_ACTIVE
+        LED_PATTERN_BOOTLOADER_ACTIVE,
+#if defined(CONFIG_LCZ_LWM2M_TRANSPORT_BLE_PERIPHERAL)
+        LED_PATTERN_DM_CONNECTED
+#endif
 } ledPatterns_t;
 
 /******************************************************************************/
