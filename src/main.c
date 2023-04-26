@@ -53,7 +53,6 @@ void main(void)
 #endif
 #ifdef CONFIG_LCZ_LWM2M_FW_UPDATE
 	(void)lcz_lwm2m_fw_update_set_pkg_name(PKG_NAME);
-	(void)lcz_lwm2m_fw_update_set_pkg_version(APP_VERSION_STRING);
 #endif
 	BSP_Init();
 	ControlTask_Initialize();

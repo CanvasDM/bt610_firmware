@@ -1,8 +1,8 @@
 {
   "openrpc": "1.2.6",
   "info": {
-    "title": "Project_Index",
-    "version": "1.0.0"
+    "title": "BT610 Canvas Firmware",
+    "version": "1.0.1"
   },
   "methods": [
     {
@@ -2158,7 +2158,7 @@
               "type": "string"
             },
             "x-ctype": "string",
-            "x-default": "1.0.0",
+            "x-default": "1.0.1",
             "x-example": "123.456.789",
             "x-readable": true,
             "summary": "The API attribute version that the firmware supports",
@@ -4039,7 +4039,6 @@
             "required": true,
             "schema": {
               "maxLength": 32,
-              "minLength": 1,
               "type": "string"
             },
             "x-ctype": "string",
