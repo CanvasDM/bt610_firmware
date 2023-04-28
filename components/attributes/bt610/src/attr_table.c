@@ -47,9 +47,9 @@ typedef struct rw_attribute {
 	uint8_t digital_input_1_config;
 	uint8_t digital_input_2_config;
 	enum analog_input_1_type analog_input_1_type;
-	uint8_t analog_input_2_type;
-	uint8_t analog_input_3_type;
-	uint8_t analog_input_4_type;
+	enum analog_input_2_type analog_input_2_type;
+	enum analog_input_3_type analog_input_3_type;
+	enum analog_input_4_type analog_input_4_type;
 	uint32_t qrtc_last_set;
 	float sh_offset;
 	uint32_t analog_sense_interval;
@@ -429,9 +429,9 @@ const struct attr_table_entry ATTR_TABLE[ATTR_TABLE_SIZE] = {
 	[32 ] = { RO_ATTRX(analog_input_3)                      , ATTR_TYPE_FLOAT         , 0x2   , av_float            , attr_prepare_analog_input_3         , .min.fx = 0.0       , .max.fx = 15000.0   },
 	[33 ] = { RO_ATTRX(analog_input_4)                      , ATTR_TYPE_FLOAT         , 0x2   , av_float            , attr_prepare_analog_input_4         , .min.fx = 0.0       , .max.fx = 15000.0   },
 	[34 ] = { RW_ATTRE(analog_input_1_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
-	[35 ] = { RW_ATTRX(analog_input_2_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
-	[36 ] = { RW_ATTRX(analog_input_3_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
-	[37 ] = { RW_ATTRX(analog_input_4_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
+	[35 ] = { RW_ATTRE(analog_input_2_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
+	[36 ] = { RW_ATTRE(analog_input_3_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
+	[37 ] = { RW_ATTRE(analog_input_4_type)                 , ATTR_TYPE_U8            , 0x1b  , av_aic              , NULL                                , .min.ux = 0         , .max.ux = 7         },
 	[38 ] = { RO_ATTRE(magnet_state)                        , ATTR_TYPE_BOOL          , 0x2   , av_bool             , NULL                                , .min.ux = 0         , .max.ux = 1         },
 	[39 ] = { RO_ATTRS(param_path)                          , ATTR_TYPE_STRING        , 0x2   , av_string           , NULL                                , .min.ux = 2         , .max.ux = 8         },
 	[40 ] = { RO_ATTRX(battery_age)                         , ATTR_TYPE_U32           , 0x2   , av_uint32           , NULL                                , .min.ux = 0         , .max.ux = 0         },
@@ -592,6 +592,51 @@ const char *const attr_get_string_digital_input(int value)
 }
 
 const char *const attr_get_string_analog_input_1_type(int value)
+{
+	switch (value) {
+		case 0:           return "Unused";
+		case 1:           return "Voltage 0 V To 10 V DC";
+		case 2:           return "Current 4 Ma To 20 Ma";
+		case 3:           return "Pressure";
+		case 4:           return "Ultrasonic";
+		case 5:           return "AC Current 20 A";
+		case 6:           return "AC Current 150 A";
+		case 7:           return "AC Current 500 A";
+		default:          return "?";
+	}
+}
+
+const char *const attr_get_string_analog_input_2_type(int value)
+{
+	switch (value) {
+		case 0:           return "Unused";
+		case 1:           return "Voltage 0 V To 10 V DC";
+		case 2:           return "Current 4 Ma To 20 Ma";
+		case 3:           return "Pressure";
+		case 4:           return "Ultrasonic";
+		case 5:           return "AC Current 20 A";
+		case 6:           return "AC Current 150 A";
+		case 7:           return "AC Current 500 A";
+		default:          return "?";
+	}
+}
+
+const char *const attr_get_string_analog_input_3_type(int value)
+{
+	switch (value) {
+		case 0:           return "Unused";
+		case 1:           return "Voltage 0 V To 10 V DC";
+		case 2:           return "Current 4 Ma To 20 Ma";
+		case 3:           return "Pressure";
+		case 4:           return "Ultrasonic";
+		case 5:           return "AC Current 20 A";
+		case 6:           return "AC Current 150 A";
+		case 7:           return "AC Current 500 A";
+		default:          return "?";
+	}
+}
+
+const char *const attr_get_string_analog_input_4_type(int value)
 {
 	switch (value) {
 		case 0:           return "Unused";

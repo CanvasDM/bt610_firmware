@@ -58,6 +58,39 @@ enum analog_input_1_type {
 	ANALOG_INPUT_1_TYPE_AC_CURRENT_500A = 7,
 };
 
+enum analog_input_2_type {
+	ANALOG_INPUT_2_TYPE_UNUSED = 0,
+	ANALOG_INPUT_2_TYPE_VOLTAGE_0V_TO_10V_DC = 1,
+	ANALOG_INPUT_2_TYPE_CURRENT_4MA_TO_20MA = 2,
+	ANALOG_INPUT_2_TYPE_PRESSURE = 3,
+	ANALOG_INPUT_2_TYPE_ULTRASONIC = 4,
+	ANALOG_INPUT_2_TYPE_AC_CURRENT_20A = 5,
+	ANALOG_INPUT_2_TYPE_AC_CURRENT_150A = 6,
+	ANALOG_INPUT_2_TYPE_AC_CURRENT_500A = 7,
+};
+
+enum analog_input_3_type {
+	ANALOG_INPUT_3_TYPE_UNUSED = 0,
+	ANALOG_INPUT_3_TYPE_VOLTAGE_0V_TO_10V_DC = 1,
+	ANALOG_INPUT_3_TYPE_CURRENT_4MA_TO_20MA = 2,
+	ANALOG_INPUT_3_TYPE_PRESSURE = 3,
+	ANALOG_INPUT_3_TYPE_ULTRASONIC = 4,
+	ANALOG_INPUT_3_TYPE_AC_CURRENT_20A = 5,
+	ANALOG_INPUT_3_TYPE_AC_CURRENT_150A = 6,
+	ANALOG_INPUT_3_TYPE_AC_CURRENT_500A = 7,
+};
+
+enum analog_input_4_type {
+	ANALOG_INPUT_4_TYPE_UNUSED = 0,
+	ANALOG_INPUT_4_TYPE_VOLTAGE_0V_TO_10V_DC = 1,
+	ANALOG_INPUT_4_TYPE_CURRENT_4MA_TO_20MA = 2,
+	ANALOG_INPUT_4_TYPE_PRESSURE = 3,
+	ANALOG_INPUT_4_TYPE_ULTRASONIC = 4,
+	ANALOG_INPUT_4_TYPE_AC_CURRENT_20A = 5,
+	ANALOG_INPUT_4_TYPE_AC_CURRENT_150A = 6,
+	ANALOG_INPUT_4_TYPE_AC_CURRENT_500A = 7,
+};
+
 enum magnet_state {
 	MAGNET_STATE_FAR = false,
 	MAGNET_STATE_NEAR = true,
@@ -180,6 +213,9 @@ BUILD_ASSERT(sizeof(enum advertising_phy) == ATTR_SIZE_BOOL);
 BUILD_ASSERT(sizeof(enum config_type) == ATTR_SIZE_U8);
 BUILD_ASSERT(sizeof(enum digital_input) == ATTR_SIZE_U8);
 BUILD_ASSERT(sizeof(enum analog_input_1_type) == ATTR_SIZE_U8);
+BUILD_ASSERT(sizeof(enum analog_input_2_type) == ATTR_SIZE_U8);
+BUILD_ASSERT(sizeof(enum analog_input_3_type) == ATTR_SIZE_U8);
+BUILD_ASSERT(sizeof(enum analog_input_4_type) == ATTR_SIZE_U8);
 BUILD_ASSERT(sizeof(enum magnet_state) == ATTR_SIZE_BOOL);
 BUILD_ASSERT(sizeof(enum tamper_switch_status) == ATTR_SIZE_BOOL);
 BUILD_ASSERT(sizeof(enum boot_phy) == ATTR_SIZE_U8);
@@ -430,6 +466,9 @@ const char *const attr_get_string_advertising_phy(int value);
 const char *const attr_get_string_config_type(int value);
 const char *const attr_get_string_digital_input(int value);
 const char *const attr_get_string_analog_input_1_type(int value);
+const char *const attr_get_string_analog_input_2_type(int value);
+const char *const attr_get_string_analog_input_3_type(int value);
+const char *const attr_get_string_analog_input_4_type(int value);
 const char *const attr_get_string_magnet_state(int value);
 const char *const attr_get_string_tamper_switch_status(int value);
 const char *const attr_get_string_boot_phy(int value);

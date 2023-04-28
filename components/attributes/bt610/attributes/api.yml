@@ -1601,6 +1601,15 @@ components:
         schema:
           minimum: 0
           maximum: 7
+          enum:
+            UNUSED: 0
+            VOLTAGE_0V_TO_10V_DC: 1
+            CURRENT_4MA_TO_20MA: 2
+            PRESSURE: 3
+            ULTRASONIC: 4
+            AC_CURRENT_20A: 5
+            AC_CURRENT_150A: 6
+            AC_CURRENT_500A: 7
           type: integer
         x-ctype: uint8_t
         x-broadcast: true
@@ -1617,6 +1626,15 @@ components:
         schema:
           minimum: 0
           maximum: 7
+          enum:
+            UNUSED: 0
+            VOLTAGE_0V_TO_10V_DC: 1
+            CURRENT_4MA_TO_20MA: 2
+            PRESSURE: 3
+            ULTRASONIC: 4
+            AC_CURRENT_20A: 5
+            AC_CURRENT_150A: 6
+            AC_CURRENT_500A: 7
           type: integer
         x-ctype: uint8_t
         x-broadcast: true
@@ -1633,6 +1651,15 @@ components:
         schema:
           minimum: 0
           maximum: 7
+          enum:
+            UNUSED: 0
+            VOLTAGE_0V_TO_10V_DC: 1
+            CURRENT_4MA_TO_20MA: 2
+            PRESSURE: 3
+            ULTRASONIC: 4
+            AC_CURRENT_20A: 5
+            AC_CURRENT_150A: 6
+            AC_CURRENT_500A: 7
           type: integer
         x-ctype: uint8_t
         x-broadcast: true
